@@ -1,0 +1,35 @@
+#!/bin/sh /etc/rc.common
+START=99
+STOP=10
+USE_PROCD=1
+C=/data/ShellCrash
+boot() {
+ [ ! -f /data/ShellCrash-tool/.dis_startup ] || return 0
+ printf '1\n' > "$C/configs/enabled"
+ mkdir -p /tmp/ShellCrash
+ printf 'boot\n' > /tmp/ShellCrash/control-source.pending
+ start
+}
+start_service() {
+ [ "$(cat $C/configs/enabled 2>/dev/null)" = 1 ] || return 0
+ "$C/ax5/prepare.sh" || return 1
+ rm -f /tmp/ShellCrash/manual-stop
+ procd_open_instance
+ procd_set_param command "$C/ax5/run.sh"
+ # Conservative mode uses the existing one-minute sampler, never both guards.
+ if ! grep -qx 'start_old=ON' /data/ShellCrash-tool/configs/ShellCrash.cfg; then
+  procd_set_param respawn 600 30 5
+  printf 'procd\n' > /tmp/ShellCrash/guard-mode
+ else
+  printf 'conservative\n' > /tmp/ShellCrash/guard-mode
+ fi
+ procd_set_param term_timeout 10
+ procd_set_param stdout 0
+ procd_set_param stderr 0
+ procd_close_instance
+}
+stop_service() {
+ lua "$C/ax5/state.lua" save-selection
+ touch /tmp/ShellCrash/manual-stop
+ "$C/ax5/firewall.sh" stop
+}

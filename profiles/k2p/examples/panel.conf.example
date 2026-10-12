@@ -1,0 +1,10 @@
+# Optional overrides; otherwise detect the Padavan LAN IPv4 from NVRAM.
+# PANEL_LAN_IP='192.168.1.1'
+# Optional private mirror for the pinned cn.srs; hash verification is mandatory.
+# PANEL_CN_MIRROR='https://downloads.example.com/cn.srs'
+
+# Optional existing domestic IPv4 list to import on first start (missing path is skipped).
+# PANEL_CN_IP_FILE='/etc/storage/custom/chnroute.txt'
+
+# Existing deployments may retain a different root selector name.
+# PANEL_MAIN_GROUP='proxy-main'

@@ -1,0 +1,9 @@
+;(function(){
+ if(window.shellCrashAnyTLSMenu)return;
+ window.shellCrashAnyTLSMenu=true;
+ window.shellCrashAnyTLSMenuIndex=menuL2_title.length;
+ menuL2_title.push('ShellCrash');
+ menuL2_link.push('/custom/AnyTLS.asp');
+ tabtitle[window.shellCrashAnyTLSMenuIndex-1]=['','ShellCrash'];
+ tablink[window.shellCrashAnyTLSMenuIndex-1]=['','/custom/AnyTLS.asp'];
+})();

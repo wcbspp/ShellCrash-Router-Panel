@@ -1,0 +1,10 @@
+--- a/start.sh
++++ b/start.sh
+@@ -1,5 +1,7 @@
+ #!/bin/sh
+ # Copyright (C) Juewuy
++# AX5 service bridge: CLI and web use the same procd instance.
++exec /data/ShellCrash/ax5/cli.sh "$@"
+ 
+ #初始化目录
+ [ -z "$CRASHDIR" ] && CRASHDIR=$(

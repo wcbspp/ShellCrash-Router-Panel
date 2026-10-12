@@ -1,0 +1,11 @@
+--- a/init.sh
++++ b/init.sh
+@@ -1,5 +1,8 @@
+ #!/bin/sh
+ # Copyright (C) Juewuy
++# Preserve the AX5 adapter and its service when sourced by menus.
++/data/ShellCrash/ax5/tool-sync.sh
++return 0 2>/dev/null || exit 0
+ 
+ #特殊固件识别及标记
+ [ -f "/etc/storage/started_script.sh" ] && { #老毛子固件

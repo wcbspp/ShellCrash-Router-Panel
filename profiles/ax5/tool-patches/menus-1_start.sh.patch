@@ -1,0 +1,14 @@
+--- a/menus/1_start.sh
++++ b/menus/1_start.sh
+@@ -18,9 +18,9 @@
+ }
+ start_core() {
+     if echo "$crashcore" | grep -q 'singbox'; then
+-        core_config="$CRASHDIR"/jsons/config.json
++        core_config=/data/ShellCrash/configs/config.json
+     else
+-        core_config="$CRASHDIR"/yamls/config.yaml
++        core_config=/data/ShellCrash/configs/config.yaml
+     fi
+     echo "-----------------------------------------------"
+     if [ ! -s $core_config -a -s "$CRASHDIR"/configs/providers.cfg ]; then

@@ -1,0 +1,546 @@
+@@if ax5@@
+let guardDirty=false;
+@@else@@
+@@end@@
+// On-demand administration through the existing authenticated Padavan httpd.
+@@if ax5@@
+const nativeHost=true,apiBase=backendBase+'/api';
+@@else@@
+const nativeHost=location.port!=='9999',apiBase=location.protocol+'//'+location.hostname+':9999';
+@@end@@
+let dnsLoaded=false,dnsDirty=false,lastPressure='normal';
+let csrf='',running=false,manageBusy=false,activeTab='nodes',nativeState=null;
+@@if ax5@@
+const words={"subscription_http_400":"转换或订阅服务返回 HTTP 400：请求格式不被接受。可改用直接下载，或核对工具中的转换服务。","subscription_http_401":"服务器返回 HTTP 401：订阅或转换服务要求认证。","subscription_http_403":"服务器返回 HTTP 403：请求被拒绝，请检查订阅权限或服务限制。","subscription_http_404":"服务器返回 HTTP 404：订阅或转换接口不存在，请核对地址。","subscription_http_429":"服务器返回 HTTP 429：请求过于频繁，请稍后重试。","subscription_http_500":"服务器返回 HTTP 500：服务内部错误，请稍后重试。","subscription_http_502":"服务器返回 HTTP 502：服务网关异常，请稍后重试。","subscription_http_503":"服务器返回 HTTP 503：订阅或转换服务暂不可用。可改用直接下载，或稍后重试。","subscription_http_504":"服务器返回 HTTP 504：服务网关超时，请稍后重试。","subscription_dns_failed":"无法解析订阅或转换服务域名，请检查 DNS。","subscription_connect_failed":"无法连接订阅或转换服务，请检查网络。","subscription_timeout":"订阅或转换服务响应超时，当前配置保留。","subscription_tls_failed":"HTTPS 证书或 TLS 握手失败，请检查路由器时间及证书。","guard_saved":"守护模式已生效","guard_save_failed":"守护设置保存失败，旧设置保留","guard_apply_failed_previous_restored":"新守护启动失败，已恢复原设置",database_updating:'正在下载并校验当前内核的国内域名库',database_unchanged:'域名库内容未变化，无需重启',database_updated:'域名库已更新并备份',database_download_failed:'域名库下载失败，原库继续使用',database_invalid:'域名库文件无效，原库继续使用',database_space_insufficient:'持久化空间不足，原库继续使用',database_check_failed:'内核校验未通过，原库继续使用',database_backup_failed:'旧库备份失败，未替换',database_save_failed:'保存失败，原库继续使用',checking_tool_release:'正在查询官方正式版',updating_tool_release:'正在检查工具版本与适配',tool_checked:'正式版查询完成',tool_updated:'工具版本检查与更新完成，代理未重启',tool_update_rejected_previous_kept:'工具更新未执行或已回退；请查看日志中的版本、适配或空间原因',configuration_saved_backup_pending:'本地配置已保存，远程备份失败；请查看日志并重试同步',memory_settings_saved:'内存管理设置已保存',memory_settings_unchanged:'设置未变化，无需写入',memory_settings_invalid:'阈值无效：提醒须高于保护；保护至少 12 MB；清理为 0 或不低于提醒',memory_settings_saving:'正在保存内存管理设置',memory_settings_save_failed:'保存失败，已恢复原阈值',memory_settings_low:'可用内存低于 12 MB，暂缓写入设置',cleaning_memory:'正在清理未使用的临时文件',memory_cleaned:'安全清理完成',cleanup_busy:'启动或清理正在进行，请稍后重试',mirror_saving:'正在把镜像地址保存到路由器',mirror_memory_insufficient:'远端缺少当前内核，可用内存不足以暂存上传；请先在服务器放入内核文件',mirror_saved:'远程设置已保存，请验证连接',mirror_synced:'应用与内核已备份并通过拉取校验',mirror_syncing:'正在备份文件到远端',mirror_invalid:'远程地址或开关参数无效',mirror_key_missing:'尚未安装镜像上传密钥及服务器指纹',mirror_sync_failed:'同步失败，请查看日志；本地配置保持',mirror_sync_failed_previous_kept:'镜像同步失败，更新取消，原版本继续使用',memory_protected:'内存保护中，暂缓配置更新；可用内存回升后再操作',validating_dns:'正在校验 DNS 和例外名单',dns_updated:'DNS 设置已保存并生效',invalid_filter_previous_kept:'名单格式无效，原配置继续使用',rules_backup_failed:'准备旧规则备份失败，原规则继续使用',downloading_rules:'正在下载国内 IP 规则',validating_rules:'正在校验并同步规则',rules_unchanged:'规则已是最新，无需重启',rules_updated:'规则已更新并保存',rules_download_failed:'规则下载失败，原规则继续使用',rules_invalid_previous_kept:'规则内容校验失败，原规则继续使用',upload_ready:'正在传输配置',downloading_subscription:'正在下载订阅',subscription_downloaded:'订阅已下载',validating_configuration:'正在校验配置',subscription_updated:'订阅已更新并保存',service_operation:'正在处理服务',service_operation_complete:'操作完成',invalid_subscription_url:'订阅链接无效',subscription_download_failed:'订阅下载失败，请查看日志',empty_subscription:'订阅内容为空',invalid_upload:'配置传输不完整',configuration_template_missing:'配置模板未准备好',configuration_check_failed_previous_kept:'配置校验失败，已保留原配置',persistent_save_failed_previous_kept:'保存失败，已保留原配置',start_failed_previous_restored:'启动失败，已恢复原配置',service_start_failed:'启动失败，请查看日志',service_stop_failed:'停止失败，请查看日志',persistent_save_failed:'保存失败，请查看日志',checking_core_update:'正在检查 ShellCrash 下载源',core_checked:'当前源检查完成',core_check_failed:'检查失败，当前内核保持运行',core_runtime_config_missing:'运行配置缺失，当前内核保持运行',core_source_unsupported:'当前 ShellCrash 源或内核类型不支持网页检查，保留现有内核',core_package_too_large:'该程序超过 AX5 轻量限制，保留当前内核',core_current_invalid:'已安装内核记录不完整，请联系维护',core_previous_invalid:'旧内核缓存校验失败，未更新',core_downgrade_rejected:'拒绝降级，当前内核保持运行',core_up_to_date:'已是当前适配版本，无需重启',preparing_core_update:'正在准备内核更新',downloading_core_update:'正在下载新内核',validating_core_update:'正在校验新内核和配置',starting_core_update:'正在启动新内核',core_memory_insufficient:'可用内存不足，已回退；当前版本继续运行',core_download_failed_previous_kept:'下载失败，已回退旧内核',core_archive_invalid:'程序包无效，已回退旧内核',core_version_mismatch:'版本校验失败，已回退旧内核',core_config_incompatible:'新内核不兼容现有配置，已回退',core_start_failed_previous_restored:'新内核启动失败，已恢复旧内核',core_update_failed_previous_kept:'内核未安装，原配置保留；请查看运行日志中的空间、备份或校验结果',core_updated:'内核更新完成，配置保持',core_download_failed:'内核下载失败，请检查网络',logs_cleared:'日志已清空',clearing_logs:'正在清空日志'};
+@@else@@
+const words={"subscription_http_400":"转换或订阅服务返回 HTTP 400：请求格式不被接受。可改用直接下载，或核对工具中的转换服务。","subscription_http_401":"服务器返回 HTTP 401：订阅或转换服务要求认证。","subscription_http_403":"服务器返回 HTTP 403：请求被拒绝，请检查订阅权限或服务限制。","subscription_http_404":"服务器返回 HTTP 404：订阅或转换接口不存在，请核对地址。","subscription_http_429":"服务器返回 HTTP 429：请求过于频繁，请稍后重试。","subscription_http_500":"服务器返回 HTTP 500：服务内部错误，请稍后重试。","subscription_http_502":"服务器返回 HTTP 502：服务网关异常，请稍后重试。","subscription_http_503":"服务器返回 HTTP 503：订阅或转换服务暂不可用。可改用直接下载，或稍后重试。","subscription_http_504":"服务器返回 HTTP 504：服务网关超时，请稍后重试。","subscription_dns_failed":"无法解析订阅或转换服务域名，请检查 DNS。","subscription_connect_failed":"无法连接订阅或转换服务，请检查网络。","subscription_timeout":"订阅或转换服务响应超时，当前配置保留。","subscription_tls_failed":"HTTPS 证书或 TLS 握手失败，请检查路由器时间及证书。","guard_saved":"守护模式已生效","guard_save_failed":"守护设置保存失败，旧设置保留","guard_apply_failed_previous_restored":"新守护启动失败，已恢复原设置",checking_tool_release:'正在查询官方正式版',updating_tool_release:'正在检查工具版本与适配',tool_checked:'正式版查询完成',tool_updated:'工具版本检查与更新完成，代理未重启',tool_update_rejected_previous_kept:'工具更新未执行或已回退；请查看日志中的版本、适配或空间原因',memory_settings_saved:'内存管理设置已保存',memory_settings_unchanged:'设置未变化，无需写入',memory_settings_invalid:'阈值无效：提醒须高于保护；保护至少 12 MB；清理为 0 或不低于提醒',memory_settings_saving:'正在保存内存管理设置',memory_settings_save_failed:'保存失败，已恢复原阈值',memory_settings_low:'可用内存低于 12 MB，暂缓写入设置',cleaning_memory:'正在清理未使用的临时文件',memory_cleaned:'安全清理完成',cleanup_busy:'启动或清理正在进行，请稍后重试',mirror_saving:'正在把镜像地址保存到路由器',mirror_memory_insufficient:'远端缺少当前内核，可用内存不足以暂存上传；请先在服务器放入内核文件',mirror_saved:'远程设置已保存，请验证连接',mirror_synced:'应用与内核已备份并通过拉取校验',mirror_syncing:'正在备份文件到远端',mirror_invalid:'远程地址或开关参数无效',mirror_key_missing:'尚未安装镜像上传密钥及服务器指纹',mirror_sync_failed:'同步失败，请查看日志；本地配置保持',mirror_sync_failed_previous_kept:'镜像同步失败，更新取消，原版本继续使用',core_runtime_mismatch:'运行内核与已安装版本记录不一致，更新未执行',core_runtime_unavailable:'无法保留当前内核用于回退，原服务继续运行',core_staging_memory_insufficient:'当前没有可复用内核；暂存内核包需要额外内存，更新未执行。详情见日志',memory_protected:'内存保护中，暂缓配置更新；可用内存回升后再操作',validating_dns:'正在校验 DNS 和例外名单',dns_updated:'DNS 设置已保存并生效',invalid_filter_previous_kept:'名单格式无效，原配置继续使用',rules_backup_failed:'准备旧规则备份失败，原规则继续使用',downloading_rules:'正在下载国内 IP 规则',validating_rules:'正在校验并同步规则',rules_unchanged:'规则已是最新，无需重启',rules_updated:'规则已更新并保存',rules_download_failed:'规则下载失败，原规则继续使用',rules_invalid_previous_kept:'规则内容校验失败，原规则继续使用',upload_ready:'正在传输配置',downloading_subscription:'正在下载订阅',subscription_downloaded:'订阅已下载',validating_configuration:'正在校验配置',subscription_updated:'订阅已更新并保存',service_operation:'正在处理服务',service_operation_complete:'操作完成',invalid_subscription_url:'订阅链接无效',subscription_download_failed:'订阅下载失败，请查看日志',empty_subscription:'订阅内容为空',invalid_upload:'配置传输不完整',configuration_template_missing:'配置模板未准备好',configuration_check_failed_previous_kept:'配置校验失败，已保留原配置',persistent_save_failed_previous_kept:'保存失败，已保留原配置',start_failed_previous_restored:'启动失败，已恢复原配置',service_start_failed:'启动失败，请查看日志',service_stop_failed:'停止失败，请查看日志',persistent_save_failed:'保存失败，请查看日志',checking_core_update:'正在检查 ShellCrash 下载源',core_checked:'当前源检查完成',core_check_failed:'检查失败，当前内核保持运行',core_runtime_config_missing:'运行配置缺失，当前内核保持运行',core_source_unsupported:'当前 ShellCrash 源或内核类型不支持网页检查，保留现有内核',core_package_too_large:'该程序超过 K2P 轻量限制，保留当前内核',core_current_invalid:'已安装内核记录不完整，请联系维护',core_previous_invalid:'旧内核缓存校验失败，未更新',core_downgrade_rejected:'拒绝降级，当前内核保持运行',core_up_to_date:'已是当前适配版本，无需重启',preparing_core_update:'正在准备内核更新',downloading_core_update:'正在下载新内核',validating_core_update:'正在校验新内核和配置',starting_core_update:'正在启动新内核',core_memory_insufficient:'可用内存不足，已回退；当前版本继续运行',core_download_failed_previous_kept:'下载失败，已回退旧内核',core_archive_invalid:'程序包无效，已回退旧内核',core_version_mismatch:'版本校验失败，已回退旧内核',core_config_incompatible:'新内核不兼容现有配置，已回退',core_start_failed_previous_restored:'新内核启动失败，已恢复旧内核',core_updated:'内核更新完成，配置保持',core_download_failed:'内核下载失败，请检查网络',logs_cleared:'日志已清空',clearing_logs:'正在清空日志'};
+@@end@@
+const decode=s=>new TextDecoder().decode(Uint8Array.from(atob(s),c=>c.charCodeAt(0)));
+@@if ax5@@
+async function nativeRead(kind){const r=await fetch(backendBase+'/read?kind='+encodeURIComponent(kind)+'&t='+Date.now(),{cache:'no-store'});if(!r.ok)throw Error('后台请求失败：'+r.status);return ['state','zerotier','converters','remoteconnection'].includes(kind)?r.json():r.text()}
+@@else@@
+function nativeSessionError(response,json=false){
+ if(response.includes('请先注销另一用户'))return Object.assign(Error('路由器后台存在另一登录会话，请退出旧连接后重新打开管理页；已停止等待'),{code:'session_conflict'});
+ if(json&&/^\s*<(?:!doctype|html|head|script|body)\b/i.test(response))return Object.assign(Error('路由器登录已失效，请重新打开管理页；已停止等待'),{code:'session_expired'});
+ return null;
+}
+async function nativeRead(kind){
+ const abort=new AbortController(),timer=setTimeout(()=>abort.abort(),10000),json=['state','converters','remoteconnection','nodeprofile','uploadreceipt'].includes(kind);
+ try{const r=await fetch('/custom/sc-'+kind+'.asp?t='+Date.now(),{cache:'no-store',signal:abort.signal});if(!r.ok)throw Error('路由器后台请求失败：'+r.status);const response=await r.text(),session=nativeSessionError(response,json);if(session)throw session;return json?JSON.parse(response):response}finally{clearTimeout(timer)}
+}
+@@end@@
+let pendingControl=null;
+@@if ax5@@
+async function control(script,args=[],retry=false){if(!retry&&!/^sc-(new|put)\.sh$/.test(script))pendingControl={script,args:args.slice(),time:Date.now(),retries:0};const r=await fetch(backendBase+'/control',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded','X-SC-CSRF':csrf},body:new URLSearchParams({payload:JSON.stringify({script,args})})});if(!r.ok)throw Error('操作请求失败：'+r.status)}
+function showTab(tab){const previous=activeTab;activeTab=tab;for(const t of ['nodes','checks','subscription','backup','rules','dns','monitor','logs']){el(t+'-tab').hidden=t!==tab;el('tab-'+t).classList.toggle('active',t===tab)}if(tab!=='nodes')pauseMeasurements();else if(previous!=='nodes')autoMeasure();if(tab!=='rules'&&typeof cancelInspection==='function')cancelInspection();if(tab==='rules'){loadPolicy();if(el('runtime-inspection').open)loadInspection()}if(tab==='logs')loadLogs();if(tab==='monitor'){refreshZeroTier();syncNative().catch(()=>{});loadIncidents();loadMemory(true)};if(tab==='dns')loadDNS();if(tab!=='checks'&&siteBusy)pauseSites();if(tab==='checks'&&(!siteLastTime||siteLastNode!==siteNode()))checkSites()}
+function showService(){if(!nativeState)return;const s=nativeState,previousPressure=lastPressure;lastPressure=s.pressure;running=s.running;for(const field of el('subscription-form')?.elements||[])field.disabled=manageBusy||s.active||advancedActive;if(!dnsDirty&&s.dns_mode!=='unknown')el('dns-mode').value=s.dns_mode;el('rules-summary').textContent=(s.rules_count||4305)+' 条国内 IPv4 网段 · '+(s.rules_date_b64?'最近更新 '+decode(s.rules_date_b64).trim():'当前使用预置规则');const db=s.domain_check?.kind===s.core_kind?s.domain_check:s.domain_database||{};el('domain-summary').textContent='当前 '+(s.domain_file||'—')+(db.sha256?' · SHA256 '+db.sha256.slice(0,12):' · 部署固化版本')+(db.checked?' · 检查 '+new Date(db.checked*1000).toLocaleString('zh-CN',{hour12:false}):db.updated?' · 更新 '+new Date(db.updated*1000).toLocaleString('zh-CN',{hour12:false}):'');el('online').textContent=running?'内核运行中':'内核已停止';el('online').classList.toggle('off',!running);paintStartup(s);paintCoreState();paintSubscription(s);subscriptionHelp();el('resources').textContent='可用 '+((s.available_kb??s.free_kb)/1024).toFixed(1)+' MB · 内核 '+(s.rss_kb/1024).toFixed(1)+' MB · 异常恢复 '+(s.recoveries||0)+' 次';el('resources').title='异常恢复计数从本次记录启用后开始，清空日志不重置；重启路由器归零。';el('service-start').hidden=running;el('service-stop').hidden=!running;for(const id of ['service-start','service-stop','service-restart','subscription-update','rules-update','domain-update','dns-save','logs-clear','core-check','core-update','mirror-save','mirror-sync','memory-cleanup','memory-limits-save','guard-save'])el(id).disabled=manageBusy||s.active||advancedActive;el('service-restart').hidden=!running;el('panel').hidden=false;el('login').hidden=true;el('nodes-content').hidden=!running;el('stopped').hidden=running;if(!running){el('current').textContent='代理已停止';el('state').textContent='普通路由保持运行'}if(s.url_b64&&!el('subscription-url').value)el('subscription-url').value=decode(s.url_b64);paintSites();paintKernel();paintMirror();paintMonitor();paintTool();el('memory-protection').hidden=s.pressure==='normal'||!s.pressure;el('memory-protection').textContent=s.pressure==='protect'?'内存保护中：暂缓测速和配置更新，代理继续运行':'内存余量偏低，正在自动监测';el('resource-breakdown').textContent='RAM 文件与共享页 '+((s.shmem_kb||0)/1024).toFixed(1)+' MB · 内核数据 '+((s.slab_kb||0)/1024).toFixed(1)+' MB · TCP 缓冲 '+((s.tcp_kb||0)/1024).toFixed(2)+' MB · 连接跟踪 '+(s.conntrack||0);if(s.pressure==='protect'){pauseMeasurements();pauseSites();for(const id of ['subscription-update','rules-update','domain-update','dns-save','core-update'])el(id).disabled=true}else if(previousPressure==='protect'&&running&&!manageBusy){if(activeTab==='nodes')autoMeasure();if(activeTab==='checks')checkSites()}paintProxyMode();paintQuickActions();for(const select of el('quick-policies')?.querySelectorAll('select')||[])select.disabled=manageBusy||s.active||advancedActive;}
+@@else@@
+async function control(script,args=[],retry=false){if(!retry&&!/^sc-(new|put)\.sh$/.test(script))pendingControl={script,args:args.slice(),time:Date.now(),retries:0};if(!/^sc-(new|put|fetch|fetchconvert|fetchpanel|apply|start|stop|restart|clear|cleanup|memcfg|rules|dns|policy|groupmode|proxymode|advanced|corecheck|coreupdate|toolcheck|toolupdate|mirrorsave|mirrorsync|mirrorverify|mirrortest|backuplocal|backupremote)\.sh$/.test(script)||args.some(s=>!/^[A-Za-z0-9+/=]+$/.test(s)))throw Error('请求参数无效');const action=[script,...args,csrf].join(' ');if(action.length>58)throw Error('请求长度超限');const r=await fetch('/start_apply.htm',{method:'POST',body:new URLSearchParams({action_mode:' Apply ',action_script:action,sid_list:'',current_page:'custom/AnyTLS.asp',next_page:''})});if(!r.ok)throw Error('操作请求失败：'+r.status);const response=await r.text();const session=nativeSessionError(response);if(session)throw session;if(!/<script>\s*done_committing\(\);\s*<\/script>/.test(response))throw Error('路由器未确认操作请求，请刷新管理页后重试')}
+function showTab(tab){const previous=activeTab;activeTab=tab;for(const t of ['nodes','checks','subscription','backup','rules','dns','monitor','logs']){el(t+'-tab').hidden=t!==tab;el('tab-'+t).classList.toggle('active',t===tab)}if(tab!=='nodes')pauseMeasurements();else if(previous!=='nodes')autoMeasure();if(tab!=='rules'&&typeof cancelInspection==='function')cancelInspection();if(tab==='rules'){loadPolicy();if(el('runtime-inspection').open)loadInspection()}if(tab==='logs')loadLogs();if(tab==='monitor'){syncNative().catch(()=>{});loadIncidents();loadMemory(true)};if(tab==='dns')loadDNS();if(tab!=='checks'&&siteBusy)pauseSites();if(tab==='checks'&&(!siteLastTime||siteLastNode!==siteNode()))checkSites()}
+function showService(){if(!nativeState)return;const s=nativeState,previousPressure=lastPressure;lastPressure=s.pressure;running=s.running;for(const field of el('subscription-form')?.elements||[])field.disabled=manageBusy||s.active||advancedActive;if(!dnsDirty&&s.dns_mode!=='unknown')el('dns-mode').value=s.dns_mode;el('rules-summary').textContent=(s.rules_count||4305)+' 条国内 IPv4 网段 · '+(s.rules_date_b64?'最近更新 '+decode(s.rules_date_b64).trim():'当前使用预置规则');el('online').textContent=running?'内核运行中':'内核已停止';el('online').classList.toggle('off',!running);paintStartup(s);paintCoreState();paintSubscription(s);subscriptionHelp();el('resources').textContent='可用 '+((s.available_kb??s.free_kb)/1024).toFixed(1)+' MB · 内核 '+(s.rss_kb/1024).toFixed(1)+' MB · 异常恢复 '+(s.recoveries||0)+' 次';el('resources').title='异常恢复计数从本次记录启用后开始，清空日志不重置；重启路由器归零。';el('service-start').hidden=running;el('service-stop').hidden=!running;for(const id of ['service-start','service-stop','service-restart','subscription-update','rules-update','dns-save','logs-clear','core-check','core-update','mirror-save','mirror-sync','memory-cleanup','memory-limits-save'])el(id).disabled=manageBusy||s.active||advancedActive;el('service-restart').hidden=!running;el('panel').hidden=false;el('login').hidden=true;el('nodes-content').hidden=!running;el('stopped').hidden=running;if(!running){el('current').textContent='代理已停止';el('state').textContent='普通路由和 ZeroTier 保持运行'}if(s.url_b64&&!el('subscription-url').value)el('subscription-url').value=decode(s.url_b64);paintSites();paintKernel();paintMirror();paintMonitor();paintTool();el('memory-protection').hidden=s.pressure==='normal'||!s.pressure;el('memory-protection').textContent=s.pressure==='protect'?'内存保护中：暂缓测速和配置更新，代理继续运行':'内存余量偏低，正在自动监测';el('resource-breakdown').textContent='RAM 文件与共享页 '+((s.shmem_kb||0)/1024).toFixed(1)+' MB · 内核数据 '+((s.slab_kb||0)/1024).toFixed(1)+' MB · TCP 缓冲 '+((s.tcp_kb||0)/1024).toFixed(2)+' MB · 连接跟踪 '+(s.conntrack||0);if(s.pressure==='protect'){pauseMeasurements();pauseSites();for(const id of ['subscription-update','rules-update','dns-save','core-update'])el(id).disabled=true}else if(previousPressure==='protect'&&running&&!manageBusy){if(activeTab==='nodes')autoMeasure();if(activeTab==='checks')checkSites()}paintProxyMode();paintQuickActions();for(const select of el('quick-policies')?.querySelectorAll('select')||[])select.disabled=manageBusy||s.active||advancedActive;}
+@@end@@
+async function syncNative(){if(!nativeHost)return;nativeState=await nativeRead('state');if(nativeState.running&&!nativeState.active&&!manageBusy)await readProxyMode().catch(()=>{});showService();if(activeTab==='monitor'&&el('memory-details').open)loadMemory();if(running&&!nativeState.active&&!manageBusy&&(!proxies[mainName()]||el('current').textContent==='代理已停止'))await refresh();else if(running&&activeTab==='nodes'&&!manageBusy&&!busy&&!nativeState.active&&Object.values(proxies).some(p=>p.all&&!isSelectable(p))){const d=await api('/proxies');proxies=d.proxies;render()}return nativeState}
+@@if ax5@@
+async function waitJob(id,goal='done',limit=120000,messageTarget='operation-message'){const end=Date.now()+limit;let lastPhase='';while(Date.now()<end){await new Promise(r=>setTimeout(r,2500));let s;try{s=await syncNative()}catch(e){el(messageTarget).textContent='后台状态暂不可用，正在重新查询…';continue}lastPhase=s.phase;if(id&&s.id!==id)throw Error('另一项更新正在进行，请重试');if(s.phase==='uploading'&&!s.active&&pendingControl?.args[0]===id&&Date.now()-pendingControl.time>10000&&pendingControl.retries<2){pendingControl.retries++;pendingControl.time=Date.now();el(messageTarget).textContent='请求尚未执行，正在重新发送…';await control(pendingControl.script,pendingControl.args,true);continue}el(messageTarget).textContent=words[decode(s.message_b64||'').trim()]||decode(s.message_b64||'').trim()||'正在处理…';if(s.phase==='fetching'){const progress=await nativeRead('progress').catch(()=>'');if(progress.trim())el(messageTarget).textContent=progress.trim()}if(s.phase==='error'&&!s.active)throw Error(words[decode(s.message_b64||'').trim()]||decode(s.message_b64||'').trim().replace(/^\/[^:\n]+:\d+:\s*/,'')||'操作失败，请查看日志');if(s.phase===goal&&!s.active)return s}throw Error(lastPhase==='uploading'?'操作未启动，修改尚未保存；请重新打开路由器管理页后重试':'操作仍在后台进行，请刷新状态或查看日志')}
+@@else@@
+async function waitJob(id,goal='done',limit=120000,messageTarget='operation-message'){const end=Date.now()+limit;let lastPhase='';while(Date.now()<end){await new Promise(r=>setTimeout(r,2500));let s;try{s=await syncNative()}catch(e){if(e.code==='session_conflict'||e.code==='session_expired')throw e;el(messageTarget).textContent='后台状态暂不可用，正在重新查询…';continue}lastPhase=s.phase;if(id&&s.id!==id)throw Error('另一项更新正在进行，请重试');if(s.phase==='uploading'&&!s.active&&pendingControl?.args[0]===id&&Date.now()-pendingControl.time>10000&&pendingControl.retries<2){pendingControl.retries++;pendingControl.time=Date.now();el(messageTarget).textContent='请求尚未执行，正在重新发送…';await control(pendingControl.script,pendingControl.args,true);continue}el(messageTarget).textContent=words[decode(s.message_b64||'').trim()]||decode(s.message_b64||'').trim()||'正在处理…';if(s.phase==='fetching'){const progress=await nativeRead('progress').catch(e=>{if(e.code==='session_conflict'||e.code==='session_expired')throw e;return ''});if(progress.trim())el(messageTarget).textContent=progress.trim()}if(s.phase==='error'&&!s.active)throw Error(words[decode(s.message_b64||'').trim()]||decode(s.message_b64||'').trim().replace(/^\/[^:\n]+:\d+:\s*/,'')||'操作失败，请查看日志');if(s.phase===goal&&!s.active)return s}throw Error(lastPhase==='uploading'?'操作未启动，修改尚未保存；请重新打开路由器管理页后重试':'操作仍在后台进行，请刷新状态或查看日志')}
+@@end@@
+async function service(action){if(manageBusy||advancedActive)return;pauseMeasurements();pauseSites();manageBusy=true;showService();note('正在'+({start:'启动',stop:'停止',restart:'重启'}[action])+'服务…',false,{pending:true});try{await control('sc-'+action+'.sh');await waitJob('', 'done',180000);if(running)await refresh();note('');el('operation-message').textContent='操作完成'}catch(e){note(e.message,true)}finally{manageBusy=false;await syncNative().catch(()=>{});showService();if(running){render();autoMeasure()}}}
+async function updateRules(){if(manageBusy||nativeState?.active)return;pauseMeasurements();pauseSites();manageBusy=true;showService();note('正在下载国内 IP 规则…',false,{pending:true});const id=[...crypto.getRandomValues(new Uint8Array(4))].map(b=>b.toString(16).padStart(2,'0')).join('');try{await control('sc-rules.sh',[id]);const s=await waitJob(id,'done',180000);if(running)await refresh();note(words[decode(s.message_b64).trim()]||'规则更新完成')}catch(e){note(e.message,true)}finally{manageBusy=false;await syncNative().catch(()=>{});showService();if(running)render()}}
+async function loadDNS(){if(dnsLoaded)return;try{el('dns-filter').value=await nativeRead('filter');dnsLoaded=true;indexDNS()}catch(e){note(e.message,true)}}
+function indexDNS(){const select=el('dns-index');select.replaceChildren();const lines=el('dns-filter').value.split('\n');lines.forEach((line,i)=>{if(line.startsWith('#')&&!line.startsWith('#+')&&!line.startsWith('#geosite:')){const o=document.createElement('option');o.value=i;o.textContent=line.slice(1);select.append(o)}})}
+function jumpDNS(){const t=el('dns-filter'),lines=t.value.split('\n'),i=Number(el('dns-index').value),start=lines.slice(0,i).join('\n').length+(i?1:0);t.focus();t.setSelectionRange(start,start+lines[i].length);t.scrollTop=i*20;}
+async function saveDNS(){if(manageBusy||nativeState?.active)return;manageBusy=true;pauseMeasurements();pauseSites();showService();const id=[...crypto.getRandomValues(new Uint8Array(4))].map(b=>b.toString(16).padStart(2,'0')).join(''),mode=el('dns-mode').value;try{await upload(id,'filter',new TextEncoder().encode(el('dns-filter').value));await control('sc-dns.sh',[id,mode==='redir_host'?'real':mode]);await waitJob(id,'done',180000);dnsDirty=false;if(running)await refresh();note('DNS 设置已保存并生效')}catch(e){note(e.message,true)}finally{manageBusy=false;await syncNative().catch(()=>{});showService();if(running)render()}}
+async function clearLogs(){if(manageBusy||nativeState?.active)return;manageBusy=true;showService();try{await control('sc-clear.sh');await waitJob('','done',30000);await loadLogs();note('日志已清空')}catch(e){note(e.message,true)}finally{manageBusy=false;showService()}}
+let logSections=[];function paintLogs(){const out=el('log-output');out.replaceChildren();const view=el('logs-view').value;for(const section of logSections){if(view!=='all'&&section.kind!==view)continue;const card=document.createElement('details');card.className='log-section';card.open=!!section.text;const title=document.createElement('summary');title.textContent=section.title+' · '+(section.text?section.text.split('\n').filter(Boolean).length+' 行':'暂无记录');card.append(title);const content=document.createElement(section.text?'pre':'p');if(!section.text)content.className='log-empty';content.textContent=section.text||'当前没有此类日志；只在操作、状态变化或异常时记录。';card.append(content);out.append(card)}}
+async function loadLogs(){loadIncidents();el('logs-refresh').disabled=true;try{const raw=await nativeRead('logs'),text=raw.replace(/\x1b\[[0-9;]*m/g,'').replace(/https?:\/\/[^\s<>]+/g,'[链接已隐藏]');const parts=text.split(/^=== (.+?) ===\s*$/m);const names={'Management':'操作记录','Resource pressure':'内存压力','Proxy':'内核运行','ShellCrash':'工具日志','Subscription download':'订阅错误','ShellCrash subscription':'订阅获取','Last operation':'最近后台操作'};logSections=[];for(let i=1;i<parts.length;i+=2){const title=names[parts[i]]||parts[i],body=(parts[i+1]||'').trim();const kind=/订阅/.test(title)?'subscription':/内核/.test(title)?'core':/操作|校验/.test(title)?'operation':'system';logSections.push({title,text:body,kind})}if(!logSections.length)logSections=[{title:'最近日志',text:text.trim(),kind:'system'}];paintLogs();el('logs-summary').textContent='更新于 '+new Date().toLocaleTimeString('zh-CN',{hour12:false})+' · 按需读取，重启后清空'}catch(e){el('log-output').textContent='日志读取失败：'+e.message}finally{el('logs-refresh').disabled=false}}
+
+// Exclusion runs on candidate nodes in the browser, before configuration publication.
+function subscriptionExclusion(mode='auto'){
+ const text=el('subscription-exclude').value.trim(),lines=text.split(/\r?\n/).map((s,i)=>({s:s.trim(),line:i+1})).filter(x=>x.s);
+ if(new TextEncoder().encode(text).length>1024||lines.length>32)throw Error('节点排除最多 32 行、1024 字节');
+ const entries=lines.map(x=>{const wrapped=x.s.match(/^\/(.*)\/[iu]*$/),regex=mode==='regex'||mode==='auto'&&(!!wrapped||/^\^|\$$|\.\*|\.\+|\||\\[dDwWsSpPbB]|\[[0-9][0-9-]*\]/.test(x.s)),pattern=wrapped&&mode==='auto'?wrapped[1]:x.s;
+  if(regex)try{new RegExp(pattern,'iu')}catch(e){throw Error('节点排除第 '+x.line+' 行正则无效：'+e.message)}return {regex,pattern};});
+ return {mode,text,lines:lines.map(x=>x.s),entries};
+}
+async function excludedNodeNames(names,filter){
+ if(!filter.lines.length)return [];
+ if(filter.entries.every(x=>!x.regex))return names.filter(name=>filter.entries.some(x=>name.normalize('NFKC').toLowerCase().includes(x.pattern.normalize('NFKC').toLowerCase())));
+ // Run user expressions outside the UI thread; terminate expensive patterns.
+ const code="onmessage=e=>{const {names,entries}=e.data,tests=entries.map(x=>x.regex?new RegExp(x.pattern,'iu'):x.pattern.normalize('NFKC').toLowerCase());postMessage(names.filter(n=>tests.some(r=>typeof r==='string'?n.normalize('NFKC').toLowerCase().includes(r):r.test(n))))}";
+ const url=URL.createObjectURL(new Blob([code],{type:'text/javascript'}));let worker;
+ try{return await new Promise((resolve,reject)=>{let timer;try{worker=new Worker(url);timer=setTimeout(()=>{worker.terminate();reject(Error('节点排除正则匹配超时，请简化表达式；当前配置保留'))},1000);worker.onmessage=e=>{clearTimeout(timer);resolve(e.data)};worker.onerror=()=>{clearTimeout(timer);reject(Error('节点排除正则执行失败；当前配置保留'))};worker.postMessage({names,entries:filter.entries})}catch(e){clearTimeout(timer);reject(Error('浏览器不支持安全正则匹配，请改用关键字'))}})}finally{if(worker)worker.terminate();URL.revokeObjectURL(url)}
+}
+async function filterSubscriptionNodes(profile,filter){
+ const clash=Array.isArray(profile.proxies),list=clash?profile.proxies:Array.isArray(profile)?profile:profile.outbounds;
+ if(!Array.isArray(list))throw Error('订阅缺少节点列表');
+ const key=clash?'name':'tag',member=clash?'proxies':'outbounds',nodes=list.filter(n=>typeof n.server==='string'),removed=new Set(await excludedNodeNames(nodes.map(n=>n[key]),filter)),count=removed.size;
+ if(!count)return {profile,count:0};if(count===nodes.length)throw Error('节点排除命中了全部 '+count+' 个节点；当前配置保留');
+ const result=JSON.parse(JSON.stringify(profile)),entries=clash?result.proxies:Array.isArray(result)?result:result.outbounds,groups=clash?result['proxy-groups']||[]:entries.filter(n=>Array.isArray(n.outbounds));
+ let changed=true;while(changed){changed=false;for(const group of groups){if(removed.has(group[key])||!Array.isArray(group[member]))continue;group[member]=group[member].filter(name=>!removed.has(name));if(!group[member].length){removed.add(group[key]);changed=true}else if(group.default&&removed.has(group.default)){if(group[key].startsWith('分流/')){const fallback=groups.find(g=>g[key]==='proxy-main'&&!removed.has(g[key]))||groups.find(g=>!g[key].startsWith('分流/')&&!removed.has(g[key]));if(!fallback)throw Error('节点排除后缺少默认代理；当前配置保留');group._subscription_reset=true;group.default=fallback[key];if(!group[member].includes(group.default))group[member].push(group.default)}else group.default=group[member][0]}}}
+ for(const n of entries)if(!removed.has(n[key])&&removed.has(n.detour||n['dialer-proxy']))throw Error('节点排除会破坏链式代理：'+n[key]+'；当前配置保留');
+ const checkRoute=value=>{if(!value||typeof value!=='object')return;if(removed.has(value.final))throw Error('节点排除会移除最终出口：'+value.final);if(removed.has(value.outbound))throw Error('节点排除会移除规则目标：'+value.outbound+'；当前配置保留');for(const child of Object.values(value))if(typeof child==='object')checkRoute(child)};
+ if(clash){for(const rule of result.rules||[]){const parts=rule.split(','),target=parts[parts.length-(parts.at(-1).toLowerCase()==='no-resolve'?2:1)];if(removed.has(target))throw Error('节点排除会移除规则目标：'+target+'；当前配置保留')}result.proxies=entries.filter(n=>!removed.has(n[key]));result['proxy-groups']=groups.filter(g=>!removed.has(g[key]))}else{checkRoute(result.route);const kept=entries.filter(n=>!removed.has(n[key]));if(Array.isArray(result))return {profile:kept,count};result.outbounds=kept}
+ return {profile:result,count};
+}
+function paintSubscriptionExclusion(){const n=el('subscription-exclude').value.split(/\r?\n/).filter(s=>s.trim()).length;el('subscription-exclude-status').textContent=n?'已设置 '+n+' 条 · 下次更新时生效':'未设置';}
+
+@@if ax5@@
+@@else@@
+let subscriptionOldNodes=[];
+function retainSubscriptionNodeNames(nodes,oldNodes){
+ const identity=n=>{if(!n?.server||!n.server_port||!n.type)return '';const type=n.type==='ss'?'shadowsocks':n.type;return JSON.stringify([type,String(n.server).toLowerCase(),Number(n.server_port),n.password??'',n.uuid??'',n.method??'',n.username??'',n.protocol??'',n.obfs??''])};
+ const previous=new Map(),incoming=new Map();for(const n of oldNodes||[]){const key=identity(n);if(key)previous.set(key,[...(previous.get(key)||[]),n.tag])}for(const n of nodes){const key=identity(n);if(key)incoming.set(key,(incoming.get(key)||0)+1)}
+ const result=nodes.map(n=>{const key=identity(n),names=previous.get(key);return names?.length===1&&incoming.get(key)===1?{...n,tag:names[0]}:{...n}});if(new Set(result.map(n=>n.tag)).size!==result.length)throw Error('节点名称匹配后重复，原配置保留');return result;
+}
+@@end@@
+function parseSubscription(raw){
+ let text=raw.trim();if(!/^[a-z][a-z0-9+.-]*:\/\//im.test(text)&&!/^[{[]/.test(text)){try{text=decode(text.replace(/\s/g,'').replace(/-/g,'+').replace(/_/g,'/'))}catch(e){throw Error('订阅格式无效，请使用链接列表、Base64 或 sing-box JSON')}}
+ const nodes=[],seen=new Set(),regions=new Map(),countries=['香港','新加坡','台湾','日本','美国','菲律宾','英国','韩国','澳大利亚','荷兰','德国','印度','巴西','法国','越南','埃及','泰国','印尼','迪拜','土耳其','阿根廷','加拿大','俄罗斯','以色列','意大利','西班牙','马来西亚','巴基斯坦','哥伦比亚','尼日利亚'];let ignored=0;
+ let jsonNodes=null;if(/^[{[]/.test(text)){let data;try{data=JSON.parse(text)}catch(e){throw Error('JSON 订阅格式无效')}const list=Array.isArray(data)?data:data.outbounds;if(!Array.isArray(list))throw Error('JSON 订阅缺少 outbounds 节点');jsonNodes=list.filter(n=>n&&typeof n.server==='string'&&n.type&&!['direct','block','dns','selector','urltest'].includes(n.type));if(jsonNodes.some(n=>n.detour))throw Error('JSON 含链式代理，请使用独立节点订阅');}
+ for(const line of (jsonNodes||text.split(/\r?\n/).map(x=>x.trim()).filter(Boolean))){
+  if(typeof line==='object'){if(!line.tag||seen.has(line.tag))throw Error('JSON 节点名称缺失或重复');seen.add(line.tag);nodes.push(line);const region=countries.find(c=>line.tag.includes(c))||'其他',group='地区/'+region;if(!regions.has(group))regions.set(group,[]);regions.get(group).push(line.tag);continue}
+  if(line.startsWith('ssr://')){
+   const b64=x=>decode(x.replace(/-/g,'+').replace(/_/g,'/')+'='.repeat((4-x.length%4)%4));let raw;try{raw=b64(line.slice(6))}catch(e){throw Error('SSR 链接编码无效')}
+   const [body,query='']=raw.split('/?'),m=body.match(/^(.*):(\d+):([^:]+):([^:]+):([^:]+):([^:]+)$/);if(!m)throw Error('SSR 链接字段无效');const q=new URLSearchParams(query),tag=q.has('remarks')?b64(q.get('remarks')):m[1],port=Number(m[2]),protocol=m[3],obfs=m[5];if(!tag||!m[1]||port<1||port>65535||seen.has(tag))throw Error('SSR 节点名称或服务器无效');
+   const obfsParam=q.has('obfsparam')?b64(q.get('obfsparam')):'',protocolParam=q.has('protoparam')?b64(q.get('protoparam')):'';let n;
+   if(protocol==='origin'&&['plain','http_simple'].includes(obfs)&&!obfsParam.includes(';')){n={type:'shadowsocks',tag,server:m[1],server_port:port,method:m[4],password:b64(m[6])};if(obfs!=='plain'){n.plugin='obfs-local';n.plugin_opts='obfs='+(obfs==='http_simple'?'http':'tls')+';obfs-host='+(obfsParam||m[1])}}
+   else if(nativeState?.core_kind==='meta'){n={type:'shadowsocksr',tag,server:m[1],server_port:port,method:m[4],password:b64(m[6]),protocol,obfs,protocol_param:protocolParam,obfs_param:obfsParam}}
+   else{ignored++;continue}
+   seen.add(tag);nodes.push(n);const region=countries.find(c=>tag.includes(c))||'其他',group='地区/'+region;if(!regions.has(group))regions.set(group,[]);regions.get(group).push(tag);continue
+  }
+  if(!line.startsWith('anytls://')){throw Error('该链接格式请使用 ShellCrash 订阅转换，或提供 sing-box JSON；原配置保留')}
+  let u;try{u=new URL(line)}catch(e){throw Error('订阅中含无效的 AnyTLS 地址')}
+  const port=Number(u.port||443),tag=decodeURIComponent(u.hash.slice(1));if(!tag||!u.hostname||port<1||port>65535||!u.username)throw Error('有节点缺少名称、服务器或密码');if(seen.has(tag))throw Error('节点名称重复：'+tag+'，请使用名称唯一的订阅');seen.add(tag);
+  const q=u.searchParams,tls={enabled:true,server_name:q.get('sni')||q.get('peer')||u.hostname.replace(/^\[|\]$/g,''),insecure:['1','true'].includes((q.get('insecure')||q.get('allowInsecure')||'').toLowerCase())};if(q.get('alpn'))tls.alpn=q.get('alpn').split(',').filter(Boolean);
+  const n={type:'anytls',tag,server:u.hostname.replace(/^\[|\]$/g,''),server_port:port,password:decodeURIComponent(u.username)+(u.password?':'+decodeURIComponent(u.password):''),tls};nodes.push(n);
+  const region=tag.includes('狮城')?'新加坡':tag.includes('澳洲')?'澳大利亚':countries.find(c=>tag.includes(c))||(tag.match(/^[\u4e00-\u9fff]+/)||['其他'])[0],group='地区/'+region;if(!regions.has(group))regions.set(group,[]);regions.get(group).push(tag)
+ }
+@@if ax5@@
+@@else@@
+ const preserved=typeof retainSubscriptionNodeNames==='function'?retainSubscriptionNodeNames(nodes,typeof subscriptionOldNodes==='undefined'?[]:subscriptionOldNodes):nodes;nodes.splice(0,nodes.length,...preserved);regions.clear();for(const n of nodes){const country=n.tag.includes('狮城')?'新加坡':n.tag.includes('澳洲')?'澳大利亚':countries.find(c=>n.tag.includes(c))||(n.tag.match(/^[\u4e00-\u9fff]+/)||['其他'])[0],group='地区/'+country;if(!regions.has(group))regions.set(group,[]);regions.get(group).push(n.tag)}
+@@end@@
+ if(!nodes.length)throw Error('订阅中没有可用的代理节点');if(nodes.length>500)throw Error('节点超过 500 个，请选择较精简的代理订阅');
+ const groups=[...regions.keys()],defaultGroup=groups.includes(proxies[mainName()]?.now)?proxies[mainName()].now:groups[0];
+ const out=[{type:'selector',tag:mainName(),outbounds:groups,default:defaultGroup},...[...regions].map(([tag,all])=>({type:'selector',tag,outbounds:all,default:all.includes(proxies[tag]?.now)?proxies[tag].now:all[0]})),{type:'direct',tag:'direct'},...nodes];
+ const warnings=[];const members=out.filter(o=>o.tag!=='GLOBAL'&&o.tag!=='DIRECT').map(o=>o.tag);
+@@if ax5@@
+ for(const tag of ['分流/谷歌','分流/ChatGPT','分流/国外 AI','分流/GitHub'])if(proxies[tag]){const choice=proxies[tag].now;out.push({type:'selector',tag,outbounds:members,default:choice})}
+@@else@@
+ for(const tag of ['分流/谷歌','分流/ChatGPT','分流/国外 AI','分流/GitHub'])if(proxies[tag]){let choice=proxies[tag].now;if(!members.includes(choice)){warnings.push(tag+'：'+choice+' 不在新订阅中，已重置为默认代理');choice=mainName();}out.push({type:'selector',tag,outbounds:members,default:choice,...(choice!==proxies[tag].now?{_subscription_reset:true}:{})})}
+@@end@@
+ return{out,count:nodes.length,groups:groups.length,ignored,warnings}
+}
+@@if ax5@@
+function hydrateProviderProfile(profile,list){
+ if(!Array.isArray(list?.proxies)||!list.proxies.length)throw Error('转换服务未返回有效节点列表');
+ const providers=Object.keys(profile['proxy-providers']||{});if(providers.length!==1)throw Error('轻量设备当前只支持单一远程节点 Provider，原配置保留');
+ const names=list.proxies.map(p=>p.name);if(names.some(n=>typeof n!=='string')||new Set(names).size!==names.length)throw Error('远程节点名称无效或重复');
+ const inline=profile.proxies||[];if(inline.some(p=>names.includes(p.name)))throw Error('远程与内嵌节点名称重复，原配置保留');
+ profile.proxies=[...inline,...list.proxies];
+ for(const group of profile['proxy-groups']||[]){if(group.use?.length){if(group.use.some(name=>!providers.includes(name)))throw Error('策略组引用未知节点 Provider');let selected=names;try{if(group.filter){const filter=new RegExp(group.filter);selected=selected.filter(n=>filter.test(n))}if(group['exclude-filter']){const filter=new RegExp(group['exclude-filter']);selected=selected.filter(n=>!filter.test(n))}}catch(e){throw Error('策略组筛选条件无法解析：'+group.name)}group.proxies=[...new Set([...(group.proxies||[]),...selected])];delete group.use;delete group.filter;delete group['exclude-filter'];if(!group.proxies.length)group.proxies=['DIRECT']}}
+ delete profile['proxy-providers'];return profile;
+@@else@@
+function sha256Bytes(bytes){
+ const k=[],h=[],w=new Uint32Array(64);let prime=2;
+ while(k.length<64){let valid=true;for(let d=2;d*d<=prime;d++)if(prime%d===0){valid=false;break}if(valid){if(h.length<8)h.push((Math.sqrt(prime)%1*4294967296)>>>0);k.push((Math.cbrt(prime)%1*4294967296)>>>0)}prime++}
+ const data=new Uint8Array(Math.ceil((bytes.length+9)/64)*64);data.set(bytes);data[bytes.length]=128;const view=new DataView(data.buffer);view.setUint32(data.length-8,Math.floor(bytes.length/536870912));view.setUint32(data.length-4,(bytes.length*8)>>>0);
+ const rr=(x,n)=>(x>>>n)|(x<<(32-n));
+ for(let offset=0;offset<data.length;offset+=64){for(let i=0;i<16;i++)w[i]=view.getUint32(offset+i*4);for(let i=16;i<64;i++){const x=w[i-15],y=w[i-2];w[i]=(w[i-16]+(rr(x,7)^rr(x,18)^(x>>>3))+w[i-7]+(rr(y,17)^rr(y,19)^(y>>>10)))>>>0}let [a,b,c,d,e,f,g,z]=h;
+  for(let i=0;i<64;i++){const t=(z+(rr(e,6)^rr(e,11)^rr(e,25))+((e&f)^(~e&g))+k[i]+w[i])>>>0,v=((rr(a,2)^rr(a,13)^rr(a,22))+((a&b)^(a&c)^(b&c)))>>>0;z=g;g=f;f=e;e=(d+t)>>>0;d=c;c=b;b=a;a=(t+v)>>>0}
+  for(const [i,value]of [a,b,c,d,e,f,g,z].entries())h[i]=(h[i]+value)>>>0;
+ }
+ return h.map(x=>x.toString(16).padStart(8,'0')).join('');
+@@end@@
+}
+@@if ax5@@
+async function upload(id,kind,bytes,messageTarget='operation-message'){let str='';for(const b of bytes)str+=String.fromCharCode(b);const data=btoa(str),chunkSize=kind==='profile'?16000:2000,total=Math.max(1,Math.ceil(data.length/chunkSize));if(total>350)throw Error('配置内容超过传输上限，当前配置已保留');for(let part=0;part<total;part++){const r=await fetch(backendBase+'/upload',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded','X-SC-CSRF':csrf},body:new URLSearchParams({payload:JSON.stringify({id,kind,data:data.slice(part*chunkSize,(part+1)*chunkSize),part,total})})});let result;try{result=await r.json()}catch{}if(!r.ok||!result?.ok)throw Error('配置传输失败：'+r.status+(result?.error?'（'+result.error+'）':''));el(messageTarget).textContent='正在传输配置 '+(part+1)+'/'+total}el(messageTarget).textContent='配置已传输'}
+async function updateSubscription(){if(manageBusy)return;const url=el('subscription-url').value.trim();try{const u=new URL(url);if(!['http:','https:'].includes(u.protocol)||url.length>2048)throw Error()}catch(e){note('请输入有效的 HTTP 或 HTTPS 订阅链接',true);return}let exclusion,requestMethod,requestPolicy,requestSource;try{exclusion=subscriptionExclusion();requestMethod=el('subscription-method').value;requestPolicy=converterPolicy();requestSource=subscriptionSource(url,exclusion)}catch(e){el('subscription-error').hidden=true;note(e.message,true);return}el('subscription-error').hidden=true;el('operation-message').textContent='正在准备订阅更新…';pauseMeasurements();pauseSites();manageBusy=true;showService();showTab('subscription');note('');const id=[...crypto.getRandomValues(new Uint8Array(4))].map(b=>b.toString(16).padStart(2,'0')).join('');try{await upload(id,'source',new TextEncoder().encode(requestSource));await control('sc-fetch.sh',[id,requestMethod,requestPolicy]);await waitJob(id,'downloaded',300000);const raw=await nativeRead('subscription');let full;if(requestMethod!=='panel'){try{full=JSON.parse(raw)}catch(e){if(requestMethod==='direct'&&!/^(?:proxy-groups|proxies):/m.test(raw)){full=null}else{if(nativeState?.core_kind!=='meta')throw Error('ShellCrash 返回的内容不是当前 sing-box 完整配置');if(!window.jsyaml){await new Promise((resolve,reject)=>{const script=document.createElement('script');script.src=backendBase+'/asset?name=js-yaml.min.js';script.onload=resolve;script.onerror=()=>reject(Error('配置解析组件加载失败'));document.head.appendChild(script)})}full=window.jsyaml.load(raw,{schema:window.jsyaml.JSON_SCHEMA})}}}const nativeProfile=full&&(Array.isArray(full['proxy-groups'])&&Array.isArray(full.rules)||Array.isArray(full.outbounds)&&full.route);if(nativeProfile){if(full['proxy-providers']){const nodesRaw=await nativeRead('subscriptionnodes');if(!nodesRaw.trim())throw Error('订阅使用远程节点 Provider，但尚未获取节点列表；请使用转换方式');full=hydrateProviderProfile(full,window.jsyaml.load(nodesRaw,{schema:window.jsyaml.JSON_SCHEMA}))}const filtered=await filterSubscriptionNodes(full,exclusion);full=filtered.profile;await upload(id,'profile',new TextEncoder().encode(JSON.stringify(full)));await control('sc-apply.sh',[id,'native']);const applied=await waitJob(id,'done',240000);if(running)await refresh();el('operation-message').textContent='ShellCrash 完整配置已加载，策略组与规则已保留。'+(filtered.count?' 已排除 '+filtered.count+' 个节点。':'');if(decode(applied.message_b64||'').trim()==='configuration_saved_backup_pending')note('配置已加载，远端备份未完成',true);else{const warnings=subscriptionRecord(nativeState||{}).warnings||[];note('订阅与模板规则更新成功'+(warnings.length?'；'+warnings.join('；'):''));}return}const p=parseSubscription(raw),filtered=await filterSubscriptionNodes(p.out,exclusion);p.out=filtered.profile;p.count-=filtered.count;p.groups=p.out.filter(n=>n.tag?.startsWith('地区/')).length;el('operation-message').textContent='找到 '+p.count+' 个节点 · '+p.groups+' 个地区'+(p.ignored?' · '+p.ignored+' 个 SSR 不适用于当前内核，未导入':'');await upload(id,'bounds',new TextEncoder().encode(JSON.stringify(p.out)));await control('sc-apply.sh',[id]);const applied=await waitJob(id,'done',180000);const backupPending=decode(applied.message_b64||'').trim()==='configuration_saved_backup_pending';if(running)await refresh();el('operation-message').textContent='已更新 '+p.count+' 个节点，配置已保存。'+(filtered.count?' 已排除 '+filtered.count+' 个节点。':'')+(p.ignored?' '+p.ignored+' 个非兼容 SSR 未导入：当前 sing-box 不支持，需使用 Mihomo。':'');if(backupPending){el('operation-message').textContent+=' 远端备份未完成，请重试同步。';note('订阅已更新，远端备份未完成',true)}else note('订阅更新成功')}catch(e){note(e.message,true);const endpoint=await nativeRead('endpoint').catch(()=>''),attempts=await nativeRead('subscriptionlog').catch(()=>'');el('subscription-error').textContent='失败原因：'+e.message+'\n本次订阅地址：'+url+(endpoint.trim()?'\n出错接口：'+endpoint.trim():'')+'\n当前配置已保留。'+(attempts.trim()?'\n\n本次尝试记录：\n'+attempts.trim().split('\n').slice(-12).join('\n'):'');el('subscription-error').hidden=false;el('operation-message').textContent='更新未完成，请查看提示和日志'}finally{manageBusy=false;await syncNative().catch(()=>{});showService();if(running){render();autoMeasure()}}}
+async function initializeManager(){el('router-entry').href=backendBase;if(!nativeHost){el('login').hidden=false;note('请从路由器后台打开管理页');return}try{const r=await fetch(backendBase+'/read?kind=auth',{cache:'no-store'});if(!r.ok)throw Error('请重新登录路由器后台');const a=await r.json();token=decode(a.token_b64);csrf=a.control_token;await syncNative();if(running)await refresh();else note('');if(nativeState.needs_subscription){showTab('subscription');note('首次安装当前全直连，请填写自己的订阅。')} }catch(e){el('login').hidden=false;note(e.message,true)}}
+@@else@@
+async function upload(id,kind,bytes,messageTarget='operation-message'){
+ let data=bytes;if((kind==='bounds'||kind==='profile'||kind==='filter')&&typeof CompressionStream==='function')data=new Uint8Array(await new Response(new Blob([bytes]).stream().pipeThrough(new CompressionStream('gzip'))).arrayBuffer());
+ let b64='';for(const b of data)b64+=String.fromCharCode(b);b64=btoa(b64);await control('sc-new.sh',[id,kind]);const started=await nativeRead('state');if(started.id!==id||started.phase!=='uploading')throw Error('配置传输未启动，请刷新管理页后重试');
+ const label=kind==='mirror'?'WebDAV 参数':kind==='source'?'订阅地址':kind==='filter'?'DNS 例外名单':kind==='policy'?'域名分流':'节点配置';
+ // Four bounded requests share the same authenticated client. Await every
+ // response before the next batch; no apply can run after a failed batch.
+ for(let i=0;i<b64.length;i+=64){const jobs=[];for(let offset=i;offset<Math.min(i+64,b64.length);offset+=16){const chunk=(offset/16).toString(16).padStart(4,'0')+b64.slice(offset,offset+16);jobs.push(control('sc-put.sh',[id,chunk]))}const replies=await Promise.allSettled(jobs),failure=replies.find(r=>r.status==='rejected');if(failure)throw failure.reason;el(messageTarget).textContent='传输'+label+' '+Math.round(Math.min(i+64,b64.length)/b64.length*100)+'%'}
+ const receipt=await nativeRead('uploadreceipt');if(receipt.id!==id||receipt.phase!=='uploading'||receipt.sha256!==sha256Bytes(new TextEncoder().encode(b64)))throw Error('配置传输不完整，未应用；请重新尝试');
+}
+
+async function updateSubscription(){if(manageBusy)return;const url=el('subscription-url').value.trim();try{const u=new URL(url);if(!['http:','https:'].includes(u.protocol)||url.length>2048)throw Error()}catch(e){note('请输入有效的 HTTP 或 HTTPS 订阅链接',true);return}let exclusion,requestMethod,requestPolicy,requestSource;try{exclusion=subscriptionExclusion();requestMethod=el('subscription-method').value;requestPolicy=converterPolicy();requestSource=subscriptionSource(url,exclusion)}catch(e){el('subscription-error').hidden=true;note(e.message,true);return}el('subscription-error').hidden=true;el('operation-message').textContent='正在准备订阅更新…';pauseMeasurements();pauseSites();manageBusy=true;showService();showTab('subscription');note('');const id=[...crypto.getRandomValues(new Uint8Array(4))].map(b=>b.toString(16).padStart(2,'0')).join('');let requestStarted=false;try{if(running)await refresh();await upload(id,'source',new TextEncoder().encode(requestSource));await control(requestMethod==='convert'?'sc-fetchconvert.sh':requestMethod==='panel'?'sc-fetchpanel.sh':'sc-fetch.sh',requestMethod==='convert'?[id,requestPolicy]:[id]);requestStarted=true;await waitJob(id,'downloaded',300000);const raw=await nativeRead('subscription');subscriptionOldNodes=await nativeRead('nodeprofile');if(!Array.isArray(subscriptionOldNodes))throw Error('当前节点资料读取失败，原配置保留');let complete;try{complete=JSON.parse(raw)}catch{}if(complete&&Array.isArray(complete.outbounds)&&Array.isArray(complete.route?.rules)){if(typeof buildNativeSubscription!=='function')throw Error('完整配置组件加载失败，请刷新后重试');const filtered=await filterSubscriptionNodes(complete,exclusion);if(!policyLoaded)await loadPolicy();const base=JSON.parse(await nativeRead('configprofile')),profile=buildNativeSubscription(filtered.profile,base,mainName(),subscriptionOldNodes.map(n=>({...n,default:proxies[n.tag]?.now||n.default})),policyRows);await upload(id,'profile',new TextEncoder().encode(serializeNativeSubscription(profile.payload)));await control('sc-apply.sh',[id]);await waitJob(id,'done',300000);await syncNative();if(running)await refresh();policyLoaded=false;await loadPolicy();el('operation-message').textContent='已加载 '+profile.count+' 个节点、'+profile.groups+' 个订阅策略组及 '+profile.ruleCount+' 条订阅规则。'+(profile.warnings.length?' '+profile.warnings.join('；'):'');note('完整订阅更新成功'+(decode(nativeState.subscription_info_b64||'').includes('\"rule_resources_retained\":true')?'；规则集沿用此前已校验版本（内存不足，未更新数据）':''));return;}const p=parseSubscription(raw),filtered=await filterSubscriptionNodes(p.out,exclusion);p.out=filtered.profile;for(const g of p.out)if(g.tag?.startsWith('分流/')&&proxies[g.tag]?.now!==g.default&&!p.warnings.some(w=>w.startsWith(g.tag+'：')))p.warnings.push(g.tag+'：'+proxies[g.tag]?.now+' 已排除，已重置为默认代理');p.count-=filtered.count;p.groups=p.out.filter(n=>n.tag?.startsWith('地区/')).length;el('operation-message').textContent='找到 '+p.count+' 个节点 · '+p.groups+' 个地区'+(p.ignored?' · '+p.ignored+' 个 SSR 不适用于当前内核，未导入':'');await upload(id,'bounds',new TextEncoder().encode(JSON.stringify(p.out)));await control('sc-apply.sh',[id]);await waitJob(id,'done',180000);if(running)await refresh();el('operation-message').textContent='已更新 '+p.count+' 个节点，配置已保存。'+(filtered.count?' 已排除 '+filtered.count+' 个节点。':'')+(p.ignored?' '+p.ignored+' 个非兼容 SSR 未导入：当前 sing-box mini 不支持；此机型不提供 Mihomo 切换。':'');note('订阅更新成功'+(p.warnings?.length?'；'+p.warnings.join('；'):''))}catch(e){note(e.message,true);const endpoint=requestStarted?await nativeRead('endpoint').catch(()=>''):'',attempts=requestStarted?await nativeRead('subscriptionlog').catch(()=>''):'';el('subscription-error').textContent='失败原因：'+e.message+'\n本次订阅地址：'+url+(endpoint.trim()?'\n出错接口：'+endpoint.trim():'')+'\n当前配置已保留。'+(attempts.trim()?'\n\n本次尝试记录：\n'+attempts.trim().split('\n').slice(-12).join('\n'):'');el('subscription-error').hidden=false;el('operation-message').textContent='更新未完成，请查看提示和日志'}finally{manageBusy=false;await syncNative().catch(()=>{});showService();if(running){render();autoMeasure()}}}
+async function initializeManager(){el('router-entry').href=routerOrigin+'/custom/AnyTLS.asp';if(!nativeHost){el('login').hidden=false;note('请从路由器后台打开管理页');return}try{const r=await fetch('/custom/sc-auth.asp',{cache:'no-store'});if(!r.ok)throw Error('请重新登录路由器后台');const a=await r.json();token=decode(a.token_b64);csrf=a.control_token;await syncNative();if(running)await refresh();else note('');}catch(e){el('login').hidden=false;note(e.message,true)}}
+@@end@@
+for(const t of ['nodes','checks','subscription','backup','rules','dns','monitor','logs'])el('tab-'+t).onclick=()=>showTab(t);for(const a of ['start','stop','restart'])el('service-'+a).onclick=()=>service(a);el('subscription-form').onsubmit=e=>{e.preventDefault();updateSubscription()};el('logs-refresh').onclick=loadLogs;el('logs-view').onchange=paintLogs;el('logs-clear').onclick=clearLogs;el('rules-update').onclick=updateRules;el('dns-form').onsubmit=e=>{e.preventDefault();saveDNS()};el('dns-index').onchange=jumpDNS;el('dns-mode').onchange=()=>{dnsDirty=true};el('dns-filter').oninput=()=>{dnsDirty=true;indexDNS()};
+setInterval(()=>{if(document.visibilityState==='visible'&&!manageBusy&&!advancedActive)syncNative().catch(()=>{})},30000);
+@@if ax5@@
+const siteScript=document.createElement('script');siteScript.src=backendBase+'/asset?name=sites.js&v='+Date.now();siteScript.onload=initializeManager;siteScript.onerror=()=>note('网站检测组件加载失败，请刷新页面',true);const healthScript=document.createElement('script');healthScript.src=backendBase+'/asset?name=health.js&v='+Date.now();healthScript.onload=()=>document.body.append(siteScript);healthScript.onerror=()=>note('管理组件加载失败，请刷新页面',true);document.body.append(healthScript);
+@@else@@
+const siteScript=document.createElement('script');siteScript.src='/custom/sites.js?v='+Date.now();siteScript.onload=initializeManager;siteScript.onerror=()=>note('网站检测组件加载失败，请刷新页面',true);const healthScript=document.createElement('script');healthScript.src='/custom/health.js?v='+Date.now();healthScript.onload=()=>{const nativeScript=document.createElement('script');nativeScript.src='/custom/native-profile.js?v='+Date.now();nativeScript.onload=()=>document.body.append(siteScript);nativeScript.onerror=()=>note('完整订阅组件加载失败，请刷新',true);document.body.append(nativeScript)};healthScript.onerror=()=>note('管理组件加载失败，请刷新页面',true);document.body.append(healthScript);
+@@end@@
+
+let mirrorDirty=false,remoteConnectionKey="",remoteConnection=null;
+let mirrorTestKey='',mirrorTestedAt=0;
+function mirrorFeedback(message,kind='info'){const box=el('mirror-message');box.textContent=message;box.className='backup-feedback '+kind;box.hidden=!message;box.setAttribute?.('role',kind==='error'?'alert':'status');}
+function mirrorDraft(){return {base:el('mirror-base').value.trim().replace(/\/$/,''),user:el('remote-user').value.trim(),password:el('remote-password').value,enabled:el('remote-enabled').checked};}
+function mirrorDraftKey(){const d=mirrorDraft();return JSON.stringify([d.base,d.user,d.password]);}
+function mirrorCredentialsValid(){const d=mirrorDraft(),same=d.base===decode(nativeState?.mirror_base_b64||'').trim().replace(/\/$/,'')&&d.user===decode(nativeState?.webdav_user_b64||'').trim();return /^https?:\/\/[A-Za-z0-9.-]+(?::[0-9]{1,5})?(?:\/[A-Za-z0-9._~%+-]+)*$/.test(d.base)&&!!d.user&&(!!d.password||same&&nativeState?.webdav_password_set);}
+function mirrorDraftVerified(){const d=mirrorDraft();return mirrorTestKey===mirrorDraftKey()&&Date.now()-mirrorTestedAt<900000||!mirrorDirty&&nativeState?.remote_enabled&&nativeState?.remote_verified&&!d.password;}
+function paintMirror(){
+ if(!nativeState)return;const s=nativeState;
+ if(mirrorTestKey&&Date.now()-mirrorTestedAt>=900000){mirrorTestKey='';mirrorFeedback('测试结果已过期，请重新测试连接后保存','info');}
+ if(!mirrorDirty){el('mirror-base').value=s.remote_transport==='webdav'?decode(s.mirror_base_b64||'').trim():'';el('remote-user').value=decode(s.webdav_user_b64||'').trim();el('remote-enabled').checked=s.remote_transport==='webdav'&&!!s.remote_enabled;el('remote-password').value=''}
+ const ready=s.remote_transport==='webdav'&&s.remote_enabled&&s.remote_verified,busy=manageBusy||s.active||advancedActive;
+ const home=el('remote-home');if(home){home.hidden=s.remote_transport!=='webdav'||!s.remote_enabled;home.textContent=!ready?'WebDAV 待验证':!remoteConnection?'WebDAV 检查中':({connected:'WebDAV 连接正常',unreachable:'WebDAV 无法连接',unauthorized:'WebDAV 认证失败',error:'WebDAV 地址异常'}[remoteConnection.state]||'WebDAV 待验证');home.title=remoteConnection?.checked?'最近连接检查：'+new Date(remoteConnection.checked*1000).toLocaleString('zh-CN',{hour12:false})+'；打开页面检查，非持续在线监测':s.remote_checked?'最近验证：'+new Date(s.remote_checked*1000).toLocaleString('zh-CN',{hour12:false}):'尚未验证'}
+ const connectionKey=ready?[s.mirror_base_b64,s.webdav_user_b64,s.remote_checked].join(':'):'';if(connectionKey!==remoteConnectionKey){remoteConnectionKey=connectionKey;remoteConnection=null;if(ready)nativeRead('remoteconnection').then(result=>{if(remoteConnectionKey===connectionKey){remoteConnection=result;paintMirror()}}).catch(()=>{if(remoteConnectionKey===connectionKey){remoteConnection={state:'unreachable',checked:Math.floor(Date.now()/1000)};paintMirror()}})}
+ const versions=[];for(const [scope,title] of [['application','应用包'],['config','自动配置']]){let b;try{b=JSON.parse(decode(s['remote_'+scope+'_b64']||''))}catch{}if(b?.format===1&&b.created&&/^[a-f0-9]{64}$/.test(b.sha256||''))versions.push(title+' · '+new Date(b.created*1000).toLocaleString('zh-CN',{hour12:false})+' · '+(Number(b.size)/1024).toFixed(0)+' KB\n内核 '+(b.core_kind==='meta'?'Mihomo':'sing-box')+' '+b.core_version+' · ShellCrash '+b.tool_version+' · 包编号 '+b.sha256.slice(0,12))}el('remote-versions').textContent=!ready?'开启并验证后读取远端版本':versions.length?versions.join('\n\n'):'尚无最新备份记录，请点“备份到 WebDAV”创建';
+ el('mirror-save').classList.toggle('dirty',mirrorDirty);
+ el('backup-badge').textContent=mirrorDirty?(mirrorDraftVerified()?'测试通过 · 待保存':el('remote-enabled').checked?'待测试':s.remote_enabled?'待关闭':'未启用'):s.remote_transport!=='webdav'||!s.remote_enabled?'已关闭':ready?'已验证':'待验证';el('backup-badge').classList.toggle('ready',mirrorDirty?mirrorDraftVerified():ready);
+ const samePeer=el('mirror-base').value.trim()===decode(s.mirror_base_b64||'').trim()&&el('remote-user').value.trim()===decode(s.webdav_user_b64||'').trim();el('backup-password-state').textContent=s.webdav_password_set&&samePeer?'密码已保存，留空沿用':s.webdav_password_set?'账号或地址已变更，请重新填写密码':'请填写此账号的 WebDAV 密码';
+ el('mirror-status').textContent=mirrorDirty?(mirrorDraftVerified()?'测试通过，设置尚未保存':el('remote-enabled').checked?'有未保存设置，请先测试连接':'关闭尚未保存，点击保存后生效'):s.remote_transport!=='webdav'||!s.remote_enabled?'关闭时不连接 WebDAV；本地导出仍可使用':!s.remote_verified?'已保存，验证通过后才能备份和拉取':'WebDAV 已验证，可备份并用作恢复来源';
+ el('mirror-sync').disabled=busy||!ready||mirrorDirty||s.pressure==='protect';el('mirror-verify').disabled=busy;el('backup-local').disabled=busy;
+ el('backup-http-note').hidden=!el('mirror-base').value.startsWith('http://');
+ el('mirror-save').disabled=busy||!mirrorDirty||el('remote-enabled').checked&&!mirrorDraftVerified();for(const id of ['remote-enabled','mirror-base','remote-user','remote-password'])el(id).disabled=busy;
+}
+async function mirrorAction(action){
+ if(manageBusy||nativeState?.active){mirrorFeedback('另一项操作正在进行，请稍后重试','info');return false;}
+ let {base,user,password,enabled}=mirrorDraft();const key=mirrorDraftKey(),disableOnly=action==='mirrorsave'&&!enabled&&!mirrorDraftVerified();if(disableOnly){base=decode(nativeState?.mirror_base_b64||'').trim();user=decode(nativeState?.webdav_user_b64||'').trim();password='';}
+ if((action==='mirrortest'||action==='mirrorsave'&&enabled)&&!mirrorCredentialsValid()){mirrorFeedback(!password&&(!nativeState?.webdav_password_set||user!==decode(nativeState.webdav_user_b64||'').trim()||base!==decode(nativeState.mirror_base_b64||'').trim())?'测试未开始：更换账号或地址后，请重新填写密码':'测试未开始：请填写有效的 WebDAV 地址、账号和密码','error');if(!password)el('remote-password').focus?.();return false;}
+ if(action==='mirrorsave'&&enabled&&!mirrorDraftVerified()){mirrorFeedback('请先测试当前地址与账号密码，通过后再保存','error');return false;}
+ pauseMeasurements();pauseSites();manageBusy=true;showService();mirrorFeedback(action==='mirrortest'?'正在测试连接、写入、读取和清理…':action==='mirrorsave'?'正在保存设置…':'正在处理备份…','working');
+ const id=[...crypto.getRandomValues(new Uint8Array(4))].map(b=>b.toString(16).padStart(2,'0')).join('');
+ try{
+  if(action==='mirrorsave'||action==='mirrortest'){const b64=v=>{let bytes=new TextEncoder().encode(v),str='';for(const b of bytes)str+=String.fromCharCode(b);return btoa(str)};await upload(id,'mirror',new TextEncoder().encode('enabled='+(enabled?'1':'0')+'\ntransport=webdav\nbase_b64='+b64(base)+'\nuser_b64='+b64(user)+'\npassword_b64='+b64(password)+'\n'),'mirror-message');}
+  await control('sc-'+action+'.sh',[id]);await waitJob(id,'done',180000,'mirror-message');
+  if(action==='mirrortest'){mirrorTestKey=key;mirrorTestedAt=Date.now();mirrorDirty=true;mirrorFeedback(enabled?'测试通过。点击“保存设置”后启用 WebDAV':'测试通过，设置尚未保存；勾选开启并保存后才启用','success');}
+  else if(action==='mirrorsave'){await syncNative();mirrorDirty=false;mirrorTestKey='';el('remote-password').value='';mirrorFeedback(enabled?'设置已保存，WebDAV 已启用':disableOnly?'WebDAV 已关闭，连接参数保持原值':'设置已保存，WebDAV 保持关闭','success');}
+  else mirrorFeedback(action==='backupremote'?'已备份到 WebDAV':'备份已准备好，正在下载','success');
+  paintMirror();return true;
+ }catch(e){if(action==='mirrortest'||action==='mirrorsave')mirrorTestKey='';mirrorFeedback((action==='mirrortest'?'测试失败：':'操作失败：')+e.message,'error');return false;}
+ finally{manageBusy=false;await syncNative().catch(()=>{});showService();if(running)render();}
+}
+for(const id of ['mirror-base','remote-user','remote-password'])el(id).oninput=()=>{mirrorDirty=true;mirrorTestKey='';mirrorFeedback('参数已修改，请点击测试连接','info');paintMirror();};el('remote-enabled').onchange=()=>{mirrorDirty=true;paintMirror();};
+el('mirror-form').onsubmit=e=>{e.preventDefault();mirrorAction('mirrorsave');};el('mirror-sync').onclick=()=>mirrorAction('backupremote');el('mirror-verify').onclick=()=>mirrorAction('mirrortest');
+@@if ax5@@
+async function downloadBackup(url,name){const old=el('backup-download');if(old)old.remove();const a=document.createElement('a');a.id='backup-download';a.className='refresh backup-download';a.href=url;a.download=name;a.target='_top';a.textContent='下载文件';el('backup-local').parentNode.append(a);a.click();el('mirror-message').textContent='文件已准备好（tar.gz）；若未自动下载，请点“下载文件”';setTimeout(()=>a.remove(),600000)}
+el('backup-local').onclick=async()=>{if(await mirrorAction('backuplocal')){try{await downloadBackup(backendBase+'/read?kind=backup','AX5-application-backup.tar.gz')}catch(e){el('mirror-message').textContent=e.message}}};
+el('backup-core').onclick=async()=>{try{await downloadBackup(backendBase+'/read?kind=corebackup','AX5-core.tar.gz')}catch(e){el('mirror-message').textContent=e.message}};
+
+let zeroTierBusy=false,zeroTierLast=0;
+async function refreshZeroTier(force=false){
+ if(zeroTierBusy||(!force&&Date.now()-zeroTierLast<60000))return;zeroTierBusy=true;el('zt-refresh').disabled=true;
+ try{
+  const s=await nativeRead('zerotier');zeroTierLast=Date.now();el('zt-state').textContent=!s.installed?'未安装 ZeroTier':({ONLINE:'在线',OFFLINE:'离线',UNAVAILABLE:'本地接口未响应'}[s.status]||s.status)+' · '+(s.version||'—');
+  const box=el('zt-networks');box.replaceChildren();for(const n of s.networks||[]){const p=document.createElement('p');p.className='small-note';p.textContent=n.id+' · '+({OK:'已授权',ACCESS_DENIED:'未授权',NOT_FOUND:'网络不存在',REQUESTING_CONFIGURATION:'正在请求配置',PORT_ERROR:'虚拟网卡异常'}[n.status]||n.status)+' · '+n.ips;box.append(p)}
+  if(s.installed&&!(s.networks||[]).length)box.textContent='未取得已加入网络，请检查本地服务。';
+  el('zt-log').textContent=await nativeRead('zerotierlog');
+ }catch(e){el('zt-state').textContent='查询失败：'+e.message}
+ finally{zeroTierBusy=false;el('zt-refresh').disabled=false}
+@@else@@
+async function downloadBackup(url,name){
+ const r=await fetch(url,{cache:'no-store'});if(!r.ok)throw Error('备份文件下载失败：'+r.status);const text=await r.text();if(text.length>5400000)throw Error('备份传输超出限制');const split=text.indexOf('\n'),header=text.slice(0,split).trim().match(/^SCBACKUP1 ([0-9]+) ([a-f0-9]{64})$/);if(!header||Number(header[1])>4000000)throw Error('备份下载信息无效，请重新导出');const encoded=text.slice(split+1).replace(/\s/g,'');if(!/^[A-Za-z0-9+/]*={0,2}$/.test(encoded))throw Error('备份传输不完整，请重新导出');let binary;try{binary=atob(encoded)}catch{throw Error('备份传输不完整，请重新导出')}const bytes=Uint8Array.from(binary,c=>c.charCodeAt(0));if(bytes.length!==Number(header[1])||sha256Bytes(bytes)!==header[2])throw Error('备份下载校验失败，未导出损坏文件；请重试');if(bytes.length<32||bytes[0]!==31||bytes[1]!==139)throw Error('备份文件格式无效');
+ const blob=new Blob([bytes],{type:'application/gzip'}),old=el('backup-download');if(old){URL.revokeObjectURL(old.href);old.remove()}const a=document.createElement('a');a.id='backup-download';a.className='refresh backup-download';a.href=URL.createObjectURL(blob);a.download=name;a.target='_top';a.textContent='下载文件';el('backup-local').parentNode.append(a);a.click();mirrorFeedback('备份已完整下载并通过校验（tar.gz）；若未自动保存，请点“下载文件”','success');setTimeout(()=>{if(a.isConnected){URL.revokeObjectURL(a.href);a.remove()}},600000);
+@@end@@
+}
+@@if ax5@@
+el('zt-refresh').onclick=()=>refreshZeroTier(true);
+
+async function updateDomainDatabase(){
+ if(manageBusy||nativeState?.active)return;pauseMeasurements();pauseSites();manageBusy=true;showService();
+ const id=[...crypto.getRandomValues(new Uint8Array(4))].map(b=>b.toString(16).padStart(2,'0')).join('');
+ try{await new Promise(resolve=>setTimeout(resolve,3500));await control('sc-domainupdate.sh',[id]);const s=await waitJob(id,'done',300000,'domain-message');el('domain-message').textContent=words[decode(s.message_b64).trim()]||'操作完成';if(running)await refresh()}
+ catch(e){el('domain-message').textContent=e.message}
+ finally{manageBusy=false;await syncNative().catch(()=>{});showService();if(running)render()}
+}
+el('domain-update').onclick=updateDomainDatabase;
+@@else@@
+el('backup-local').onclick=async()=>{if(await mirrorAction('backuplocal')){try{await downloadBackup('/custom/sc-backup.asp','K2P-application-backup.tar.gz')}catch(e){el('mirror-message').textContent=e.message}}};
+@@end@@
+
+function coreUptimeText(s){
+ if(!s.running)return '已停止';
+ const n=s.core_uptime_seconds;
+ if(!Number.isFinite(n)||n<0)return '暂不可用';
+ const seconds=Math.floor(n),days=Math.floor(seconds/86400),hours=Math.floor(seconds%86400/3600),minutes=Math.floor(seconds%3600/60);
+ return (days?days+'天 ':'')+(hours?hours+'小时 ':'')+(minutes?minutes+'分钟 ': '')+(seconds<60?seconds+'秒':'');
+}
+function paintStartup(s){
+ const configured=s.guard_mode==='procd'?'系统守护':'每分钟检测';
+ const actual=s.guard_runtime==='procd'?'系统守护':s.guard_runtime==='conservative'?'每分钟检测':configured;
+ const status=s.guard_active?(actual===configured?'运行中':'设置待重启生效'):'已停止';
+ el('startup-state').textContent='自启 '+(s.autostart===true?'开':s.autostart===false?'关':'—')+' · '+actual+(s.guard_active?(actual===configured?'':'（待生效）'):'（未运行）');
+ const source={boot:'路由器开机',tool:'ShellCrash 工具',panel:'面板操作',watchdog:'异常恢复',system:'系统恢复'}[s.start_source]||'未记录';
+ const owner={procd:'系统 procd',shellcrash:'ShellCrash 原生',panel:'面板定时适配'}[s.guard_owner]||'待查询';
+ el('startup-source').textContent='启动来源：'+source+' · 守护执行：'+owner;
+ el('startup-state').title='开机启动：'+(s.autostart?'开启':'关闭')+'；守护设置：'+configured+'；执行状态：'+status+'。';
+@@if ax5@@
+ if(!guardDirty&&document.activeElement!==el('guard-mode'))el('guard-mode').value=s.guard_mode||'conservative';
+ el('guard-mode').disabled=manageBusy||s.active;
+@@else@@
+ if(document.activeElement!==el('guard-mode'))el('guard-mode').value=s.guard_mode||'conservative';
+ el('guard-mode').disabled=manageBusy||s.active||true;
+@@end@@
+}
+@@if ax5@@
+
+async function saveGuard(){if(manageBusy||nativeState?.active)return;const mode=el('guard-mode').value;manageBusy=true;pauseMeasurements();pauseSites();showService();const id=[...crypto.getRandomValues(new Uint8Array(4))].map(b=>b.toString(16).padStart(2,'0')).join('');try{await control('sc-guard.sh',[id,mode]);await waitJob(id,'done',90000,'guard-result');guardDirty=false;el('guard-result').textContent='守护模式已保存并生效';if(running)await refresh()}catch(e){el('guard-result').textContent=e.message}finally{manageBusy=false;await syncNative().catch(()=>{});showService();if(running){render();autoMeasure()}}}
+el('guard-save').onclick=saveGuard;
+el('guard-mode').onchange=()=>{guardDirty=true};
+@@else@@
+@@end@@
+
+let subscriptionPrefsReady=false,preferredConverter='0';
+const subscriptionPrefsKey='sc-subscription-prefs:'+location.host;
+function subscriptionRecord(s){if(s.subscription&&Object.keys(s.subscription).length)return s.subscription;if(s.subscription_info_b64){try{return JSON.parse(decode(s.subscription_info_b64))}catch(e){}}return {}}
+function paintSubscription(s){
+ const info=subscriptionRecord(s);
+ if(!subscriptionPrefsReady){let pref={};try{pref=JSON.parse(localStorage.getItem(subscriptionPrefsKey)||'{}')}catch(e){}const method=pref.method||info.method;if(['direct','convert','panel'].includes(method))el('subscription-method').value=method;for(const [field,key]of [['converter-url','custom'],['converter-template','template_url'],['subscription-ua','ua']])el(field).value=pref[key==='template_url'?'template':key]??(info[key+'_b64']?decode(info[key+'_b64']):'');const policy=info.converter_policy||'s0a1';preferredConverter=String(pref.converter??(info.custom_b64&&decode(info.custom_b64)?(decode(info.custom_b64)==='https://api.asailor.org'?'asailor':'custom'):policy.charAt(1)));if(Array.from(el('converter-server').options).some(o=>o.value===preferredConverter))el('converter-server').value=preferredConverter;el('converter-auto').checked=pref.auto??(policy.charAt(3)==='1');if(el('subscription-exclude')){el('subscription-exclude').value=pref.excludeText??(info.exclude_b64?decode(info.exclude_b64):'');paintSubscriptionExclusion()}subscriptionPrefsReady=true;syncSubscriptionOptions();subscriptionHelp()}
+ const lines=[];
+ if(info.applied_at){
+  const fetched=info.fetcher==='shellcrash'?'ShellCrash':'面板兼容下载',direct=info.method==='direct',native=info.parser==='native';
+  lines.push('获取：'+fetched+' · '+(direct?'服务商直取（未调用第三方转换）':info.method==='convert'?'第三方转换':'订阅地址直取')+(direct&&info.fetcher==='panel'?' · ShellCrash 下载失败后兜底':''));
+  lines.push('加载：'+(native?(direct?'服务商':'转换服务')+'返回的完整配置（节点、策略组、规则）；叠加本机 DNS 与自定义分流':'仅导入节点；DNS 与分流沿用本机设置'));
+  const template=info.template_b64?decode(info.template_b64).trim():'';if(template)lines.push((native?'转换模板：':'转换模板（规则未导入）：')+(info.template_url_b64?decode(info.template_url_b64):template));
+@@if ax5@@
+  if(info.provider_source==='shellcrash-direct')lines.push('节点获取：ShellCrash 从原订阅直取；策略组与规则使用转换模板');
+@@else@@
+@@end@@
+  const converter=info.converter_b64?decode(info.converter_b64).trim():'';if(converter)lines.push('转换服务：'+converter);
+  const ua=info.ua_b64?decode(info.ua_b64):'';lines.push('下载时 User-Agent：'+(ua||(info.fetcher==='panel'?'curl 默认':typeof info.ua_b64==='string'?'未发送':'未记录')));
+  if(info.exclude_b64&&decode(info.exclude_b64).trim())lines.push('加载前节点排除：'+(info.exclude_mode==='auto'?'自动识别':info.exclude_mode==='regex'?'正则':'关键字')+' · '+decode(info.exclude_b64).split(/\r?\n/).filter(s=>s.trim()).length+' 条');
+  if(Array.isArray(info.warnings)&&info.warnings.length)lines.push('分流调整：'+info.warnings.join('；'));
+@@if ax5@@
+@@else@@
+  if(info.rule_resources_retained)lines.push('规则集：沿用此前已校验版本（内存不足，本次未更新数据）');
+@@end@@
+  if(info.reset_count>0)lines.push('分流调整：'+info.reset_count+' 项失效固定选择已重置为默认代理');
+  const tool=info.tool_version_b64?decode(info.tool_version_b64).trim():'';lines.push('成功加载：'+new Date(info.applied_at*1000).toLocaleString('zh-CN',{hour12:false})+(tool?' · 下载工具 ShellCrash '+tool:''));
+ }else lines.push('现有配置的订阅获取记录尚未保存。下一次成功更新后记录；运行内核版本见首页。');
+
+ el('subscription-current').textContent=lines.join('\n');
+}
+function rememberSubscription(){preferredConverter=el('converter-server').value;try{localStorage.setItem(subscriptionPrefsKey,JSON.stringify({method:el('subscription-method').value,converter:preferredConverter,auto:el('converter-auto').checked,custom:el('converter-url').value,template:el('converter-template').value,ua:el('subscription-ua').value,excludeMode:'auto',excludeText:el('subscription-exclude')?.value||''}))}catch(e){}subscriptionHelp()}
+
+@@if ax5@@
+function subscriptionHelp(){const method=el('subscription-method').value,kind=nativeState?.core_kind==='meta'?'Mihomo YAML':'sing-box JSON';el('converter-options').hidden=method!=='convert';el('subscription-ua-field').hidden=method==='panel';loadConverters(!!converterDefaults&&!!nativeState&&(converterDefaults.core_kind!==(nativeState.core_kind||'singbox')||String(converterDefaults.core_version||'').replace(/^v/,'')!==String(nativeState.core_version||'').replace(/^v/,'')));const custom=el('converter-server').value==='custom';el('converter-custom').hidden=!custom;el('converter-auto').disabled=custom||el('converter-server').value==='asailor'||manageBusy||!!nativeState?.active;const help={direct:'ShellCrash 从订阅地址直接下载，失败尝试面板兼容下载。',convert:'先预检转换接口，通过后由 ShellCrash 转换下载。',panel:'面板直接下载，仅导入节点。'};el('subscription-help').textContent=(help[method]||help.direct)+' '+(method==='panel'?'':'完整配置保留策略组与规则，本机 DNS 和额外分流继续叠加。')+'失败保留当前配置。';paintSubscriptionDefaults();}
+@@else@@
+function subscriptionHelp(){if(!['direct','panel'].includes(el('subscription-method').value))el('subscription-method').value='direct';const method=el('subscription-method').value,kind=nativeState?.core_kind==='meta'?'Mihomo YAML':'sing-box JSON';el('converter-options').hidden=method!=='convert';el('subscription-ua-field').hidden=method==='panel';loadConverters(!!converterDefaults&&!!nativeState&&(converterDefaults.core_kind!==(nativeState.core_kind||'singbox')||String(converterDefaults.core_version||'').replace(/^v/,'')!==String(nativeState.core_version||'').replace(/^v/,'')));const custom=el('converter-server').value==='custom';el('converter-custom').hidden=!custom;el('converter-auto').disabled=custom||el('converter-server').value==='asailor'||manageBusy||!!nativeState?.active;const help={direct:'通过 ShellCrash 从原服务商下载，不调用第三方转换；失败时尝试同一地址的兼容下载。',convert:'先预检转换接口，通过后由 ShellCrash 转换下载。',panel:'面板从订阅地址直接下载。'};el('subscription-help').textContent=(help[method]||help.direct)+' '+'完整 sing-box 配置保留策略组与规则；只有节点时使用本机基础分流。本机 DNS 与自定义覆盖保留。'+'失败保留当前配置。';paintSubscriptionDefaults();}
+@@end@@
+el('subscription-method').onchange=rememberSubscription;
+
+let convertersLoaded=false,convertersLoading=false,convertersAttempted=false,convertersError='',converterDefaults=null,converterServers=[],converterTemplates=[];
+function paintSubscriptionDefaults(){
+ const d=converterDefaults,method=el('subscription-method').value,ua=el('subscription-ua').value.trim(),kind=d?.core_kind==='meta'?'Mihomo':d?.core_kind?.includes('singbox')?'sing-box':'内核';
+ if(!d){el('subscription-defaults').textContent=convertersError?'工具参数读取失败：'+convertersError+'。可点击刷新重试。':'正在读取 ShellCrash 设置…';if(el('subscription-parameters-details'))el('subscription-parameters-details').hidden=true;return}
+ const lines=['ShellCrash '+(d.tool_version||nativeState?.tool_version||'—')+' · '+kind+' '+(d.core_version||'版本未记录')];
+ const effective=ua==='none'?'':ua==='auto'?((d.core_kind||'').includes('singbox')?'sing-box/singbox/'+d.core_version:d.core_kind==='meta'?'clash.meta/mihomo/'+d.core_version:'clash'):ua||d.ua;
+ lines.push('User-Agent：'+(method==='panel'?'curl 默认':(effective||'不发送')+'（'+(ua?'本次指定':d.ua_mode==='auto'?'ShellCrash 自动':'ShellCrash '+(d.ua_mode==='none'?'关闭 UA':'自定义'))+'）'));
+ if(method==='convert'){
+  const choice=el('converter-server').value,row=choice==='0'?d.converter:converterServers.find(x=>String(x.id)===choice),custom=choice==='asailor'?'https://api.asailor.org':choice==='custom'?el('converter-url').value.trim():'';
+  lines.push('转换服务：'+(custom|| (choice==='custom'?'未填写自定义地址':row?.url||'未找到，请刷新工具参数'))+'（'+(choice==='0'?'ShellCrash 当前选择':choice==='custom'?'本次自定义':'本次选择')+'）');
+@@if ax5@@
+  const template=el('converter-template').value.trim(),selected=converterTemplates.find(x=>x.url===template);
+  lines.push('转换模板：'+(template?(selected?.name||template):d.template?.name||'未找到，请在 ShellCrash 中确认')+'（'+(template?'本次指定':'ShellCrash 当前选择')+'）');
+@@else@@
+  const selected=el('converter-template').value.trim(),tpl=converterTemplates.find(t=>t.url===selected)||d.template;lines.push('规则模板：'+(selected||tpl?.url||'未配置')+'（'+(selected?'本次指定':'ShellCrash 当前选择')+'；加载前校验资源）');
+@@end@@
+  lines.push('失败换服务：'+(!['custom','asailor'].includes(el('converter-server').value)&&el('converter-auto').checked?'开启':'关闭'));
+ }else lines.push('第三方转换：不调用');
+ const count=(el('subscription-exclude')?.value||'').split(/\r?\n/).filter(s=>s.trim()).length,excludes=[];
+ if(method==='convert'&&d.exclude)excludes.push('ShellCrash：'+d.exclude);if(count)excludes.push(count+' 条输入条件（下载后过滤）');
+ lines.push('排除节点：'+(excludes.length?excludes.join('；'):'无'));if(method==='convert'&&d.include)lines.push('ShellCrash 保留条件：'+d.include);
+@@if ax5@@
+ el('subscription-defaults').textContent=lines.join('\n');el('subscription-defaults').title=method==='convert'?(el('converter-template').value.trim()||d.template?.url||''):'';
+@@else@@
+ el('subscription-defaults').textContent=lines.join('\n');el('subscription-defaults').title='';
+@@end@@
+ if(el('subscription-parameters-details')){el('subscription-parameters-details').hidden=method!=='convert';el('subscription-parameters').textContent='target='+d.target+' · '+d.parameters}
+}
+
+async function loadConverters(force=false){if(convertersLoading||(!force&&(convertersLoaded||convertersAttempted)))return;convertersLoading=true;convertersAttempted=true;convertersError='';try{const data=await nativeRead('converters');converterDefaults=data.defaults||null;converterServers=data.servers||[];converterTemplates=data.templates||[];for(const old of Array.from(el('converter-server').options))if(/^[1-8]$/.test(old.value))old.remove();for(const row of data.servers||[]){if(Array.from(el('converter-server').options).some(o=>o.value===String(row.id)))continue;const o=document.createElement('option');o.value=row.id;o.textContent=row.url+' · '+row.name;el('converter-server').append(o)}for(const row of data.templates||[]){if(Array.from(el('converter-template-mode').options).some(o=>o.value===row.url))continue;const o=document.createElement('option');o.value=row.url;const category=/Mini|极简|精简|轻量|Lite/i.test(row.name)?'精简模板':/Full|全能|完整|重度/i.test(row.name)?'规则较多':/Online|在线/i.test(row.name)?'含远程规则':'资源需校验';o.textContent='ShellCrash · '+row.name+' · '+category;el('converter-template-mode').append(o)}syncSubscriptionOptions();if(Array.from(el('converter-server').options).some(o=>o.value===preferredConverter))el('converter-server').value=preferredConverter;convertersLoaded=true}catch(e){convertersError=e.message;converterDefaults=null}finally{convertersLoading=false;paintSubscriptionDefaults()}}
+el('subscription-defaults-refresh').onclick=()=>loadConverters(true);
+function syncSubscriptionOptions(){for(const [select,input]of [['subscription-ua-mode','subscription-ua'],['converter-template-mode','converter-template']]){const value=el(input).value;el(select).value=Array.from(el(select).options).some(o=>o.value===value)?value:'custom';el(input).hidden=el(select).value!=='custom'}}
+for(const [select,input]of [['subscription-ua-mode','subscription-ua'],['converter-template-mode','converter-template']])el(select).onchange=()=>{const value=el(select).value;el(input).hidden=value!=='custom';if(value!=='custom')el(input).value=value;rememberSubscription()};
+function subscriptionSource(url,exclusion=subscriptionExclusion()){
+ const value=id=>el(id).value.trim(),method=el('subscription-method').value,custom=method==='convert'&&value('converter-server')==='custom'?value('converter-url'):method==='convert'&&value('converter-server')==='asailor'?'https://api.asailor.org':'',template=method==='convert'?value('converter-template'):'',ua=value('subscription-ua');
+ const valid=(text,endpoint=false)=>{const u=new URL(text);if(!['http:','https:'].includes(u.protocol)||u.username||u.password||/\s/.test(text)||(endpoint&&(u.search||u.hash||text.length>512)))throw Error('请输入有效的 HTTP/HTTPS 地址，不含账号、密码或空格')};
+ if(custom)valid(custom,true);else if(method==='convert'&&value('converter-server')==='custom')throw Error('请填写自定义转换服务地址');if(template)valid(template);if(template.length>2048||ua.length>128||/[\r\n\x00-\x1f\x7f]/.test(ua))throw Error('模板地址或 User-Agent 格式无效');
+ const enc=text=>btoa(String.fromCharCode(...new TextEncoder().encode(text)));return url+'\n'+[['custom',custom.replace(/\/$/,'')],['template',template],['ua',ua],['exclude_mode',exclusion.mode],['exclude',exclusion.text]].map(([k,v])=>k+'='+enc(v)).join('\n')+'\n';
+}
+function converterPolicy(){return 's'+(['custom','asailor'].includes(el('converter-server').value)?'0':el('converter-server').value)+'a'+(!['custom','asailor'].includes(el('converter-server').value)&&el('converter-auto').checked?'1':'0')}
+el('subscription-exclude').oninput=()=>{paintSubscriptionExclusion();rememberSubscription()};
+subscriptionHelp();
+for(const field of ['converter-url','converter-template','subscription-ua'])el(field).onchange=rememberSubscription;el('converter-auto').onchange=rememberSubscription;el('converter-server').onchange=rememberSubscription;
+
+function paintCoreState(){
+ if(!running)return;const groups=groupNames(),nodes=Object.values(proxies).filter(p=>!p.all&&!/^(direct|reject.*|pass.*|block|compatible|dns)$/i.test(p.type||'')).length;
+ el('state').textContent=groups.length+' 个策略组 · '+nodes+' 个节点 · '+count+' 个连接 · '+(nativeState?.core_kind==='meta'?'mihomo':'sing-box')+' '+(version||nativeState?.core_version||'—')+' · 运行 '+coreUptimeText(nativeState||{running:true});
+}
+
+let inspectPage=0,inspectKind='rules',inspectQuery='',inspectController=null,inspectSnapshot=null,inspectGeneration=0,inspectTotal=0,inspectLoading=false;
+const inspectLimit=20;
+function inspectRows(kind,data){
+ if(kind==='rules')return (data.rules||[]).map((r,i)=>({title:r.payload||r.rule||r.ruleSet||r.type||'默认规则',detail:[r.type,r.proxy||r.outbound].filter(Boolean).join(' → '),order:i+1}));
+ if(kind==='groups')return Object.entries(data.proxies||{}).filter(([,p])=>Array.isArray(p.all)).map(([name,p])=>({title:label(name),detail:(p.type||'策略组')+' · '+p.all.length+' 个成员 · 当前 '+(p.now||'未选择')}));
+ return (data.connections||[]).map(c=>{const m=c.metadata||{};return {title:m.host||m.destinationIP||'未知目标',detail:[m.network||'',m.sourceIP?m.sourceIP+':'+(m.sourcePort||''):'',...(c.chains||[]),c.rule?c.rule+(c.rulePayload?' / '+c.rulePayload:''):''].filter(Boolean).join(' · ')}});
+}
+function cancelInspection(){inspectGeneration++;if(inspectController)inspectController.abort();inspectController=null;inspectSnapshot=null;inspectLoading=false;el('inspect-list').replaceChildren();el('inspect-summary').textContent='按需查询内核已加载的数据';el('inspect-refresh').disabled=false;el('inspect-previous').disabled=el('inspect-next').disabled=true;el('inspect-page').textContent='';}
+function renderInspection(data){
+ inspectTotal=data.total;inspectPage=data.page;const list=el('inspect-list');list.replaceChildren();
+ for(const r of data.rows){const row=document.createElement('div');row.className='inspect-row';const title=document.createElement('strong'),detail=document.createElement('small');title.textContent=(r.order?r.order+'. ':'')+String(r.title||'—');detail.textContent=String(r.detail||'');row.append(title,detail);list.append(row)}
+ if(!data.rows.length){const empty=document.createElement('p');empty.className='small-note';empty.textContent=inspectKind==='connections'?'当前没有匹配的活动连接':'没有匹配的数据';list.append(empty)}
+ el('inspect-summary').textContent=({rules:'已加载规则',groups:'当前策略组',connections:'当前连接'})[inspectKind]+' · '+data.total+' 项'+(data.checked?' · '+new Date(data.checked*1000).toLocaleTimeString('zh-CN',{hour12:false}):'');
+ el('inspect-page').textContent=(data.total?data.page+1:0)+' / '+Math.ceil(data.total/inspectLimit);
+ el('inspect-previous').disabled=inspectLoading||data.page<=0;el('inspect-next').disabled=inspectLoading||(data.page+1)*inspectLimit>=data.total;
+}
+async function loadInspection(reset=false){
+ if(activeTab!=='rules'||!el('runtime-inspection').open||document.hidden)return;
+ if(manageBusy||nativeState?.active){el('inspect-summary').textContent='正在处理配置，请稍后查询';return}
+ if(!running){el('inspect-summary').textContent='代理已停止，启动后可查询运行数据';return}
+ if(nativeState?.pressure==='protect'){el('inspect-summary').textContent='内存保护中，暂缓查询';return}
+ if(reset){inspectPage=0;inspectSnapshot=null}
+ if(inspectController)inspectController.abort();const controller=new AbortController();inspectController=controller;const generation=++inspectGeneration;inspectLoading=true;el('inspect-refresh').disabled=true;el('inspect-previous').disabled=el('inspect-next').disabled=true;el('inspect-summary').textContent='正在查询…';
+ try{
+  let data;
+  if(typeof backendBase!=='undefined'&&apiBase===backendBase+'/api'){
+   const params=new URLSearchParams({kind:'inspect',view:inspectKind,page:String(inspectPage),q:inspectQuery});
+   const r=await fetch(backendBase+'/read?'+params,{cache:'no-store',signal:controller.signal});data=await r.json();if(!r.ok)throw Error(data.error||'查询失败：'+r.status);
+  }else{
+   if(!inspectSnapshot){const d=await api(({rules:'/rules',groups:'/proxies',connections:'/connections'})[inspectKind],'GET',undefined,controller.signal);if(generation!==inspectGeneration)return;inspectSnapshot={rows:inspectRows(inspectKind,d),checked:Math.floor(Date.now()/1000)}}
+   const rows=inspectSnapshot.rows.filter(r=>(r.title+' '+r.detail).toLowerCase().includes(inspectQuery.toLowerCase()));inspectPage=Math.min(inspectPage,Math.max(0,Math.ceil(rows.length/inspectLimit)-1));data={rows:rows.slice(inspectPage*inspectLimit,(inspectPage+1)*inspectLimit),total:rows.length,page:inspectPage,checked:inspectSnapshot.checked};
+  }
+  if(generation!==inspectGeneration)return;if(data.total>0&&data.page*inspectLimit>=data.total){inspectPage=Math.floor((data.total-1)/inspectLimit);loadInspection();return}inspectLoading=false;renderInspection(data);
+ }catch(e){if(generation!==inspectGeneration||e.name==='AbortError')return;el('inspect-list').replaceChildren();el('inspect-summary').textContent=e.message;el('inspect-page').textContent='';}
+ finally{if(generation===inspectGeneration){inspectLoading=false;inspectController=null;el('inspect-refresh').disabled=false;}}
+}
+el('inspect-refresh').onclick=()=>loadInspection(true);
+el('inspect-kind').onchange=()=>{inspectKind=el('inspect-kind').value;inspectQuery=el('inspect-query').value.trim();loadInspection(true)};
+el('inspect-search-form').onsubmit=e=>{e.preventDefault();inspectQuery=el('inspect-query').value.trim();loadInspection(true)};
+el('inspect-previous').onclick=()=>{if(inspectLoading||inspectPage<=0)return;inspectPage--;loadInspection()};
+el('inspect-next').onclick=()=>{if(inspectLoading||(inspectPage+1)*inspectLimit>=inspectTotal)return;inspectPage++;loadInspection()};
+document.addEventListener('visibilitychange',()=>{if(document.hidden)cancelInspection()});window.addEventListener('pagehide',cancelInspection);
+
+let policyRows=[],policyLoaded=false,policyDirty=false,policyLoading=false;
+function paintPolicyTargets(){const select=el('policy-target'),previous=select.value;select.replaceChildren();targetOptions(select,previous||mainName())}
+function renderPolicy(){
+ const list=el('policy-list');list.replaceChildren();for(let i=0;i<policyRows.length;i++){
+  const r=policyRows[i],row=document.createElement('div');row.className='policy-row';const domain=document.createElement('strong'),match=document.createElement('small'),arrow=document.createElement('span'),target=document.createElement('span'),remove=document.createElement('button');domain.textContent=r.domain;match.textContent=r.kind==='suffix'?'含子域名':'仅此域名';arrow.className='policy-arrow';arrow.textContent='→';target.textContent=r.target==='direct'?'直连':groupLabel(r.target);remove.textContent='移除';remove.setAttribute('aria-label','移除 '+r.domain+' 的分流');remove.onclick=()=>{if(manageBusy)return;policyRows.splice(i,1);policyDirty=true;renderPolicy()};row.append(domain,match,arrow,target,remove);list.append(row)
+ }
+ el('policy-status').textContent=policyDirty?'有未保存的修改':policyRows.length?'已保存 '+policyRows.length+' 条 · 优先于'+(nativeState?.template_kind?'订阅模板规则':'国内分流与默认代理'):'没有自定义规则，使用现有国内直连与默认代理。';el('policy-save').hidden=!policyDirty;el('policy-save').classList.toggle('primary',policyDirty);el('policy-save').disabled=!policyLoaded||!policyDirty||manageBusy;
+}
+async function loadPolicy(){
+ paintPolicyTargets();if(policyLoaded||policyLoading)return;policyLoading=true;
+ try{const text=await nativeRead('policy');policyRows=text.trim()?text.trim().split('\n').map(line=>{const [kind,domain,target]=line.split('\t');return {kind,domain,target}}):[];policyLoaded=true;renderPolicy();paintQuickPolicies()}catch(e){el('policy-status').textContent='读取失败：'+e.message;el('policy-save').disabled=true}finally{policyLoading=false}
+}
+el('policy-add').onsubmit=e=>{e.preventDefault();if(!policyLoaded||manageBusy)return;const domain=el('policy-domain').value.trim().toLowerCase(),kind=el('policy-match').value,target=el('policy-target').value;const valid=domain.length<=253&&domain.includes('.')&&domain.split('.').every(x=>x.length>0&&x.length<=63&&/^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/.test(x));if(!valid||/^\d+\.\d+\.\d+\.\d+$/.test(domain)){el('policy-status').textContent='请输入域名，例如 github.com，不含 https://、路径或通配符';return}if(policyRows.length>=32){el('policy-status').textContent='最多添加 32 条简单分流规则';return}if(policyRows.some(r=>r.kind===kind&&r.domain===domain)){el('policy-status').textContent='该域名已存在，请先移除旧规则';return}policyRows.push({kind,domain,target});policyDirty=true;el('policy-domain').value='';renderPolicy()};
+el('policy-save').onclick=async()=>{
+ if(!policyLoaded||!policyDirty||manageBusy||nativeState?.active)return;
+ pauseMeasurements();pauseSites();manageBusy=true;showService();el('policy-save').disabled=true;el('policy-status').textContent='正在保存；代理会短暂重启以应用规则…';note('正在保存域名分流，校验通过后应用…',false,{pending:true});const progressTarget=quickBaseRows?'quick-status':'policy-status';
+ const id=[...crypto.getRandomValues(new Uint8Array(4))].map(b=>b.toString(16).padStart(2,'0')).join(''),text=policyRows.map(r=>r.kind+'\t'+r.domain+'\t'+r.target).join('\n')+(policyRows.length?'\n':'');
+ try{await upload(id,'policy',new TextEncoder().encode(text),progressTarget);await control('sc-policy.sh',[id]);await waitJob(id,'done',240000,progressTarget);policyDirty=false;policyLoaded=false;await loadPolicy();if(running){await refresh();for(const item of quickPolicies){const target=quickDrafts.get(item.name);if(target&&proxies[item.tag]?.type==='Selector'&&proxies[item.tag].now!==target)await api('/proxies/'+encodeURIComponent(item.tag),'PUT',{name:target})}if(quickDrafts.size)await refresh()}quickBaseRows=null;quickDrafts.clear();renderPolicy();paintQuickPolicies();note('域名分流已保存并生效')}
+ catch(e){if(quickBaseRows){policyRows=quickBaseRows;quickBaseRows=null;policyDirty=false;renderPolicy()}note('分流保存未确认：'+e.message+'；修改仍保留，请核对状态后重试',true);el('policy-status').textContent='保存未完成：'+e.message+'；修改保留，请核对运行状态。'}
+ finally{manageBusy=false;await syncNative().catch(()=>{});showService();el('policy-save').disabled=!policyDirty;paintQuickActions();if(running)render()}
+};
+el('runtime-inspection').ontoggle=()=>{if(el('runtime-inspection').open)loadInspection(true);else cancelInspection()};
+
+function paintGroupMode(){if(el('search').value.trim()){el('group-mode-note').textContent='搜索全部节点；属于当前手动组的节点可直接选择，其余先进入所属组。搜索不会改动其他策略组。';return}const p=proxies[viewRegion];if(!p)return;el('group-mode-note').textContent=isSelectable(p)?'手动组：点击成员固定使用。选择自动组后，由内核测速择优。':'自动组：内核按订阅配置定期测速择优；关闭网页后仍生效。手动指定请使用手动组。'}
+
+const policyLogos={"谷歌": "<svg viewBox=\"0 0 24 24\"><g transform=\"scale(.5)\"><path fill=\"#EA4335\" d=\"M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z\"/><path fill=\"#4285F4\" d=\"M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z\"/><path fill=\"#FBBC05\" d=\"M10.53 28.59A14.4 14.4 0 0 1 9.75 24c0-1.59.27-3.13.76-4.59l-7.98-6.19A23.87 23.87 0 0 0 0 24c0 3.87.93 7.53 2.56 10.78l7.97-6.19z\"/><path fill=\"#34A853\" d=\"M24 48c6.48 0 11.94-2.13 15.92-5.8l-7.73-6c-2.15 1.45-4.92 2.3-8.19 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z\"/></g></svg>", "ChatGPT": "<svg role=\"img\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\"><title>OpenAI</title><path d=\"M22.2819 9.8211a5.9847 5.9847 0 0 0-.5157-4.9108 6.0462 6.0462 0 0 0-6.5098-2.9A6.0651 6.0651 0 0 0 4.9807 4.1818a5.9847 5.9847 0 0 0-3.9977 2.9 6.0462 6.0462 0 0 0 .7427 7.0966 5.98 5.98 0 0 0 .511 4.9107 6.051 6.051 0 0 0 6.5146 2.9001A5.9847 5.9847 0 0 0 13.2599 24a6.0557 6.0557 0 0 0 5.7718-4.2058 5.9894 5.9894 0 0 0 3.9977-2.9001 6.0557 6.0557 0 0 0-.7475-7.0729zm-9.022 12.6081a4.4755 4.4755 0 0 1-2.8764-1.0408l.1419-.0804 4.7783-2.7582a.7948.7948 0 0 0 .3927-.6813v-6.7369l2.02 1.1686a.071.071 0 0 1 .038.052v5.5826a4.504 4.504 0 0 1-4.4945 4.4944zm-9.6607-4.1254a4.4708 4.4708 0 0 1-.5346-3.0137l.142.0852 4.783 2.7582a.7712.7712 0 0 0 .7806 0l5.8428-3.3685v2.3324a.0804.0804 0 0 1-.0332.0615L9.74 19.9502a4.4992 4.4992 0 0 1-6.1408-1.6464zM2.3408 7.8956a4.485 4.485 0 0 1 2.3655-1.9728V11.6a.7664.7664 0 0 0 .3879.6765l5.8144 3.3543-2.0201 1.1685a.0757.0757 0 0 1-.071 0l-4.8303-2.7865A4.504 4.504 0 0 1 2.3408 7.872zm16.5963 3.8558L13.1038 8.364 15.1192 7.2a.0757.0757 0 0 1 .071 0l4.8303 2.7913a4.4944 4.4944 0 0 1-.6765 8.1042v-5.6772a.79.79 0 0 0-.407-.667zm2.0107-3.0231l-.142-.0852-4.7735-2.7818a.7759.7759 0 0 0-.7854 0L9.409 9.2297V6.8974a.0662.0662 0 0 1 .0284-.0615l4.8303-2.7866a4.4992 4.4992 0 0 1 6.6802 4.66zM8.3065 12.863l-2.02-1.1638a.0804.0804 0 0 1-.038-.0567V6.0742a4.4992 4.4992 0 0 1 7.3757-3.4537l-.142.0805L8.704 5.459a.7948.7948 0 0 0-.3927.6813zm1.0976-2.3654l2.602-1.4998 2.6069 1.4998v2.9994l-2.5974 1.4997-2.6067-1.4997Z\"/></svg>", "GitHub": "<svg role=\"img\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\"><title>GitHub</title><path d=\"M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12\"/></svg>", "国外 AI": "<svg viewBox=\"0 0 24 24\" fill=\"currentColor\" aria-hidden=\"true\"><path d=\"m12 2 3 7 7 3-7 3-3 7-3-7-7-3 7-3z\"/></svg>"};
+const quickPolicies=[{name:'谷歌',tag:'分流/谷歌',domains:['google.com','gstatic.com','googleapis.com']},{name:'ChatGPT',tag:'分流/ChatGPT',domains:['chatgpt.com','openai.com','oaistatic.com','oaiusercontent.com']},{name:'国外 AI',tag:'分流/国外 AI',domains:['claude.ai','anthropic.com','perplexity.ai','poe.com']},{name:'GitHub',tag:'分流/GitHub',domains:['github.com','githubusercontent.com','githubassets.com']}];
+function targetOptions(select,current,includeDefault=false){
+ if(includeDefault){const o=document.createElement('option');o.value='';o.textContent=nativeState?.template_kind?'跟随订阅规则':'跟随默认规则';select.append(o)}
+ const direct=document.createElement('option');direct.value='direct';direct.textContent='直连';select.append(direct);
+ for(const [caption,names]of [['策略组',groupNames().filter(n=>!n.startsWith('分流/'))],['固定节点',Object.keys(proxies).filter(n=>!proxies[n].all&&!/^(direct|reject.*|pass.*|block|compatible|dns)$/i.test(proxies[n].type||''))]]){const group=document.createElement('optgroup');group.label=caption;for(const n of names){const o=document.createElement('option');o.value=n;o.textContent=caption==='策略组'?groupLabel(n):n;group.append(o)}select.append(group)}
+ if(current&&!Array.from(select.options).some(o=>o.value===current)){const o=document.createElement('option');o.value=current;o.textContent=current+'（当前内核未找到）';select.append(o)}select.value=current;
+}
+const quickDrafts=new Map();
+let quickBaseRows=null;
+function paintQuickPolicies(){
+ const box=el('quick-policies');if(!box)return;if(!policyLoaded){loadPolicy();return}if(box.querySelector('select:focus')){paintQuickActions();return;}
+ box.replaceChildren();for(const item of quickPolicies){
+  const card=document.createElement('div');card.className='quick-policy'+(quickDrafts.has(item.name)?' pending':'');const title=document.createElement('strong'),icon=document.createElement('span'),select=document.createElement('select');icon.className='policy-icon';icon.innerHTML=policyLogos[item.name];title.append(icon,document.createTextNode(item.name));title.title='匹配域名及其子域名：'+item.domains.join('、');select.setAttribute('aria-label',item.name+' 分流目标');
+  const match=policyRows.filter(r=>item.domains.includes(r.domain)&&r.kind==='suffix'),values=new Set(match.map(r=>r.target)),saved=match.length===item.domains.length&&values.size===1?(match[0].target===item.tag?(proxies[item.tag]?.now||''):match[0].target):'';
+  targetOptions(select,quickDrafts.has(item.name)?quickDrafts.get(item.name):saved,true);select.disabled=manageBusy||nativeState?.active;
+  select.onchange=()=>{if(select.value===saved)quickDrafts.delete(item.name);else quickDrafts.set(item.name,select.value);card.classList.toggle('pending',quickDrafts.has(item.name));paintQuickActions()};const updateHint=()=>{const override=!!select.value;card.classList.toggle('overridden',override);select.title=override?'自定义覆盖，优先于'+(nativeState?.template_kind?'订阅规则':'默认规则'):(nativeState?.template_kind?'使用订阅模板规则':'使用默认规则')};const changed=select.onchange;select.onchange=()=>{changed();updateHint()};updateHint();card.append(title,select);box.append(card)
+ }paintQuickActions();
+}
+function paintQuickActions(){const dirty=quickDrafts.size>0;el('quick-follow').hidden=false;el('quick-follow').textContent=nativeState?.template_kind?'全部跟随订阅':'全部恢复默认';el('quick-follow').disabled=manageBusy||nativeState?.active||(!quickDrafts.size&&!quickPolicies.some(p=>policyRows.some(r=>r.kind==='suffix'&&p.domains.includes(r.domain))));el('quick-policies').dataset.dirty=dirty?'1':'';el('quick-save').hidden=!dirty;el('quick-save').disabled=manageBusy||nativeState?.active;el('quick-status').classList.toggle('unsaved',dirty);el('quick-status').classList.toggle('has-overrides',!dirty&&quickPolicies.some(p=>policyRows.some(r=>r.kind==='suffix'&&p.domains.includes(r.domain))));el('quick-cancel').hidden=!dirty;el('quick-cancel').disabled=manageBusy;if(!(manageBusy&&quickBaseRows))el('quick-status').textContent=dirty?'有 '+quickDrafts.size+' 项未保存':(()=>{const n=quickPolicies.filter(p=>policyRows.some(r=>r.kind==='suffix'&&p.domains.includes(r.domain))).length;return n?n+' 项自定义覆盖 · 优先于'+(nativeState?.template_kind?'订阅':'默认规则'):(nativeState?.template_kind?'全部跟随订阅规则':'全部跟随默认规则')})();}
+el('quick-follow').onclick=()=>{if(manageBusy)return;for(const item of quickPolicies){const has=policyRows.some(r=>r.kind==='suffix'&&item.domains.includes(r.domain));if(has)quickDrafts.set(item.name,'');else quickDrafts.delete(item.name)}paintQuickPolicies()};
+el('quick-cancel').onclick=()=>{if(manageBusy)return;quickDrafts.clear();paintQuickPolicies()};
+async function saveNativeQuickPolicies(){
+ const changes=quickPolicies.filter(p=>quickDrafts.has(p.name));
+ if(!running||!changes.every(p=>quickDrafts.get(p.name)&&proxies[p.tag]?.type==='Selector'&&proxies[p.tag].all.includes(quickDrafts.get(p.name))&&p.domains.every(d=>policyRows.some(r=>r.kind==='suffix'&&r.domain===d&&r.target===p.tag))))return false;
+ manageBusy=true;pauseMeasurements();pauseSites();showService();paintQuickActions();const applied=[];
+ try{
+  for(const p of changes){const old=proxies[p.tag].now;await api('/proxies/'+encodeURIComponent(p.tag),'PUT',{name:quickDrafts.get(p.name)});applied.push({tag:p.tag,old})}
+  const data=await api('/proxies');if(!changes.every(p=>data.proxies[p.tag]?.now===quickDrafts.get(p.name)))throw Error('内核返回的选择与提交不一致');
+  proxies=data.proxies;quickDrafts.clear();note('分流目标已生效，代理未重启；一分钟内自动保存。');
+ }catch(e){
+  const errors=[];for(const p of applied.reverse()){try{await api('/proxies/'+encodeURIComponent(p.tag),'PUT',{name:p.old})}catch(err){errors.push(p.tag)}}
+  await refresh().catch(()=>{});note(errors.length?'部分回退未确认：'+errors.join('、')+'；请核对当前选择。':('提交失败，已恢复原选择：'+e.message),true);
+ }finally{manageBusy=false;showService();paintQuickPolicies();if(running)render()}
+ return true;
+}
+el('quick-save').onclick=async()=>{
+ if(!quickDrafts.size||manageBusy||nativeState?.active)return;if(policyDirty){note('请先保存规则页的未完成修改；这里的四项选择会保留',true);return}
+ if(await saveNativeQuickPolicies())return;
+ let next=policyRows.slice();for(const item of quickPolicies){if(!quickDrafts.has(item.name))continue;const target=quickDrafts.get(item.name);next=next.filter(r=>!(item.domains.includes(r.domain)&&r.kind==='suffix'));if(target)for(const domain of item.domains)next.push({kind:'suffix',domain,target})}
+ if(next.length>32){note('自定义分流最多 32 条，请减少规则后重试',true);return}
+ quickBaseRows=policyRows.slice();policyRows=next;policyDirty=true;renderPolicy();el('policy-save').click();paintQuickActions();
+};
+
+let advancedActive=false;
+async function openAdvanced(){
+ if(manageBusy||busy||nativeState?.active){note('正在处理操作，请稍后打开高级面板',true);return}
+ if(policyDirty||el('quick-policies')?.dataset.dirty==='1'||dnsDirty){note('请先保存未完成的修改',true);return}
+ advancedActive=true;showService();el('advanced-title').textContent=(nativeState?.core_kind==='meta'?'Yacd-Meta':'YACD')+' 高级面板';pauseMeasurements();pauseSites();cancelInspection();el('lightweight-area').hidden=true;el('advanced-area').hidden=false;el('advanced-frame').hidden=true;el('advanced-open').disabled=true;
+ try{const id=[...crypto.getRandomValues(new Uint8Array(4))].map(b=>b.toString(16).padStart(2,'0')).join('');el('advanced-message').textContent='正在准备高级面板；代理服务继续运行。文件仅保存在内存中，重启后首次打开会重新下载。';await control('sc-advanced.sh',[id]);await waitJob(id,'done',180000,'advanced-message');if(!advancedActive)return;
+ el('advanced-message').textContent='轻量面板的操作与测速已暂停。共用当前内核、规则和策略组；配置更新与 DNS 请返回轻量面板操作。流量图和实时日志暂不接入。';
+ el('advanced-frame').src=typeof backendBase!=='undefined'?backendBase+'/advancedasset/index.html#/proxies':'/custom/sc-dashboard/index.html#/proxies';el('advanced-frame').hidden=false;
+ }catch(e){el('advanced-message').textContent='高级面板准备失败：'+e.message+'。可返回轻量面板继续使用。'}
+}
+async function closeAdvanced(){advancedActive=false;el('advanced-frame').src='about:blank';el('advanced-frame').hidden=true;el('advanced-area').hidden=true;el('lightweight-area').hidden=false;el('advanced-open').disabled=false;if(!policyDirty&&!quickDrafts.size)policyLoaded=false;proxies={};await syncNative().catch(()=>{});if(running)await refresh();loadPolicy();}
+el('advanced-open').onclick=openAdvanced;el('advanced-close').onclick=closeAdvanced;
+window.addEventListener('message',async e=>{
+ const d=e.data;if(!advancedActive||e.origin!==location.origin||e.source!==el('advanced-frame').contentWindow||d?.type!=='sc-dashboard-request')return;
+ const method=String(d.method).toUpperCase(),path=String(d.path),allowed=method==='GET'&&/^\/(?:version|configs|rules|proxies|connections|providers\/(?:proxies|rules)|group)(?:\/[^?]*)?(?:\?.*)?$/.test(path)||(method==='PUT'||method==='DELETE')&&/^\/proxies\/[^?]+$/.test(path);
+ let status=200,data,error;
+ try{if(!allowed){status=403;throw Error('此操作请返回轻量面板处理')}data=await api(path,method,method==='PUT'?JSON.parse(d.body):undefined)}catch(err){status=err.status||status===403&&403||502;error=err.message}
+ if(!advancedActive||e.source!==el('advanced-frame').contentWindow)return;e.source.postMessage({type:'sc-dashboard-response',id:d.id,status,data,error},location.origin);
+});
+
+function setDashboardScale(value){if(!['0.75','0.85','0.9','1'].includes(value))value='0.9';el('dashboard-scale').value=value;el('advanced-frame').style.setProperty('--dashboard-scale',value);try{localStorage.setItem('sc-dashboard-scale',value)}catch(e){}}
+el('dashboard-scale').onchange=()=>setDashboardScale(el('dashboard-scale').value);
+try{setDashboardScale(localStorage.getItem('sc-dashboard-scale')||'0.9')}catch(e){setDashboardScale('0.9')}
+
+let proxyMode='rule',proxyModeLoading=false,proxyModeConflict=false;
+function paintProxyMode(){
+ const e=el('proxy-mode');if(!e)return;e.disabled=!running||manageBusy||!!nativeState?.active||advancedActive||proxyModeLoading;
+ if(document.activeElement!==e||!proxyModeLoading)e.value=proxyMode;e.classList.toggle('mode-override',proxyMode!=='rule');
+ if(running&&Object.keys(proxies).length){if(proxyMode==='direct')el('current').textContent='直连上网（内核待命）';else if(proxyMode==='global')el('current').textContent='全局 TCP 代理 / '+resolvedNode('GLOBAL');else el('current').textContent=groupLabel(mainName())+' / '+resolvedNode(mainName());}
+ const descriptions={rule:'规则：新连接按当前分流规则选择出口。',direct:'直连：已暂停透明代理与 DNS 接管，新连接正常直连。',global:'全局：外网 IPv4 TCP 使用默认代理组，取消国内 IP 绕过；普通 UDP 仍直连。'};
+ const help=el('proxy-mode-help');if(help){help.textContent=proxyModeConflict?'内核与接管模式不一致，请重新选择模式。':descriptions[proxyMode];help.classList.toggle('override',proxyMode!=='rule');}
+ e.title='只作用于接管的新连接；已有连接保持原出口，内核重启后恢复规则分流。';
+ const traffic=el('traffic-state');if(traffic)traffic.textContent=!running?'接管已停止':proxyMode==='direct'?'接管已暂停':proxyMode==='global'?'TCP 全局接管':'TCP 规则接管';
+ const advanced=el('advanced-open');if(advanced){advanced.textContent='打开 '+(nativeState?.core_kind==='meta'?'Yacd-Meta':'YACD')+' ↗';advanced.disabled=manageBusy||!!nativeState?.active||advancedActive||!running;}
+}
+async function readProxyMode(){const c=await api('/configs'),actual=String(c.mode||'rule').toLowerCase(),managed=nativeState?.traffic_mode||actual,mode=['rule','direct','global'].includes(managed)?managed:actual;if(['rule','direct','global'].includes(mode)){if(mode!==proxyMode&&typeof invalidateSiteResults==='function')invalidateSiteResults();proxyMode=mode;}proxyModeConflict=actual!==proxyMode;paintProxyMode();}
+async function setProxyMode(){
+ if(proxyModeLoading||manageBusy||nativeState?.active||advancedActive)return;
+ const requested=el('proxy-mode').value,previous=proxyMode;if(!['rule','direct','global'].includes(requested)){paintProxyMode();return}
+ proxyModeLoading=true;manageBusy=true;pauseMeasurements();pauseSites();showService();
+ try{
+  if(requested==='global'){
+   const d=await api('/proxies'),g=d.proxies?.GLOBAL,target=[mainName(),'proxy-main'].find(n=>g?.all?.includes(n));if(!target)throw Error('GLOBAL 缺少默认代理组，当前模式保持');
+   let leaf=target;const seen=new Set();while(d.proxies[leaf]?.all){if(seen.has(leaf)||!d.proxies[leaf].now)throw Error('默认代理组尚未选择可用节点');seen.add(leaf);leaf=d.proxies[leaf].now;}
+   if(/^(direct|reject|rejectdrop)$/i.test(d.proxies[leaf]?.type||leaf))throw Error('默认代理组目前是直连或拒绝，请先选择代理节点');
+   await api('/proxies/GLOBAL','PUT',{name:target});proxies=d.proxies;proxies.GLOBAL.now=target;
+  }
+  const id=[...crypto.getRandomValues(new Uint8Array(4))].map(b=>b.toString(16).padStart(2,'0')).join('');
+  await control('sc-proxymode.sh',[id,requested]);await waitJob(id,'done',60000);await readProxyMode();
+  if(proxyMode!==requested||proxyModeConflict)throw Error('未确认接管模式与内核一致');
+  note(({rule:'已恢复规则分流',direct:'已暂停透明代理与 DNS 接管；旧连接或 DNS 缓存可能需要重新建立',global:'全局 TCP 代理已生效；普通 UDP 保持直连'})[requested]);
+ }catch(e){proxyMode=previous;await syncNative().catch(()=>{});await readProxyMode().catch(()=>{});note('模式切换失败：'+e.message,true)}
+ finally{manageBusy=false;proxyModeLoading=false;await syncNative().catch(()=>{});showService();if(running&&!manageBusy&&activeTab==='nodes')autoMeasure();}
+}
+el('proxy-mode').onchange=setProxyMode;

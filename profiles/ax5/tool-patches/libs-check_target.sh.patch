@@ -1,0 +1,8 @@
+--- a/libs/check_target.sh
++++ b/libs/check_target.sh
+@@ -6,3 +6,5 @@
+ 	format=yaml
+ fi
+ core_config="$CRASHDIR/${format}s/config.$format"
++
++[ "$format" = json ] && core_config=/data/ShellCrash/configs/config.json || core_config=/data/ShellCrash/configs/config.yaml

@@ -1,0 +1,15 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');
+const root=path.resolve(__dirname,'..'),file=fs.existsSync(path.join(root,'ui/manager.js'))?'ui/manager.js':'payload/padavan/manager.js';
+const source=fs.readFileSync(path.join(root,file),'utf8').match(/function paintSubscriptionDefaults\(\)[\s\S]*?(?=async function loadConverters)/)[0];
+const defaults={tool_version:'1.9.4release',core_kind:'meta',core_version:'v1.19.28',ua_mode:'auto',ua:'clash.meta/mihomo/v1.19.28',converter:{name:'tool-service',url:'https://tool.example'},template:{name:'Acl4SSR精简',url:'https://rules.example/default'},target:'clash',parameters:'insert=true · new_name=true · scv=true · udp=true',include:'',exclude:''};
+const fields={'subscription-method':{value:'direct'},'subscription-ua':{value:''},'subscription-defaults':{textContent:'',title:''},'converter-server':{value:'0'},'converter-url':{value:''},'converter-template':{value:''},'converter-auto':{checked:true,disabled:false}};
+const c=vm.createContext({el:k=>fields[k],converterDefaults:defaults,convertersError:'',converterServers:[],converterTemplates:[],nativeState:{}});vm.runInContext(source,c);
+const paint=()=>{c.paintSubscriptionDefaults();return fields['subscription-defaults'].textContent};
+assert.match(paint(),/clash.meta\/mihomo\/v1.19.28（ShellCrash 自动）/);assert.doesNotMatch(paint(),/https:\/\/tool.example/);
+fields['subscription-method'].value='convert';assert.match(paint(),/tool.example（ShellCrash 当前选择）/);assert.match(paint(),/Acl4SSR精简（ShellCrash 当前选择）/);
+fields['subscription-ua'].value='clash-verge/v2.4.5';assert.match(paint(),/clash-verge\/v2.4.5（本次指定）/);
+fields['converter-server'].value='custom';fields['converter-url'].value='https://custom.example';fields['converter-template'].value='https://rules.example/custom';fields['converter-auto'].disabled=true;
+assert.match(paint(),/custom.example（本次自定义）/);assert.match(paint(),/失败换服务：关闭/);assert.equal(fields['subscription-defaults'].title,'https://rules.example/custom');
+fields['subscription-method'].value='panel';assert.match(paint(),/curl 默认/);assert.doesNotMatch(paint(),/clash-verge|target=clash|custom.example/);
+fields['subscription-exclude']={value:'台湾'};assert.match(paint(),/排除节点：1 条输入条件/);assert.doesNotMatch(paint(),/排除：无/);c.converterDefaults=null;c.convertersError='HTTP 403';assert.match(paint(),/读取失败：HTTP 403/);assert.doesNotMatch(paint(),/v1.19.28/);
+console.log('Subscription parameter preview: tool defaults, method isolation, custom overrides, failure without stale data passed');

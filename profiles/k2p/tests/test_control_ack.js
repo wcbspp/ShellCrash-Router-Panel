@@ -1,0 +1,17 @@
+const fs=require('fs'),vm=require('vm'),assert=require('assert');
+(async()=>{
+ const source=fs.readFileSync('payload/padavan/manager.js','utf8');
+ const control=source.slice(source.indexOf('function nativeSessionError('),source.indexOf('\nfunction showTab'));
+ let response='<script>done_committing();</script>';
+ const context={URLSearchParams,Date,fetch:async()=>({ok:true,text:async()=>response})};vm.createContext(context);
+ vm.runInContext("let csrf='fixture';"+control,context);
+ await vm.runInContext("control('sc-policy.sh',['1234abcd'])",context);
+ response='<html>请先注销另一用户后再尝试登录。</html>';
+ await assert.rejects(vm.runInContext("control('sc-policy.sh',['1234abcd'])",context),/另一登录会话/);
+ response='<html>authentication failed</html>';
+ await assert.rejects(vm.runInContext("control('sc-policy.sh',['1234abcd'])",context),/未确认操作请求/);
+ const upload=source.slice(source.indexOf('async function upload('),source.indexOf('\nasync function updateSubscription'));
+ const context2={Uint8Array,CompressionStream:undefined,btoa:x=>Buffer.from(x,'binary').toString('base64'),control:async()=>{},nativeRead:async()=>({id:'wrong',phase:'uploading'}),el:()=>({})};vm.createContext(context2);vm.runInContext(upload,context2);
+ await assert.rejects(vm.runInContext("upload('1234abcd','policy',new Uint8Array([97]))",context2),/配置传输未启动/);
+ console.log('HTTP 200 login rejection, missing execution acknowledgement and unstarted upload are reported explicitly');
+})().catch(e=>{console.error(e);process.exit(1)});

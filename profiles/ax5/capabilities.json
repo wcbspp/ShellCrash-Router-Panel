@@ -1,0 +1,17 @@
+{
+  "profile": "ax5",
+  "kernels": [
+    "singbox",
+    "meta"
+  ],
+  "subscription_methods": [
+    "direct",
+    "convert",
+    "panel"
+  ],
+  "native_guard": true,
+  "firmware": "RA67 1.0.105",
+  "backend": "luci-lua",
+  "fresh_install_status": "pending-device-test",
+  "upgrade_status": "pending-device-test"
+}

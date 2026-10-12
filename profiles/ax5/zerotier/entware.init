@@ -1,0 +1,4 @@
+#!/bin/sh /etc/rc.common
+# Mount before Mixbox or ZeroTier starts. No extra resident process.
+START=15
+start(){ /etc/mixbox/apps/entware/scripts/entware-mount.sh; }

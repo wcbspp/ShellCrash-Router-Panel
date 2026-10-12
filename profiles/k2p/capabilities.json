@@ -1,0 +1,15 @@
+{
+  "profile": "k2p",
+  "kernels": [
+    "singbox"
+  ],
+  "subscription_methods": [
+    "direct",
+    "panel"
+  ],
+  "native_guard": false,
+  "firmware": "K2P 16MB Padavan 4.4.198.9-100_20220804",
+  "backend": "padavan-shell",
+  "fresh_install_status": "pending-device-test",
+  "upgrade_status": "pending-device-test"
+}

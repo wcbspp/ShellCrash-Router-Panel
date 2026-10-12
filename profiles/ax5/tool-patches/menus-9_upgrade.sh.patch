@@ -1,0 +1,81 @@
+--- a/menus/9_upgrade.sh
++++ b/menus/9_upgrade.sh
+@@ -123,29 +123,8 @@
+ }
+ 
+ #更新脚本
+-getscripts(){ 
+-	get_bin "$TMPDIR"/ShellCrash.tar.gz ShellCrash.tar.gz
+-	if [ "$?" != "0" ];then
+-		echo -e "\033[33m文件下载失败！\033[0m"
+-		error_down
+-	else
+-		"$CRASHDIR"/start.sh stop 2>/dev/null
+-		#解压
+-		echo "-----------------------------------------------"
+-		echo "开始解压文件！"
+-		mkdir -p "$CRASHDIR" > /dev/null
+-		tar -zxf "$TMPDIR/ShellCrash.tar.gz" ${tar_para} -C "$CRASHDIR"/
+-		if [ $? -ne 0 ];then
+-			echo -e "\033[33m文件解压失败！\033[0m"
+-			error_down
+-		else
+-			. "$CRASHDIR"/init.sh >/dev/null
+-			echo "$release_type" | grep -qE '^[0-9]' && setconfig userguide  #回退时重新新手引导
+-			echo -e "\033[32m脚本更新成功！\033[0m"
+-		fi
+-	fi
+-	rm -rf "$TMPDIR"/ShellCrash.tar.gz
+-	exit
++getscripts(){
++ /data/ShellCrash/ax5/tool-update.sh ax5 update
+ }
+ setscripts(){
+ 	echo "-----------------------------------------------"
+@@ -203,31 +182,8 @@
+ 	esac
+ 	echo "$crashcore" | grep -q 'singbox' && core_new=singbox || core_new=clash
+ }
+-switch_core(){ #clash与singbox内核切换
+-	#singbox和clash内核切换时提示是否保留文件
+-	[ "$core_new" != "$core_old" ] && {
+-		[ "$dns_mod" = "redir_host" ] && [ "$core_old" = "clash" ] && setconfig dns_mod mix #singbox自动切换dns
+-		[ "$dns_mod" = "mix" ] && [ "$crashcore" = 'clash' -o "$crashcore" = 'clashpre' ] && setconfig dns_mod redir_host #singbox自动切换dns
+-		echo -e "\033[33m已从$core_old内核切换至$core_new内核\033[0m"
+-		echo -e "\033[33m二者Geo数据库及yaml/json配置文件不通用\033[0m"
+-		read -p "是否保留相关数据库文件？(1/0) > " res
+-		[ "$res" = '0' ] && {
+-			[ "$core_old" = "clash" ] && {
+-				geodate='Country.mmdb GeoSite.dat ruleset/*.mrs ruleset/*.yaml ruleset/*.yml'
+-				geodate_v='Country_v cn_mini_v geosite_v mrs_geosite_cn_v'
+-			}
+-			[ "$core_old" = "singbox" ] && {
+-				geodate='geoip.db geosite.db ruleset/*.srs ruleset/*.json'
+-				geodate_v='geoip_cn_v geosite_cn_v srs_geoip_cn_v srs_geosite_cn_v'
+-			}
+-			for text in ${geodate} ;do
+-				rm -rf "$CRASHDIR"/${text}
+-			done
+-			for text in ${geodate_v} ;do
+-				setconfig "$text"
+-			done
+-		}
+-	}
++switch_core(){
++ echo 'AX5 已保留订阅、DNS、规则与节点选择，并按内核生成运行配置。'
+ }
+ getcore(){ #下载内核文件
+ 	. "$CRASHDIR"/libs/core_tools.sh #调用下载工具
+@@ -250,10 +206,10 @@
+ 		[ -z "$custcorelink" ] && error_down
+ 	;;
+ 	*)
+-		echo -e "\033[31m核心文件下载成功但校验失败！请尝试手动指定CPU版本\033[0m"
++		echo '内核未安装：配置、空间或备份检查未通过，原内核保留。' 
+ 		rm -rf ${TMPDIR}/core_new
+ 		rm -rf ${TMPDIR}/core_new.tar.gz
+-		setcpucore
++		/data/ShellCrash/ax5/tool-sync.sh
+ 	;;
+ 	esac
+ }

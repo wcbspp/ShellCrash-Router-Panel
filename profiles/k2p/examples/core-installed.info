@@ -1,0 +1,10 @@
+version=1.12.13
+arch=mipsle-softfloat
+variant=singbox
+archive_size=9025081
+binary_size=28836019
+sha256=8908cee4a14591f3b8e2d6b6046a6456f8448e5b6f80948886b8864fc02145a7
+fallback1=https://testingcf.jsdelivr.net/gh/juewuy/ShellCrash@7b1471a33bcf195cf2b7fb8f6f40fe27a9646ba5/bin/singbox/singbox-linux-mipsle-softfloat.tar.gz
+fallback2=https://raw.githubusercontent.com/juewuy/ShellCrash/7b1471a33bcf195cf2b7fb8f6f40fe27a9646ba5/bin/singbox/singbox-linux-mipsle-softfloat.tar.gz
+git_blob=33540f3c7aad4b74385a45dea1ff005bcff64169
+url=https://testingcf.jsdelivr.net/gh/juewuy/ShellCrash@7b1471a33bcf195cf2b7fb8f6f40fe27a9646ba5/bin/singbox/singbox-linux-mipsle-softfloat.tar.gz

@@ -1,0 +1,4 @@
+{
+  "install.sh": "Validated optional offline core before writes; stage verified archive for normal bootstrap",
+  "tools/deploy.py": "Optional local node/core input; same SSH preflight/backup/rollback"
+}

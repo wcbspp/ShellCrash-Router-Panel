@@ -1,0 +1,212 @@
+#!/bin/sh
+# Run ShellCrash subscription retrieval in isolation; commit only after adapter validation.
+set -e
+umask 077
+platform=${1:-ax5}
+mode=${2:-direct}
+policy=${3:-s0a0}
+case "$policy" in s[0-8]a[01]) ;; *) exit 2;; esac
+case "$platform" in
+ ax5) T=/data/ShellCrash-tool; R=/tmp/ShellCrash; input=$R/upload-source; output=$R/subscription.raw; proxy=http://127.0.0.1:7890;;
+ k2p) T=/etc/storage/ShellCrash; R=/tmp/sc-admin; input=$R/native-source; output=$R/sub.raw; . "$T/starts/panel_env.sh"; proxy=http://$PANEL_LAN_IP:7890;;
+ *) exit 2;;
+esac
+diagnostic(){
+ tail -n 29 "$R/subscription-tool.log" > "$R/subscription-tool.log.new" 2>/dev/null || true
+ printf '%s %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$1" >> "$R/subscription-tool.log.new"
+ mv "$R/subscription-tool.log.new" "$R/subscription-tool.log"
+}
+rm -f "$R/subscription.error" "$R/subscription.endpoint" "$R/subscription.nodes.raw" "$R/subscription.progress"
+case "$mode" in direct|convert) ;; *) exit 2;; esac
+servers=$T/configs/servers.list
+[ -s "$servers" ] || servers=$T/servers.list
+[ -f "$T/starts/core_config.sh" ] && [ -s "$servers" ] || exit 1
+diagnostic "ShellCrash subscription: mode=$mode, staging"
+[ "$mode" != direct ] || printf '正在由 ShellCrash 从原订阅地址下载（不调用转换接口）\n' > "$R/subscription.progress"
+work=$R/subscription-tool.$$
+mkdir "$work" || exit 1
+trap 'rm -rf "$work"' EXIT HUP INT TERM
+mkdir -p "$work/configs" "$work/starts" "$work/jsons" "$work/tmp"
+cp "$T/configs/ShellCrash.cfg" "$work/configs/"
+cp "$servers" "$work/configs/servers.list"
+cp -r "$T/libs" "$work/libs"
+export CRASHDIR=$work
+TMPDIR=$work/tmp
+. "$CRASHDIR/configs/ShellCrash.cfg"
+if [ "$platform" = k2p ];then crashcore=singbox;core_v=${core_v:-1.12.13};fi
+. "$T/starts/core_config.sh"
+# The installed check_target is bridged to the live adapter: override for this sandbox.
+if [ "$crashcore" = meta ];then target=clash;format=yaml;else target=singbox;format=json;fi
+mkdir -p "$work/${format}s"
+core_config=$work/${format}s/config.$format
+# Respect the installed tool's automatic or custom User-Agent.
+Url=''; Https=''
+url=$(head -1 "$input")
+case "$url" in http://*|https://*) ;; *) exit 2;; esac
+# Request preferences are data, never sourced as shell code; only the isolated tool copy changes.
+option(){
+ encoded=$(sed -n "s/^$1=//p" "$input" | head -1)
+ [ "${#encoded}" -le 4096 ] || return 1
+ [ -z "$encoded" ] || { printf '%s' "$encoded" | grep -Eq '^[A-Za-z0-9+/=]+$' && printf '%s' "$encoded" | base64 -d; }
+}
+invalid_options(){ printf '%s\n' subscription_options_invalid > "$R/subscription.error";diagnostic '自定义订阅参数无效，未发送请求';exit 1; }
+custom=$(option custom) || invalid_options
+custom=${custom%/sub};custom=${custom%/}
+template_url=$(option template) || invalid_options
+ua=$(option ua) || invalid_options
+[ "${#ua}" -le 128 ] && [ "$ua" = "$(printf '%s' "$ua" | LC_ALL=C tr -d '\000-\037\177')" ] || invalid_options
+[ -z "$ua" ] || user_agent=$ua
+gen_ua || true
+valid_url(){
+ [ "${#1}" -le 2048 ] && printf '%s' "$1" | grep -Eq '^https?://[^/@[:space:]]+(/[^[:space:]]*)?$' && [ "$1" = "$(printf '%s' "$1" | LC_ALL=C tr -d '\000-\040\177')" ]
+}
+if [ "$mode" = convert ];then
+ if [ -n "$custom" ];then
+  valid_url "$custom" && [ "${#custom}" -le 512 ] && ! printf '%s' "$custom" | grep -q '[?#]' || invalid_options
+  # get_core_config reads its own servers.list; preserve upstream generation and URL encoding.
+  grep -avE '^[34][0-9][0-9][[:space:]]' "$work/configs/servers.list" > "$work/configs/servers.keep" || true
+  printf '401 Custom %s user_agent\n' "$custom" >> "$work/configs/servers.keep"
+  mv "$work/configs/servers.keep" "$work/configs/servers.list"
+  server_link=1;policy=s1a0
+ fi
+ if [ -n "$template_url" ];then
+  valid_url "$template_url" || invalid_options
+  grep -avE '^5[0-9][0-9][[:space:]]' "$work/configs/servers.list" > "$work/configs/servers.keep" || true
+  printf '501 Custom %s\n' "$template_url" >> "$work/configs/servers.keep"
+  mv "$work/configs/servers.keep" "$work/configs/servers.list"
+  rule_link=1
+ fi
+fi
+servers=$work/configs/servers.list
+if [ "$mode" = convert ];then Url=$url;else Https=$url;fi
+logger(){ :; }
+ckcmd(){ command -v "$1" >/dev/null 2>&1; }
+# A failed request must not send private subscriptions to another converter automatically.
+ca=''
+if [ "$platform" = k2p ];then
+ ca=$work/ca.pem
+ cat /etc/ssl/certs/*.crt "$T/configs/subscription-ca.pem" > "$ca" 2>/dev/null || true
+fi
+webget(){
+ # Only the original provider gets the independent recovery route. Converter
+ # requests keep their explicit service selection and privacy/preflight policy.
+ if [ "$platform" = ax5 ] && [ "$2" = "$url" ] && [ -x /data/ShellCrash/ax5/direct-download.sh ];then
+  diagnostic '原订阅直连下载：独立 DNS 与临时定向绕过（不调用转换接口）'
+  if /data/ShellCrash/ax5/direct-download.sh "$1" "$2" "$6";then
+   printf '%s' "$2" > "$work/request.url";diagnostic '原订阅直连下载成功';return 0
+  fi
+  diagnostic '原订阅直连未完成；尝试现有代理（不调用转换接口）'
+ fi
+ printf '%s' "$2" > "$work/request.url"
+ code=0
+ http=$(curl -4 -fsSL -A "$6" ${ca:+--cacert "$ca"} --proxy "$proxy" --noproxy '' --connect-timeout 5 --max-time 18 --max-filesize 1572864 -w '%{http_code}' "$2" -o "$1" 2>/dev/null) || code=$?
+ [ "$code" = 0 ] && return 0
+ diagnostic "ShellCrash $mode: proxy request failed, HTTP=${http:-000}, curl=$code; retry direct"
+ code=0
+ http=$(curl -4 -fsSL -A "$6" ${ca:+--cacert "$ca"} --noproxy '*' --connect-timeout 5 --max-time 18 --max-filesize 1572864 -w '%{http_code}' "$2" -o "$1" 2>/dev/null) || code=$?
+ [ "$code" = 0 ] && return 0
+ case "$http" in
+  400|401|403|404|429|500|502|503|504) reason=subscription_http_$http;;
+  *) case "$code" in 5|6) reason=subscription_dns_failed;; 7) reason=subscription_connect_failed;; 28) reason=subscription_timeout;; 35|60|77) reason=subscription_tls_failed;; *) reason=subscription_download_failed;; esac;;
+ esac
+ printf '%s\n' "$reason" > "$R/subscription.error"
+ printf '%s\n' "${2%%\?*}" > "$R/subscription.endpoint"
+ diagnostic "ShellCrash $mode: HTTP=${http:-000}, curl=$code; live config retained, converter unchanged"
+ exit 1
+}
+# Tool validates its output, while the adapter performs the final core compatibility check.
+cat > "$work/starts/singbox_config_check.sh" <<'CHECK'
+check_config(){
+ [ -s "$core_config_new" ] && [ "$(wc -c < "$core_config_new")" -le 1572864 ] || exit 1
+ if [ "$SC_SUB_MODE" = convert ];then
+  grep -q '"outbounds"' "$core_config_new" && grep -q '"server"' "$core_config_new" || { diagnostic 'ShellCrash conversion: missing outbounds, live config retained';exit 1; }
+ fi
+}
+CHECK
+cp "$work/starts/singbox_config_check.sh" "$work/starts/clash_config_check.sh"
+# Native Clash YAML is validated by the current Mihomo before commit.
+if [ "$format" = yaml ];then
+ cat > "$work/starts/clash_config_check.sh" <<'CHECK'
+check_config(){
+ [ -s "$core_config_new" ] && [ "$(wc -c < "$core_config_new")" -le 1572864 ] || exit 1
+ if [ "$SC_SUB_MODE" = convert ];then grep -q '^proxy-groups:' "$core_config_new" && grep -q '^rules:' "$core_config_new" || { diagnostic '转换返回的内容缺少完整策略组或规则';exit 1; };fi
+}
+CHECK
+fi
+export SC_SUB_MODE=$mode
+# Keep upstream generation in a subshell: no interactive retry, no tool setting changes.
+count=$(grep -aE '^[34][0-9][0-9][[:space:]]' "$servers" | wc -l)
+chosen=$(printf '%s' "$policy" | cut -c 2)
+auto=$(printf '%s' "$policy" | cut -c 4)
+[ "$chosen" != 0 ] || chosen=${server_link:-1}
+case "$chosen" in [1-8]) ;; *) chosen=1;; esac
+[ "$chosen" -le "$count" ] || chosen=1
+order=$chosen
+if [ "$mode" = convert ] && [ "$auto" = 1 ];then
+ n=1;while [ "$n" -le "$count" ] && [ "$n" -le 8 ];do
+  [ "$n" = "$chosen" ] || order="$order $n"
+  n=$((n+1))
+ done
+fi
+for index in $order;do
+ if [ "$mode" = convert ];then
+  endpoint=$(grep -aE '^[34][0-9][0-9][[:space:]]' "$servers" | sed -n "${index}p" | awk '{print $3}')
+  # No subscription is included in this request. 400/422 often mean a missing URL.
+  printf '正在预检转换接口：%s（不含订阅地址）\n' "$endpoint" > "$R/subscription.progress"
+  probe=${endpoint}/sub?target=$target
+  code=0
+  http=$(curl -4 -sSL ${ca:+--cacert "$ca"} --noproxy '*' --connect-timeout 3 --max-time 6 --max-filesize 16384 -w '%{http_code}' "$probe" -o "$work/probe" 2>/dev/null) || code=$?
+  diagnostic "转换接口预检：${endpoint}；HTTP=${http:-000}，curl=${code}（未发送订阅）"
+  case "$http:$code" in 2??:0|400:0|422:0) :;; *)
+   diagnostic "接口直连预检未通过；尝试现有代理（未发送订阅）"
+   code=0
+   http=$(curl -4 -sSL ${ca:+--cacert "$ca"} --proxy "$proxy" --noproxy '' --connect-timeout 3 --max-time 6 --max-filesize 16384 -w '%{http_code}' "$probe" -o "$work/probe" 2>/dev/null) || code=$?
+   diagnostic "接口代理预检：${endpoint}；HTTP=${http:-000}，curl=${code}（未发送订阅）";;
+  esac
+
+  case "$http:$code" in 2??:0|400:0|422:0) ;; *)
+   case "$http" in 400|401|403|404|429|500|502|503|504) reason=subscription_http_$http;; *) case "$code" in 5|6) reason=subscription_dns_failed;; 35|60|77) reason=subscription_tls_failed;; 28) reason=subscription_timeout;; *) reason=subscription_connect_failed;; esac;; esac
+   printf '%s\n' "$reason" > "$R/subscription.error"
+   printf '%s\n' "${endpoint}/sub" > "$R/subscription.endpoint"
+   diagnostic "转换接口不可用，跳过；当前配置保留"
+   continue;;
+  esac
+  printf '正在转换订阅：%s（使用第 %s 个服务）\n' "$endpoint" "$index" > "$R/subscription.progress"
+  diagnostic "转换服务 ${index}：${endpoint}；开始发送订阅进行转换"
+ fi
+ rm -f "$core_config" "$work/tmp/${target}_config.$format"
+ if (server_link=$index; retry=3; get_core_config) >/dev/null 2>&1 && [ -s "$core_config" ];then
+  # Provider subscriptions should be fetched by the client with its own UA, just
+  # like Mihomo/OpenClash. A converter-side snapshot can omit newer protocols.
+  if [ "$mode" = convert ] && [ "$format" = yaml ] && grep -q '^proxy-providers:' "$core_config";then
+   request=$(cat "$work/request.url")
+   cp "$core_config" "$work/template.yaml"
+   printf '正在通过 ShellCrash 获取 Provider 节点（保留转换模板）\n' > "$R/subscription.progress"
+   provider_source=converter
+   if grep -Fq "$url" "$work/template.yaml" && (Url='';Https=$url;SC_SUB_MODE=direct;retry=3;get_core_config) >/dev/null 2>&1 && grep -q '^proxies:' "$core_config";then
+    cp "$core_config" "$work/nodes.yaml";provider_source=shellcrash-direct
+    diagnostic 'Provider 节点由 ShellCrash 按本机 User-Agent 直取，转换模板保留'
+   else
+    diagnostic 'Provider 直取未返回 Mihomo 节点，改用所选转换服务节点快照'
+    webget "$work/nodes.yaml" "$request&list=true" echoon rediron skipceron "$user_agent"
+   fi
+   cp "$work/template.yaml" "$core_config"
+   grep -q '^proxies:' "$work/nodes.yaml" || { diagnostic '节点列表格式无效，未替换运行配置';exit 1; }
+   mv "$work/nodes.yaml" "$R/subscription.nodes.raw"
+  fi
+  cp "$core_config" "$output.new"
+  mv "$output.new" "$output"
+  rm -f "$R/subscription.error" "$R/subscription.endpoint"
+  # Public provenance only; never store the private subscription URL here.
+  template=$(grep -aE '^5[0-9][0-9][[:space:]]' "$servers" | sed -n "${rule_link:-1}p" | awk '{print $2}')
+  [ "$mode" = convert ] || { endpoint='';template=''; }
+  { printf 'converter_b64=%s\n' "$(printf '%s' "$endpoint" | base64 | tr -d '\n')"; printf 'template_b64=%s\n' "$(printf '%s' "$template" | base64 | tr -d '\n')"; printf 'custom_b64=%s\n' "$(printf '%s' "$custom" | base64 | tr -d '\n')"; printf 'template_url_b64=%s\n' "$(printf '%s' "$template_url" | base64 | tr -d '\n')"; printf 'ua_b64=%s\n' "$(printf '%s' "$user_agent" | base64 | tr -d '\n')"; printf 'tool_version_b64=%s\n' "$(head -c 64 "$T/version" | base64 | tr -d '\n')"; } > "$R/subscription-fetch.info.new"
+  mv "$R/subscription-fetch.info.new" "$R/subscription-fetch.info"
+  [ -z "${provider_source:-}" ] || printf 'provider_source=%s\n' "$provider_source" >> "$R/subscription-fetch.info"
+  diagnostic "订阅候选已获取，等待完整配置与当前内核校验"
+  exit 0
+ fi
+ [ "$mode" = convert ] || break
+ diagnostic "此转换服务失败；尚未替换运行配置"
+done
+exit 1

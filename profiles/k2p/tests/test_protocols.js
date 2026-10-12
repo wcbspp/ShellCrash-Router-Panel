@@ -1,0 +1,11 @@
+const fs=require('fs'),vm=require('vm'),assert=require('assert');
+const file=process.argv[2]||'payload/padavan/manager.js',s=fs.readFileSync(file,'utf8'),a=s.indexOf('function parseSubscription('),b=s.indexOf('\nasync function updateSubscription',a);
+const ctx={decode:x=>Buffer.from(x,'base64').toString('utf8'),URL,URLSearchParams,nativeState:{core_kind:'singbox'},proxies:{},mainName:()=> 'proxy-main'};
+vm.createContext(ctx);vm.runInContext(s.slice(a,b),ctx);
+const enc=x=>Buffer.from(x).toString('base64url');
+const node=(protocol,obfs,name)=>'ssr://'+enc('server.example.com:443:'+protocol+':chacha20-ietf:'+obfs+':'+enc('fixture-password')+'/?remarks='+enc(name)+'&obfsparam='+enc('host.example.com'));
+let p=ctx.parseSubscription(node('origin','http_simple','香港01'));assert.equal(p.count,1);assert.equal(p.out.at(-1).type,'shadowsocks');assert.equal(p.out.at(-1).plugin,'obfs-local');assert.equal(p.out.at(-1).plugin_opts,'obfs=http;obfs-host=host.example.com');
+p=ctx.parseSubscription('anytls://fixture-password@node.example.com:443#台湾01\n'+node('auth_aes128_sha1','tls1.2_ticket_auth','香港02'));assert.equal(p.count,1);assert.equal(p.ignored,1);
+ctx.nativeState.core_kind='meta';p=ctx.parseSubscription(node('auth_aes128_sha1','tls1.2_ticket_auth','香港02'));assert.equal(p.count,1);assert.equal(p.out.at(-1).type,'shadowsocksr');assert.equal(p.out.at(-1).protocol,'auth_aes128_sha1');
+p=ctx.parseSubscription(enc(node('origin','http_simple','香港01')));assert.equal(p.count,1);
+assert.throws(()=>ctx.parseSubscription('ssr://bad'),/SSR/);console.log(file+': 5 protocol cases passed');

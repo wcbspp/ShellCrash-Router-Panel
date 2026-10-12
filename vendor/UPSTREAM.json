@@ -1,0 +1,9 @@
+{
+  "project": "juewuy/ShellCrash",
+  "version": "1.9.4release",
+  "release": "https://github.com/juewuy/ShellCrash/releases/tag/1.9.4",
+  "archive_url": "https://github.com/juewuy/ShellCrash/releases/download/1.9.4/ShellCrash.tar.gz",
+  "archive_sha256": "4f946031a0483ed528e266143d459075489cce6c3f8f2f4681f39ca6d7448681",
+  "archive_size": 123627,
+  "note": "Source files are unchanged; LICENSE.txt and SHA256SUMS added for redistribution."
+}
