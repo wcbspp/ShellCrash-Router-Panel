@@ -12,7 +12,7 @@ class BuildTests(unittest.TestCase):
     golden=json.loads((ROOT/'profiles'/profile/'baseline.sha256.json').read_text())
     intentional=json.loads((ROOT/'profiles'/profile/'intentional_changes.json').read_text())
     for name,sha in golden.items():
-     if name not in intentional:self.assertEqual(hashlib.sha256((target/name).read_bytes()).hexdigest(),sha,profile+'/'+name)
+     self.assertEqual(hashlib.sha256((target/name).read_bytes()).hexdigest(),intentional.get(name,{}).get('sha256',sha),profile+'/'+name)
     verify_package.verify(target)
     methods=json.loads((ROOT/'profiles'/profile/'capabilities.json').read_text())['subscription_methods']
     self.assertEqual('convert' in methods,profile=='ax5')

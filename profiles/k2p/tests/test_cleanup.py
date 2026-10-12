@@ -1,5 +1,5 @@
 """Exercise safe cleanup with isolated paths; never touch router state."""
-import json,subprocess,tempfile,unittest
+import json,re,subprocess,tempfile,unittest
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 class CleanupTests(unittest.TestCase):
@@ -12,7 +12,7 @@ class CleanupTests(unittest.TestCase):
   (self.p/'etc/dnsmasq.conf').write_text('')
   (self.p/'etc/storage/dnsmasq/dnsmasq.conf').write_text('')
   s=(ROOT/'payload/starts/resource_health.sh').read_text()
-  for src in ['/proc/','/tmp/','/etc/']:s=s.replace(src,str(self.p)+src)
+  s=re.sub(r'/(?:proc/|tmp/|etc/)',lambda m:str(self.p)+m.group(0),s)
   s=s.replace('stat -c %s', 'python3 -c \"import os,sys; print(os.stat(sys.argv[1]).st_size)\"')
   s=s.replace('/usr/sbin/nvram get ss_enable','printf 0').replace('pidof CrashCore','printf 77')
   (self.p/'helper.sh').write_text(s)

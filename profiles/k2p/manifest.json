@@ -207,5 +207,6 @@
   "tools/prepare_profile.py": "profiles/k2p/tools/prepare_profile.py",
   "tools/remote_receive.py": "profiles/k2p/tools/remote_receive.py",
   "docs/CONTROL_TEST_CASES.csv": "profiles/k2p/docs/CONTROL_TEST_CASES.csv",
-  "docs/CONTROL_TEST_RESULTS.csv": "profiles/k2p/docs/CONTROL_TEST_RESULTS.csv"
+  "docs/CONTROL_TEST_RESULTS.csv": "profiles/k2p/docs/CONTROL_TEST_RESULTS.csv",
+  "tools/update.sh": "profiles/k2p/tools/update.sh"
 }

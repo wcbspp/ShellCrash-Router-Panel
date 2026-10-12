@@ -1,4 +1,18 @@
 {
-  "install.sh": "Validated optional offline core before writes; stage verified archive for normal bootstrap",
-  "tools/deploy.py": "Optional local node/core input; same SSH preflight/backup/rollback"
+  "install.sh": {
+    "reason": "Validated optional offline core before writes; stage verified archive for normal bootstrap",
+    "sha256": "4776b1f73ab0d940457700b4d531c69cc0521e7391c836a1a54e37cc0a273617"
+  },
+  "tools/deploy.py": {
+    "reason": "Optional local node/core input; same SSH preflight/backup/rollback",
+    "sha256": "8aa00c8d65125546f35317e24411391594513d24c60072aca0dd4a8425c2fa76"
+  },
+  "tests/test_cleanup.py": {
+    "reason": "Rewrite fixture paths once; supports Linux /tmp without double prefix",
+    "sha256": "3a5d79b3bfacbfa525f916e96dcd0161453bc193314f7a24ac917e0b55062fb9"
+  },
+  "tests/test_project.py": {
+    "reason": "Apply PATH shim after path rewriting; prevent Linux fixture from losing its fake id",
+    "sha256": "08af81867d59a761e4c1e7ba2aeab807b759b80af2442a626a87fc7737ba9bf2"
+  }
 }

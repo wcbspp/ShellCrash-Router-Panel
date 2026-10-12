@@ -32,7 +32,7 @@ def build(profile,output=None):
   src=ROOT/source;dst=target/relative;dst.parent.mkdir(parents=True,exist_ok=True)
   if src.suffix=='.in':dst.write_text(render(src.read_text(),profile));dst.chmod(0o644)
   else:shutil.copy2(src,dst)
- for name in ['README.md','LICENSE','NOTICE.md','VERSION','deploy.py']:
+ for name in ['README.md','LICENSE','NOTICE.md','VERSION','deploy.py','update.py']:
   shutil.copy2(ROOT/name,target/name)
  # The firmware-specific scripts keep their legacy paths; no compiler runs on-device.
  shutil.copy2(ROOT/'install.sh',target/'setup.sh')

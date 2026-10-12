@@ -1,3 +1,6 @@
 {
-  "install.sh": "Fixed-version offline core input; original integrity/preflight/rollback retained"
+  "install.sh": {
+    "reason": "Fixed-version offline core input; original integrity/preflight/rollback retained",
+    "sha256": "1c117f492af35c6d3b2ad1b03479879be37e2a4fab91de871a63ffda31c3c3f9"
+  }
 }

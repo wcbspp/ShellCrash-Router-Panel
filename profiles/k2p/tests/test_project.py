@@ -81,8 +81,9 @@ class ProjectTests(unittest.TestCase):
    for cmd in ['iptables','ipset','mtd_write','sha256sum']:commands[cmd]='exit 0'
    for cmd,body in commands.items():
     f=shim/cmd;f.write_text('#!/bin/sh\n'+body+'\n');f.chmod(0o700)
-   script=(ROOT/'install.sh').read_text().replace('export PATH=/usr/sbin:/usr/bin:/sbin:/bin:$PATH','export PATH="'+str(shim)+':$PATH"')
+   script=(ROOT/'install.sh').read_text()
    script=re.sub(r'/(?:etc/storage(?=/|\b)|www/|sbin/|tmp/|opt)',lambda m:str(d)+m.group(0),script)
+   script=script.replace('export PATH=/usr/sbin:/usr/bin:/sbin:/bin:$PATH','export PATH="'+str(shim)+':$PATH"')
    f=d/'install-check.sh';f.write_text(script)
    hook=c/'task/bfstart';hook.write_text('echo user-hook\n')
    result=run(['sh',str(f),'--check']);self.assertNotEqual(result.returncode,0);self.assertIn('已有自定义钩子',result.stdout,result.stderr);self.assertEqual(hook.read_text(),'echo user-hook\n')

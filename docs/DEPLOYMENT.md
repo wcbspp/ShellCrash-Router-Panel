@@ -50,7 +50,7 @@ sh install.sh --install --profile /tmp/config.private.json --secret-file /tmp/pa
 # 离线时，上述两条命令均可加 --core-file /tmp/core-offline.tar.gz
 ```
 
-K2P 已有自定义启动钩子或运行覆盖时，脚本拒绝覆盖；候选版尚未提供已部署 K2P 的一键升级。不能删除防护标记再运行首次安装器。已运行设备的迁移升级必须单独验收。
+K2P 已有自定义启动钩子或运行覆盖时，脚本拒绝覆盖；已部署 K2P 使用包内 `update.py` 进行源码升级（候选待实机验收），不使用首次安装器。不能删除防护标记再运行首次安装器。已运行设备的迁移升级必须单独验收。
 
 ## 失败后
 
