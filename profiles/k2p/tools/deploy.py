@@ -102,7 +102,7 @@ def main():
     p.add_argument('--router', help='路由器 LAN IPv4 地址')
     p.add_argument('--user', help='SSH 用户名，默认 admin')
     p.add_argument('--port', type=int, help='SSH 端口，默认 22')
-    p.add_argument('--backup-dir', type=Path, default=Path.cwd(), help='电脑上的备份目录')
+    p.add_argument('--backup-dir', type=Path, default=Path.home()/'ShellCrash-backups', help='电脑上的备份目录')
     p.add_argument('--nodes-file', type=Path, help='离线节点文件：sing-box JSON 或 AnyTLS 链接')
     p.add_argument('--core-file', type=Path, help='离线固定版本内核包')
     p.add_argument('--check-only', action='store_true', help='只检查，不安装')

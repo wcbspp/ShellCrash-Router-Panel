@@ -23,19 +23,25 @@ else
  [ -s "$C/configs/config.json" ] && [ -f "$C/ax5/prepare.sh" ] && [ -f "$T/start.sh" ] || fail '未发现本项目完整部署，不能按更新方式覆盖'
 fi
 available=$(df -k /data | awk 'END{print $4}')
-need=16000;[ "$mode" != --update ] || need=768
+need=16000
+if [ "$mode" = --update ];then
+ largest=$(find "$source/ax5" "$source/ui" -type f -exec stat -c %s {} \; | awk '$1>largest{largest=$1} END{print largest+0}')
+ need=$(( (largest+1023)/1024 + 256 ))
+fi
 [ "$available" -ge "$need" ] || fail "持久空间不足：需至少 $need KB，可用 $available KB"
 [ "$(df -k /overlay | awk 'END{print $4}')" -ge 256 ] || fail 'overlay 空间不足'
 mem=$(awk '/^MemAvailable:/{print $2}' /proc/meminfo)
-[ "${mem:-0}" -ge 24000 ] || fail '可用内存不足 24 MB，请稍后重试'
+mem_need=24000;[ "$mode" != --update ] || mem_need=16384
+[ "${mem:-0}" -ge "$mem_need" ] || fail "可用内存不足：此操作需要 $mem_need KB，请稍后重试"
 mkdir -p /tmp/ShellCrash
 mkdir /tmp/ShellCrash/operation.lock || fail '已有操作在进行'
 date +%s > /tmp/ShellCrash/operation.lock.time
-stage=$(mktemp -d /data/.shellcrash-install.XXXXXX)
+if [ "$mode" = --update ];then stage=$(mktemp -d /tmp/ax5-source.XXXXXX);else stage=$(mktemp -d /data/.shellcrash-install.XXXXXX);fi
 committed=0
-rollback=''
+rollback='';pending=''
 cleanup(){
  rc=$?
+ [ -z "$pending" ] || rm -f "$pending"
  if [ "$rc" != 0 ] && [ -n "$rollback" ];then tar -xzf "$rollback" -C / || echo '源码回退失败，请使用缓存备份恢复' >&2;fi
  if [ "$rc" != 0 ] && [ "$committed" = 1 ] && [ "$mode" = --install ];then
   /etc/init.d/shellcrash stop 2>/dev/null || true
@@ -92,10 +98,20 @@ if [ "$mode" = --install ];then
  mv "$stage/tool" "$T";mv "$stage/panel" "$C";committed=1
 else
  echo '更新页面与适配源码，保留订阅、内核、规则和 ZeroTier'
- rollback=$C/cache/panel-previous.tar.gz
+ rollback=$stage/code-before.tar.gz
  tar -czf "$rollback.new" -C / data/ShellCrash/ax5 data/ShellCrash/ui etc/init.d/shellcrash usr/lib/lua/luci/controller/web/shellcrash.lua usr/lib/lua/luci/view/web/shellcrash.htm usr/lib/lua/luci/view/web/inc/header.htm usr/bin/crash
  mv "$rollback.new" "$rollback"
- cp -r "$stage/panel/ax5/." "$C/ax5/";cp -r "$stage/panel/ui/." "$C/ui/"
+ for part in ax5 ui;do
+  find "$stage/panel/$part" -type f > "$stage/files"
+  while IFS= read -r file;do
+   relative=${file#"$stage/panel/$part/"};target=$C/$part/$relative
+   mkdir -p "$(dirname "$target")"
+   pending=$target.sc-new.$$
+   cp -p "$file" "$pending"
+   mv "$pending" "$target"
+   pending=''
+  done < "$stage/files"
+ done
 fi
 echo '3/3 接入小米管理菜单'
 cp "$C/ax5/controller.lua" /usr/lib/lua/luci/controller/web/shellcrash.lua
@@ -113,6 +129,11 @@ if [ "$mode" = --install ];then
   if lua -e 'local M=dofile("/data/ShellCrash/ax5/common.lua");os.exit(M.pid()>0 and M.api("/version")~="" and 0 or 1)';then break;fi;sleep 1
  done
  lua -e 'local M=dofile("/data/ShellCrash/ax5/common.lua");os.exit(M.pid()>0 and M.api("/version")~="" and 0 or 1)' || fail '内核启动检查失败'
+fi
+if [ "$mode" = --update ];then
+ cp "$rollback" /tmp/ShellCrash/panel-source-before.tar.gz
+ chmod 600 /tmp/ShellCrash/panel-source-before.tar.gz
+ echo '本次源码回退包：/tmp/ShellCrash/panel-source-before.tar.gz（仅 RAM，重启前保存到电脑）'
 fi
 rollback=''
 sync

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Computer-side installer for generated AX5/K2P packages."""
-import argparse,ipaddress,shlex,subprocess,sys,tarfile,tempfile,io,os,shutil
+import argparse,hashlib,json,ipaddress,shlex,subprocess,sys,tarfile,tempfile,io,os,shutil
 from pathlib import Path
 ROOT=Path(__file__).resolve().parent
 
@@ -8,10 +8,14 @@ def main():
  p=argparse.ArgumentParser(description='电脑端安装 ShellCrash Router Panel')
  p.add_argument('--router');p.add_argument('--user');p.add_argument('--port',type=int,default=22)
  p.add_argument('--check-only',action='store_true');p.add_argument('--core-file',type=Path);p.add_argument('--nodes-file',type=Path)
- p.add_argument('--backup-dir',type=Path,default=Path.cwd());a=p.parse_args()
+ p.add_argument('--backup-dir',type=Path,default=Path.home()/'ShellCrash-backups');a=p.parse_args()
  device=(ROOT/'DEVICE').read_text().strip()
- subprocess.run([sys.executable,str(ROOT/'tools/verify_package.py'),str(ROOT)],check=True)
  if a.core_file and not a.core_file.is_file():p.error('离线内核文件不存在')
+ from tools.verify_package import verify
+ verify(ROOT,[a.nodes_file,a.core_file])
+ if a.core_file:
+  expected=json.loads((ROOT/'CORE.json').read_text())
+  if a.core_file.stat().st_size!=expected['archive_size'] or hashlib.sha256(a.core_file.read_bytes()).hexdigest()!=expected['sha256']:raise ValueError('离线内核的架构、版本或校验不匹配；未连接路由器')
  if device=='k2p':
   cmd=[sys.executable,str(ROOT/'tools/deploy.py')]
   for arg,value in [('router',a.router),('user',a.user),('port',a.port),('core-file',a.core_file),('nodes-file',a.nodes_file),('backup-dir',a.backup_dir)]:
@@ -32,7 +36,7 @@ def main():
   data=io.BytesIO()
   with tarfile.open(fileobj=data,mode='w:gz') as t:
    for f in sorted(ROOT.rglob('*')):
-    if f.is_file() and '__pycache__' not in f.parts and f.suffix!='.pyc':
+    if f.is_file() and '__pycache__' not in f.parts and f.suffix!='.pyc' and not(a.core_file and f.resolve()==a.core_file.resolve()):
      if f.is_symlink():raise ValueError('安装包含软链接')
      t.add(f,arcname='package/'+str(f.relative_to(ROOT)),recursive=False)
    if a.core_file:t.add(a.core_file,arcname='core-offline.tar.gz',recursive=False)

@@ -1,8 +1,8 @@
-import os,subprocess,tempfile,unittest
+import hashlib,os,subprocess,tempfile,unittest
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 class UpdateTests(unittest.TestCase):
- def fixture(self,mode,fail_save=False,fail_api=False,busy=False,mem=24000,unknown=False):
+ def fixture(self,mode,fail_save=False,fail_api=False,busy=False,mem=24000,unknown=False,legacy=False,tampered=False):
   with tempfile.TemporaryDirectory() as td:
    root=Path(td);c=root/'storage/ShellCrash';d=root/'state';base=root/'package';shim=root/'bin';shim.mkdir();d.mkdir();(base/'tools').mkdir(parents=True)
    (c/'configs').mkdir(parents=True);(c/'configs/panel.conf').write_text('fixture\n');(c/'configs/ShellCrash.cfg').write_text('crashcore=singbox\nsecret=fixture-only\n');(c/'version').write_text('1.9.4release\n');(c.parent/'started_script.sh').write_text('#PadavanShellCrashPanel\n')
@@ -19,13 +19,24 @@ class UpdateTests(unittest.TestCase):
     f=shim/name;f.write_text('#!/bin/sh\n'+body+'\n');f.chmod(0o700)
    if busy:(d/'operation.lock').mkdir()
    if unknown:(c/'version').write_text('other\n')
+   if legacy:
+    (c.parent/'started_script.sh').write_text(str(c)+'/starts/codex_boot.sh boot & # ShellCrash初始化脚本\n')
+    rows=[]
+    for name in ['codex_boot.sh','office_bfstart.sh','office_afstart.sh']:
+     value=b'#!/bin/sh\necho legacy\n';(c/'starts'/name).write_bytes(value);rows.append(name+' '+hashlib.sha256(value).hexdigest())
+    (base/'tools/legacy-migration.sha256').write_text('\n'.join(rows)+'\n')
+    if tampered:(c/'starts/codex_boot.sh').write_text('changed')
    memfile=root/'meminfo';memfile.write_text('MemAvailable: '+str(mem)+' kB\n')
-   script=(ROOT/'profiles/k2p/tools/update.sh').read_text().replace('C=/etc/storage/ShellCrash','C='+str(c)).replace('D=/tmp/sc-admin','D='+str(d)).replace('/etc/storage/started_script.sh',str(c.parent/'started_script.sh')).replace('/proc/meminfo',str(memfile)).replace('/tmp/shellcrash-bootstrap.lock',str(root/'bootstrap.lock')).replace('/tmp/sc-upgrade.XXXXXX',str(root/'upgrade.XXXXXX'))
+   script=(ROOT/'profiles/k2p/tools/update.sh').read_text().replace('C=/etc/storage/ShellCrash','C='+str(c)).replace('D=/tmp/sc-admin','D='+str(d)).replace('/etc/storage/started_script.sh',str(c.parent/'started_script.sh')).replace('/proc/meminfo',str(memfile)).replace('/tmp/shellcrash-bootstrap.lock',str(root/'bootstrap.lock')).replace('/tmp/sc-upgrade.$$',str(root/'upgrade')+'.$$')
+   script=script.replace('export PATH=/usr/sbin:/usr/bin:/sbin:/bin:$PATH','export PATH='+str(shim)+':$PATH')
    (base/'tools/update.sh').write_text(script);before=(c/'configs/ShellCrash.cfg').read_bytes()
    env=os.environ.copy();env['PATH']=str(shim)+':'+env['PATH'];result=subprocess.run(['sh',str(base/'tools/update.sh'),mode],env=env,capture_output=True,text=True)
    markers=[(c/part/'marker').read_text() for part in ['starts','libs','menus','padavan','ui']]
    self.assertEqual((c/'configs/ShellCrash.cfg').read_bytes(),before)
    return result,markers,(d/'operation.lock').exists()
+ def test_known_legacy_migrates_and_unknown_modification_rejects(self):
+  r,m,lock=self.fixture('--apply',legacy=True);self.assertEqual(r.returncode,0,r.stdout+r.stderr);self.assertEqual(m,['new']*5);self.assertFalse(lock)
+  r,m,lock=self.fixture('--apply',legacy=True,tampered=True);self.assertNotEqual(r.returncode,0);self.assertEqual(m,['old']*5);self.assertFalse(lock)
  def test_check_never_modifies(self):
   r,m,lock=self.fixture('--check');self.assertEqual(r.returncode,0,r.stderr);self.assertEqual(m,['old']*5);self.assertFalse(lock)
  def test_update_preserves_config_and_releases_lock(self):

@@ -30,9 +30,9 @@
 - 电脑端安装助手需要 **Python 3.9+、OpenSSH**。macOS / Linux 可直接运行；Windows 使用 WSL。
 - 在线安装时，电脑能访问 GitHub，路由器能访问 ShellCrash 内核源。访问不了时使用离线方式。
 - K2P 先关闭原“科学上网”插件的运行开关，避免重复接管流量；保留其配置即可。
-- 首次安装前保存固件配置。安装助手还会把本次修改前的备份存到电脑，文件中可能包含私人配置，请自行保管。
+- 首次安装前保存固件配置。安装助手还会把本次修改前的备份存到电脑的 `~/ShellCrash-backups/`（可用 `--backup-dir` 修改），文件中可能包含私人配置，请自行保管。
 
-AX5 安装预检要求可用内存至少 24 MB，首次安装 `/data` 剩余至少 16 MB；更新预检要求至少 768 KB。K2P 的 Storage 仅 512 KiB，安装和保存都要检查压缩后大小，不能按 RAM 余量判断持久空间够不够。
+AX5 安装预检要求可用内存至少 24 MB，首次安装 `/data` 剩余至少 16 MB；源码更新使用 RAM 暂存，需要 16 MB 可用内存，持久空间按最大源码文件加 256 KB 余量计算；不启动第二个内核。K2P 的 Storage 仅 512 KiB，安装和保存都要检查压缩后大小，不能按 RAM 余量判断持久空间够不够。
 
 ## 安装
 
@@ -114,13 +114,15 @@ K2P 更新先检查本项目与工具版本，下载应用备份到电脑，再�
 
 ## 页面预览
 
-以下为同一套功能迁移前的实机页面；统一构建保持页面内容一致。运行数值仅代表截图时状态。
+以下为统一项目安装包升级后的实机页面。运行数值仅代表截图时状态。
+
+![AX5 桌面页面](docs/assets/ax5-desktop.jpg)
 
 ![K2P 桌面页面](docs/assets/k2p-desktop.jpg)
 
 <p>
 <img src="docs/assets/ax5-mobile.jpg" width="260" alt="AX5 手机页面">
-<img src="docs/assets/k2p-backup-mobile.jpg" width="260" alt="K2P 手机备份页面">
+<img src="docs/assets/k2p-mobile.jpg" width="260" alt="K2P 手机页面">
 </p>
 
 ## 可以做什么

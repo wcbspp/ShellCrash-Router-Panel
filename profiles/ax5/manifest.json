@@ -112,7 +112,6 @@
   "tests/test_webdav_ui.js": "profiles/ax5/tests/test_webdav_ui.js",
   "tests/traffic_mode.lua": "profiles/ax5/tests/traffic_mode.lua",
   "tests/upload.lua": "profiles/ax5/tests/upload.lua",
-  "tools/build_release.py": "profiles/ax5/tools/build_release.py",
   "tools/menu-install.lua": "profiles/ax5/tools/menu-install.lua",
   "tools/prepare-install.lua": "profiles/ax5/tools/prepare-install.lua",
   "docs/CONTROL_TEST_CASES.csv": "profiles/ax5/docs/CONTROL_TEST_CASES.csv",

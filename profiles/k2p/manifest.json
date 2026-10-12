@@ -201,12 +201,12 @@
   "tests/test_upload_hotpath.py": "profiles/k2p/tests/test_upload_hotpath.py",
   "tests/test_webdav.py": "profiles/k2p/tests/test_webdav.py",
   "tests/test_webdav_ui.js": "profiles/k2p/tests/test_webdav_ui.js",
-  "tools/build_release.py": "profiles/k2p/tools/build_release.py",
   "tools/deploy.py": "profiles/k2p/tools/deploy.py",
   "tools/mirror_receive.py": "profiles/k2p/tools/mirror_receive.py",
   "tools/prepare_profile.py": "profiles/k2p/tools/prepare_profile.py",
   "tools/remote_receive.py": "profiles/k2p/tools/remote_receive.py",
   "docs/CONTROL_TEST_CASES.csv": "profiles/k2p/docs/CONTROL_TEST_CASES.csv",
   "docs/CONTROL_TEST_RESULTS.csv": "profiles/k2p/docs/CONTROL_TEST_RESULTS.csv",
-  "tools/update.sh": "profiles/k2p/tools/update.sh"
+  "tools/update.sh": "profiles/k2p/tools/update.sh",
+  "tools/legacy-migration.sha256": "profiles/k2p/tools/legacy-migration.sha256"
 }

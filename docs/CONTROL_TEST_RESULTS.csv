@@ -43,8 +43,8 @@ AX5-CTRL-tab-checks,AX5,桌面,未执行,,,,
 AX5-CTRL-tab-checks,AX5,手机窄屏,未执行,,,,
 AX5-CTRL-tab-subscription,AX5,桌面,未执行,,,,
 AX5-CTRL-tab-subscription,AX5,手机窄屏,未执行,,,,
-AX5-CTRL-tab-backup,AX5,桌面,实机页面部分通过,关闭→测试→保存→再关闭/开启主流程完成；错误密码 HTTP401、失败重试和保存拦截已验证。独立边界项详见回归报告，未全部实机注入。,WEBDAV_REGRESSION.md；assets/webdav-test-ready-mobile.jpg,2026-10-12,工作区候选；AX5 Mihomo 1.19.28 / K2P sing-box 1.12.13
-AX5-CTRL-tab-backup,AX5,手机窄屏,实机页面部分通过,关闭→测试→保存→再关闭/开启主流程完成；错误密码 HTTP401、失败重试和保存拦截已验证。独立边界项详见回归报告，未全部实机注入。,WEBDAV_REGRESSION.md；assets/webdav-test-ready-mobile.jpg,2026-10-12,工作区候选；AX5 Mihomo 1.19.28 / K2P sing-box 1.12.13
+AX5-CTRL-tab-backup,AX5,桌面,迁移前记录，待统一包重测,关闭→测试→保存→再关闭/开启主流程完成；错误密码 HTTP401、失败重试和保存拦截已验证。独立边界项详见回归报告，未全部实机注入。,旧工作区私有测试记录，未随新仓库发布,2026-10-12,工作区候选；AX5 Mihomo 1.19.28 / K2P sing-box 1.12.13
+AX5-CTRL-tab-backup,AX5,手机窄屏,迁移前记录，待统一包重测,关闭→测试→保存→再关闭/开启主流程完成；错误密码 HTTP401、失败重试和保存拦截已验证。独立边界项详见回归报告，未全部实机注入。,旧工作区私有测试记录，未随新仓库发布,2026-10-12,工作区候选；AX5 Mihomo 1.19.28 / K2P sing-box 1.12.13
 AX5-CTRL-tab-rules,AX5,桌面,未执行,,,,
 AX5-CTRL-tab-rules,AX5,手机窄屏,未执行,,,,
 AX5-CTRL-tab-dns,AX5,桌面,未执行,,,,
@@ -155,18 +155,18 @@ AX5-CTRL-core-check,AX5,桌面,未执行,,,,
 AX5-CTRL-core-check,AX5,手机窄屏,未执行,,,,
 AX5-CTRL-core-update,AX5,桌面,未执行,,,,
 AX5-CTRL-core-update,AX5,手机窄屏,未执行,,,,
-AX5-CTRL-remote-enabled,AX5,桌面,实机页面部分通过,关闭→测试→保存→再关闭/开启主流程完成；错误密码 HTTP401、失败重试和保存拦截已验证。独立边界项详见回归报告，未全部实机注入。,WEBDAV_REGRESSION.md；assets/webdav-test-ready-mobile.jpg,2026-10-12,工作区候选；AX5 Mihomo 1.19.28 / K2P sing-box 1.12.13
-AX5-CTRL-remote-enabled,AX5,手机窄屏,实机页面部分通过,关闭→测试→保存→再关闭/开启主流程完成；错误密码 HTTP401、失败重试和保存拦截已验证。独立边界项详见回归报告，未全部实机注入。,WEBDAV_REGRESSION.md；assets/webdav-test-ready-mobile.jpg,2026-10-12,工作区候选；AX5 Mihomo 1.19.28 / K2P sing-box 1.12.13
-AX5-CTRL-mirror-base,AX5,桌面,实机页面部分通过,关闭→测试→保存→再关闭/开启主流程完成；错误密码 HTTP401、失败重试和保存拦截已验证。独立边界项详见回归报告，未全部实机注入。,WEBDAV_REGRESSION.md；assets/webdav-test-ready-mobile.jpg,2026-10-12,工作区候选；AX5 Mihomo 1.19.28 / K2P sing-box 1.12.13
-AX5-CTRL-mirror-base,AX5,手机窄屏,实机页面部分通过,关闭→测试→保存→再关闭/开启主流程完成；错误密码 HTTP401、失败重试和保存拦截已验证。独立边界项详见回归报告，未全部实机注入。,WEBDAV_REGRESSION.md；assets/webdav-test-ready-mobile.jpg,2026-10-12,工作区候选；AX5 Mihomo 1.19.28 / K2P sing-box 1.12.13
-AX5-CTRL-remote-user,AX5,桌面,实机页面部分通过,关闭→测试→保存→再关闭/开启主流程完成；错误密码 HTTP401、失败重试和保存拦截已验证。独立边界项详见回归报告，未全部实机注入。,WEBDAV_REGRESSION.md；assets/webdav-test-ready-mobile.jpg,2026-10-12,工作区候选；AX5 Mihomo 1.19.28 / K2P sing-box 1.12.13
-AX5-CTRL-remote-user,AX5,手机窄屏,实机页面部分通过,关闭→测试→保存→再关闭/开启主流程完成；错误密码 HTTP401、失败重试和保存拦截已验证。独立边界项详见回归报告，未全部实机注入。,WEBDAV_REGRESSION.md；assets/webdav-test-ready-mobile.jpg,2026-10-12,工作区候选；AX5 Mihomo 1.19.28 / K2P sing-box 1.12.13
-AX5-CTRL-remote-password,AX5,桌面,实机页面部分通过,关闭→测试→保存→再关闭/开启主流程完成；错误密码 HTTP401、失败重试和保存拦截已验证。独立边界项详见回归报告，未全部实机注入。,WEBDAV_REGRESSION.md；assets/webdav-test-ready-mobile.jpg,2026-10-12,工作区候选；AX5 Mihomo 1.19.28 / K2P sing-box 1.12.13
-AX5-CTRL-remote-password,AX5,手机窄屏,实机页面部分通过,关闭→测试→保存→再关闭/开启主流程完成；错误密码 HTTP401、失败重试和保存拦截已验证。独立边界项详见回归报告，未全部实机注入。,WEBDAV_REGRESSION.md；assets/webdav-test-ready-mobile.jpg,2026-10-12,工作区候选；AX5 Mihomo 1.19.28 / K2P sing-box 1.12.13
-AX5-CTRL-mirror-verify,AX5,桌面,实机页面部分通过,关闭→测试→保存→再关闭/开启主流程完成；错误密码 HTTP401、失败重试和保存拦截已验证。独立边界项详见回归报告，未全部实机注入。,WEBDAV_REGRESSION.md；assets/webdav-test-ready-mobile.jpg,2026-10-12,工作区候选；AX5 Mihomo 1.19.28 / K2P sing-box 1.12.13
-AX5-CTRL-mirror-verify,AX5,手机窄屏,实机页面部分通过,关闭→测试→保存→再关闭/开启主流程完成；错误密码 HTTP401、失败重试和保存拦截已验证。独立边界项详见回归报告，未全部实机注入。,WEBDAV_REGRESSION.md；assets/webdav-test-ready-mobile.jpg,2026-10-12,工作区候选；AX5 Mihomo 1.19.28 / K2P sing-box 1.12.13
-AX5-CTRL-mirror-save,AX5,桌面,实机页面部分通过,关闭→测试→保存→再关闭/开启主流程完成；错误密码 HTTP401、失败重试和保存拦截已验证。独立边界项详见回归报告，未全部实机注入。,WEBDAV_REGRESSION.md；assets/webdav-test-ready-mobile.jpg,2026-10-12,工作区候选；AX5 Mihomo 1.19.28 / K2P sing-box 1.12.13
-AX5-CTRL-mirror-save,AX5,手机窄屏,实机页面部分通过,关闭→测试→保存→再关闭/开启主流程完成；错误密码 HTTP401、失败重试和保存拦截已验证。独立边界项详见回归报告，未全部实机注入。,WEBDAV_REGRESSION.md；assets/webdav-test-ready-mobile.jpg,2026-10-12,工作区候选；AX5 Mihomo 1.19.28 / K2P sing-box 1.12.13
+AX5-CTRL-remote-enabled,AX5,桌面,迁移前记录，待统一包重测,关闭→测试→保存→再关闭/开启主流程完成；错误密码 HTTP401、失败重试和保存拦截已验证。独立边界项详见回归报告，未全部实机注入。,旧工作区私有测试记录，未随新仓库发布,2026-10-12,工作区候选；AX5 Mihomo 1.19.28 / K2P sing-box 1.12.13
+AX5-CTRL-remote-enabled,AX5,手机窄屏,迁移前记录，待统一包重测,关闭→测试→保存→再关闭/开启主流程完成；错误密码 HTTP401、失败重试和保存拦截已验证。独立边界项详见回归报告，未全部实机注入。,旧工作区私有测试记录，未随新仓库发布,2026-10-12,工作区候选；AX5 Mihomo 1.19.28 / K2P sing-box 1.12.13
+AX5-CTRL-mirror-base,AX5,桌面,迁移前记录，待统一包重测,关闭→测试→保存→再关闭/开启主流程完成；错误密码 HTTP401、失败重试和保存拦截已验证。独立边界项详见回归报告，未全部实机注入。,旧工作区私有测试记录，未随新仓库发布,2026-10-12,工作区候选；AX5 Mihomo 1.19.28 / K2P sing-box 1.12.13
+AX5-CTRL-mirror-base,AX5,手机窄屏,迁移前记录，待统一包重测,关闭→测试→保存→再关闭/开启主流程完成；错误密码 HTTP401、失败重试和保存拦截已验证。独立边界项详见回归报告，未全部实机注入。,旧工作区私有测试记录，未随新仓库发布,2026-10-12,工作区候选；AX5 Mihomo 1.19.28 / K2P sing-box 1.12.13
+AX5-CTRL-remote-user,AX5,桌面,迁移前记录，待统一包重测,关闭→测试→保存→再关闭/开启主流程完成；错误密码 HTTP401、失败重试和保存拦截已验证。独立边界项详见回归报告，未全部实机注入。,旧工作区私有测试记录，未随新仓库发布,2026-10-12,工作区候选；AX5 Mihomo 1.19.28 / K2P sing-box 1.12.13
+AX5-CTRL-remote-user,AX5,手机窄屏,迁移前记录，待统一包重测,关闭→测试→保存→再关闭/开启主流程完成；错误密码 HTTP401、失败重试和保存拦截已验证。独立边界项详见回归报告，未全部实机注入。,旧工作区私有测试记录，未随新仓库发布,2026-10-12,工作区候选；AX5 Mihomo 1.19.28 / K2P sing-box 1.12.13
+AX5-CTRL-remote-password,AX5,桌面,迁移前记录，待统一包重测,关闭→测试→保存→再关闭/开启主流程完成；错误密码 HTTP401、失败重试和保存拦截已验证。独立边界项详见回归报告，未全部实机注入。,旧工作区私有测试记录，未随新仓库发布,2026-10-12,工作区候选；AX5 Mihomo 1.19.28 / K2P sing-box 1.12.13
+AX5-CTRL-remote-password,AX5,手机窄屏,迁移前记录，待统一包重测,关闭→测试→保存→再关闭/开启主流程完成；错误密码 HTTP401、失败重试和保存拦截已验证。独立边界项详见回归报告，未全部实机注入。,旧工作区私有测试记录，未随新仓库发布,2026-10-12,工作区候选；AX5 Mihomo 1.19.28 / K2P sing-box 1.12.13
+AX5-CTRL-mirror-verify,AX5,桌面,迁移前记录，待统一包重测,关闭→测试→保存→再关闭/开启主流程完成；错误密码 HTTP401、失败重试和保存拦截已验证。独立边界项详见回归报告，未全部实机注入。,旧工作区私有测试记录，未随新仓库发布,2026-10-12,工作区候选；AX5 Mihomo 1.19.28 / K2P sing-box 1.12.13
+AX5-CTRL-mirror-verify,AX5,手机窄屏,迁移前记录，待统一包重测,关闭→测试→保存→再关闭/开启主流程完成；错误密码 HTTP401、失败重试和保存拦截已验证。独立边界项详见回归报告，未全部实机注入。,旧工作区私有测试记录，未随新仓库发布,2026-10-12,工作区候选；AX5 Mihomo 1.19.28 / K2P sing-box 1.12.13
+AX5-CTRL-mirror-save,AX5,桌面,迁移前记录，待统一包重测,关闭→测试→保存→再关闭/开启主流程完成；错误密码 HTTP401、失败重试和保存拦截已验证。独立边界项详见回归报告，未全部实机注入。,旧工作区私有测试记录，未随新仓库发布,2026-10-12,工作区候选；AX5 Mihomo 1.19.28 / K2P sing-box 1.12.13
+AX5-CTRL-mirror-save,AX5,手机窄屏,迁移前记录，待统一包重测,关闭→测试→保存→再关闭/开启主流程完成；错误密码 HTTP401、失败重试和保存拦截已验证。独立边界项详见回归报告，未全部实机注入。,旧工作区私有测试记录，未随新仓库发布,2026-10-12,工作区候选；AX5 Mihomo 1.19.28 / K2P sing-box 1.12.13
 AX5-CTRL-mirror-sync,AX5,桌面,未执行,,,,
 AX5-CTRL-mirror-sync,AX5,手机窄屏,未执行,,,,
 AX5-CTRL-backup-local,AX5,桌面,未执行,,,,
@@ -371,8 +371,8 @@ K2P-CTRL-tab-checks,K2P,桌面,未执行,,,,
 K2P-CTRL-tab-checks,K2P,手机窄屏,未执行,,,,
 K2P-CTRL-tab-subscription,K2P,桌面,未执行,,,,
 K2P-CTRL-tab-subscription,K2P,手机窄屏,未执行,,,,
-K2P-CTRL-tab-backup,K2P,桌面,实机页面部分通过,关闭→测试→保存→再关闭/开启主流程完成；错误密码 HTTP401、失败重试和保存拦截已验证。独立边界项详见回归报告，未全部实机注入。,WEBDAV_REGRESSION.md；assets/webdav-test-ready-mobile.jpg,2026-10-12,工作区候选；AX5 Mihomo 1.19.28 / K2P sing-box 1.12.13
-K2P-CTRL-tab-backup,K2P,手机窄屏,实机页面部分通过,关闭→测试→保存→再关闭/开启主流程完成；错误密码 HTTP401、失败重试和保存拦截已验证。独立边界项详见回归报告，未全部实机注入。,WEBDAV_REGRESSION.md；assets/webdav-test-ready-mobile.jpg,2026-10-12,工作区候选；AX5 Mihomo 1.19.28 / K2P sing-box 1.12.13
+K2P-CTRL-tab-backup,K2P,桌面,迁移前记录，待统一包重测,关闭→测试→保存→再关闭/开启主流程完成；错误密码 HTTP401、失败重试和保存拦截已验证。独立边界项详见回归报告，未全部实机注入。,旧工作区私有测试记录，未随新仓库发布,2026-10-12,工作区候选；AX5 Mihomo 1.19.28 / K2P sing-box 1.12.13
+K2P-CTRL-tab-backup,K2P,手机窄屏,迁移前记录，待统一包重测,关闭→测试→保存→再关闭/开启主流程完成；错误密码 HTTP401、失败重试和保存拦截已验证。独立边界项详见回归报告，未全部实机注入。,旧工作区私有测试记录，未随新仓库发布,2026-10-12,工作区候选；AX5 Mihomo 1.19.28 / K2P sing-box 1.12.13
 K2P-CTRL-tab-rules,K2P,桌面,未执行,,,,
 K2P-CTRL-tab-rules,K2P,手机窄屏,未执行,,,,
 K2P-CTRL-tab-dns,K2P,桌面,未执行,,,,
@@ -399,7 +399,7 @@ K2P-CTRL-sites-run,K2P,桌面,未执行,,,,
 K2P-CTRL-sites-run,K2P,手机窄屏,未执行,,,,
 K2P-CTRL-subscription-url,K2P,桌面,未执行,,,,
 K2P-CTRL-subscription-url,K2P,手机窄屏,未执行,,,,
-K2P-CTRL-subscription-method,K2P,桌面,实机页面部分通过,服务商直取约71秒成功，119节点/2订阅组/5订阅规则；新备份实际下载并通过macOS解压。完整边界项尚未全部实机注入。,K2P_STABILITY_REVIEW.md,2026-10-12,
+K2P-CTRL-subscription-method,K2P,桌面,迁移前记录，待统一包重测,服务商直取约71秒成功，119节点/2订阅组/5订阅规则；新备份实际下载并通过macOS解压。完整边界项尚未全部实机注入。,旧工作区私有测试记录，未随新仓库发布,2026-10-12,
 K2P-CTRL-subscription-method,K2P,手机窄屏,未执行,,,,
 K2P-OPT-subscription-method-0,K2P,桌面,未执行,,,,
 K2P-OPT-subscription-method-0,K2P,手机窄屏,未执行,,,,
@@ -413,26 +413,26 @@ K2P-OPT-subscription-ua-mode-1,K2P,桌面,未执行,,,,
 K2P-OPT-subscription-ua-mode-1,K2P,手机窄屏,未执行,,,,
 K2P-CTRL-subscription-ua,K2P,桌面,未执行,,,,
 K2P-CTRL-subscription-ua,K2P,手机窄屏,未执行,,,,
-K2P-CTRL-converter-server,K2P,桌面,不适用,K2P 面板取消第三方转换；该控件不可达。ShellCrash 终端自身功能保持。,K2P_STABILITY_REVIEW.md,2026-10-12,
-K2P-CTRL-converter-server,K2P,手机窄屏,不适用,K2P 面板取消第三方转换；该控件不可达。ShellCrash 终端自身功能保持。,K2P_STABILITY_REVIEW.md,2026-10-12,
+K2P-CTRL-converter-server,K2P,桌面,迁移前记录，待统一包重测,K2P 面板取消第三方转换；该控件不可达。ShellCrash 终端自身功能保持。,旧工作区私有测试记录，未随新仓库发布,2026-10-12,
+K2P-CTRL-converter-server,K2P,手机窄屏,迁移前记录，待统一包重测,K2P 面板取消第三方转换；该控件不可达。ShellCrash 终端自身功能保持。,旧工作区私有测试记录，未随新仓库发布,2026-10-12,
 K2P-OPT-converter-server-0,K2P,桌面,未执行,,,,
 K2P-OPT-converter-server-0,K2P,手机窄屏,未执行,,,,
 K2P-OPT-converter-server-1,K2P,桌面,未执行,,,,
 K2P-OPT-converter-server-1,K2P,手机窄屏,未执行,,,,
 K2P-OPT-converter-server-2,K2P,桌面,未执行,,,,
 K2P-OPT-converter-server-2,K2P,手机窄屏,未执行,,,,
-K2P-CTRL-converter-url,K2P,桌面,不适用,K2P 面板取消第三方转换；该控件不可达。ShellCrash 终端自身功能保持。,K2P_STABILITY_REVIEW.md,2026-10-12,
-K2P-CTRL-converter-url,K2P,手机窄屏,不适用,K2P 面板取消第三方转换；该控件不可达。ShellCrash 终端自身功能保持。,K2P_STABILITY_REVIEW.md,2026-10-12,
-K2P-CTRL-converter-template-mode,K2P,桌面,不适用,K2P 面板取消第三方转换；该控件不可达。ShellCrash 终端自身功能保持。,K2P_STABILITY_REVIEW.md,2026-10-12,
-K2P-CTRL-converter-template-mode,K2P,手机窄屏,不适用,K2P 面板取消第三方转换；该控件不可达。ShellCrash 终端自身功能保持。,K2P_STABILITY_REVIEW.md,2026-10-12,
+K2P-CTRL-converter-url,K2P,桌面,迁移前记录，待统一包重测,K2P 面板取消第三方转换；该控件不可达。ShellCrash 终端自身功能保持。,旧工作区私有测试记录，未随新仓库发布,2026-10-12,
+K2P-CTRL-converter-url,K2P,手机窄屏,迁移前记录，待统一包重测,K2P 面板取消第三方转换；该控件不可达。ShellCrash 终端自身功能保持。,旧工作区私有测试记录，未随新仓库发布,2026-10-12,
+K2P-CTRL-converter-template-mode,K2P,桌面,迁移前记录，待统一包重测,K2P 面板取消第三方转换；该控件不可达。ShellCrash 终端自身功能保持。,旧工作区私有测试记录，未随新仓库发布,2026-10-12,
+K2P-CTRL-converter-template-mode,K2P,手机窄屏,迁移前记录，待统一包重测,K2P 面板取消第三方转换；该控件不可达。ShellCrash 终端自身功能保持。,旧工作区私有测试记录，未随新仓库发布,2026-10-12,
 K2P-OPT-converter-template-mode-0,K2P,桌面,未执行,,,,
 K2P-OPT-converter-template-mode-0,K2P,手机窄屏,未执行,,,,
 K2P-OPT-converter-template-mode-1,K2P,桌面,未执行,,,,
 K2P-OPT-converter-template-mode-1,K2P,手机窄屏,未执行,,,,
-K2P-CTRL-converter-template,K2P,桌面,不适用,K2P 面板取消第三方转换；该控件不可达。ShellCrash 终端自身功能保持。,K2P_STABILITY_REVIEW.md,2026-10-12,
-K2P-CTRL-converter-template,K2P,手机窄屏,不适用,K2P 面板取消第三方转换；该控件不可达。ShellCrash 终端自身功能保持。,K2P_STABILITY_REVIEW.md,2026-10-12,
-K2P-CTRL-converter-auto,K2P,桌面,不适用,K2P 面板取消第三方转换；该控件不可达。ShellCrash 终端自身功能保持。,K2P_STABILITY_REVIEW.md,2026-10-12,
-K2P-CTRL-converter-auto,K2P,手机窄屏,不适用,K2P 面板取消第三方转换；该控件不可达。ShellCrash 终端自身功能保持。,K2P_STABILITY_REVIEW.md,2026-10-12,
+K2P-CTRL-converter-template,K2P,桌面,迁移前记录，待统一包重测,K2P 面板取消第三方转换；该控件不可达。ShellCrash 终端自身功能保持。,旧工作区私有测试记录，未随新仓库发布,2026-10-12,
+K2P-CTRL-converter-template,K2P,手机窄屏,迁移前记录，待统一包重测,K2P 面板取消第三方转换；该控件不可达。ShellCrash 终端自身功能保持。,旧工作区私有测试记录，未随新仓库发布,2026-10-12,
+K2P-CTRL-converter-auto,K2P,桌面,迁移前记录，待统一包重测,K2P 面板取消第三方转换；该控件不可达。ShellCrash 终端自身功能保持。,旧工作区私有测试记录，未随新仓库发布,2026-10-12,
+K2P-CTRL-converter-auto,K2P,手机窄屏,迁移前记录，待统一包重测,K2P 面板取消第三方转换；该控件不可达。ShellCrash 终端自身功能保持。,旧工作区私有测试记录，未随新仓库发布,2026-10-12,
 K2P-CTRL-summary-subscription-2,K2P,桌面,未执行,,,,
 K2P-CTRL-summary-subscription-2,K2P,手机窄屏,未执行,,,,
 K2P-CTRL-subscription-exclude,K2P,桌面,未执行,,,,
@@ -443,7 +443,7 @@ K2P-CTRL-summary-subscription-3,K2P,桌面,未执行,,,,
 K2P-CTRL-summary-subscription-3,K2P,手机窄屏,未执行,,,,
 K2P-CTRL-summary-subscription-4,K2P,桌面,未执行,,,,
 K2P-CTRL-summary-subscription-4,K2P,手机窄屏,未执行,,,,
-K2P-CTRL-subscription-update,K2P,桌面,实机页面部分通过,服务商直取约71秒成功，119节点/2订阅组/5订阅规则；新备份实际下载并通过macOS解压。完整边界项尚未全部实机注入。,K2P_STABILITY_REVIEW.md,2026-10-12,
+K2P-CTRL-subscription-update,K2P,桌面,迁移前记录，待统一包重测,服务商直取约71秒成功，119节点/2订阅组/5订阅规则；新备份实际下载并通过macOS解压。完整边界项尚未全部实机注入。,旧工作区私有测试记录，未随新仓库发布,2026-10-12,
 K2P-CTRL-subscription-update,K2P,手机窄屏,未执行,,,,
 K2P-CTRL-guard-mode,K2P,桌面,未执行,,,,
 K2P-CTRL-guard-mode,K2P,手机窄屏,未执行,,,,
@@ -461,21 +461,21 @@ K2P-CTRL-core-update,K2P,桌面,未执行,,,,
 K2P-CTRL-core-update,K2P,手机窄屏,未执行,,,,
 K2P-CTRL-summary-subscription-6,K2P,桌面,未执行,,,,
 K2P-CTRL-summary-subscription-6,K2P,手机窄屏,未执行,,,,
-K2P-CTRL-remote-enabled,K2P,桌面,实机页面部分通过,关闭→测试→保存→再关闭/开启主流程完成；错误密码 HTTP401、失败重试和保存拦截已验证。独立边界项详见回归报告，未全部实机注入。,WEBDAV_REGRESSION.md；assets/webdav-test-ready-mobile.jpg,2026-10-12,工作区候选；AX5 Mihomo 1.19.28 / K2P sing-box 1.12.13
-K2P-CTRL-remote-enabled,K2P,手机窄屏,实机页面部分通过,关闭→测试→保存→再关闭/开启主流程完成；错误密码 HTTP401、失败重试和保存拦截已验证。独立边界项详见回归报告，未全部实机注入。,WEBDAV_REGRESSION.md；assets/webdav-test-ready-mobile.jpg,2026-10-12,工作区候选；AX5 Mihomo 1.19.28 / K2P sing-box 1.12.13
-K2P-CTRL-mirror-base,K2P,桌面,实机页面部分通过,关闭→测试→保存→再关闭/开启主流程完成；错误密码 HTTP401、失败重试和保存拦截已验证。独立边界项详见回归报告，未全部实机注入。,WEBDAV_REGRESSION.md；assets/webdav-test-ready-mobile.jpg,2026-10-12,工作区候选；AX5 Mihomo 1.19.28 / K2P sing-box 1.12.13
-K2P-CTRL-mirror-base,K2P,手机窄屏,实机页面部分通过,关闭→测试→保存→再关闭/开启主流程完成；错误密码 HTTP401、失败重试和保存拦截已验证。独立边界项详见回归报告，未全部实机注入。,WEBDAV_REGRESSION.md；assets/webdav-test-ready-mobile.jpg,2026-10-12,工作区候选；AX5 Mihomo 1.19.28 / K2P sing-box 1.12.13
-K2P-CTRL-remote-user,K2P,桌面,实机页面部分通过,关闭→测试→保存→再关闭/开启主流程完成；错误密码 HTTP401、失败重试和保存拦截已验证。独立边界项详见回归报告，未全部实机注入。,WEBDAV_REGRESSION.md；assets/webdav-test-ready-mobile.jpg,2026-10-12,工作区候选；AX5 Mihomo 1.19.28 / K2P sing-box 1.12.13
-K2P-CTRL-remote-user,K2P,手机窄屏,实机页面部分通过,关闭→测试→保存→再关闭/开启主流程完成；错误密码 HTTP401、失败重试和保存拦截已验证。独立边界项详见回归报告，未全部实机注入。,WEBDAV_REGRESSION.md；assets/webdav-test-ready-mobile.jpg,2026-10-12,工作区候选；AX5 Mihomo 1.19.28 / K2P sing-box 1.12.13
-K2P-CTRL-remote-password,K2P,桌面,实机页面部分通过,关闭→测试→保存→再关闭/开启主流程完成；错误密码 HTTP401、失败重试和保存拦截已验证。独立边界项详见回归报告，未全部实机注入。,WEBDAV_REGRESSION.md；assets/webdav-test-ready-mobile.jpg,2026-10-12,工作区候选；AX5 Mihomo 1.19.28 / K2P sing-box 1.12.13
-K2P-CTRL-remote-password,K2P,手机窄屏,实机页面部分通过,关闭→测试→保存→再关闭/开启主流程完成；错误密码 HTTP401、失败重试和保存拦截已验证。独立边界项详见回归报告，未全部实机注入。,WEBDAV_REGRESSION.md；assets/webdav-test-ready-mobile.jpg,2026-10-12,工作区候选；AX5 Mihomo 1.19.28 / K2P sing-box 1.12.13
-K2P-CTRL-mirror-verify,K2P,桌面,实机页面部分通过,关闭→测试→保存→再关闭/开启主流程完成；错误密码 HTTP401、失败重试和保存拦截已验证。独立边界项详见回归报告，未全部实机注入。,WEBDAV_REGRESSION.md；assets/webdav-test-ready-mobile.jpg,2026-10-12,工作区候选；AX5 Mihomo 1.19.28 / K2P sing-box 1.12.13
-K2P-CTRL-mirror-verify,K2P,手机窄屏,实机页面部分通过,关闭→测试→保存→再关闭/开启主流程完成；错误密码 HTTP401、失败重试和保存拦截已验证。独立边界项详见回归报告，未全部实机注入。,WEBDAV_REGRESSION.md；assets/webdav-test-ready-mobile.jpg,2026-10-12,工作区候选；AX5 Mihomo 1.19.28 / K2P sing-box 1.12.13
-K2P-CTRL-mirror-save,K2P,桌面,实机页面部分通过,关闭→测试→保存→再关闭/开启主流程完成；错误密码 HTTP401、失败重试和保存拦截已验证。独立边界项详见回归报告，未全部实机注入。,WEBDAV_REGRESSION.md；assets/webdav-test-ready-mobile.jpg,2026-10-12,工作区候选；AX5 Mihomo 1.19.28 / K2P sing-box 1.12.13
-K2P-CTRL-mirror-save,K2P,手机窄屏,实机页面部分通过,关闭→测试→保存→再关闭/开启主流程完成；错误密码 HTTP401、失败重试和保存拦截已验证。独立边界项详见回归报告，未全部实机注入。,WEBDAV_REGRESSION.md；assets/webdav-test-ready-mobile.jpg,2026-10-12,工作区候选；AX5 Mihomo 1.19.28 / K2P sing-box 1.12.13
+K2P-CTRL-remote-enabled,K2P,桌面,迁移前记录，待统一包重测,关闭→测试→保存→再关闭/开启主流程完成；错误密码 HTTP401、失败重试和保存拦截已验证。独立边界项详见回归报告，未全部实机注入。,旧工作区私有测试记录，未随新仓库发布,2026-10-12,工作区候选；AX5 Mihomo 1.19.28 / K2P sing-box 1.12.13
+K2P-CTRL-remote-enabled,K2P,手机窄屏,迁移前记录，待统一包重测,关闭→测试→保存→再关闭/开启主流程完成；错误密码 HTTP401、失败重试和保存拦截已验证。独立边界项详见回归报告，未全部实机注入。,旧工作区私有测试记录，未随新仓库发布,2026-10-12,工作区候选；AX5 Mihomo 1.19.28 / K2P sing-box 1.12.13
+K2P-CTRL-mirror-base,K2P,桌面,迁移前记录，待统一包重测,关闭→测试→保存→再关闭/开启主流程完成；错误密码 HTTP401、失败重试和保存拦截已验证。独立边界项详见回归报告，未全部实机注入。,旧工作区私有测试记录，未随新仓库发布,2026-10-12,工作区候选；AX5 Mihomo 1.19.28 / K2P sing-box 1.12.13
+K2P-CTRL-mirror-base,K2P,手机窄屏,迁移前记录，待统一包重测,关闭→测试→保存→再关闭/开启主流程完成；错误密码 HTTP401、失败重试和保存拦截已验证。独立边界项详见回归报告，未全部实机注入。,旧工作区私有测试记录，未随新仓库发布,2026-10-12,工作区候选；AX5 Mihomo 1.19.28 / K2P sing-box 1.12.13
+K2P-CTRL-remote-user,K2P,桌面,迁移前记录，待统一包重测,关闭→测试→保存→再关闭/开启主流程完成；错误密码 HTTP401、失败重试和保存拦截已验证。独立边界项详见回归报告，未全部实机注入。,旧工作区私有测试记录，未随新仓库发布,2026-10-12,工作区候选；AX5 Mihomo 1.19.28 / K2P sing-box 1.12.13
+K2P-CTRL-remote-user,K2P,手机窄屏,迁移前记录，待统一包重测,关闭→测试→保存→再关闭/开启主流程完成；错误密码 HTTP401、失败重试和保存拦截已验证。独立边界项详见回归报告，未全部实机注入。,旧工作区私有测试记录，未随新仓库发布,2026-10-12,工作区候选；AX5 Mihomo 1.19.28 / K2P sing-box 1.12.13
+K2P-CTRL-remote-password,K2P,桌面,迁移前记录，待统一包重测,关闭→测试→保存→再关闭/开启主流程完成；错误密码 HTTP401、失败重试和保存拦截已验证。独立边界项详见回归报告，未全部实机注入。,旧工作区私有测试记录，未随新仓库发布,2026-10-12,工作区候选；AX5 Mihomo 1.19.28 / K2P sing-box 1.12.13
+K2P-CTRL-remote-password,K2P,手机窄屏,迁移前记录，待统一包重测,关闭→测试→保存→再关闭/开启主流程完成；错误密码 HTTP401、失败重试和保存拦截已验证。独立边界项详见回归报告，未全部实机注入。,旧工作区私有测试记录，未随新仓库发布,2026-10-12,工作区候选；AX5 Mihomo 1.19.28 / K2P sing-box 1.12.13
+K2P-CTRL-mirror-verify,K2P,桌面,迁移前记录，待统一包重测,关闭→测试→保存→再关闭/开启主流程完成；错误密码 HTTP401、失败重试和保存拦截已验证。独立边界项详见回归报告，未全部实机注入。,旧工作区私有测试记录，未随新仓库发布,2026-10-12,工作区候选；AX5 Mihomo 1.19.28 / K2P sing-box 1.12.13
+K2P-CTRL-mirror-verify,K2P,手机窄屏,统一包实机部分通过,测试原设置成功并保存；取消勾选能关闭；关闭后换错误账号测试明确 HTTP401 且禁止保存；恢复原账号重测成功并保存启用。超时等边界待完整注入。,LIVE_TEST_2026-10-13.md,2026-10-13,1.0.0-rc.1；sing-box mini 1.12.13
+K2P-CTRL-mirror-save,K2P,桌面,迁移前记录，待统一包重测,关闭→测试→保存→再关闭/开启主流程完成；错误密码 HTTP401、失败重试和保存拦截已验证。独立边界项详见回归报告，未全部实机注入。,旧工作区私有测试记录，未随新仓库发布,2026-10-12,工作区候选；AX5 Mihomo 1.19.28 / K2P sing-box 1.12.13
+K2P-CTRL-mirror-save,K2P,手机窄屏,统一包实机部分通过,测试原设置成功并保存；取消勾选能关闭；关闭后换错误账号测试明确 HTTP401 且禁止保存；恢复原账号重测成功并保存启用。超时等边界待完整注入。,LIVE_TEST_2026-10-13.md,2026-10-13,1.0.0-rc.1；sing-box mini 1.12.13
 K2P-CTRL-mirror-sync,K2P,桌面,未执行,,,,
 K2P-CTRL-mirror-sync,K2P,手机窄屏,未执行,,,,
-K2P-CTRL-backup-local,K2P,桌面,实机页面部分通过,服务商直取约71秒成功，119节点/2订阅组/5订阅规则；新备份实际下载并通过macOS解压。完整边界项尚未全部实机注入。,K2P_STABILITY_REVIEW.md,2026-10-12,
+K2P-CTRL-backup-local,K2P,桌面,迁移前记录，待统一包重测,服务商直取约71秒成功，119节点/2订阅组/5订阅规则；新备份实际下载并通过macOS解压。完整边界项尚未全部实机注入。,旧工作区私有测试记录，未随新仓库发布,2026-10-12,
 K2P-CTRL-backup-local,K2P,手机窄屏,未执行,,,,
 K2P-CTRL-summary-backup-7,K2P,桌面,未执行,,,,
 K2P-CTRL-summary-backup-7,K2P,手机窄屏,未执行,,,,
@@ -492,7 +492,7 @@ K2P-CTRL-policy-target,K2P,手机窄屏,未执行,,,,
 K2P-CTRL-policy-add-submit,K2P,桌面,未执行,,,,
 K2P-CTRL-policy-add-submit,K2P,手机窄屏,未执行,,,,
 K2P-CTRL-policy-save,K2P,桌面,未执行,,,,
-K2P-CTRL-policy-save,K2P,手机窄屏,未执行,,,,
+K2P-CTRL-policy-save,K2P,手机窄屏,统一包实机部分通过,单条 example.com 后缀直连规则保存成功，撤销后 policy.tsv 为 0 字节；页面确认恢复。多条事务与新连接命中仍待该用例完整重测。,LIVE_TEST_2026-10-13.md,2026-10-13,1.0.0-rc.1；sing-box mini 1.12.13
 K2P-CTRL-summary-rules-8,K2P,桌面,未执行,,,,
 K2P-CTRL-summary-rules-8,K2P,手机窄屏,未执行,,,,
 K2P-CTRL-inspect-refresh,K2P,桌面,未执行,,,,

@@ -1,6 +1,18 @@
 {
   "install.sh": {
-    "reason": "Fixed-version offline core input; original integrity/preflight/rollback retained",
-    "sha256": "1c117f492af35c6d3b2ad1b03479879be37e2a4fab91de871a63ffda31c3c3f9"
+    "reason": "Verified offline core; update uses RAM staging/rollback and one-file atomic replacement, 16MB RAM reserve and largest-file-plus-256KB disk headroom; fresh installation unchanged",
+    "sha256": "25da6e7ea299f0d8e9025a97dc1f7d7f95397d17770d5bc71da5e8a6963cf1be"
+  },
+  "tools/build_release.py": {
+    "reason": "Removed obsolete per-repository release builder; tools/package.py is the shared release pipeline",
+    "removed": true
+  },
+  "ui/manager.js": {
+    "sha256": "b5fd3a3ca2b8b78d9673f4b01700cb15b769ab887927085be27d17413019c9c9",
+    "reason": "Require explicit AX5 JSON upload/control acknowledgements; detect expired sessions and retain drafts. Regression coverage includes HTTP 200 login/invalid/unconfirmed responses."
+  },
+  "tests/test_upload.js": {
+    "sha256": "0dce5a8da15fe6746c8244fe11aa86d7acbc23b1d5b3e20ed9e5f4769133f018",
+    "reason": "Require explicit AX5 JSON upload/control acknowledgements; detect expired sessions and retain drafts. Regression coverage includes HTTP 200 login/invalid/unconfirmed responses."
   }
 }

@@ -6,7 +6,7 @@ ROOT=Path(__file__).resolve().parent
 
 def main():
  p=argparse.ArgumentParser(description='更新已有 K2P ShellCrash 面板源码')
- p.add_argument('--host-key-alias',help='SSH 转发时使用已保存的主机标识');p.add_argument('--router',required=True);p.add_argument('--user',default='admin');p.add_argument('--port',type=int,default=22);p.add_argument('--check-only',action='store_true');p.add_argument('--backup-dir',type=Path,default=Path.cwd());a=p.parse_args()
+ p.add_argument('--host-key-alias',help='SSH 转发时使用已保存的主机标识');p.add_argument('--router',required=True);p.add_argument('--user',default='admin');p.add_argument('--port',type=int,default=22);p.add_argument('--check-only',action='store_true');p.add_argument('--backup-dir',type=Path,default=Path.home()/'ShellCrash-backups');a=p.parse_args()
  if (ROOT/'DEVICE').read_text().strip()!='k2p':raise ValueError('AX5 更新使用 deploy.py，由其原安装器识别已有部署')
  host=str(ipaddress.IPv4Address(a.router))
  if not re.fullmatch(r'[A-Za-z_][A-Za-z0-9_-]{0,31}',a.user) or not 1<=a.port<=65535:raise ValueError('SSH 参数无效')
@@ -16,7 +16,7 @@ def main():
   opts=['-p',str(a.port),'-o','ConnectTimeout=10','-o','ControlMaster=auto','-o','ControlPersist=300','-o','ControlPath='+td+'/ssh'];opts+=['-o','HostKeyAlias='+a.host_key_alias] if a.host_key_alias else [];ssh=['ssh',*opts,a.user+'@'+host];remote='/tmp/sc-update-'+Path(td).name;q=shlex.quote(remote)
   data=io.BytesIO()
   with tarfile.open(fileobj=data,mode='w:gz') as t:
-   for name in ['payload','tools/update.sh']:
+   for name in ['payload','tools/update.sh','tools/legacy-migration.sha256']:
     path=ROOT/name
     for f in [path] if path.is_file() else sorted(path.rglob('*')):
      if f.is_file():

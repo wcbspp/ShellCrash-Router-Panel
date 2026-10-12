@@ -26,6 +26,20 @@ def build(profile,output=None):
  target=Path(output) if output else ROOT/'build'/profile
  target.mkdir(parents=True,exist_ok=True)
  manifest=json.loads((ROOT/'profiles'/profile/'manifest.json').read_text())
+ expected=set(manifest)|{'README.md','LICENSE','NOTICE.md','VERSION','deploy.py','update.py','setup.sh','DEVICE','CORE.json','MANIFEST.sha256','tools/verify_package.py','tools/__init__.py'}
+ expected.update('docs/'+str(p.relative_to(ROOT/'docs')) for p in (ROOT/'docs').rglob('*') if p.is_file())
+ previous=set()
+ if (target/'MANIFEST.sha256').exists():
+  for line in (target/'MANIFEST.sha256').read_text().splitlines():
+   sha,name=line.split('  ',1)
+   if Path(name).is_absolute() or '..' in Path(name).parts:raise ValueError('Unsafe previous manifest')
+   previous.add(name)
+ actual={str(p.relative_to(target)) for p in target.rglob('*') if p.is_file() and '__pycache__' not in p.parts and p.suffix!='.pyc'}
+ if actual-expected-previous:raise ValueError('构建目录含非构建文件，请先移走：'+', '.join(sorted(actual-expected-previous)))
+ for name in previous-expected:
+  p=target/name
+  if p.is_file() or p.is_symlink():p.unlink()
+
  for relative,source in manifest.items():
   for name in (relative,source):
    if Path(name).is_absolute() or '..' in Path(name).parts:raise ValueError('Unsafe build path')
@@ -37,8 +51,10 @@ def build(profile,output=None):
  # The firmware-specific scripts keep their legacy paths; no compiler runs on-device.
  shutil.copy2(ROOT/'install.sh',target/'setup.sh')
  shutil.copy2(ROOT/'tools/verify_package.py',target/'tools/verify_package.py')
+ shutil.copy2(ROOT/'tools/__init__.py',target/'tools/__init__.py')
  shutil.copytree(ROOT/'docs',target/'docs',dirs_exist_ok=True)
  (target/'DEVICE').write_text(profile+'\n')
+ shutil.copy2(ROOT/'profiles'/profile/'core.json',target/'CORE.json')
  files=sorted(p for p in target.rglob('*') if p.is_file() and '__pycache__' not in p.parts and p.suffix!='.pyc' and p.name!='MANIFEST.sha256')
  (target/'MANIFEST.sha256').write_text(''.join(f'{hashlib.sha256(p.read_bytes()).hexdigest()}  {p.relative_to(target)}\n' for p in files))
  return target

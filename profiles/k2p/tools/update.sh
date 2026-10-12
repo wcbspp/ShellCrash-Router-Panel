@@ -1,6 +1,7 @@
 #!/bin/sh
 # Update only this project's code. Configuration, core and startup hooks stay in place.
 set -eu
+export PATH=/usr/sbin:/usr/bin:/sbin:/bin:$PATH
 base=$(CDPATH='' cd -- "$(dirname "$0")/.." && pwd)
 C=/etc/storage/ShellCrash
 D=/tmp/sc-admin
@@ -10,7 +11,16 @@ case "$mode" in --check|--apply) ;; *) echo '用法：sh tools/update.sh --check
 [ -f "$C/starts/panel_boot.sh" ] && [ -f "$C/configs/panel.conf" ] && [ -f "$C/padavan/manager.js" ] || { echo '不是本项目完整部署，未覆盖'; exit 1; }
 [ -f "$C/version" ] && grep -q '^1\.9\.4' "$C/version" || { echo '当前工具版本未经本包验证，未更新'; exit 1; }
 grep -qx 'crashcore=singbox' "$C/configs/ShellCrash.cfg" || { echo '仅支持现有 sing-box 部署'; exit 1; }
-grep -q '#PadavanShellCrashPanel' /etc/storage/started_script.sh || { echo '启动入口不是本项目，未更新'; exit 1; }
+legacy=0
+if ! grep -q '#PadavanShellCrashPanel' /etc/storage/started_script.sh;then
+ grep -Fq "$C/starts/codex_boot.sh" /etc/storage/started_script.sh || { echo '启动入口不是本项目，未更新'; exit 1; }
+ for file in codex_boot.sh office_bfstart.sh office_afstart.sh;do
+  [ -f "$C/starts/$file" ] || { echo '早期适配不完整，未更新'; exit 1; }
+  actual=$(sha256sum "$C/starts/$file" | awk '{print $1}')
+  awk -v file="$file" -v hash="$actual" '$1==file && $2==hash {found=1} END {exit !found}' "$base/tools/legacy-migration.sha256" || { echo '早期入口已被修改，请人工迁移'; exit 1; }
+ done
+ legacy=1
+fi
 [ ! -d "$D/operation.lock" ] && [ ! -d /tmp/shellcrash-bootstrap.lock ] || { echo '有配置或启动任务，稍后重试'; exit 1; }
 available=$(awk '/^MemAvailable:/{print $2}' /proc/meminfo)
 [ "${available:-0}" -ge 14336 ] || { echo '可用内存不足 14 MB，未更新'; exit 1; }
@@ -36,12 +46,20 @@ finish(){
 }
 trap finish EXIT
 trap 'exit 1' HUP INT TERM
-work=$(mktemp -d /tmp/sc-upgrade.XXXXXX)
+candidate=/tmp/sc-upgrade.$$
+mkdir "$candidate" || exit 1
+work=$candidate
 # Small compressed code snapshot; no second full copy of configurations.
 tar -czf "$work/code-before.tar.gz" -C "$C" starts libs menus padavan ui
 gzip -t "$work/code-before.tar.gz"
 modified=1
 for part in starts libs menus padavan ui;do cp -R "$base/payload/$part/." "$C/$part/";done
+if [ "$legacy" = 1 ];then
+ for pair in codex_boot.sh:panel_boot.sh office_bfstart.sh:panel_bfstart.sh office_afstart.sh:panel_afstart.sh;do
+  old=${pair%%:*};target=${pair#*:}
+  printf '#!/bin/sh\nexec %s/starts/%s "$@"\n' "$C" "$target" > "$C/starts/$old"
+ done
+fi
 chmod 700 "$C/starts/"*.sh
 "$C/starts/padavan_ui.sh"
 # A code upgrade must not restart a healthy core or change its configuration.

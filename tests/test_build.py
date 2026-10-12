@@ -12,10 +12,15 @@ class BuildTests(unittest.TestCase):
     golden=json.loads((ROOT/'profiles'/profile/'baseline.sha256.json').read_text())
     intentional=json.loads((ROOT/'profiles'/profile/'intentional_changes.json').read_text())
     for name,sha in golden.items():
-     self.assertEqual(hashlib.sha256((target/name).read_bytes()).hexdigest(),intentional.get(name,{}).get('sha256',sha),profile+'/'+name)
+     if intentional.get(name,{}).get('removed'):self.assertFalse((target/name).exists())
+     else:self.assertEqual(hashlib.sha256((target/name).read_bytes()).hexdigest(),intentional.get(name,{}).get('sha256',sha),profile+'/'+name)
     verify_package.verify(target)
     methods=json.loads((ROOT/'profiles'/profile/'capabilities.json').read_text())['subscription_methods']
     self.assertEqual('convert' in methods,profile=='ax5')
+ def test_build_refuses_private_unmanaged_files(self):
+  with tempfile.TemporaryDirectory() as td:
+   target=build.build('ax5',td);(target/'private-nodes.json').write_text('private-data')
+   with self.assertRaises(ValueError):build.build('ax5',td)
  def test_bad_template_blocks_reject(self):
   for text in ['@@else@@\n','@@end@@\n','@@if other@@\n','@@if ax5@@\n','@@if ax5@@\n@@if k2p@@\n']:
    with self.assertRaises(ValueError):build.render(text,'ax5')
@@ -30,6 +35,11 @@ class BuildTests(unittest.TestCase):
     elif mutation=='extra':(root/'extra').write_text('x')
     else:(root/'install.sh').unlink()
     with self.assertRaises((ValueError,OSError)):verify_package.verify(root)
+ def test_local_inputs_do_not_exempt_declared_code(self):
+  with tempfile.TemporaryDirectory() as td:
+   root=build.build('k2p',td);node=root/'my-nodes.json';node.write_text('{}')
+   verify_package.verify(root,[node]);(root/'install.sh').write_text('tampered')
+   with self.assertRaises(ValueError):verify_package.verify(root,[node,root/'install.sh'])
  def test_archive_traversal_links_and_size_reject(self):
   for name,kind,size in [('pkg/../evil','file',1),('/pkg/file','file',1),('other/file','file',1),('pkg/link','link',0),('pkg/huge','file',21000000)]:
    with tempfile.TemporaryDirectory() as td:
@@ -45,6 +55,9 @@ class BuildTests(unittest.TestCase):
    with tarfile.open(archive,'w:gz') as t:
     i=tarfile.TarInfo('pkg/install.sh');i.size=2;t.addfile(i,io.BytesIO(b'ok'))
    self.assertEqual((bootstrap.extract(archive,root/'out','pkg')/'install.sh').read_bytes(),b'ok')
+ def test_core_descriptor_matches_installer(self):
+  ax=json.loads((ROOT/'profiles/ax5/core.json').read_text());self.assertIn(ax['sha256'],(ROOT/'profiles/ax5/install.sh').read_text());self.assertEqual(ax['sha256'],prepare_offline.core_spec('ax5')['sha256'])
+  k=json.loads((ROOT/'profiles/k2p/core.json').read_text());self.assertEqual(k['sha256'],prepare_offline.core_spec('k2p')['sha256'])
  def test_core_has_wrong_architecture_hash(self):
   self.assertNotEqual(prepare_offline.core_spec('ax5')['sha256'],prepare_offline.core_spec('k2p')['sha256'])
  def test_core_archive_rejects_link_and_missing_executable(self):
