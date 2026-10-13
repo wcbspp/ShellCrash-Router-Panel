@@ -170,7 +170,7 @@ AX5-CTRL-mirror-save,AX5,手机窄屏,迁移前记录，待统一包重测,关�
 AX5-CTRL-mirror-sync,AX5,桌面,未执行,,,,
 AX5-CTRL-mirror-sync,AX5,手机窄屏,未执行,,,,
 AX5-CTRL-backup-local,AX5,桌面,未执行,,,,
-AX5-CTRL-backup-local,AX5,手机窄屏,未执行,,,,
+AX5-CTRL-backup-local,AX5,手机窄屏,部分通过,实际客户端下载，gzip CRC、成员安全检查和 macOS tar 解压通过；异常边界待测,LIVE_TEST_2026-10-13.md,2026-10-13,1.0.0-rc.1
 AX5-CTRL-backup-core,AX5,桌面,未执行,,,,
 AX5-CTRL-backup-core,AX5,手机窄屏,未执行,,,,
 AX5-CTRL-summary-backup-6,AX5,桌面,未执行,,,,
@@ -188,7 +188,7 @@ AX5-CTRL-policy-target,AX5,手机窄屏,未执行,,,,
 AX5-CTRL-policy-add-submit,AX5,桌面,未执行,,,,
 AX5-CTRL-policy-add-submit,AX5,手机窄屏,未执行,,,,
 AX5-CTRL-policy-save,AX5,桌面,未执行,,,,
-AX5-CTRL-policy-save,AX5,手机窄屏,未执行,,,,
+AX5-CTRL-policy-save,AX5,手机窄屏,部分通过,临时后缀直连保存、删除、新连接命中及原配置恢复；其他边界待测,LIVE_TEST_2026-10-13.md,2026-10-13,1.0.0-rc.1
 AX5-CTRL-summary-rules-7,AX5,桌面,未执行,,,,
 AX5-CTRL-summary-rules-7,AX5,手机窄屏,未执行,,,,
 AX5-CTRL-inspect-refresh,AX5,桌面,未执行,,,,
@@ -381,11 +381,11 @@ K2P-CTRL-tab-monitor,K2P,桌面,未执行,,,,
 K2P-CTRL-tab-monitor,K2P,手机窄屏,未执行,,,,
 K2P-CTRL-tab-logs,K2P,桌面,未执行,,,,
 K2P-CTRL-tab-logs,K2P,手机窄屏,未执行,,,,
-K2P-CTRL-quick-follow,K2P,桌面,未执行,,,,
+K2P-CTRL-quick-follow,K2P,桌面,部分通过,点击并保存恢复无覆盖；辅助组保留，测试后从原快照完全恢复,LIVE_TEST_2026-10-13.md,2026-10-13,1.0.0-rc.1
 K2P-CTRL-quick-follow,K2P,手机窄屏,未执行,,,,
-K2P-CTRL-quick-cancel,K2P,桌面,未执行,,,,
+K2P-CTRL-quick-cancel,K2P,桌面,部分通过,四项同时修改，一次取消恢复；其他边界待测,LIVE_TEST_2026-10-13.md,2026-10-13,1.0.0-rc.1
 K2P-CTRL-quick-cancel,K2P,手机窄屏,未执行,,,,
-K2P-CTRL-quick-save,K2P,桌面,未执行,,,,
+K2P-CTRL-quick-save,K2P,桌面,部分通过,四项同时修改，一次提交生效，恢复原配置；其他来源及异常边界待测,LIVE_TEST_2026-10-13.md,2026-10-13,1.0.0-rc.1
 K2P-CTRL-quick-save,K2P,手机窄屏,未执行,,,,
 K2P-CTRL-search,K2P,桌面,未执行,,,,
 K2P-CTRL-search,K2P,手机窄屏,未执行,,,,
@@ -475,7 +475,7 @@ K2P-CTRL-mirror-save,K2P,桌面,统一包实机部分通过,测试原设置成�
 K2P-CTRL-mirror-save,K2P,手机窄屏,迁移前记录，待统一包重测,关闭→测试→保存→再关闭/开启主流程完成；错误密码 HTTP401、失败重试和保存拦截已验证。独立边界项详见回归报告，未全部实机注入。,旧工作区私有测试记录，未随新仓库发布,2026-10-12,工作区候选；AX5 Mihomo 1.19.28 / K2P sing-box 1.12.13
 K2P-CTRL-mirror-sync,K2P,桌面,未执行,,,,
 K2P-CTRL-mirror-sync,K2P,手机窄屏,未执行,,,,
-K2P-CTRL-backup-local,K2P,桌面,迁移前记录，待统一包重测,服务商直取约71秒成功，119节点/2订阅组/5订阅规则；新备份实际下载并通过macOS解压。完整边界项尚未全部实机注入。,旧工作区私有测试记录，未随新仓库发布,2026-10-12,
+K2P-CTRL-backup-local,K2P,桌面,部分通过,实际客户端下载，gzip CRC、成员安全检查和 macOS tar 解压通过；异常边界待测,LIVE_TEST_2026-10-13.md,2026-10-13,1.0.0-rc.1
 K2P-CTRL-backup-local,K2P,手机窄屏,未执行,,,,
 K2P-CTRL-summary-backup-7,K2P,桌面,未执行,,,,
 K2P-CTRL-summary-backup-7,K2P,手机窄屏,未执行,,,,

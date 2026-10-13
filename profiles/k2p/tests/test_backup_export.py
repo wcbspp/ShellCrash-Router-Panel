@@ -4,6 +4,9 @@ SOURCE=Path(__file__).resolve().parents[1]/'payload/starts/backup-app.sh'
 class BackupExport(unittest.TestCase):
  def setUp(self):
   self.tmp=tempfile.TemporaryDirectory();self.root=Path(self.tmp.name);self.c=self.root/'persist';self.d=self.root/'ram';self.d.mkdir();(self.c/'starts').mkdir(parents=True);(self.c/'configs').mkdir();(self.c/'ui').mkdir()
+  link_source=SOURCE.parent/'backup-links.sh'
+  if not link_source.exists():link_source=Path(__file__).resolve().parents[3]/'shared/lib/backup-links.sh'
+  (self.c/'starts/backup-links.sh').write_bytes(link_source.read_bytes())
   (self.c/'starts/remote.sh').write_text('remote_ready(){ :; }\n')
   (self.c/'configs/core-installed.info').write_text('version=1.12.13\nsha256='+('1'*64)+'\n')
   (self.c/'configs/webdav.auth').write_text('private fixture');(self.c/'configs/webdav.user').write_text('user')
@@ -29,5 +32,13 @@ class BackupExport(unittest.TestCase):
   old=b'previous backup';(self.d/'application-backup.tar.gz').write_bytes(old)
   self.mem.write_text('MemAvailable: 12500 kB\n');self.assertNotEqual(self.run_backup().returncode,0);self.assertEqual((self.d/'application-backup.tar.gz').read_bytes(),old);self.clean()
   self.mem.write_text('MemAvailable: 12801 kB\n');(self.c/'ui/fixture').write_bytes(os.urandom(600000));self.assertNotEqual(self.run_backup().returncode,0);self.assertEqual((self.d/'application-backup.tar.gz').read_bytes(),old);self.clean()
+ def test_runtime_links_are_omitted_without_changing_live_aliases(self):
+  (self.c/'jsons').mkdir();link=self.c/'jsons/dns.json';link.symlink_to('/tmp/panel-dns/dns.json')
+  result=self.run_backup();self.assertEqual(result.returncode,0,result.stderr);self.assertTrue(link.is_symlink());self.clean()
+  with tarfile.open(self.d/'application-backup.tar.gz') as t:
+   self.assertNotIn('./jsons/dns.json',t.getnames());self.assertTrue(all(m.isfile() or m.isdir() for m in t.getmembers()))
+ def test_unknown_link_rejects_and_keeps_previous_export(self):
+  old=b'previous backup';(self.d/'application-backup.tar.gz').write_bytes(old);(self.c/'configs/unexpected').symlink_to('/etc/passwd')
+  result=self.run_backup();self.assertNotEqual(result.returncode,0);self.assertIn('未知软链接',result.stderr.decode());self.assertEqual((self.d/'application-backup.tar.gz').read_bytes(),old);self.clean()
  def test_existing_storage_commit_is_not_interrupted(self):
   self.lock.mkdir();self.assertNotEqual(self.run_backup().returncode,0);self.assertTrue(self.lock.exists());self.assertEqual(list(self.root.glob('.sc-backup-stage.*')),[])

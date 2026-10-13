@@ -8,11 +8,27 @@
     "removed": true
   },
   "ui/manager.js": {
-    "sha256": "b5fd3a3ca2b8b78d9673f4b01700cb15b769ab887927085be27d17413019c9c9",
-    "reason": "Require explicit AX5 JSON upload/control acknowledgements; detect expired sessions and retain drafts. Regression coverage includes HTTP 200 login/invalid/unconfirmed responses."
+    "sha256": "747a951c25fa5003849ddb3353532fe91af51c74d2407525b0a89ed4d3d9ea10",
+    "reason": "Show actual remote panel version and SHA256 core filenames; preserve explicit native JSON acknowledgements, expired-session detection and drafts."
   },
   "tests/test_upload.js": {
     "sha256": "0dce5a8da15fe6746c8244fe11aa86d7acbc23b1d5b3e20ed9e5f4769133f018",
     "reason": "Require explicit AX5 JSON upload/control acknowledgements; detect expired sessions and retain drafts. Regression coverage includes HTTP 200 login/invalid/unconfirmed responses."
+  },
+  "ax5/backup-app.sh": {
+    "sha256": "a1404891f2aded8148fe10d2a4ce7f4905677bd2b445fe92c62f62d6e0b13f07",
+    "reason": "Make backup archives portable without runtime aliases, support minimal K2P utilities, record the actual panel release in local/remote metadata, and identify core files by SHA256."
+  },
+  "ax5/api.lua": {
+    "sha256": "f3296eca42543e1a35dc4c91c9260619d858ca4b8d8bd616c3d5ca4bb873c376",
+    "reason": "Make backup archives portable without runtime aliases, support minimal K2P utilities, record the actual panel release in local/remote metadata, and identify core files by SHA256."
+  },
+  "ax5/webdav.sh": {
+    "sha256": "6372a90d51eb9933e3bf9210e0d34ac2ffc439146a8ac33fcd62264d4d4ae215",
+    "reason": "Make backup archives portable without runtime aliases, support minimal K2P utilities, record the actual panel release in local/remote metadata, and identify core files by SHA256."
+  },
+  "tests/test_webdav.py": {
+    "sha256": "dd7686bae363e6727d6284e40b69222903d3a21225b29dcd77fce2fd8780f42f",
+    "reason": "Make backup archives portable without runtime aliases, support minimal K2P utilities, record the actual panel release in local/remote metadata, and identify core files by SHA256."
   }
 }

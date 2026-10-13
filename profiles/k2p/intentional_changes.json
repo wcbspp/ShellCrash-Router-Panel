@@ -20,7 +20,27 @@
     "removed": true
   },
   "payload/padavan/manager.js": {
-    "sha256": "d04e60da1a869a4fed0b7b1a4e0b4a87360f57262eacd9bf4d2364e72265b606",
-    "reason": "Shared login-response detection preserves K2P conflict handling and recognizes Xiaomi login pages for AX5."
+    "sha256": "3d2cacde822af621a304fa76f8597f7d68b2db454d186a4469588cf8c4faaf29",
+    "reason": "Show actual remote panel version and SHA256 core filenames while preserving shared management behavior."
+  },
+  "payload/starts/backup-app.sh": {
+    "sha256": "a1eb7a725f7d22c188a2b0326e0d0005e888b981bed3fd19c8c3db800eb5720f",
+    "reason": "Make backup archives portable without runtime aliases, support minimal K2P utilities, record the actual panel release in local/remote metadata, and identify core files by SHA256."
+  },
+  "tests/test_backup_export.py": {
+    "sha256": "853d52553b9cd491e565782d1047dc75846a618cf79aa6513f378990f85734ac",
+    "reason": "Make backup archives portable without runtime aliases, support minimal K2P utilities, record the actual panel release in local/remote metadata, and identify core files by SHA256."
+  },
+  "payload/starts/panel_bfstart.sh": {
+    "sha256": "fb1bc025c339d9c1d33035bfba574dc741cf3332dc11878bfcdcf4f96bd07b76",
+    "reason": "Make backup archives portable without runtime aliases, support minimal K2P utilities, record the actual panel release in local/remote metadata, and identify core files by SHA256."
+  },
+  "payload/starts/webdav.sh": {
+    "sha256": "6372a90d51eb9933e3bf9210e0d34ac2ffc439146a8ac33fcd62264d4d4ae215",
+    "reason": "Make backup archives portable without runtime aliases, support minimal K2P utilities, record the actual panel release in local/remote metadata, and identify core files by SHA256."
+  },
+  "tests/test_webdav.py": {
+    "sha256": "9abb8314aca878287d2f428a17f4fab74065684eb142d52193f7699e2bcb7a31",
+    "reason": "Make backup archives portable without runtime aliases, support minimal K2P utilities, record the actual panel release in local/remote metadata, and identify core files by SHA256."
   }
 }

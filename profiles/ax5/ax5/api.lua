@@ -41,7 +41,8 @@ function A.read()
   local path=kind=='backup'and(M.R..'/application-backup.tar.gz')or(M.C..'/cache/core-armv7.tar.gz')
   local f=io.open(path,'rb');if not f then reply({error='backup_not_ready'},404);return end
   local size=f:seek('end');f:seek('set',0);H.header('Content-Length',tostring(size))
-  H.prepare_content('application/gzip');H.header('Content-Disposition','attachment; filename="'..(kind=='backup'and'AX5-application-backup.tar.gz'or'AX5-core.tar.gz')..'"')
+  local corehash=M.read(M.C..'/cache/core.sha256',128):gsub('%s+$','');local filename=kind=='backup'and'AX5-application-backup.tar.gz'or(corehash:match('^%x+$')and #corehash==64 and('core-'..corehash..'.tar.gz')or'AX5-core.tar.gz')
+  H.prepare_content('application/gzip');H.header('Content-Disposition','attachment; filename="'..filename..'"')
   while true do local chunk=f:read(32768);if not chunk then break end;H.write(chunk)end;f:close();return
  elseif kind=='remoteconnection'then
   M.run('C='..M.C..' D='..M.R..' sh -c \'. "$C/ax5/remote.sh"; dav_status > "$D/remote-connection.out"\'');H.prepare_content('application/json');H.write(M.read(M.R..'/remote-connection.out',512));return

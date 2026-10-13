@@ -115,5 +115,7 @@
   "tools/menu-install.lua": "profiles/ax5/tools/menu-install.lua",
   "tools/prepare-install.lua": "profiles/ax5/tools/prepare-install.lua",
   "docs/CONTROL_TEST_CASES.csv": "profiles/ax5/docs/CONTROL_TEST_CASES.csv",
-  "docs/CONTROL_TEST_RESULTS.csv": "profiles/ax5/docs/CONTROL_TEST_RESULTS.csv"
+  "docs/CONTROL_TEST_RESULTS.csv": "profiles/ax5/docs/CONTROL_TEST_RESULTS.csv",
+  "ax5/backup-links.sh": "shared/lib/backup-links.sh",
+  "ax5/panel-version": "VERSION"
 }

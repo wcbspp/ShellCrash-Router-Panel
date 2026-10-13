@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Upgrade an existing K2P panel with a private client backup and on-device rollback."""
-import argparse,io,ipaddress,re,shlex,subprocess,sys,tarfile,tempfile
+import argparse,gzip,io,ipaddress,re,shlex,subprocess,sys,tarfile,tempfile
 from pathlib import Path
 ROOT=Path(__file__).resolve().parent
 
@@ -29,7 +29,10 @@ def main():
    a.backup_dir.mkdir(parents=True,exist_ok=True);backup=a.backup_dir/('shellcrash-before-update-'+host+'-'+Path(td).name+'.tar.gz')
    with backup.open('xb') as f:
     backup.chmod(0o600)
-    subprocess.run([*ssh,'/etc/storage/ShellCrash/starts/backup-app.sh local >/dev/null && cat /tmp/sc-admin/application-backup.tar.gz'],stdout=f,check=True)
+    # A source repair must work even when the installed exporter is broken.
+    subprocess.run([*ssh,'tar -czf - -C /etc/storage/ShellCrash .'],stdout=f,check=True)
+   with gzip.open(backup,'rb') as stream:
+    while stream.read(1048576):pass
    with tarfile.open(backup) as t:
     if not t.getnames():raise ValueError('备份无效，未更新')
    subprocess.run([*ssh,'sh '+q+'/tools/update.sh --apply'],check=True)

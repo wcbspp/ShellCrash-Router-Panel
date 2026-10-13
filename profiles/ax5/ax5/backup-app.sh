@@ -28,10 +28,12 @@ for name in webdav.auth webdav.user mirror-id mirror_key mirror_known_hosts remo
 [ ! -d "$C/cache/targets" ] || { mkdir -p "$stage/cache";cp -R "$C/cache/targets" "$stage/cache/"; }
 cp -R /data/ShellCrash-tool "$stage/ShellCrash-tool"
 rm -f "$stage/ShellCrash-tool/configs/command.env"
+sh "$C/ax5/backup-links.sh" "$stage" ax5
 . "$C/ax5/core-env.sh"
 hash=$HASH;version=$VERSION
 mkdir -p "$stage/cache";cp "$C/cache/core.env" "$stage/cache/core.env"
-printf 'format=1\nmodel=AX5\ncore_sha256=%s\ncore_version=%s\ncore_archive=core-%s.tar.gz\ncreated=%s\n' "$hash" "$version" "$hash" "$(date +%s)" > "$stage/backup.info"
+panel_version=$(cat "$C/ax5/panel-version" 2>/dev/null || printf unknown)
+printf 'format=1\nmodel=AX5\npanel_version=%s\ncore_sha256=%s\ncore_version=%s\ncore_archive=core-%s.tar.gz\ncreated=%s\n' "$panel_version" "$hash" "$version" "$hash" "$(date +%s)" > "$stage/backup.info"
 cat > "$stage/RESTORE.txt" <<'RESTORE'
 ShellCrash panel application backup / format 1
 Model: AX5 / architecture: armv7
@@ -40,7 +42,8 @@ Extract on a computer into an empty temporary directory first. Do not extract ov
 Inspect backup.info. Obtain core-<core_sha256>.tar.gz separately and verify SHA256.
 Layout: AX5: configs/ui/ax5/ruleset/cache => /data/ShellCrash; ShellCrash-tool => /data/ShellCrash-tool
 This archive includes private subscription/node credentials. Keep it private.
-Excluded: firmware, Entware, ZeroTier identity, WebDAV credentials, SSH keys, runtime logs.
+Excluded: firmware, Entware, ZeroTier identity, WebDAV credentials, SSH keys, runtime logs and generated runtime links.
+Runtime JSON/config aliases are rebuilt by the matching installer and start hooks.
 Restore only to the same model/architecture with local LAN recovery access.
 Keep the current project and working core before changing files. Stop the proxy, restore project files,
 and reinstall its management/boot integration using the matching project installer.

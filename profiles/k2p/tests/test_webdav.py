@@ -47,6 +47,7 @@ class WebDAV(unittest.TestCase):
         self.root = Path(self.tmp.name)
         (self.root/'configs').mkdir(); (self.root/'starts').mkdir(); (self.root/'ax5').mkdir()
         (self.root/'version').write_text('1.9.4release')
+        (self.root/'starts/panel-version').write_text('1.0.0-test')
         (self.root/'configs/core-installed.info').write_text('version=1.12.13\nsha256='+('0'*64)+'\n')
         for name in ('remote.sh', 'webdav.sh', 'remote-settings.sh'):
             shutil.copyfile(SOURCE/name, self.root/'starts'/name)
@@ -149,7 +150,7 @@ class WebDAV(unittest.TestCase):
         self.assertTrue(any(digests[1] in path for path in self.server.objects))
         import json
         index = json.loads(self.server.objects['/dav/shellcrash-panel/K2P/backups/application-latest.json'])
-        self.assertEqual(index['sha256'], digests[1]); self.assertEqual(index['tool_version'], '1.9.4release')
+        self.assertEqual(index['sha256'], digests[1]); self.assertEqual(index['tool_version'], '1.9.4release'); self.assertEqual(index['panel_version'], '1.0.0-test')
     def test_off_and_unverified_never_connect(self):
         for enabled in ('1', '0'):
             self.save(enabled=enabled); self.server.calls.clear()

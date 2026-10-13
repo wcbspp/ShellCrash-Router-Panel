@@ -25,8 +25,10 @@ for folder in configs ui padavan starts libs tools jsons yamls ruleset;do
 done
 for name in webdav.auth webdav.user mirror-id mirror_key mirror_known_hosts remote.verified;do rm -f "$stage/configs/$name";done
 for name in start.sh menu.sh init.sh version;do [ ! -f "$C/$name" ] || cp -al "$C/$name" "$stage/";done
+sh "$C/starts/backup-links.sh" "$stage" k2p
 hash=$(sed -n 's/^sha256=//p' "$C/configs/core-installed.info");version=$(sed -n 's/^version=//p' "$C/configs/core-installed.info")
-printf 'format=1\nmodel=K2P\ncore_sha256=%s\ncore_version=%s\ncore_archive=core-%s.tar.gz\ncreated=%s\n' "$hash" "$version" "$hash" "$(date +%s)" > "$stage/backup.info"
+panel_version=$(cat "$C/starts/panel-version" 2>/dev/null || printf unknown)
+printf 'format=1\nmodel=K2P\npanel_version=%s\ncore_sha256=%s\ncore_version=%s\ncore_archive=core-%s.tar.gz\ncreated=%s\n' "$panel_version" "$hash" "$version" "$hash" "$(date +%s)" > "$stage/backup.info"
 cat > "$stage/RESTORE.txt" <<'RESTORE'
 ShellCrash panel application backup / format 1
 Model: K2P / architecture: mipsle
@@ -35,7 +37,8 @@ Extract on a computer into an empty temporary directory first. Do not extract ov
 Inspect backup.info. Obtain core-<core_sha256>.tar.gz separately and verify SHA256.
 Layout: K2P: configs/ui/padavan/starts/libs/tools/jsons/yamls/ruleset and start.sh/menu.sh/init.sh/version => /etc/storage/ShellCrash
 This archive includes private subscription/node credentials. Keep it private.
-Excluded: firmware, Entware, ZeroTier identity, WebDAV credentials, SSH keys, runtime logs.
+Excluded: firmware, Entware, ZeroTier identity, WebDAV credentials, SSH keys, runtime logs and generated runtime links.
+Runtime JSON/config aliases are rebuilt by the matching installer and start hooks.
 Restore only to the same model/architecture with local LAN recovery access.
 Keep the current project and working core before changing files. Stop the proxy, restore project files,
 and reinstall its management/boot integration using the matching project installer.

@@ -26,15 +26,18 @@ dav_publish_backup()(
  trap 'rm -f "$previous" "$index"' EXIT
  dav_latest "$scope" > "$previous" || :
  if [ "$C" = /data/ShellCrash ];then
+  panel=$(cat "$C/ax5/panel-version" 2>/dev/null || printf unknown)
   kind=$(sed -n 's/^KIND=//p' "$C/cache/core.env");version=$(sed -n 's/^VERSION=//p' "$C/cache/core.env");core=$(sed -n 's/^HASH=//p' "$C/cache/core.env");tool=$(cat /data/ShellCrash-tool/version)
  else
+  panel=$(cat "$C/starts/panel-version" 2>/dev/null || printf unknown)
   kind=singbox;version=$(sed -n 's/^version=//p' "$C/configs/core-installed.info");core=$(sed -n 's/^sha256=//p' "$C/configs/core-installed.info");tool=$(cat "$C/version")
  fi
  case "$kind" in meta|singbox) :;;*)kind=unknown;;esac
  printf '%s' "$version" | grep -Eq '^v?[0-9.]{1,24}$' || version=unknown
+ printf '%s' "$panel" | grep -Eq '^[A-Za-z0-9._-]{1,40}$' || panel=unknown
  printf '%s' "$tool" | grep -Eq '^[A-Za-z0-9._-]{1,40}$' || tool=unknown
  printf '%s' "$core" | grep -Eq '^[a-f0-9]{64}$' || core=''
- printf '{"format":1,"model":"%s","scope":"%s","created":%s,"size":%s,"sha256":"%s","core_kind":"%s","core_version":"%s","core_sha256":"%s","tool_version":"%s"}\n' "$(dav_model)" "$scope" "$(date +%s)" "$(wc -c < "$file" | tr -d ' ')" "$hash" "$kind" "$version" "$core" "$tool" > "$index"
+ printf '{"format":1,"model":"%s","scope":"%s","created":%s,"size":%s,"sha256":"%s","core_kind":"%s","core_version":"%s","core_sha256":"%s","tool_version":"%s","panel_version":"%s"}\n' "$(dav_model)" "$scope" "$(date +%s)" "$(wc -c < "$file" | tr -d ' ')" "$hash" "$kind" "$version" "$core" "$tool" "$panel" > "$index"
  dav_publish_index "$(dav_base)/backups/$scope-latest.json" "$index" || return 1
  cp "$index" "$D/remote-$scope.json"
  old=$(sed -n 's/.*"sha256":"\([a-f0-9]*\)".*/\1/p' "$previous")

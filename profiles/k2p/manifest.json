@@ -208,5 +208,7 @@
   "docs/CONTROL_TEST_CASES.csv": "profiles/k2p/docs/CONTROL_TEST_CASES.csv",
   "docs/CONTROL_TEST_RESULTS.csv": "profiles/k2p/docs/CONTROL_TEST_RESULTS.csv",
   "tools/update.sh": "profiles/k2p/tools/update.sh",
-  "tools/legacy-migration.sha256": "profiles/k2p/tools/legacy-migration.sha256"
+  "tools/legacy-migration.sha256": "profiles/k2p/tools/legacy-migration.sha256",
+  "payload/starts/backup-links.sh": "shared/lib/backup-links.sh",
+  "payload/starts/panel-version": "VERSION"
 }

@@ -48,7 +48,7 @@ fi
 rm -f "$P/normalized.json"
 fi
 # Old panel hooks duplicated the entire route as an incremental custom module.
-case "$(readlink "$C/jsons/route.json" 2>/dev/null)" in
+case "$(LC_ALL=C ls -ld "$C/jsons/route.json" 2>/dev/null | sed -n 's/^.* -> //p')" in
  /tmp/office-dns/route.json|/tmp/panel-dns/route.json) rm -f "$C/jsons/route.json";;
 esac
 # This exact legacy module contains only the now-canonical CN declaration.
