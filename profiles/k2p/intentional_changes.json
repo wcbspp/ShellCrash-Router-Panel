@@ -42,5 +42,25 @@
   "tests/test_webdav.py": {
     "sha256": "9abb8314aca878287d2f428a17f4fab74065684eb142d52193f7699e2bcb7a31",
     "reason": "Make backup archives portable without runtime aliases, support minimal K2P utilities, record the actual panel release in local/remote metadata, and identify core files by SHA256."
+  },
+  "payload/starts/panel_boot.sh": {
+    "sha256": "1984e53e3f62cf1ba019035ee3846ccba338493b14041b51f545668a1c3ae66e",
+    "reason": "Separate startup firewall cleanup from manual stop, retry marked incomplete first boots through the existing minute watchdog with backoff, preserve stop/autostart controls and separate crash counts; verify readiness and retain dispatch errors."
+  },
+  "tests/test_boot_readiness.py": {
+    "sha256": "b205595010ef54bd9d91c02e6a6fb06a746395c88308fde144c13bd189f6b192",
+    "reason": "Separate startup firewall cleanup from manual stop, retry marked incomplete first boots through the existing minute watchdog with backoff, preserve stop/autostart controls and separate crash counts; verify readiness and retain dispatch errors."
+  },
+  "payload/starts/start_legacy_wd.sh": {
+    "sha256": "84cfac45d43b761f093dc12a7592564176f53885292099433877b9331b38101a",
+    "reason": "Separate startup firewall cleanup from manual stop, retry marked incomplete first boots through the existing minute watchdog with backoff, preserve stop/autostart controls and separate crash counts; verify readiness and retain dispatch errors."
+  },
+  "tests/test_boot_watchdog.py": {
+    "sha256": "c33e9a3b0b087b8b882b8bcd6d7009c6533a3a6c2e7704966c9b5aca3b71186c",
+    "reason": "Separate startup firewall cleanup from manual stop, retry marked incomplete first boots through the existing minute watchdog with backoff, preserve stop/autostart controls and separate crash counts; verify readiness and retain dispatch errors."
+  },
+  "payload/starts/fw_stop.sh": {
+    "sha256": "2b15f612ecd958ea028d6847125e7893bcbbed4ec794414b22aa800d0c0976e6",
+    "reason": "Separate startup firewall cleanup from manual stop, retry marked incomplete first boots through the existing minute watchdog with backoff, preserve stop/autostart controls and separate crash counts; verify readiness and retain dispatch errors."
   }
 }

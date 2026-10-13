@@ -7,7 +7,7 @@ class BootReadinessTests(unittest.TestCase):
   with tempfile.TemporaryDirectory() as td:
    d=Path(td); c=d/'persist'; (c/'configs').mkdir(parents=True); b=d/'bin'; b.mkdir()
    (c/'configs/ShellCrash.cfg').write_text('secret=fixture\n')
-   (c/'start.sh').write_text(f'#!/bin/sh\nexit {dispatch}\n'); (c/'start.sh').chmod(0o755)
+   (c/'start.sh').write_text(f'#!/bin/sh\necho dispatch-diagnostic >&2\necho ${{SC_PANEL_STARTING:-missing}} > "{d}/starting"\nexit {dispatch}\n'); (c/'start.sh').chmod(0o755)
    (d/'ram').mkdir(); (d/'clock').write_text('0')
    if manual: (d/'ram/manual-stop').touch()
    commands={
@@ -21,6 +21,8 @@ class BootReadinessTests(unittest.TestCase):
    source='native_result=0\n'+source.replace('/tmp/ShellCrash',str(d/'ram')).replace('/tmp/sc-admin',str(d/'admin'))
    p=d/'readiness.sh'; p.write_text(source)
    result=subprocess.run(['sh',str(p)],env=dict(os.environ,CRASHDIR=str(c),PANEL_LAN_IP='127.0.0.1',PATH=str(b)+':'+os.environ['PATH']),capture_output=True,text=True,timeout=15)
+   self.assertIn('dispatch-diagnostic',(d/'admin/service.log').read_text())
+   self.assertEqual((d/'starting').read_text().strip(),'1')
    log=(d/'admin/events.log').read_text() if (d/'admin/events.log').exists() else ''
    return result.returncode, log
  def test_mode_reset_failure_is_not_reported_as_ready(self):

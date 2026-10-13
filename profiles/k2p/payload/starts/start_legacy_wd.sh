@@ -1,9 +1,13 @@
 
 [ -z "$CRASHDIR" ] && CRASHDIR=$(cd "$(dirname "$0")"/.. && pwd)
+first_boot_pending=0
 if [ "$1" = shellcrash ]; then
  [ ! -f /tmp/ShellCrash/manual-stop ] || exit 0
  # A cron tick before the first boot start is not an unexpected core exit.
- [ -f /tmp/ShellCrash/crash_start_time ] || [ -f /tmp/ShellCrash/shellcrash.pid ] || exit 0
+ if [ ! -f /tmp/ShellCrash/crash_start_time ] && [ ! -f /tmp/ShellCrash/shellcrash.pid ];then
+  [ -f /tmp/ShellCrash/boot-pending ] && [ ! -f "$CRASHDIR/.dis_startup" ] || exit 0
+  first_boot_pending=1
+ fi
  [ ! -d /tmp/padavan-panel-install.lock ] || exit 0
  [ -f "$CRASHDIR/configs/panel-disabled" ] && exit 0
  admin_owner=$(cat /tmp/sc-admin/operation.lock/owner 2>/dev/null)
@@ -14,7 +18,7 @@ fi
 PIDFILE="/tmp/ShellCrash/$1.pid"
 LOCKDIR="/tmp/ShellCrash/start_$1.lock"
 
-[ -f "$CRASHDIR"/.start_error ] && [ ! -f /tmp/ShellCrash/crash_start_time ] && exit 1 #当启动失败后禁止开机自启动
+[ "$first_boot_pending" != 1 ] && [ -f "$CRASHDIR"/.start_error ] && [ ! -f /tmp/ShellCrash/crash_start_time ] && exit 1 #当启动失败后禁止开机自启动
 if ! mkdir "$LOCKDIR" 2>/dev/null; then
  lock_owner=$(cat "$LOCKDIR/owner" 2>/dev/null)
  if [ -n "$lock_owner" ]; then
@@ -39,6 +43,20 @@ if [ "$1" = shellcrash ]; then
    exit 0
   fi
  done
+fi
+
+if [ "$first_boot_pending" = 1 ];then
+ mkdir -p /tmp/sc-admin
+ now=$(cut -d. -f1 /proc/uptime)
+ due=$(cat /tmp/sc-admin/boot-retry-due 2>/dev/null);case "$due" in ''|*[!0-9]*)due=0;;esac
+ [ "$now" -ge "$due" ] || exit 0
+ attempts=$(cat /tmp/sc-admin/boot-retry-attempts 2>/dev/null);case "$attempts" in ''|*[!0-9]*)attempts=0;;esac
+ attempts=$((attempts+1));delay=$((attempts*60));[ "$delay" -le 300 ] || delay=300
+ echo "$attempts" > /tmp/sc-admin/boot-retry-attempts
+ echo $((now+delay)) > /tmp/sc-admin/boot-retry-due
+ printf '%s Initial boot retry %s; not an unexpected core exit\n' "$(date '+%m-%d %H:%M:%S')" "$attempts" >> /tmp/sc-admin/events.log
+ SC_CONTROL_SOURCE=boot "$CRASHDIR"/starts/panel_boot.sh boot
+ exit $?
 fi
 
 if [ -f "$PIDFILE" ]; then

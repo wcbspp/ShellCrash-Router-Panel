@@ -1,4 +1,7 @@
 #!/bin/sh
+# Firmware boot/SSH shells may omit the directories holding nvram and iptables.
+PATH=/usr/sbin:/usr/bin:/sbin:/bin
+export PATH
 CRASHDIR=/etc/storage/ShellCrash
 export CRASHDIR
 export GOMEMLIMIT=12MiB
@@ -26,8 +29,10 @@ if ! mkdir /tmp/shellcrash-bootstrap.lock 2>/dev/null; then
  mkdir /tmp/shellcrash-bootstrap.lock 2>/dev/null || exit 1
 fi
 echo $$ > /tmp/shellcrash-bootstrap.lock/owner
-trap 'rm -f /tmp/shellcrash-bootstrap.lock/owner; rmdir /tmp/shellcrash-bootstrap.lock 2>/dev/null' EXIT
+trap 'boot_status=$?;rm -f /tmp/shellcrash-bootstrap.lock/owner;rmdir /tmp/shellcrash-bootstrap.lock 2>/dev/null;[ "$boot_status" = 0 ] || printf "%s Boot preparation failed (exit %s)\n" "$(date +%s)" "$boot_status" >> /tmp/sc-admin/events.log' EXIT
 mkdir -p /tmp/ShellCrash
+# Reuse the existing minute watchdog for a failed first boot, without counting a crash.
+[ "$1" != boot ] || : > /tmp/ShellCrash/boot-pending
 mount -t tmpfs -o remount,rw,size=45M tmpfs /tmp
 # Configuration transactions can supply the already verified executable without an archive.
 printf '%s core_reuse=%s executable=%s\n' "$(date '+%m-%d %H:%M:%S')" "${SC_REUSE_RUNNING_CORE:-0}" "$(test -x /tmp/ShellCrash/CrashCore && echo 1 || echo 0)" >> /tmp/sc-admin/events.log
@@ -43,7 +48,8 @@ C=$CRASHDIR
 rules_ensure || exit 1
 ln -sf "$RULES_FILE" /tmp/ShellCrash/cn_ip.txt
 native_result=0
-"$CRASHDIR/start.sh" start || native_result=$?
+mkdir -p /tmp/sc-admin
+SC_PANEL_STARTING=1 "$CRASHDIR/start.sh" start >> /tmp/sc-admin/service.log 2>&1 || native_result=$?
 # The official start_legacy path backgrounds preparation and start. Its zero
 # exit status means dispatched, not ready. Trailing hooks may also return
 # nonzero after success. In either case confirm the live authenticated API.
@@ -53,7 +59,7 @@ while [ "$(cut -d. -f1 /proc/uptime)" -lt "$deadline" ]; do
  [ ! -f "$CRASHDIR/configs/panel-disabled" ] && [ ! -f /tmp/ShellCrash/manual-stop ] || exit 0
  if [ -n "$(pidof CrashCore)" ] && curl --noproxy '*' -fsS --connect-timeout 1 --max-time 1 -H "Authorization: Bearer $secret" "http://${PANEL_LAN_IP}:9999/version" >/dev/null 2>&1; then
   # sing-box may restore the temporary API mode from its cache; startup always returns to rules.
-  if curl --noproxy '*' -fsS --connect-timeout 1 --max-time 2 -X PATCH -H "Authorization: Bearer $secret" -H 'Content-Type: application/json' -d '{"mode":"rule"}' "http://${PANEL_LAN_IP}:9999/configs" >/dev/null 2>&1;then exit 0;fi
+  if curl --noproxy '*' -fsS --connect-timeout 1 --max-time 2 -X PATCH -H "Authorization: Bearer $secret" -H 'Content-Type: application/json' -d '{"mode":"rule"}' "http://${PANEL_LAN_IP}:9999/configs" >/dev/null 2>&1;then rm -f /tmp/ShellCrash/boot-pending /tmp/sc-admin/boot-retry-due /tmp/sc-admin/boot-retry-attempts;exit 0;fi
   mkdir -p /tmp/sc-admin
   printf '%s Core started but rule mode reset failed\n' "$(date '+%m-%d %H:%M:%S')" >> /tmp/sc-admin/events.log
   exit 1

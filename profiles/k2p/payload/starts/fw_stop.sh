@@ -4,7 +4,7 @@
 #初始化目录
 [ -z "$CRASHDIR" ] && CRASHDIR=$( cd $(dirname $0);cd ..;pwd)
 mkdir -p /tmp/ShellCrash
-touch /tmp/ShellCrash/manual-stop
+[ "${SC_PANEL_STARTING:-0}" = 1 ] || touch /tmp/ShellCrash/manual-stop
 . "$CRASHDIR"/libs/get_config.sh
 . "$CRASHDIR"/libs/check_cmd.sh
 . "$CRASHDIR"/starts/fw_getlanip.sh && getlanip #获取局域网host地址
