@@ -110,20 +110,45 @@ python3 update.py --router 192.168.123.1 --check-only
 python3 update.py --router 192.168.123.1
 ```
 
-K2P 更新先检查本项目与工具版本，下载应用备份到电脑，再覆盖源码并保存 Storage；不覆盖配置、内核或启动钩子。检查失败不强行安装。候选版的这个入口仍需实机验收。
+K2P 更新先检查本项目与工具版本，下载应用备份到电脑，再覆盖源码并保存 Storage；不覆盖配置、内核或启动钩子。检查失败不强行安装。两台现用设备已完成源码升级验证；首次安装、完整恢复及全部控件验收范围见测试记录。
 
 ## 页面预览
 
-以下为统一项目安装包升级后的实机页面。运行数值仅代表截图时状态。
+### 小米 AX5
 
-![AX5 桌面页面](docs/assets/ax5-desktop.jpg)
+从小米原厂后台顶部的 **ShellCrash** 进入。原厂路由设置和轻量面板使用各自的页面，入口位置如下。
 
-![K2P 桌面页面](docs/assets/k2p-desktop.jpg)
+<img src="docs/assets/ax5-native-settings.jpg" width="960" alt="AX5 小米原厂后台与顶部 ShellCrash 入口，旧项目截图">
 
-<p>
-<img src="docs/assets/ax5-mobile.jpg" width="260" alt="AX5 手机页面">
-<img src="docs/assets/k2p-mobile.jpg" width="260" alt="K2P 手机页面">
-</p>
+<details>
+<summary>查看 AX5 轻量面板与手机版</summary>
+
+统一项目的轻量面板：
+
+<img src="docs/assets/ax5-desktop.jpg" width="960" alt="AX5 当前轻量面板">
+
+<img src="docs/assets/ax5-mobile.jpg" width="280" alt="AX5 手机轻量面板">
+
+</details>
+
+### K2P / Padavan
+
+从左侧 **高级设置 → ShellCrash** 进入，保留 Padavan 的导航和系统信息。下面是旧项目的后台集成布局示意，节点与数值为示例数据。
+
+<img src="docs/assets/k2p-native-layout.png" width="960" alt="K2P Padavan 原后台中集成 ShellCrash 的布局示意">
+
+<details>
+<summary>查看 K2P 当前轻量面板与手机版</summary>
+
+统一项目实机页面：
+
+<img src="docs/assets/k2p-desktop.jpg" width="960" alt="K2P 当前轻量面板">
+
+<img src="docs/assets/k2p-mobile.jpg" width="280" alt="K2P 手机轻量面板">
+
+</details>
+
+[更多界面及截图来源](docs/SCREENSHOTS.md)。旧项目图片用于展示入口和界面演变，当前功能以统一项目的说明为准；截图数值不代表设备规格或性能保证。
 
 ## 可以做什么
 
