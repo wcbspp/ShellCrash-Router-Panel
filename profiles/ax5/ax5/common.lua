@@ -5,7 +5,7 @@ function M.write(p,s) local f=assert(io.open(p,'wb'));assert(f:write(s));f:close
 function M.load(p,default) local ok,v=pcall(M.json.decode,M.read(p));if ok then return v end;return default or {} end
 function M.encode(v)
  local s=M.json.encode(v)
- for _,key in ipairs({'domain','domain_suffix','domain_regex','query_type','rule_set','rules','servers','ip_cidr','outbounds','alpn','path','connections'})do s=s:gsub('"'..key..'":{}','"'..key..'":[]')end
+ for _,key in ipairs({'domain','domain_suffix','domain_regex','query_type','rule_set','rules','servers','ip_cidr','outbounds','alpn','path','connections','rows'})do s=s:gsub('"'..key..'":{}','"'..key..'":[]')end
  return s
 end
 function M.save(p,v) M.write(p..'.new',M.encode(v));assert(os.rename(p..'.new',p)) end
@@ -80,6 +80,7 @@ function M.state()
  local incidents=M.read(M.R..'/incidents');local recoveries=0;for _ in incidents:gmatch('\n') do recoveries=recoveries+1 end
  local coreenv=M.read(M.C..'/cache/core.env');local kind=coreenv:match('KIND=([^%s]+)')or'singbox';local ver=coreenv:match('VERSION=([^%s]+)')or'1.12.13'
  local s={running=pid>0,pid=pid,core_uptime_seconds=M.core_uptime(pid),available_kb=avail,free_kb=mem.MemFree or 0,rss_kb=tonumber(stat:match('VmRSS:%s+(%d+)')) or 0,shmem_kb=mem.Shmem or 0,slab_kb=mem.Slab or 0,tcp_kb=pages*4,conntrack=tonumber(M.read('/proc/sys/net/netfilter/nf_conntrack_count')) or 0,pressure=avail<limits.protect_mb*1024 and 'protect' or avail<limits.warning_mb*1024 and 'warning' or 'normal',memory_limits=limits,dns_mode=M.read(M.C..'/configs/dns-mode'):gsub('%s+$',''),url_b64=M.b64(M.read(M.C..'/configs/subscription'):gsub('%s+$','')),core_kind=kind,core_version=ver,core_blob=M.read(M.C..'/cache/core.sha256'):match('^(%x+)'),rules_count=count,rules_date_b64=M.b64(M.read(M.C..'/configs/rules-date')),recoveries=recoveries,cleanup=M.load(M.R..'/cleanup.json')}
+ s.transport=dofile(M.C..'/ax5/transport-mode.lua').state()
  s.traffic_mode=M.read(M.R..'/traffic-mode'):gsub('%s+$','');if not({rule=true,direct=true,global=true})[s.traffic_mode]then s.traffic_mode='rule'end
  s.subscription=M.load(M.C..'/configs/subscription-state.json');s.template_kind=index.template_kind;s.template_rules=index.template_rules;s.template_groups=index.template_groups;s.main_group=index.main_group
  local toolcfg='\n'..M.read('/data/ShellCrash-tool/configs/ShellCrash.cfg')

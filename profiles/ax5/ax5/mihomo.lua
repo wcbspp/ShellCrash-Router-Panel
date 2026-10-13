@@ -15,7 +15,7 @@ function A.build(c)
    end
   elseif o.type=='direct'or o.type=='block'then
   else
-   local t=o.type;local tls=o.tls or{};local p={name=o.tag,type=t,server=o.server,port=o.server_port,udp=false}
+   local t=o.type;local tls=o.tls or{};local p={name=o.tag,type=t,server=o.server,port=o.server_port,udp=o.network~="tcp"}
    if t=='anytls'or t=='trojan'then p.password=o.password
    elseif t=='shadowsocks'then
     p.type='ss';p.cipher=o.method;p.password=o.password
@@ -53,7 +53,7 @@ function A.build(c)
  local filter={'rule-set:cn'};for line in M.read(M.C..'/configs/fake_ip_filter.list'):gmatch('[^\r\n]+')do line=line:match('^%s*(.-)%s*$');if line~=''and not line:match('^#')and not line:find(' ')then filter[#filter+1]=line end end
  local mode='redir_host';for _,server in ipairs(c.dns.servers or{})do if server.type=='fakeip'then mode='mix'end end
  local hosts={};for line in M.read(M.R..'/hosts'):gmatch('[^\n]+')do local ip,n=line:match('^(%d+%.%d+%.%d+%.%d+)%s+([^%s#]+)');if ip and n then hosts[n]=ip end end
- return {['mixed-port']=7890,['redir-port']=7892,['allow-lan']=true,['bind-address']='*',mode='rule',['log-level']='warning',ipv6=false,['routing-mark']=21315,['find-process-mode']='off',['external-controller']='127.0.0.1:9999',secret=c.experimental.clash_api.secret,['geo-auto-update']=false,profile={['store-selected']=false,['store-fake-ip']=true},hosts=hosts,proxies=ps,['proxy-groups']=gs,['rule-providers']={cn={type='file',behavior='domain',format='mrs',path='/data/ShellCrash/ruleset/cn.mrs'}},dns={enable=true,listen='0.0.0.0:1053',ipv6=false,['enhanced-mode']=mode=='mix'and'fake-ip'or'redir-host',['fake-ip-range']='198.18.0.1/15',['fake-ip-filter']=filter,['default-nameserver']={'223.5.5.5'},nameserver={'tcp://8.8.8.8#proxy-main','https://cloudflare-dns.com/dns-query#proxy-main'},['nameserver-policy']={['rule-set:cn']={'223.5.5.5'},['+.lan']={'223.5.5.5'},['+.local']={'223.5.5.5'}},['proxy-server-nameserver']={'223.5.5.5'},['direct-nameserver']={'223.5.5.5'}},rules=rules}
+ return {tun=dofile(M.C..'/ax5/transport-mode.lua').tun(),['mixed-port']=7890,['redir-port']=7892,['allow-lan']=true,['bind-address']='*',mode='rule',['log-level']='warning',ipv6=false,['routing-mark']=21315,['find-process-mode']='off',['external-controller']='127.0.0.1:9999',secret=c.experimental.clash_api.secret,['geo-auto-update']=false,profile={['store-selected']=false,['store-fake-ip']=true},hosts=hosts,proxies=ps,['proxy-groups']=gs,['rule-providers']={cn={type='file',behavior='domain',format='mrs',path='/data/ShellCrash/ruleset/cn.mrs'}},dns={enable=true,listen='0.0.0.0:1053',ipv6=false,['enhanced-mode']=mode=='mix'and'fake-ip'or'redir-host',['fake-ip-range']='198.18.0.1/15',['fake-ip-filter']=filter,['default-nameserver']={'223.5.5.5'},nameserver={'tcp://8.8.8.8#proxy-main','https://cloudflare-dns.com/dns-query#proxy-main'},['nameserver-policy']={['rule-set:cn']={'223.5.5.5'},['+.lan']={'223.5.5.5'},['+.local']={'223.5.5.5'}},['proxy-server-nameserver']={'223.5.5.5'},['direct-nameserver']={'223.5.5.5'}},rules=rules}
 end
 if arg and arg[1]=='generate'then M.write(arg[3] or M.C..'/configs/config.yaml',M.encode(A.build(M.load(arg[2] or M.C..'/configs/config.json'))):gsub('\\/','/'))end
 return A

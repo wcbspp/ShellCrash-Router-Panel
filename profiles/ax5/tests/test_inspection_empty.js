@@ -1,0 +1,10 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');
+const root=path.resolve(__dirname,'..'),ax=fs.existsSync(path.join(root,'ui/manager.js'));
+const text=fs.readFileSync(path.join(root,ax?'ui/manager.js':'payload/padavan/manager.js'),'utf8');
+const source=text.slice(text.indexOf('function renderInspection(data)'),text.indexOf('async function loadInspection'));
+const fields={'inspect-list':{replaceChildren(){this.items=[]},append(x){this.items.push(x)}},'inspect-summary':{},'inspect-page':{},'inspect-previous':{},'inspect-next':{}};
+const c=vm.createContext({el:id=>fields[id],inspectKind:'rules',inspectLimit:20,inspectLoading:false,document:{createElement:()=>({append(){}})}});vm.runInContext(source,c);
+c.renderInspection({rows:[],total:0,page:0});assert.equal(fields['inspect-list'].items.length,1);assert(fields['inspect-summary'].textContent.includes('0 项'));assert(fields['inspect-next'].disabled);
+c.renderInspection({rows:{},total:0,page:0});assert.equal(fields['inspect-list'].items.length,1);
+assert.throws(()=>c.renderInspection({rows:{wrong:1},total:1,page:0}),/查询结果格式异常/);
+c.renderInspection({rows:[{title:'example',detail:'DIRECT'}],total:1,page:0});assert.equal(fields['inspect-list'].items.length,1);assert(fields['inspect-summary'].textContent.includes('1 项'));console.log('inspection empty array, legacy zero object, invalid result and normal row passed');

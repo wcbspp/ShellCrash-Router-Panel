@@ -14,7 +14,7 @@ local function service(action)
  if action=='stop'then M.write(M.C..'/configs/enabled','0\n')else M.write(M.C..'/configs/enabled','1\n')end
  if not M.run('SC_CONTROL_SOURCE=panel /data/ShellCrash-tool/start.sh '..action..' >> '..M.R..'/service.log 2>&1')then fail('service_'..action..'_failed')end
  if action=='stop'then for i=1,15 do if M.pid()==0 then return end;M.run('sleep 1')end;fail('service_stop_failed')end
- if action~='stop'then for i=1,12 do if M.pid()>0 and M.api('/version')~=''then return end;M.run('sleep 1')end;fail('service_start_failed')end
+ if action~='stop'then for i=1,12 do if M.pid()>0 and M.api('/version')~=''and M.read(M.R..'/service-ready')=='1\n' then return end;M.run('sleep 1')end;fail('service_start_failed')end
 end
 local function guard()if (M.memory().MemAvailable or 0)<M.limits().protect_mb*1024 then fail('memory_protected')end end
 local function current()return M.load(M.C..'/configs/config.json')end
@@ -77,13 +77,15 @@ local function upload(kind)
 end
 local function record_subscription(parser)
  local info=M.load(M.R..'/subscription-attempt.json');if info.id~=id then return end
- local source=M.read(M.R..'/upload-source',8192);info.exclude_b64=source:match('\nexclude=([A-Za-z0-9+/=]*)')or'';local mode=source:match('\nexclude_mode=([A-Za-z0-9+/=]*)')or'';info.exclude_mode=mode=='YXV0bw=='and'auto'or mode=='cmVnZXg='and'regex'or'keyword';info.warnings=current()._subscription_warnings;info.id=nil;info.parser=parser;info.applied_at=os.time();info.core_kind=M.state().core_kind
+ local source=M.read(M.R..'/upload-source',8192);info.ua_override_b64=source:match('\nua=([A-Za-z0-9+/=]*)')or'';info.exclude_b64=source:match('\nexclude=([A-Za-z0-9+/=]*)')or'';local mode=source:match('\nexclude_mode=([A-Za-z0-9+/=]*)')or'';info.exclude_mode=mode=='YXV0bw=='and'auto'or mode=='cmVnZXg='and'regex'or'keyword';info.warnings=current()._subscription_warnings;info.id=nil;info.parser=parser;info.applied_at=os.time();info.core_kind=M.state().core_kind
  info.config_id=M.exec('md5sum '..M.quote(M.C..'/configs/config.json')..' 2>/dev/null'):match('^(%x+)')
  M.save(M.C..'/configs/subscription-state.json',info)
 end
 local function execute()
  local a=req.action
- if a=='advanced'then guard();if not M.run('sh '..M.C..'/ax5/dashboard-install.sh '..M.C..' '..M.state().core_kind..' >> '..M.R..'/worker.log 2>&1')then fail('高级面板下载或校验失败，请查看运行日志')end;phase('done','高级面板已准备',false)
+ if a=='advanced'then guard();os.remove(M.R..'/dashboard-error');if not M.run('sh '..M.C..'/ax5/dashboard-install.sh '..M.C..' '..M.state().core_kind..' >> '..M.R..'/worker.log 2>&1')then local reason=M.read(M.R..'/dashboard-error'):gsub('%s+$','');fail(reason~=''and reason or'高级面板下载或校验失败，请查看运行日志')end;phase('done','高级面板已准备',false)
+ elseif a=='transport'then
+  local message=dofile(M.C..'/ax5/transport-mode.lua').apply(args[2],service,phase);phase('done',message,false)
  elseif a=='proxymode'then
   phase('working','正在切换流量接管',true);dofile(M.C..'/ax5/traffic-mode.lua').apply(args[2]);phase('done','流量模式已生效',false)
  elseif a=='start'or a=='stop'or a=='restart'then service(a);phase('done','service_operation_complete',false)
@@ -196,7 +198,8 @@ local function execute()
   phase('done','远程仓库验证通过',false)
  elseif a=='backuplocal'or a=='backupremote'then
   phase('working','正在备份应用',true)
-  if not M.run(M.C..'/ax5/backup-app.sh '..(a=='backupremote'and'remote'or'local')..' >> '..M.R..'/service.log 2>&1')then fail('应用备份失败，请查看日志；当前服务保持运行')end
+  os.remove(M.R..'/backup-error')
+  if not M.run(M.C..'/ax5/backup-app.sh '..(a=='backupremote'and'remote'or'local')..' >> '..M.R..'/service.log 2>&1')then local reason=M.read(M.R..'/backup-error'):gsub('%s+$','');fail(reason~=''and reason or'应用备份失败，请查看日志；当前服务保持运行')end
   phase('done','应用备份完成',false)
  elseif a=='mirrorsync'then
   guard();phase('working','mirror_syncing',true)

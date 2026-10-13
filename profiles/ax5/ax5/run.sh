@@ -13,7 +13,7 @@ fi
 shutdown() { ending=1; touch "$R/manual-stop"; [ -z "$child" ] || kill -TERM "$child" 2>/dev/null; }
 trap shutdown TERM INT
 mkdir -p "$R"
-rm -f "$R/traffic-mode"
+rm -f "$R/traffic-mode" "$R/transport-runtime" "$R/service-ready"
 if [ -f "$R/control-source.pending" ]; then
  mv "$R/control-source.pending" "$R/control-source"
 else
@@ -28,7 +28,15 @@ fi
 child=$!
 echo "$child" > "$R/core.pid"
 for i in 1 2 3 4 5; do
- if curl --noproxy '*' -s -o /dev/null --connect-timeout 1 --max-time 2 http://127.0.0.1:9999/version; then lua -e 'dofile("/data/ShellCrash/ax5/traffic-mode.lua").apply("rule")' && lua "$C/ax5/state.lua" restore; break; fi
+ if curl --noproxy '*' -s -o /dev/null --connect-timeout 1 --max-time 2 http://127.0.0.1:9999/version; then
+  if lua -e 'dofile("/data/ShellCrash/ax5/traffic-mode.lua").apply("rule")' && lua "$C/ax5/state.lua" restore; then
+   cp "$R/transport-prepared" "$R/transport-runtime"
+   printf '1\n' > "$R/service-ready"
+   break
+  fi
+  kill -TERM "$child" 2>/dev/null
+  break
+ fi
  kill -0 "$child" 2>/dev/null || break
  sleep 1
 done
@@ -44,7 +52,7 @@ if [ "$KIND" = meta ] && [ "$ending" = 1 ] && [ -f "$R/cache.db" ]; then
  if [ "$size" -le 524288 ]; then cp "$R/cache.db" "$C/configs/mihomo-cache.db.new" && mv "$C/configs/mihomo-cache.db.new" "$C/configs/mihomo-cache.db"; fi
 fi
 "$C/ax5/firewall.sh" stop
-rm -f "$R/core.pid"
+rm -f "$R/core.pid" "$R/transport-runtime" "$R/service-ready"
 if [ "$ending" != 1 ] && [ ! -f "$R/manual-stop" ]; then
  lua "$C/ax5/state.lua" incident "$child" "$code"
 fi

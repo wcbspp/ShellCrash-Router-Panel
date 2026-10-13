@@ -1,0 +1,11 @@
+const fs=require('fs'),path=require('path'),vm=require('vm'),assert=require('node:assert/strict');
+const text=fs.readFileSync(path.resolve(__dirname,'../ui/index.html'),'utf8');
+const source=text.slice(text.indexOf('let routerRequestQueue='),text.indexOf('async function routedSiteProbe'));
+const c=vm.createContext({Promise,Error});vm.runInContext(source,c);
+(async()=>{let release,started=[];
+ const first=c.withRouterRequest(()=>{started.push(1);return new Promise(r=>release=r)});
+ const second=c.withRouterRequest(()=>{started.push(2);return 2});await Promise.resolve();assert.deepEqual(started,[1]);release(1);assert.equal(await first,1);assert.equal(await second,2);
+ const bad=c.withRouterRequest(()=>Promise.reject(Error('fixture')));await assert.rejects(bad);assert.equal(await c.withRouterRequest(()=>3),3,'failed request cannot stall the queue');
+ const aborted=c.withRouterRequest(()=>{throw Error('must not dispatch')},{aborted:true});await assert.rejects(aborted,e=>e.name==='AbortError');assert.equal(await c.withRouterRequest(()=>4),4);
+ console.log('router relay: serialized work, failure recovery and queued cancellation passed');
+})().catch(e=>{console.error(e);process.exitCode=1});

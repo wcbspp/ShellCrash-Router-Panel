@@ -11,3 +11,7 @@ c.proxyMode='global';assert.equal(c.siteProbeTarget({route:'proxy-main'}),'GLOBA
 c.invalidateSiteResults();assert.equal(results.size,0);assert.equal(paused,1);assert.equal(painted,1);assert.equal(vm.runInContext('siteLastTime',c),0);
 assert(source.includes('encodeURIComponent(siteProbeTarget(s))'),'actual probe API must use mode-aware target');
 console.log('website probe targets follow mode and stale successful results are invalidated');
+
+assert.equal(c.siteProbeResult({delay:12,http:200}).state,'ok');assert.equal(c.siteProbeResult({delay:12,http:403}).state,'http-error');assert.equal(c.siteProbeResult({delay:12,http:503}).state,'http-error');assert.equal(c.siteProbeResult({delay:12}).state,'ok');assert.equal(c.siteProbeResult({delay:0,tls:60}).reason,'TLS 验证失败');assert.equal(c.siteProbeFailure({status:400,message:'bad endpoint'}).reason,'接口错误 400');assert.equal(c.siteProbeFailure({name:'AbortError',message:'aborted'}).reason,'检测超时');console.log('site failures distinguish API errors, timeout/TLS, HTTP access errors and successful responses');
+
+const list=JSON.parse(source.match(/const sites=(\[.*\])/)[1]),backend=fs.readFileSync(path.join(root,'ax5/api.lua'),'utf8'),table=backend.match(/local urls=\{([^}]+)\}/)[1],entries=Object.fromEntries([...table.matchAll(/([a-z]+)='([^']+)'/g)].map(m=>[m[1],m[2]]));assert.deepEqual(Object.keys(entries).sort(),list.map(s=>s.id).sort());for(const s of list)assert.equal(entries[s.id],s.url,s.id+' frontend/backend fixed URL mismatch');console.log('every website button has the same fixed backend endpoint and URL');

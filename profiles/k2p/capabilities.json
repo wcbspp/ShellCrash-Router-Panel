@@ -11,5 +11,12 @@
   "firmware": "K2P 16MB Padavan 4.4.198.9-100_20220804",
   "backend": "padavan-shell",
   "fresh_install_status": "pending-device-test",
-  "upgrade_status": "pending-device-test"
+  "upgrade_status": "pending-device-test",
+  "interception_modes": [
+    "redir",
+    "mixed"
+  ],
+  "mixed_kernel": "singbox",
+  "mixed_udp_scope": "lan-ipv4",
+  "router_udp_proxy": false
 }

@@ -210,5 +210,13 @@
   "tools/update.sh": "profiles/k2p/tools/update.sh",
   "tools/legacy-migration.sha256": "profiles/k2p/tools/legacy-migration.sha256",
   "payload/starts/backup-links.sh": "shared/lib/backup-links.sh",
-  "payload/starts/panel-version": "VERSION"
+  "payload/starts/panel-version": "VERSION",
+  "tests/test_transport_mode.js": "profiles/ax5/tests/test_transport_mode.js",
+  "payload/starts/transport_mode.sh": "profiles/k2p/payload/starts/transport_mode.sh",
+  "payload/starts/traffic_sample.sh": "profiles/k2p/payload/starts/traffic_sample.sh",
+  "tests/test_kernel_traffic.js": "profiles/ax5/tests/test_kernel_traffic.js",
+  "tests/test_transport_apply.py": "profiles/k2p/tests/test_transport_apply.py",
+  "tests/test_status_json.py": "profiles/k2p/tests/test_status_json.py",
+  "tests/test_inspection_empty.js": "profiles/ax5/tests/test_inspection_empty.js",
+  "payload/starts/policy_capture.sh": "profiles/k2p/payload/starts/policy_capture.sh"
 }

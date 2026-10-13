@@ -14,7 +14,11 @@ if [ "$(cat "$R/.ready" 2>/dev/null || true)" = "$expected" ]; then
  exit 0
 fi
 avail=$(awk '/MemAvailable:/{print $2;exit}' /proc/meminfo)
-[ "${avail:-0}" -ge 20000 ] || { echo '可用内存不足 20 MB，暂缓下载高级面板';exit 1; }
+if [ "${avail:-0}" -lt 20000 ];then
+ mkdir -p /tmp/ShellCrash
+ printf '高级面板暂缓：可用 %s KB，安装至少需要 20000 KB；代理服务保持运行\n' "${avail:-0}" > /tmp/ShellCrash/dashboard-error
+ cat /tmp/ShellCrash/dashboard-error;exit 1
+fi
 mkdir /tmp/sc-dashboard-install.lock 2>/dev/null || exit 1
 trap 'rm -rf /tmp/sc-dashboard-install.lock /tmp/sc-dashboard-stage /tmp/sc-dashboard.tar.gz' EXIT
 W=/tmp/sc-dashboard-install.lock

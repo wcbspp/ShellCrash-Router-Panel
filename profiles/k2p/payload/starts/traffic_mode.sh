@@ -21,6 +21,13 @@ traffic_mode_apply(){
    fi
   done
   printf 'COMMIT\n'
+  printf '*mangle\n'
+  for chain in shellcrash_mark shellcrash_mark_out;do
+   if iptables -t mangle -S "$chain" > "$T/chain" 2>/dev/null;then
+    printf ':%s - [0:0]\n' "$chain";sed -n '/^-A /p' "$T/chain"
+   fi
+  done
+  printf 'COMMIT\n'
  }
  iptables -t nat -S shellcrash >/dev/null 2>&1 && iptables -t nat -S shellcrash_dns >/dev/null 2>&1 || { rm -f "$T/auth";return 1; }
  traffic_snapshot > "$T/before"
@@ -31,14 +38,25 @@ traffic_mode_apply(){
  traffic_fw(){
   traffic_unhook
   traffic_restore "$T/base" || return 1
-  if [ "$1" = direct ];then
+  if [ "$1" = rule ];then
+   . "$C/starts/policy_capture.sh"
+   policy_capture_apply || return 1
+  elif [ "$1" = direct ];then
    for chain in shellcrash shellcrash_dns shellcrash_out shellcrash_dns_out;do
     iptables -t nat -S "$chain" >/dev/null 2>&1 || continue
     iptables -t nat -I "$chain" 1 -m comment --comment SC_PANEL_DIRECT -j RETURN || return 1
    done
+   for chain in shellcrash_mark shellcrash_mark_out;do
+    iptables -t mangle -S "$chain" >/dev/null 2>&1 || continue
+    iptables -t mangle -I "$chain" 1 -m comment --comment SC_PANEL_DIRECT -j RETURN || return 1
+   done
   elif [ "$1" = global ];then
    for chain in shellcrash shellcrash_out;do
     while iptables -t nat -D "$chain" -m set --match-set cn_ip dst -j RETURN 2>/dev/null;do :;done
+   done
+   for chain in shellcrash_mark shellcrash_mark_out;do
+    iptables -t mangle -S "$chain" >/dev/null 2>&1 || continue
+    while iptables -t mangle -D "$chain" -m set --match-set cn_ip dst -j RETURN 2>/dev/null;do :;done
    done
    iptables -t nat -I PREROUTING 1 -p tcp -m comment --comment SC_PANEL_GLOBAL -j shellcrash || return 1
   fi

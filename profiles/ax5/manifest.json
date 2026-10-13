@@ -117,5 +117,17 @@
   "docs/CONTROL_TEST_CASES.csv": "profiles/ax5/docs/CONTROL_TEST_CASES.csv",
   "docs/CONTROL_TEST_RESULTS.csv": "profiles/ax5/docs/CONTROL_TEST_RESULTS.csv",
   "ax5/backup-links.sh": "shared/lib/backup-links.sh",
-  "ax5/panel-version": "VERSION"
+  "ax5/panel-version": "VERSION",
+  "tests/test_zerotier_environment.py": "profiles/ax5/tests/test_zerotier_environment.py",
+  "tests/test_https_fallback.py": "profiles/ax5/tests/test_https_fallback.py",
+  "ax5/transport-mode.lua": "profiles/ax5/ax5/transport-mode.lua",
+  "tests/test_transport_mode.js": "profiles/ax5/tests/test_transport_mode.js",
+  "tests/test_transport_firewall.py": "profiles/ax5/tests/test_transport_firewall.py",
+  "tests/transport_mode.lua": "profiles/ax5/tests/transport_mode.lua",
+  "tests/test_kernel_traffic.js": "profiles/ax5/tests/test_kernel_traffic.js",
+  "tests/test_inspection_empty.js": "profiles/ax5/tests/test_inspection_empty.js",
+  "tests/test_router_queue.js": "profiles/ax5/tests/test_router_queue.js",
+  "ax5/core-stream.lua": "profiles/ax5/ax5/core-stream.lua",
+  "tests/core_stream.lua": "profiles/ax5/tests/core_stream.lua",
+  "tests/test_backup_budget.py": "profiles/ax5/tests/test_backup_budget.py"
 }

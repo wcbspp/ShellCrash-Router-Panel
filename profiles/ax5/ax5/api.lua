@@ -1,7 +1,7 @@
 local M=dofile('/data/ShellCrash/ax5/common.lua')
 local H=require('luci.http');local D=require('luci.dispatcher')
 local A={}
-local function reply(v,code) H.status(code or 200);H.header('Cache-Control','no-store');H.prepare_content('application/json');H.write(M.json.encode(v))end
+local function reply(v,code) H.status(code or 200);H.header('Cache-Control','no-store');H.prepare_content('application/json');H.write(M.encode(v))end
 local function body()
  local n=tonumber(H.getenv('CONTENT_LENGTH')) or 0;if n>262144 then return nil end
  local raw=H.formvalue('payload');local ok,d=pcall(M.json.decode,raw or '');if ok and type(d)=='table' then return d end
@@ -82,7 +82,7 @@ function A.upload()
 end
 function A.control()
  if H.getenv('REQUEST_METHOD')~='POST'or not csrf()then reply({error='forbidden'},403);return end
- local d=body();local allowed={start=true,stop=true,restart=true,clear=true,cleanup=true,memcfg=true,fetch=true,apply=true,dns=true,policy=true,groupmode=true,grouplayout=true,rules=true,domainupdate=true,corecheck=true,coreupdate=true,toolcheck=true,toolupdate=true,guard=true,proxymode=true,advanced=true,mirrortest=true,mirrorsave=true,mirrorsync=true,mirrorverify=true,backuplocal=true,backupremote=true}
+ local d=body();local allowed={start=true,stop=true,restart=true,clear=true,cleanup=true,memcfg=true,fetch=true,apply=true,dns=true,policy=true,groupmode=true,grouplayout=true,rules=true,domainupdate=true,corecheck=true,coreupdate=true,toolcheck=true,toolupdate=true,guard=true,transport=true,proxymode=true,advanced=true,mirrortest=true,mirrorsave=true,mirrorsync=true,mirrorverify=true,backuplocal=true,backupremote=true}
  if not d or type(d.script)~='string'then reply({error='invalid_action'},400);return end
  local action=d.script:match('^sc%-(%w+)%.sh$');if not allowed[action]then reply({error='unsupported_action'},400);return end
  local args=d.args or {};if type(args)~='table'or #args>3 then reply({error='invalid_arguments'},400);return end;for _,v in ipairs(args)do if type(v)~='string'or #v>100 or not v:match('^[%w+/=]+$')then reply({error='invalid_arguments'},400);return end end
@@ -96,8 +96,27 @@ end
 function A.api()
  if not csrf()then reply({error='forbidden'},403);return end
  local path=H.formvalue('path')or'';local method=H.getenv('REQUEST_METHOD');if method=='POST'then method=path=='/configs'and'PATCH'or'PUT'end
- if #path>2048 or path:find('[\r\n]')or not (path=='/version'or path=='/configs'or path=='/rules'or path=='/providers/proxies'or path=='/providers/rules'or path=='/connections'or path=='/proxies'or path:match('^/proxies/')or path:match('^/group/[^/]+/delay'))or not ({GET=true,PUT=true,DELETE=true,PATCH=true})[method]then reply({error='invalid_api'},400);return end
- if (method=='PUT'or method=='DELETE')and not path:match('^/proxies/')then reply({error='read_only'},403);return end
+ if path=='/panel-traffic' then
+  if method~='GET'then reply({error='read_only'},403);return end
+  local pid=M.pid();if pid==0 then reply({running=false});return end
+  local stat=M.read('/proc/'..pid..'/stat'):match('^%d+ %(.+%) (.+)$')or'';local fields={};for v in stat:gmatch('%S+')do fields[#fields+1]=v end
+  local raw=M.exec('curl --noproxy "*" -sN --connect-timeout 1 --max-time 1.5 -H '..M.quote(M.read(M.C..'/configs/api-header'):gsub('%s+$',''))..' http://127.0.0.1:9999/traffic 2>/dev/null | head -1')
+  local ok,v=pcall(M.json.decode,raw)
+  if not ok or type(v)~='table'or M.pid()~=pid or type(v.up)~='number'or type(v.down)~='number'or type(v.upTotal)~='number'or type(v.downTotal)~='number'then reply({error='traffic_unavailable'},503);return end
+  v.running=true;v.epoch=tostring(pid)..'-'..tostring(fields[20]);v.checked_ms=math.floor((tonumber(M.read('/proc/uptime'):match('^(%S+)'))or 0)*1000)
+  reply(v);return
+ end
+ if path:match('^/panel%-probe/')then
+  local urls={baidu='https://www.baidu.com/',bilibili='https://www.bilibili.com/favicon.ico',tencentqq='https://www.qq.com/favicon.ico',taobao='https://www.taobao.com/favicon.ico',google='https://www.google.com/generate_204',youtube='https://www.youtube.com/generate_204',github='https://github.com/favicon.ico',openai='https://chatgpt.com/favicon.ico'}
+  local url=urls[path:match('^/panel%-probe/([a-z]+)$')or''];if method~='GET'or not url then reply({error='invalid_probe'},400);return end
+  -- Respect the active core rules. This router-originated request is distinct
+  -- from a forced outbound delay and from a LAN client's existing connection.
+  local output=M.exec('curl -4 -sS -I --proxy http://127.0.0.1:7890 --noproxy "" --connect-timeout 5 --max-time 8 -o /dev/null -w '..M.quote('%{http_code} %{time_total} %{ssl_verify_result}')..' '..M.quote(url)..' 2>/dev/null')
+  local http,seconds,tls=output:match('(%d%d%d) ([%d%.]+) (%d+)');http,seconds,tls=tonumber(http)or 0,tonumber(seconds)or 0,tonumber(tls)or 1
+  reply({http=http,delay=http>0 and tls==0 and math.max(1,math.floor(seconds*1000))or 0,scope='router-rules',tls=tls});return
+ end
+ if #path>2048 or path:find('[\r\n]')or not (path=='/version'or path=='/configs'or path=='/rules'or path=='/providers/proxies'or path=='/providers/rules'or path=='/connections'or path:match('^/connections/[A-Za-z0-9%-]+$')or path=='/proxies'or path:match('^/proxies/')or path:match('^/group/[^/]+/delay'))or not ({GET=true,PUT=true,DELETE=true,PATCH=true})[method]then reply({error='invalid_api'},400);return end
+ if (method=='PUT'or method=='DELETE')and not(path:match('^/proxies/')or method=='DELETE'and path:match('^/connections/[A-Za-z0-9%-]+$'))then reply({error='read_only'},403);return end
  if method=='PATCH'then
   if path~='/configs'then reply({error='read_only'},403);return end
   local d=body();if not d or not({rule=true,direct=true,global=true})[d.mode]then reply({error='invalid_mode'},400);return end
@@ -109,6 +128,13 @@ function A.api()
   reply({ok=true});return
  end
  local data='';if method=='PUT'then local d=body();if not d or type(d.name)~='string'or #d.name>256 then reply({error='invalid_node'},400);return end;data=M.json.encode({name=d.name}) end
+ if method=='GET'then
+  local stream,status=dofile(M.C..'/ax5/core-stream.lua').open(path)
+  if not stream then reply({error='core_request_failed'},status>0 and status or 503);return end
+  H.status(status);H.header('Cache-Control','no-store');H.prepare_content('application/json')
+  while true do local block=stream:read(4096);if not block then break end;H.write(block)end
+  stream:close();return
+ end
  local raw,status=M.request(path,method,data)
  if status<200 or status>=300 then reply({error='core_request_failed'},status>0 and status or 503);return end
  if method~='GET'then reply({ok=true});return end

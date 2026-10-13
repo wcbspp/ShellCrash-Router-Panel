@@ -1,6 +1,6 @@
 local root=arg[1]or'/data/ShellCrash/ax5'
-local original=dofile;local M=original(root..'/common.lua');local read=M.read;local policy="suffix\tcustom.example\tproxy-main\n"
-M.read=function(p,max)if p==M.C..'/configs/policy.tsv'then return policy elseif p==M.C..'/configs/fake_ip_filter.list'then return ''end;return read(p,max)end
+local original=dofile;local M=original(root..'/common.lua');local read=M.read;local interception='Redir模式';local policy="suffix\tcustom.example\tproxy-main\n"
+M.read=function(p,max)if p=='/data/ShellCrash-tool/configs/ShellCrash.cfg'then return 'redir_mod='..interception..'\n' elseif p==M.C..'/configs/policy.tsv'then return policy elseif p==M.C..'/configs/fake_ip_filter.list'then return ''end;return read(p,max)end
 dofile=function(p)if p:match('/common.lua$')then return M end;local n=p:match('/ax5/([^/]+)$');if n then return original(root..'/'..n)end;return original(p)end
 local N=dofile(M.C..'/ax5/native-profile.lua')
 local function old()return {outbounds={{type='anytls',tag='node',server='server.example',server_port=443,password='fixture'},{type='selector',tag='proxy-main',outbounds={'node'},default='node'},{type='direct',tag='direct'}},dns={servers={{type='fakeip'}}},route={rules={{ip_is_private=true,outbound='direct'}}},experimental={clash_api={secret='fixture'}}}end
@@ -34,3 +34,5 @@ assert(d.dns.servers[1].type=='fakeip')
 print('native profile: strategy/rules preserved, unique identity, local override, managed ports/DNS, unsafe file refusal, sing-box full JSON passed')
 
 policy='suffix\tgoogle.com\t分流/谷歌\nsuffix\tgstatic.com\t分流/谷歌\nsuffix\tgoogleapis.com\t分流/谷歌\n';local staleSB=old();staleSB.outbounds[#staleSB.outbounds+1]={type='selector',tag='分流/谷歌',outbounds={'removed-node'},default='removed-node'};local sbFixed=N.import_singbox(staleSB,sb);for _,g in ipairs(sbFixed.outbounds)do if g.tag=='分流/谷歌'then assert(g.default=='proxy-main')end end;assert(#sbFixed._subscription_warnings==1);print('missing fixed/local targets fall back to default proxy, staged policy remains transactional; both native formats passed')
+
+local A=dofile(M.C..'/ax5/mihomo.lua');local modes=N.import(old(),meta());assert(A.build(modes).tun.enable==false);interception='混合模式';local runtime=A.build(modes);assert(runtime.tun.enable and runtime.tun.stack=='system'and runtime.tun['auto-route']==false);assert(runtime['proxy-groups'][1].name==modes._native_meta['proxy-groups'][1].name);print('native template cannot override managed Redir/mixed TUN; groups and rules remain intact')

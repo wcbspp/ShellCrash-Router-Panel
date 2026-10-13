@@ -20,8 +20,8 @@
     "removed": true
   },
   "payload/padavan/manager.js": {
-    "sha256": "3d2cacde822af621a304fa76f8597f7d68b2db454d186a4469588cf8c4faaf29",
-    "reason": "Show actual remote panel version and SHA256 core filenames while preserving shared management behavior."
+    "sha256": "467db95ae44b1490b270caee5f5914fc25554cddcfc44a3278352a9e39880c00",
+    "reason": "Highlighted imported/filter counts and reset warnings; version-bound stale draft isolation; automatic vs explicit UA kept distinct. Mode refresh uses shared font-safe final-node renderer; prevents raw Taiwan flag returning in header. Shared mode UI with K2P capability gate; no unsupported transport mutation. Private rc.2 candidate; final plain-language scope and cancelled draft handling. Reviewed 2026-10-14: compact kernel traffic counter sampling, since-core-start totals; actual transport-dependent flow labels and rule/DNS scope. K2P mixed delegates to official ShellCrash setter/start with running executable reuse, memory/capability guards, selector preservation and rollback; direct/global also handle owned UDP marking chains. Reviewed: serialize inspection rows as an array, handle zero-result legacy replies and reject malformed rows; prevent paused/background traffic requests from painting stale samples. Reviewed 2026-10-14: stream proxy objects and retain only group descriptors, collect per ten objects, use 2 MB inspection reserve instead of full-tree 4 MB; pause traffic relay while querying to avoid concurrent memory peaks. Empty result and protection regressions on firmware Lua. Reviewed: coalesce inspection changes instead of racing backend locks; AX read/relay queue bounds LuCI worker concurrency without a resident service. Queue rejection/cancellation regression. Reviewed: transport capability text separated from actual flow mode; DNS and quick override scope reflects direct/global pause, saving restarts into rule mode. Mode scope regression included."
   },
   "payload/starts/backup-app.sh": {
     "sha256": "a1eb7a725f7d22c188a2b0326e0d0005e888b981bed3fd19c8c3db800eb5720f",
@@ -62,5 +62,53 @@
   "payload/starts/fw_stop.sh": {
     "sha256": "2b15f612ecd958ea028d6847125e7893bcbbed4ec794414b22aa800d0c0976e6",
     "reason": "Separate startup firewall cleanup from manual stop, retry marked incomplete first boots through the existing minute watchdog with backoff, preserve stop/autostart controls and separate crash counts; verify readiness and retain dispatch errors."
+  },
+  "payload/padavan/sites.js": {
+    "sha256": "7051a08f105abfd6b4a99b023acc6ca4bffad02d14e9b6a2f9ac622d6e5b9111",
+    "reason": "Reviewed: manual basic-node switching/rollback, scoped existing-flow reconnection, actual group names and routed probes, highlighted import counts/warnings, and version-bound browser subscription draft isolation. Website checks distinguish transport/TLS failures, API errors and HTTP 4xx/5xx responses; access errors use amber rather than success green. Regression includes all AX endpoint IDs/URLs."
+  },
+  "payload/ui/index.html": {
+    "sha256": "fc3bf0b4f1768e83924b04d9562bf42b4795430a1f6f9ece47acaa0b02a4e77c",
+    "reason": "Manual-only basic-node path with rollback and scoped reconnect; explicit auto-pin release/readback; truthful partial/expired measurements; native web origin preserved. Resolve final-node card text with cycle-bounded paths; show safe TW badge while preserving core keys. Nested auto/manual and cyclic graph regressions. Website checks distinguish transport/TLS failures, API errors and HTTP 4xx/5xx responses; access errors use amber rather than success green. Regression includes all AX endpoint IDs/URLs. Shared compact mode layout; K2P remains Redir and switch disabled, no heavy TUN additions. Reviewed 2026-10-14: compact kernel traffic counter sampling, since-core-start totals; actual transport-dependent flow labels and rule/DNS scope. K2P mixed delegates to official ShellCrash setter/start with running executable reuse, memory/capability guards, selector preservation and rollback; direct/global also handle owned UDP marking chains. Reviewed: native CSS zoom already resolves percent width; keep iframe at 100% to prevent double scaling and 390px overflow. Actual K mobile offender measured."
+  },
+  "tests/test_search.js": {
+    "sha256": "0e745c08a710f917f9436ee927dadf120edb6055b6fbbf5ee1db75694324e6c1",
+    "reason": "Regression coverage for manual path rollback/pin readback, partial and stale measurements, UA choice/state isolation and truthful filtered counts. Resolve final-node card text with cycle-bounded paths; show safe TW badge while preserving core keys. Nested auto/manual and cyclic graph regressions."
+  },
+  "tests/test_subscription_exclusion.js": {
+    "sha256": "712ae9a9105955459791a10cd516359387391577582d85a0a6ec518381638257",
+    "reason": "Reviewed: manual-only basic-node paths and rollback, targeted old-flow reconnect, actual template group names, highlighted truthful import counts, and AX5 probes through current rules; regression assertions included."
+  },
+  "tests/test_subscription_state.js": {
+    "sha256": "3e02de8768dbf5f29ca123385c487df6ed7962f425f44ab73df333194b3db78f",
+    "reason": "Regression coverage for manual path rollback/pin readback, partial and stale measurements, UA choice/state isolation and truthful filtered counts."
+  },
+  "payload/starts/manage.sh": {
+    "sha256": "7e31fb4bd1e7291b7d0636a7283c05ef3dfb8e9a030e35affa4be0b94f1cbbe4",
+    "reason": "Record validated explicit UA separately from resolved default; no service action or subscription behavior change. Reviewed 2026-10-14: compact kernel traffic counter sampling, since-core-start totals; actual transport-dependent flow labels and rule/DNS scope. K2P mixed delegates to official ShellCrash setter/start with running executable reuse, memory/capability guards, selector preservation and rollback; direct/global also handle owned UDP marking chains. Status JSON framing regression exercises actual status shell output with transport fields."
+  },
+  "tests/test_proxy_mode.js": {
+    "sha256": "0d476681fd7c939c813fea8283fbb786eab2d3a1432fd0b4cedf240ef4489183",
+    "reason": "Proxy-mode regression coverage. Mode refresh uses shared font-safe final-node renderer; prevents raw Taiwan flag returning in header. Reviewed: transport capability text separated from actual flow mode; DNS and quick override scope reflects direct/global pause, saving restarts into rule mode. Mode scope regression included."
+  },
+  "tests/test_site_modes.js": {
+    "sha256": "02518de8d56470a4efdffbac7b80fd7783efe26df08ee3c0752bb49bfd56a903",
+    "reason": " Website checks distinguish transport/TLS failures, API errors and HTTP 4xx/5xx responses; access errors use amber rather than success green. Regression includes all AX endpoint IDs/URLs."
+  },
+  "payload/starts/padavan_ui.sh": {
+    "sha256": "1f3b55b45fff50c3f3dfd5855c26bd47cfcbdbf745586756d5d331ad0c6b9e85",
+    "reason": " Reviewed 2026-10-14: compact kernel traffic counter sampling, since-core-start totals; actual transport-dependent flow labels and rule/DNS scope. K2P mixed delegates to official ShellCrash setter/start with running executable reuse, memory/capability guards, selector preservation and rollback; direct/global also handle owned UDP marking chains."
+  },
+  "payload/starts/panel_afstart.sh": {
+    "sha256": "52e8adef82297a0bec88a00292296ed5b23c934696eac3045dd702c3552189ef",
+    "reason": " Reviewed 2026-10-14: compact kernel traffic counter sampling, since-core-start totals; actual transport-dependent flow labels and rule/DNS scope. K2P mixed delegates to official ShellCrash setter/start with running executable reuse, memory/capability guards, selector preservation and rollback; direct/global also handle owned UDP marking chains. Reviewed: inspection reports actual memory reserve; K native/domain policies must reach core before owned country-IP bypass, preserving private exceptions and basic-config optimization. Tested base/native/custom modes and rollback."
+  },
+  "payload/starts/traffic_mode.sh": {
+    "sha256": "4fd0fa3a5ebafaac84fd99cfa161ff814844222048335a7c72231304be040733",
+    "reason": " Reviewed 2026-10-14: compact kernel traffic counter sampling, since-core-start totals; actual transport-dependent flow labels and rule/DNS scope. K2P mixed delegates to official ShellCrash setter/start with running executable reuse, memory/capability guards, selector preservation and rollback; direct/global also handle owned UDP marking chains. Reviewed: inspection reports actual memory reserve; K native/domain policies must reach core before owned country-IP bypass, preserving private exceptions and basic-config optimization. Tested base/native/custom modes and rollback."
+  },
+  "tests/test_traffic_mode.py": {
+    "sha256": "c8ae3f30c03983eb992fdac86268ca2c8eb1f45aa7bc35b9b3ab5b3ada5e2b54",
+    "reason": " Reviewed 2026-10-14: compact kernel traffic counter sampling, since-core-start totals; actual transport-dependent flow labels and rule/DNS scope. K2P mixed delegates to official ShellCrash setter/start with running executable reuse, memory/capability guards, selector preservation and rollback; direct/global also handle owned UDP marking chains. Reviewed: inspection reports actual memory reserve; K native/domain policies must reach core before owned country-IP bypass, preserving private exceptions and basic-config optimization. Tested base/native/custom modes and rollback."
   }
 }

@@ -79,8 +79,14 @@ status(){
  tool_version=$(tr -d '\r\n' < "$C/version");printf '%s' "$tool_version" | grep -Eq '^1\.[0-9]+\.[0-9]+(release|beta[0-9]+)$' || tool_version=unknown
  tool_check='{}';[ ! -s "$D/tool-check.json" ] || tool_check=$(cat "$D/tool-check.json")
  traffic_mode=$(cat /tmp/ShellCrash/traffic-mode 2>/dev/null);case "$traffic_mode" in rule|direct|global) :;; *) traffic_mode=rule;;esac
+ . "$C/starts/transport_mode.sh"
+ configured=$(transport_configured);mixed_available=false;transport_available && mixed_available=true
+ transport_active=$(cat /tmp/ShellCrash/transport-runtime 2>/dev/null)
+ [ "$running" = true ] || transport_active=''
+ case "$transport_active" in redir|mixed|'') :;; *) transport_active=unknown;;esac
+ printf '{"pid":%s,"transport":{"configured":"%s","active":"%s","mixed_available":%s},' "${pid:-0}" "$configured" "$transport_active" "$mixed_available"
  native_kind='';[ ! -f "$C/configs/native-profile" ] || native_kind=singbox
- printf '{"template_kind":"%s","traffic_mode":"%s",' "$native_kind" "$traffic_mode"
+ printf '"template_kind":"%s","traffic_mode":"%s",' "$native_kind" "$traffic_mode"
  printf '"main_group":"%s","tool_version":"%s","tool_check":%s,"local_archive":false,"mirror_pending_b64":"%s",' "$PANEL_MAIN_GROUP" "$tool_version" "$tool_check" "$(cat "$C/configs/mirror.pending" 2>/dev/null | base64 | tr -d '\n')"
  printf '"subscription_info_b64":"%s",' "$(head -c 8192 "$C/configs/subscription-state.json" 2>/dev/null | base64 | tr -d '\n')"
  remote_enabled=false;remote_enabled && remote_enabled=true
@@ -151,8 +157,14 @@ case "$act" in
    fail memory_protected; exit 1
   fi;;
 esac
-case "$act" in apply|dns|rules|policy|groupmode|grouplayout) . "$C/starts/config_core.sh" || exit 1;;esac
+case "$act" in apply|dns|rules|policy|groupmode|grouplayout|transport) . "$C/starts/config_core.sh" || exit 1;;esac
 case "$act" in
+ traffic)
+  . "$C/starts/traffic_sample.sh";traffic_sample;exit 0;;
+ transport)
+  valid_id "$id" || exit 1
+  lock || exit 1;echo "$id" > "$D/id";phase working '正在切换接管方式'
+  . "$C/starts/transport_mode.sh";transport_apply "$3" || exit 1;;
  proxymode)
   valid_id "$id" || exit 1;case "$3" in rule|direct|global) :;; *) exit 1;;esac
   lock || exit 1;echo "$id" > "$D/id";phase working '正在切换流量接管'
@@ -404,9 +416,10 @@ case "$act" in
    case "$method:$fetcher:$policy" in direct:shellcrash:s[0-8]a[01]|convert:shellcrash:s[0-8]a[01]|direct:panel:s[0-8]a[01]|panel:panel:s[0-8]a[01])
     converter='';template='';tool='';if [ "$fetcher" = shellcrash ];then converter=$(sed -n 's/^converter_b64=//p' "$D/subscription-fetch.info");template=$(sed -n 's/^template_b64=//p' "$D/subscription-fetch.info");tool=$(sed -n 's/^tool_version_b64=//p' "$D/subscription-fetch.info");fi
     custom=$(sed -n 's/^custom_b64=//p' "$D/subscription-fetch.info");template_url=$(sed -n 's/^template_url_b64=//p' "$D/subscription-fetch.info");ua=$(sed -n 's/^ua_b64=//p' "$D/subscription-fetch.info")
+    ua_override=$(sed -n 's/^ua=//p' "$D/native-source" | head -1);case "$ua_override" in *[!A-Za-z0-9+/=]*) ua_override='';;esac;[ "${#ua_override}" -le 256 ] || ua_override=''
     exclude=$(sed -n 's/^exclude=//p' "$D/native-source");case "$exclude" in *[!A-Za-z0-9+/=]*) exclude='';;esac;[ "${#exclude}" -le 1368 ] || exclude='';exclude_mode=keyword;case "$(sed -n 's/^exclude_mode=//p' "$D/native-source")" in cmVnZXg=) exclude_mode=regex;;YXV0bw==) exclude_mode=auto;;esac
     hash=$(sha256sum "$D/bounds.json" | awk '{print $1}');retained=false;[ "$parser" != native ] || [ ! -s "$D/native-resource-retained" ] || retained=true
-    printf '{"method":"%s","fetcher":"%s","parser":"%s","core_kind":"singbox","converter_policy":"%s","converter_b64":"%s","template_b64":"%s","tool_version_b64":"%s","custom_b64":"%s","template_url_b64":"%s","ua_b64":"%s","exclude_b64":"%s","exclude_mode":"%s","reset_count":%s,"rule_resources_retained":%s,"config_id":"%s","applied_at":%s}\n' "$method" "$fetcher" "$parser" "$policy" "$converter" "$template" "$tool" "$custom" "$template_url" "$ua" "$exclude" "$exclude_mode" "$reset_count" "$retained" "$hash" "$(date +%s)" > "$C/configs/subscription-state.json.new"
+    printf '{"method":"%s","fetcher":"%s","parser":"%s","core_kind":"singbox","converter_policy":"%s","converter_b64":"%s","template_b64":"%s","tool_version_b64":"%s","custom_b64":"%s","template_url_b64":"%s","ua_b64":"%s","ua_override_b64":"%s","exclude_b64":"%s","exclude_mode":"%s","reset_count":%s,"rule_resources_retained":%s,"config_id":"%s","applied_at":%s}\n' "$method" "$fetcher" "$parser" "$policy" "$converter" "$template" "$tool" "$custom" "$template_url" "$ua" "$ua_override" "$exclude" "$exclude_mode" "$reset_count" "$retained" "$hash" "$(date +%s)" > "$C/configs/subscription-state.json.new"
     mv "$C/configs/subscription-state.json.new" "$C/configs/subscription-state.json";;
    esac
   fi

@@ -23,3 +23,5 @@ fi
 "$C/ax5/tool-sync.sh"
 [ -e "$R/csrf" ] || head -c 24 /dev/urandom | base64 > "$R/csrf"
 chmod 600 "$R/csrf"
+
+lua -e 'local T=dofile("/data/ShellCrash/ax5/transport-mode.lua"); local m=T.configured(); assert(m=="redir" or (m=="mixed" and T.capable()),"Unsupported interception mode"); print(m)' > "$R/transport-prepared"

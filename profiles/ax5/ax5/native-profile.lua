@@ -91,7 +91,7 @@ function A.merge(c,runtime)
  for _,key in ipairs({'mixed-port','redir-port','allow-lan','bind-address','mode','log-level','ipv6','routing-mark','find-process-mode','external-controller','secret','profile','hosts','dns'})do base[key]=runtime[key]end
  -- Template data cannot open extra listeners or replace the router's managed network stack.
  for _,key in ipairs({'port','socks-port','tproxy-port','listeners','external-controller-tls','external-controller-unix','external-ui','external-ui-url','authentication','interface-name'})do base[key]=nil end
- base.tun={enable=false};base['geo-auto-update']=false;base['geodata-mode']=false;base['geodata-loader']='memconservative'
+ base.tun=runtime.tun or {enable=false};base['geo-auto-update']=false;base['geodata-mode']=false;base['geodata-loader']='memconservative'
  local known={};for _,g in ipairs(base['proxy-groups'])do known[g.name]=true end
  for _,g in ipairs(runtime['proxy-groups'])do if not known[g.name]then base['proxy-groups'][#base['proxy-groups']+1]=g;known[g.name]=true end end
  local rules={};for _,r in ipairs(runtime.rules)do if r:match('^IP%-CIDR,')and #rules<8 then rules[#rules+1]=r else break end end

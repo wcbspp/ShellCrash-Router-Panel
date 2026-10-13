@@ -11,3 +11,5 @@ c.proxyMode='global';assert.equal(c.siteProbeTarget({route:'proxy-main'}),'GLOBA
 c.invalidateSiteResults();assert.equal(results.size,0);assert.equal(paused,1);assert.equal(painted,1);assert.equal(vm.runInContext('siteLastTime',c),0);
 assert(source.includes('encodeURIComponent(siteProbeTarget(s))'),'actual probe API must use mode-aware target');
 console.log('website probe targets follow mode and stale successful results are invalidated');
+
+assert.equal(c.siteProbeResult({delay:12,http:200}).state,'ok');assert.equal(c.siteProbeResult({delay:12,http:403}).state,'http-error');assert.equal(c.siteProbeResult({delay:12,http:503}).state,'http-error');assert.equal(c.siteProbeResult({delay:12}).state,'ok');assert.equal(c.siteProbeResult({delay:0,tls:60}).reason,'TLS 验证失败');assert.equal(c.siteProbeFailure({status:400,message:'bad endpoint'}).reason,'接口错误 400');assert.equal(c.siteProbeFailure({name:'AbortError',message:'aborted'}).reason,'检测超时');console.log('site failures distinguish API errors, timeout/TLS, HTTP access errors and successful responses');

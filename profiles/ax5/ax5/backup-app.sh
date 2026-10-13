@@ -3,6 +3,7 @@ set -eu
 C=/data/ShellCrash
 D=/tmp/ShellCrash
 . "$C/ax5/remote.sh"
+rm -f "$D/backup-error"
 mode=${1:-local}
 case "$mode" in local|remote) :;;*)exit 2;;esac
 [ "$mode" != remote ] || remote_ready || { echo '请先开启并验证远程仓库';exit 2; }
@@ -13,7 +14,12 @@ for path in "$C/configs" "$C/ui" "$C/ax5" "$C/ruleset" "$C/cache/targets" /data/
  if [ -e "$path" ];then bytes=$(du -sk "$path" | awk '{print $1}');staging=$((staging+bytes));fi
 done
 compressed=$staging;[ "$compressed" -le 4000 ] || compressed=4000
-[ "${available:-0}" -ge "$((staging+compressed+12288))" ] || { echo '可用内存不足以安全打包，现有服务保持运行';exit 1; }
+required=$((staging+compressed+12288))
+if [ "${available:-0}" -lt "$required" ];then
+ mkdir -p "$D"
+ printf '应用备份暂缓：可用 %s KB，安全打包至少需要 %s KB；当前服务保持运行\n' "${available:-0}" "$required" > "$D/backup-error"
+ cat "$D/backup-error";exit 1
+fi
 umask 077
 mkdir -p "$D"
 stage="$D/backup-stage"
