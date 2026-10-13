@@ -4,7 +4,8 @@
 # No service stop, global proxy-mode change, or permanent firewall entry.
 set -eu
 umask 077
-output=$1; url=$2; ua=$3
+output=$1; url=$2; ua=$3; mode=${4:-download}
+case "$mode" in download|probe) ;; *) exit 2;; esac
 work=/tmp/ShellCrash/direct-download.$$
 mkdir "$work"
 tag=SC_SUB_$$
@@ -52,8 +53,14 @@ while read -r ip;do
  printf '%s %s\n' "$ip" "$port" >> "$work/bypass"
  if ! iptables -t nat -I SC_AX5_OUT 1 -p tcp -d "$ip" --dport "$port" -m owner --uid-owner 0 -m comment --comment "$tag" -j RETURN;then code=7;break;fi
  code=0
+ if [ "$mode" = probe ];then
+  # HTTP 400/422 is a valid reachable converter with the private URL omitted.
+  http=$(curl -4 -sSL -A "$ua" --noproxy '*' --resolve "$host:$port:$ip" --connect-timeout 3 --max-time 6 --max-filesize 16384 -w '%{http_code}' "$url" -o "$output" 2>/dev/null) || code=$?
+ else
  curl -4 -fsSL -A "$ua" --noproxy '*' --resolve "$host:$port:$ip" --connect-timeout 5 --max-time 18 --max-filesize 1572864 "$url" -o "$output" 2>/dev/null || code=$?
+ fi
  [ "$code" != 0 ] || break
 done < "$work/ips"
 kill "$watchdog" 2>/dev/null || :
+[ "$mode" != probe ] || printf '%s' "${http:-000}"
 exit "$code"

@@ -3,7 +3,7 @@ import os,subprocess,tempfile,unittest,shutil,json
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 class SubscriptionTests(unittest.TestCase):
- def fixture(self,mode='direct',failure=False,http=None,policy='s0a0',payload=None,platform='ax5',options=None,core_version=None,core_kind=None,source_payload=None,stored_urls=False):
+ def fixture(self,mode='direct',failure=False,http=None,policy='s0a0',payload=None,platform='ax5',options=None,core_version=None,core_kind=None,source_payload=None,stored_urls=False,independent=False):
   td=tempfile.TemporaryDirectory();self.addCleanup(td.cleanup);p=Path(td.name);tool=p/'tool';ram=p/'ram';ram.mkdir();bin=p/'bin';bin.mkdir()
   # Actual upstream 1.9.4 generator and dependencies, shipped in the public package.
   subprocess.run(['tar','-xzf',str(ROOT/'vendor/ShellCrash-1.9.4.tar.gz'),'-C',str(p)],check=True)
@@ -24,6 +24,9 @@ class SubscriptionTests(unittest.TestCase):
    (ram/'upload-source').write_text(envelope)
   (ram/'native-source').write_text((ram/'upload-source').read_text())
   if platform=='k2p':shutil.move(str(tool/'configs/servers.list'),str(tool/'servers.list'))
+  if independent:
+   helper=p/'independent-download';helper.write_text("#!/bin/sh\nprintf '%s\\n' \"$2\" >> \"$TEST_ROOT/independent-requests\"\nif [ \"${4:-}\" = probe ];then printf 400;else cp \"$TEST_ROOT/fixture\" \"$1\";fi\n")
+   helper.chmod(0o700);script=script.replace('/data/ShellCrash/ax5/direct-download.sh',str(helper))
   f=p/'run.sh';f.write_text(script)
   (p/'fixture').write_text(payload if payload is not None else json.dumps({'outbounds':[{'type':'trojan','tag':'香港01','server':'example.com','server_port':443,'password':'fixture'}]}))
   if source_payload is not None:(p/'source-fixture').write_text(source_payload)
@@ -84,4 +87,11 @@ if '-w' in a:print('200',end='')
  def test_bad_custom_options_never_send_a_subscription(self):
   for options in [{'custom':'https://user:password@host.example.com'},{'ua':'safe\r\nInjected: invalid'},{'template':'https://rules.example.com/x\n401 Inject https://other.example.com'}]:
    p,t,r,result=self.fixture('convert',options=options);self.assertNotEqual(result.returncode,0);self.assertFalse((p/'requests').exists());self.assertEqual((r/'subscription.error').read_text().strip(),'subscription_options_invalid')
+ def test_ax5_conversion_recovers_without_using_broken_proxy(self):
+  p,t,r,result=self.fixture('convert',core_kind='meta',payload='proxies: []\nproxy-groups: []\nrules: []\n',failure=True,independent=True)
+  self.assertEqual(result.returncode,0,result.stderr)
+  calls=(p/'independent-requests').read_text().splitlines();self.assertEqual(calls[0],'https://converter.example.com/sub?target=clash');self.assertNotIn('private-fixture',calls[0]);self.assertIn('url=',calls[1]);self.assertFalse((p/'requests').exists());self.assertEqual((t/'jsons/config.json').read_text(),'live-config-preserved')
+ def test_direct_recovery_does_not_preflight_converter(self):
+  p,t,r,result=self.fixture('direct',failure=True,independent=True)
+  self.assertEqual(result.returncode,0,result.stderr);calls=(p/'independent-requests').read_text();self.assertNotIn('/sub?',calls);self.assertIn('subscription.example.com',calls)
 if __name__=='__main__' :unittest.main()

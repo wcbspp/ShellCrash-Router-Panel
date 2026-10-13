@@ -34,5 +34,21 @@
   "ax5/mihomo.lua": {
     "sha256": "f0bb04a48719d65711035f5bc43855a85ece0e46e3b40f5464e237f2dd1ace9c",
     "reason": "Add certificate-verified HTTPS DNS alongside existing proxied TCP DNS; both retain the same default proxy group and existing local/direct DNS policies. Real-core hot reload retained PID and selector choices."
+  },
+  "ax5/direct-download.sh": {
+    "sha256": "4dbdf334514519f134c65b032b3b9dde49d6430060abf18a27b6213ea8761e35",
+    "reason": "Allow bounded no-subscription converter reachability probes over independently resolved, temporary root TCP bypass; retain HTTP 400/422 and cleanup."
+  },
+  "ax5/subscription-tool.sh": {
+    "sha256": "af703ca1da1e1776b7241b9bbc563ac0ecc7ec956fbc8abc791f6c541b1520a4",
+    "reason": "Use independent AX5 destination recovery for converter preflight and selected ShellCrash-generated download; noproxy alone still enters transparent OUTPUT; retain opt-in failover and isolated config."
+  },
+  "tests/test_direct_download.py": {
+    "sha256": "a5821c77217fd20fa13b13a67668f8c691cace673541990c1053aa238ac4ea1a",
+    "reason": "Regression tests for HTTP 400 probe semantics, bounded retries and removal of temporary destination bypass."
+  },
+  "tests/test_subscription_tool.py": {
+    "sha256": "916d766e7abd3bfbf682cad8cb8bca66d9cc3c68267f768f12347a1b9cd58f5a",
+    "reason": "Regression tests for converter recovery while proxy fails and direct provider mode never contacting conversion endpoints."
   }
 }

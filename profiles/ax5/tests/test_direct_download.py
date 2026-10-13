@@ -2,7 +2,7 @@ import os,subprocess,tempfile,unittest
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 class DirectDownloadTests(unittest.TestCase):
- def run_fixture(self,failed=False):
+ def run_fixture(self,failed=False,probe=False):
   td=tempfile.TemporaryDirectory();self.addCleanup(td.cleanup);p=Path(td.name);(p/'bin').mkdir();(p/'ram').mkdir()
   script=(ROOT/'ax5/direct-download.sh').read_text().replace('/tmp/ShellCrash/direct-download.',str(p/'ram')+'/direct-download.')
   (p/'run.sh').write_text(script)
@@ -16,10 +16,11 @@ p=Path(os.environ['TEST_ROOT']);a=sys.argv[1:]
 with (p/'requests').open('a') as f:f.write(' '.join(a)+'\\n')
 if '--resolve' in a and os.environ.get('TEST_FAIL'):sys.exit(28)
 Path(a[a.index('-o')+1]).write_text('fixture')
+if '-w' in a:print('400',end='')
 """);curl.chmod(0o700)
   env=dict(os.environ,PATH=str(p/'bin')+os.pathsep+os.environ['PATH'],TEST_ROOT=str(p))
   if failed:env['TEST_FAIL']='1'
-  result=subprocess.run(['sh',str(p/'run.sh'),str(p/'output'),'https://subscription.example.com/private-token','Clash'],env=env,capture_output=True,text=True)
+  result=subprocess.run(['sh',str(p/'run.sh'),str(p/'output'),'https://subscription.example.com/private-token','Clash']+(['probe'] if probe else []),env=env,capture_output=True,text=True)
   return p,result
  def test_success_bypasses_only_resolved_root_tcp_destination_and_cleans(self):
   p,r=self.run_fixture();self.assertEqual(r.returncode,0,r.stderr)
@@ -27,4 +28,11 @@ Path(a[a.index('-o')+1]).write_text('fixture')
   requests=(p/'requests').read_text().splitlines();self.assertNotIn('private-token',requests[0]);self.assertIn('--resolve subscription.example.com:443:192.0.2.8',requests[1]);self.assertNotIn('--insecure',requests[1])
  def test_failed_fetch_has_bounded_retries_and_removes_every_bypass(self):
   p,r=self.run_fixture(True);self.assertEqual(r.returncode,28,r.stderr);fw=(p/'firewall').read_text().splitlines();self.assertEqual(sum('-I 'in l for l in fw),2);self.assertEqual(sum('-D 'in l for l in fw),2);self.assertEqual(list((p/'ram').iterdir()),[])
+ def test_probe_accepts_reachable_http_400_without_sending_subscription_to_dns(self):
+  p,r=self.run_fixture(probe=True);self.assertEqual(r.returncode,0,r.stderr);self.assertEqual(r.stdout,'400')
+  calls=(p/'requests').read_text().splitlines();self.assertNotIn('private-token',calls[0]);self.assertNotIn('-fsSL',calls[1]);self.assertIn('--max-filesize 16384',calls[1])
+  fw=(p/'firewall').read_text();self.assertEqual(fw.count('-I SC_AX5_OUT'),1);self.assertEqual(fw.count('-D SC_AX5_OUT'),1)
+ def test_probe_failure_emits_one_http_status_and_cleans_both_attempts(self):
+  p,r=self.run_fixture(failed=True,probe=True);self.assertEqual(r.returncode,28,r.stderr);self.assertEqual(r.stdout,'000') # mock curl emits no status on failure
+  self.assertEqual(list((p/'ram').iterdir()),[])
 if __name__=='__main__':unittest.main()
