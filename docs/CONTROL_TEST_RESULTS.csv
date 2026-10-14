@@ -67,8 +67,8 @@ AX5-CTRL-previous,AX5,桌面,未执行,,,,
 AX5-CTRL-previous,AX5,手机窄屏,未执行,,,,
 AX5-CTRL-next,AX5,桌面,未执行,,,,
 AX5-CTRL-next,AX5,手机窄屏,未执行,,,,
-AX5-CTRL-sites-run,AX5,桌面,未执行,,,,
-AX5-CTRL-sites-run,AX5,手机窄屏,未执行,,,,
+AX5-CTRL-sites-run,AX5,桌面,部分通过,两机实际8站检测及两端显示通过；403可达、显示耗时；本轮未逐端点实机注入全部故障与模式组合,docs/LIVE_TEST_2026-10-14_CONNECTIVITY.md,2026-10-14,main网络连通改动；未发布
+AX5-CTRL-sites-run,AX5,手机窄屏,部分通过,两机实际8站检测及两端显示通过；403可达、显示耗时；本轮未逐端点实机注入全部故障与模式组合,docs/LIVE_TEST_2026-10-14_CONNECTIVITY.md,2026-10-14,main网络连通改动；未发布
 AX5-CTRL-subscription-url,AX5,桌面,未执行,,,,
 AX5-CTRL-subscription-url,AX5,手机窄屏,未执行,,,,
 AX5-CTRL-subscription-method,AX5,桌面,部分通过,本轮实际页面交互已执行；该用例全部边界与恢复场景未齐，不算全量通过,私有实机记录 ax5-full-forms；公开范围见 LIVE_TEST_2026-10-14_TRAFFIC_AND_K2P.md,2026-10-14,本地 rc.2 候选，未发布
@@ -311,22 +311,22 @@ AX5-DYN-quick-国外 AI,AX5,桌面,未执行,,,,
 AX5-DYN-quick-国外 AI,AX5,手机窄屏,未执行,,,,
 AX5-DYN-quick-GitHub,AX5,桌面,未执行,,,,
 AX5-DYN-quick-GitHub,AX5,手机窄屏,未执行,,,,
-AX5-DYN-site-baidu,AX5,桌面,未执行,,,,
-AX5-DYN-site-baidu,AX5,手机窄屏,未执行,,,,
-AX5-DYN-site-bilibili,AX5,桌面,未执行,,,,
-AX5-DYN-site-bilibili,AX5,手机窄屏,未执行,,,,
-AX5-DYN-site-tencentqq,AX5,桌面,部分验证,真实按钮单点腾讯，电脑207ms/手机221ms，HTTP301重定向；全部八站接口200。其他流量模式与失败注入未完整验收。,docs/LIVE_TEST_2026-10-14_WEBSITE_CHECKS.md；本地 ax5-sites-live-result.private.json,2026-10-14,reviewed working-tree API/UI; PID/config unchanged
-AX5-DYN-site-tencentqq,AX5,手机窄屏,部分验证,真实按钮单点腾讯，电脑207ms/手机221ms，HTTP301重定向；全部八站接口200。其他流量模式与失败注入未完整验收。,docs/LIVE_TEST_2026-10-14_WEBSITE_CHECKS.md；本地 ax5-sites-live-result.private.json,2026-10-14,reviewed working-tree API/UI; PID/config unchanged
-AX5-DYN-site-taobao,AX5,桌面,未执行,,,,
-AX5-DYN-site-taobao,AX5,手机窄屏,未执行,,,,
-AX5-DYN-site-google,AX5,桌面,未执行,,,,
-AX5-DYN-site-google,AX5,手机窄屏,未执行,,,,
-AX5-DYN-site-youtube,AX5,桌面,未执行,,,,
-AX5-DYN-site-youtube,AX5,手机窄屏,未执行,,,,
-AX5-DYN-site-github,AX5,桌面,未执行,,,,
-AX5-DYN-site-github,AX5,手机窄屏,未执行,,,,
-AX5-DYN-site-openai,AX5,桌面,未执行,,,,
-AX5-DYN-site-openai,AX5,手机窄屏,未执行,,,,
+AX5-DYN-site-baidu,AX5,桌面,部分通过,两机实际8站检测及两端显示通过；403可达、显示耗时；本轮未逐端点实机注入全部故障与模式组合,docs/LIVE_TEST_2026-10-14_CONNECTIVITY.md,2026-10-14,main网络连通改动；未发布
+AX5-DYN-site-baidu,AX5,手机窄屏,部分通过,两机实际8站检测及两端显示通过；403可达、显示耗时；本轮未逐端点实机注入全部故障与模式组合,docs/LIVE_TEST_2026-10-14_CONNECTIVITY.md,2026-10-14,main网络连通改动；未发布
+AX5-DYN-site-bilibili,AX5,桌面,部分通过,两机实际8站检测及两端显示通过；403可达、显示耗时；本轮未逐端点实机注入全部故障与模式组合,docs/LIVE_TEST_2026-10-14_CONNECTIVITY.md,2026-10-14,main网络连通改动；未发布
+AX5-DYN-site-bilibili,AX5,手机窄屏,部分通过,两机实际8站检测及两端显示通过；403可达、显示耗时；本轮未逐端点实机注入全部故障与模式组合,docs/LIVE_TEST_2026-10-14_CONNECTIVITY.md,2026-10-14,main网络连通改动；未发布
+AX5-DYN-site-tencentqq,AX5,桌面,部分通过,两机实际8站检测及两端显示通过；403可达、显示耗时；本轮未逐端点实机注入全部故障与模式组合,docs/LIVE_TEST_2026-10-14_CONNECTIVITY.md,2026-10-14,main网络连通改动；未发布
+AX5-DYN-site-tencentqq,AX5,手机窄屏,部分通过,两机实际8站检测及两端显示通过；403可达、显示耗时；本轮未逐端点实机注入全部故障与模式组合,docs/LIVE_TEST_2026-10-14_CONNECTIVITY.md,2026-10-14,main网络连通改动；未发布
+AX5-DYN-site-taobao,AX5,桌面,部分通过,两机实际8站检测及两端显示通过；403可达、显示耗时；本轮未逐端点实机注入全部故障与模式组合,docs/LIVE_TEST_2026-10-14_CONNECTIVITY.md,2026-10-14,main网络连通改动；未发布
+AX5-DYN-site-taobao,AX5,手机窄屏,部分通过,两机实际8站检测及两端显示通过；403可达、显示耗时；本轮未逐端点实机注入全部故障与模式组合,docs/LIVE_TEST_2026-10-14_CONNECTIVITY.md,2026-10-14,main网络连通改动；未发布
+AX5-DYN-site-google,AX5,桌面,部分通过,两机实际8站检测及两端显示通过；403可达、显示耗时；本轮未逐端点实机注入全部故障与模式组合,docs/LIVE_TEST_2026-10-14_CONNECTIVITY.md,2026-10-14,main网络连通改动；未发布
+AX5-DYN-site-google,AX5,手机窄屏,部分通过,两机实际8站检测及两端显示通过；403可达、显示耗时；本轮未逐端点实机注入全部故障与模式组合,docs/LIVE_TEST_2026-10-14_CONNECTIVITY.md,2026-10-14,main网络连通改动；未发布
+AX5-DYN-site-youtube,AX5,桌面,部分通过,两机实际8站检测及两端显示通过；403可达、显示耗时；本轮未逐端点实机注入全部故障与模式组合,docs/LIVE_TEST_2026-10-14_CONNECTIVITY.md,2026-10-14,main网络连通改动；未发布
+AX5-DYN-site-youtube,AX5,手机窄屏,部分通过,两机实际8站检测及两端显示通过；403可达、显示耗时；本轮未逐端点实机注入全部故障与模式组合,docs/LIVE_TEST_2026-10-14_CONNECTIVITY.md,2026-10-14,main网络连通改动；未发布
+AX5-DYN-site-github,AX5,桌面,部分通过,两机实际8站检测及两端显示通过；403可达、显示耗时；本轮未逐端点实机注入全部故障与模式组合,docs/LIVE_TEST_2026-10-14_CONNECTIVITY.md,2026-10-14,main网络连通改动；未发布
+AX5-DYN-site-github,AX5,手机窄屏,部分通过,两机实际8站检测及两端显示通过；403可达、显示耗时；本轮未逐端点实机注入全部故障与模式组合,docs/LIVE_TEST_2026-10-14_CONNECTIVITY.md,2026-10-14,main网络连通改动；未发布
+AX5-DYN-site-openai,AX5,桌面,部分通过,两机实际8站检测及两端显示通过；403可达、显示耗时；本轮未逐端点实机注入全部故障与模式组合,docs/LIVE_TEST_2026-10-14_CONNECTIVITY.md,2026-10-14,main网络连通改动；未发布
+AX5-DYN-site-openai,AX5,手机窄屏,部分通过,两机实际8站检测及两端显示通过；403可达、显示耗时；本轮未逐端点实机注入全部故障与模式组合,docs/LIVE_TEST_2026-10-14_CONNECTIVITY.md,2026-10-14,main网络连通改动；未发布
 K2P-CTRL-router-entry,K2P,桌面,未执行,,,,
 K2P-CTRL-router-entry,K2P,手机窄屏,未执行,,,,
 K2P-CTRL-msg-close,K2P,桌面,部分通过,本轮实际页面交互已执行；该用例全部边界与恢复场景未齐，不算全量通过,私有实机记录 k2p-full-forms；公开范围见 LIVE_TEST_2026-10-14_TRAFFIC_AND_K2P.md,2026-10-14,本地 rc.2 候选，未发布
@@ -395,8 +395,8 @@ K2P-CTRL-previous,K2P,桌面,未执行,,,,
 K2P-CTRL-previous,K2P,手机窄屏,未执行,,,,
 K2P-CTRL-next,K2P,桌面,未执行,,,,
 K2P-CTRL-next,K2P,手机窄屏,未执行,,,,
-K2P-CTRL-sites-run,K2P,桌面,未执行,,,,
-K2P-CTRL-sites-run,K2P,手机窄屏,未执行,,,,
+K2P-CTRL-sites-run,K2P,桌面,部分通过,两机实际8站检测及两端显示通过；403可达、显示耗时；本轮未逐端点实机注入全部故障与模式组合,docs/LIVE_TEST_2026-10-14_CONNECTIVITY.md,2026-10-14,main网络连通改动；未发布
+K2P-CTRL-sites-run,K2P,手机窄屏,部分通过,两机实际8站检测及两端显示通过；403可达、显示耗时；本轮未逐端点实机注入全部故障与模式组合,docs/LIVE_TEST_2026-10-14_CONNECTIVITY.md,2026-10-14,main网络连通改动；未发布
 K2P-CTRL-subscription-url,K2P,桌面,未执行,,,,
 K2P-CTRL-subscription-url,K2P,手机窄屏,未执行,,,,
 K2P-CTRL-subscription-method,K2P,桌面,部分通过,本轮实际页面交互已执行；该用例全部边界与恢复场景未齐，不算全量通过,私有实机记录 k2p-full-forms；公开范围见 LIVE_TEST_2026-10-14_TRAFFIC_AND_K2P.md,2026-10-14,本地 rc.2 候选，未发布
@@ -607,22 +607,22 @@ K2P-DYN-quick-国外 AI,K2P,桌面,未执行,,,,
 K2P-DYN-quick-国外 AI,K2P,手机窄屏,未执行,,,,
 K2P-DYN-quick-GitHub,K2P,桌面,未执行,,,,
 K2P-DYN-quick-GitHub,K2P,手机窄屏,未执行,,,,
-K2P-DYN-site-baidu,K2P,桌面,未执行,,,,
-K2P-DYN-site-baidu,K2P,手机窄屏,未执行,,,,
-K2P-DYN-site-bilibili,K2P,桌面,未执行,,,,
-K2P-DYN-site-bilibili,K2P,手机窄屏,未执行,,,,
-K2P-DYN-site-tencentqq,K2P,桌面,未执行,,,,
-K2P-DYN-site-tencentqq,K2P,手机窄屏,未执行,,,,
-K2P-DYN-site-taobao,K2P,桌面,未执行,,,,
-K2P-DYN-site-taobao,K2P,手机窄屏,未执行,,,,
-K2P-DYN-site-google,K2P,桌面,未执行,,,,
-K2P-DYN-site-google,K2P,手机窄屏,未执行,,,,
-K2P-DYN-site-youtube,K2P,桌面,未执行,,,,
-K2P-DYN-site-youtube,K2P,手机窄屏,未执行,,,,
-K2P-DYN-site-github,K2P,桌面,未执行,,,,
-K2P-DYN-site-github,K2P,手机窄屏,未执行,,,,
-K2P-DYN-site-openai,K2P,桌面,未执行,,,,
-K2P-DYN-site-openai,K2P,手机窄屏,未执行,,,,
+K2P-DYN-site-baidu,K2P,桌面,部分通过,两机实际8站检测及两端显示通过；403可达、显示耗时；本轮未逐端点实机注入全部故障与模式组合,docs/LIVE_TEST_2026-10-14_CONNECTIVITY.md,2026-10-14,main网络连通改动；未发布
+K2P-DYN-site-baidu,K2P,手机窄屏,部分通过,两机实际8站检测及两端显示通过；403可达、显示耗时；本轮未逐端点实机注入全部故障与模式组合,docs/LIVE_TEST_2026-10-14_CONNECTIVITY.md,2026-10-14,main网络连通改动；未发布
+K2P-DYN-site-bilibili,K2P,桌面,部分通过,两机实际8站检测及两端显示通过；403可达、显示耗时；本轮未逐端点实机注入全部故障与模式组合,docs/LIVE_TEST_2026-10-14_CONNECTIVITY.md,2026-10-14,main网络连通改动；未发布
+K2P-DYN-site-bilibili,K2P,手机窄屏,部分通过,两机实际8站检测及两端显示通过；403可达、显示耗时；本轮未逐端点实机注入全部故障与模式组合,docs/LIVE_TEST_2026-10-14_CONNECTIVITY.md,2026-10-14,main网络连通改动；未发布
+K2P-DYN-site-tencentqq,K2P,桌面,部分通过,两机实际8站检测及两端显示通过；403可达、显示耗时；本轮未逐端点实机注入全部故障与模式组合,docs/LIVE_TEST_2026-10-14_CONNECTIVITY.md,2026-10-14,main网络连通改动；未发布
+K2P-DYN-site-tencentqq,K2P,手机窄屏,部分通过,两机实际8站检测及两端显示通过；403可达、显示耗时；本轮未逐端点实机注入全部故障与模式组合,docs/LIVE_TEST_2026-10-14_CONNECTIVITY.md,2026-10-14,main网络连通改动；未发布
+K2P-DYN-site-taobao,K2P,桌面,部分通过,两机实际8站检测及两端显示通过；403可达、显示耗时；本轮未逐端点实机注入全部故障与模式组合,docs/LIVE_TEST_2026-10-14_CONNECTIVITY.md,2026-10-14,main网络连通改动；未发布
+K2P-DYN-site-taobao,K2P,手机窄屏,部分通过,两机实际8站检测及两端显示通过；403可达、显示耗时；本轮未逐端点实机注入全部故障与模式组合,docs/LIVE_TEST_2026-10-14_CONNECTIVITY.md,2026-10-14,main网络连通改动；未发布
+K2P-DYN-site-google,K2P,桌面,部分通过,两机实际8站检测及两端显示通过；403可达、显示耗时；本轮未逐端点实机注入全部故障与模式组合,docs/LIVE_TEST_2026-10-14_CONNECTIVITY.md,2026-10-14,main网络连通改动；未发布
+K2P-DYN-site-google,K2P,手机窄屏,部分通过,两机实际8站检测及两端显示通过；403可达、显示耗时；本轮未逐端点实机注入全部故障与模式组合,docs/LIVE_TEST_2026-10-14_CONNECTIVITY.md,2026-10-14,main网络连通改动；未发布
+K2P-DYN-site-youtube,K2P,桌面,部分通过,两机实际8站检测及两端显示通过；403可达、显示耗时；本轮未逐端点实机注入全部故障与模式组合,docs/LIVE_TEST_2026-10-14_CONNECTIVITY.md,2026-10-14,main网络连通改动；未发布
+K2P-DYN-site-youtube,K2P,手机窄屏,部分通过,两机实际8站检测及两端显示通过；403可达、显示耗时；本轮未逐端点实机注入全部故障与模式组合,docs/LIVE_TEST_2026-10-14_CONNECTIVITY.md,2026-10-14,main网络连通改动；未发布
+K2P-DYN-site-github,K2P,桌面,部分通过,两机实际8站检测及两端显示通过；403可达、显示耗时；本轮未逐端点实机注入全部故障与模式组合,docs/LIVE_TEST_2026-10-14_CONNECTIVITY.md,2026-10-14,main网络连通改动；未发布
+K2P-DYN-site-github,K2P,手机窄屏,部分通过,两机实际8站检测及两端显示通过；403可达、显示耗时；本轮未逐端点实机注入全部故障与模式组合,docs/LIVE_TEST_2026-10-14_CONNECTIVITY.md,2026-10-14,main网络连通改动；未发布
+K2P-DYN-site-openai,K2P,桌面,部分通过,两机实际8站检测及两端显示通过；403可达、显示耗时；本轮未逐端点实机注入全部故障与模式组合,docs/LIVE_TEST_2026-10-14_CONNECTIVITY.md,2026-10-14,main网络连通改动；未发布
+K2P-DYN-site-openai,K2P,手机窄屏,部分通过,两机实际8站检测及两端显示通过；403可达、显示耗时；本轮未逐端点实机注入全部故障与模式组合,docs/LIVE_TEST_2026-10-14_CONNECTIVITY.md,2026-10-14,main网络连通改动；未发布
 AX5-CTRL-subscription-restore-draft,AX5,桌面,未执行,,,,待发布修订
 AX5-CTRL-subscription-restore-draft,AX5,手机窄屏,未执行,,,,待发布修订
 AX5-DYN-node-view,AX5,桌面,部分验证,实际打开基础节点视图；卡片读回最终节点；桌面/手机无脚本错误及横向溢出。AX同节点按钮已点击；不同节点点击及失败回退尚待完整验收。,docs/LIVE_TEST_2026-10-13_NODE_DISPLAY.md；本地 final-node-browser-result.private.json,2026-10-13,main e45c7f3 + reviewed working-tree UI changes; no config apply
