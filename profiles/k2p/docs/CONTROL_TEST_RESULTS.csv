@@ -627,3 +627,7 @@ K2P-CTRL-cn-bypass-enabled,K2P,桌面,部分通过,两端实际开关/模式联�
 K2P-CTRL-cn-bypass-enabled,K2P,手机窄屏,部分通过,两端实际开关/模式联动及恢复通过；K2P桌面开启另有早期超时记录，最终轮起始状态已开启；故不把全组合及异常设备测试标为全通过,docs/LIVE_TEST_2026-10-14_DOMESTIC_BYPASS.md,2026-10-14,未发布 main；新源已部署
 K2P-CTRL-cn-bypass-save,K2P,桌面,部分通过,两端实际开关/模式联动及恢复通过；K2P桌面开启另有早期超时记录，最终轮起始状态已开启；故不把全组合及异常设备测试标为全通过,docs/LIVE_TEST_2026-10-14_DOMESTIC_BYPASS.md,2026-10-14,未发布 main；新源已部署
 K2P-CTRL-cn-bypass-save,K2P,手机窄屏,部分通过,两端实际开关/模式联动及恢复通过；K2P桌面开启另有早期超时记录，最终轮起始状态已开启；故不把全组合及异常设备测试标为全通过,docs/LIVE_TEST_2026-10-14_DOMESTIC_BYPASS.md,2026-10-14,未发布 main；新源已部署
+K2P-CTRL-ip-check,K2P,桌面,部分通过,两机1200/390实点IP和余量、刷新缓存、无轮询/溢出/脚本错误、PID/配置不变通过；缺头、过期/超额、源变更等由离线验证覆盖，未在每机注入全部异常,docs/LIVE_TEST_2026-10-14_IP_QUOTA_RESOURCES.md,2026-10-14,本地 main 新源已同步两机；未发布
+K2P-CTRL-ip-check,K2P,手机窄屏,部分通过,两机1200/390实点IP和余量、刷新缓存、无轮询/溢出/脚本错误、PID/配置不变通过；缺头、过期/超额、源变更等由离线验证覆盖，未在每机注入全部异常,docs/LIVE_TEST_2026-10-14_IP_QUOTA_RESOURCES.md,2026-10-14,本地 main 新源已同步两机；未发布
+K2P-CTRL-quota-refresh,K2P,桌面,部分通过,两机1200/390实点IP和余量、刷新缓存、无轮询/溢出/脚本错误、PID/配置不变通过；缺头、过期/超额、源变更等由离线验证覆盖，未在每机注入全部异常,docs/LIVE_TEST_2026-10-14_IP_QUOTA_RESOURCES.md,2026-10-14,本地 main 新源已同步两机；未发布
+K2P-CTRL-quota-refresh,K2P,手机窄屏,部分通过,两机1200/390实点IP和余量、刷新缓存、无轮询/溢出/脚本错误、PID/配置不变通过；缺头、过期/超额、源变更等由离线验证覆盖，未在每机注入全部异常,docs/LIVE_TEST_2026-10-14_IP_QUOTA_RESOURCES.md,2026-10-14,本地 main 新源已同步两机；未发布

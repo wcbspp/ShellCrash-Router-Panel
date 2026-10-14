@@ -146,6 +146,7 @@ save_safe(){
 }
 fail(){ phase error "$1"; event "$1"; }
 case "$act" in
+ quota|quotacheck) mode=read;[ "$act" != quotacheck ] || mode=check;exec sh "$C/starts/subscription-quota.sh" k2p "$mode";;
  fetchconvert)
   owner_live && exit 1
   valid_id "$id" || exit 1;echo "$id" > "$D/id"

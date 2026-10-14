@@ -3,7 +3,7 @@ const sites=[{"id":"baidu","name":"百度","domain":"www.baidu.com","url":"https
 let siteBusy=false,siteGeneration=0,siteQueue=[],siteLastNode='',siteLastTime=0;
 function siteProbeTarget(site){const mode=typeof proxyMode==='string'?proxyMode:'rule';return mode==='direct'?'direct':mode==='global'?'GLOBAL':site.route==='direct'?'direct':mainName();}
 const siteNode=()=>{const mode=typeof proxyMode==='string'?proxyMode:'rule';return mode==='direct'?'直连出站':resolvedNode(mode==='global'?'GLOBAL':mainName());};
-function invalidateSiteResults(){pauseSites();siteResults.clear();siteLastTime=0;siteLastNode='';paintSites();}
+function invalidateSiteResults(){pauseSites();siteResults.clear();siteLastTime=0;siteLastNode='';if(typeof resetExitIP==='function')resetExitIP();paintSites();}
 
 function siteProbeResult(r){
  const delay=Number(r.delay),tls=Number(r.tls||0);
@@ -49,3 +49,45 @@ async function checkSites(id){
 }
 window.addEventListener('pagehide',pauseSites);document.addEventListener('visibilitychange',()=>{if(document.hidden&&siteBusy)pauseSites()});
 initializeSites();
+
+// On-demand browser IP and provider quota checks; no polling or resident collector.
+let ipControllers=[],ipGeneration=0,quotaBusy=false,quotaSource=0,quotaGeneration=0,quotaLast=null;
+function validExitIP(text,v6){
+ if(typeof text!=='string'||text.length>45)return false;
+ if(v6)return text.includes(':')&&/^[a-fA-F0-9:]+$/.test(text)&&text.split(':').length>=3;
+ const p=text.split('.');return p.length===4&&p.every(n=>/^\d{1,3}$/.test(n)&&Number(n)<=255);
+}
+function cancelIPCheck(){ipGeneration++;for(const c of ipControllers)c.abort();if(ipControllers.length){for(const v of ['v4','v6'])if(el('ip-'+v).textContent==='检测中…')el('ip-'+v).textContent='检测已暂停';el('ip-summary').textContent='检测已暂停，点击检测 IP 可重试。'}ipControllers=[];el('ip-check').disabled=false;}
+function resetExitIP(){cancelIPCheck();for(const v of ['v4','v6'])el('ip-'+v).textContent='尚未检测';el('ip-summary').textContent='出口可能已改变，请重新检测 IP。';}
+async function checkExitIP(){
+ cancelIPCheck();const generation=ipGeneration;el('ip-check').disabled=true;el('ip-summary').textContent='正在检测当前浏览器的出口…';
+ const results=await Promise.all([['v4','https://api.ipify.org?format=json'],['v6','https://api6.ipify.org?format=json']].map(async([version,url])=>{
+  const c=new AbortController();ipControllers.push(c);const timer=setTimeout(()=>c.abort(),6000);el('ip-'+version).textContent='检测中…';
+  try{const r=await fetch(url,{signal:c.signal,cache:'no-store',credentials:'omit'});if(!r.ok)throw Error();const raw=await r.text();if(raw.length>128)throw Error();const ip=JSON.parse(raw).ip;if(!validExitIP(ip,version==='v6'))throw Error();if(generation===ipGeneration)el('ip-'+version).textContent=ip;return true}
+  catch{if(generation===ipGeneration)el('ip-'+version).textContent=version==='v6'?'未检测到 IPv6 出口':'检测未完成';return false}
+  finally{clearTimeout(timer)}
+ }));
+ if(generation!==ipGeneration)return;ipControllers=[];el('ip-check').disabled=false;
+ el('ip-summary').textContent=results.every(Boolean)?'当前浏览器的出口；不同网站可能按规则使用不同出口。':results[0]?'已检测 IPv4，未检测到 IPv6 出口。不影响 IPv4 上网。':results[1]?'已检测 IPv6，IPv4 检测服务未响应，可重试。':'IP 检测服务未响应，可稍后重试。';
+}
+function quotaView(q){
+ const state=q?.state,known=n=>typeof n==='number'&&Number.isSafeInteger(n)&&n>=0;
+ const messages={unknown:'点击查询当前订阅的余量。',no_subscription:'尚未保存订阅地址。',unavailable:'服务商未通过响应头提供用量数据，请到服务商查看。',request_failed:'余量查询未完成，不影响当前订阅；可稍后重试。',memory:'内存余量不足，暂缓查询。',busy:'其他操作正在进行，请稍后查询。'};
+ if(state!=='ok')return {summary:messages[state]||messages.request_failed,detail:'',percent:null,bad:state==='request_failed'};
+ const used=known(q.upload)&&known(q.download)&&known(q.upload+q.download)?q.upload+q.download:null,total=known(q.total)&&q.total>0?q.total:null;
+ const size=n=>{const u=['B','KB','MB','GB','TB'];let i=0;while(n>=1024&&i<4){n/=1024;i++}return n.toFixed(i?1:0)+' '+u[i]};
+ let summary=used!==null&&total!==null?'剩余 '+size(Math.max(0,total-used))+' · 已用 '+size(used)+' / '+size(total):used!==null?'已用 '+size(used)+' · 服务商未提供总额度':'服务商未提供完整用量，无法计算剩余流量';
+ let detail=known(q.expire)&&q.expire>0&&q.expire<=4102444800?'到期 '+new Date(q.expire*1000).toLocaleDateString('zh-CN'):'未提供到期时间';
+ if(known(q.expire)&&q.expire>0&&q.expire*1000<Date.now())detail+=' · 已到期';
+ if(known(q.checked)&&q.checked>0)detail+=' · 查询于 '+new Date(q.checked*1000).toLocaleString('zh-CN',{hour12:false});
+ return {summary,detail,percent:used!==null&&total!==null?Math.min(100,used/total*100):null,bad:total!==null&&used>=total||known(q.expire)&&q.expire>0&&q.expire*1000<Date.now()};
+}
+function paintQuota(q){if(q?.state==='ok')quotaLast=q;else if(!['memory','busy','request_failed'].includes(q?.state))quotaLast=null;const warning=q?.state!=='ok'&&quotaLast?quotaView(q).summary:'',v=quotaView(warning?quotaLast:q),s=el('quota-summary'),p=el('quota-progress');s.textContent=v.summary;s.classList.toggle('bad',!!v.bad||!!warning);s.classList.toggle('good',q?.state==='ok'&&!v.bad);el('quota-detail').textContent=v.detail+(warning?' · '+warning+'（显示上次查询数据）':'');p.hidden=v.percent===null;if(!p.hidden)p.value=v.percent;}
+function resetQuotaSource(source){if(quotaSource!==source){quotaSource=source;quotaGeneration++;quotaLast=null;paintQuota({state:'unknown'})}}
+async function refreshQuota(check){
+ if(quotaBusy||manageBusy||nativeState?.active)return;quotaBusy=true;const generation=quotaGeneration;el('quota-refresh').disabled=true;if(check)el('quota-summary').textContent='正在向当前订阅提供者查询…';
+ try{const raw=await nativeRead(check?'quotacheck':'quota');if(generation===quotaGeneration)paintQuota(typeof raw==='string'?JSON.parse(raw):raw)}catch{if(generation===quotaGeneration)paintQuota({state:'request_failed'})}
+ finally{quotaBusy=false;el('quota-refresh').disabled=false}
+}
+el('ip-check').onclick=checkExitIP;el('quota-refresh').onclick=()=>refreshQuota(true);
+window.addEventListener('pagehide',cancelIPCheck);document.addEventListener('visibilitychange',()=>{if(document.hidden)cancelIPCheck()});

@@ -143,5 +143,7 @@
   "ax5/cn-bypass-lib.sh": "shared/lib/cn-bypass.sh",
   "tests/test_cn_bypass.py": "shared/tests/test_cn_bypass.py",
   "tests/test_cn_bypass_ui.js": "shared/tests/test_cn_bypass_ui.js",
-  "tests/cn_bypass.lua": "profiles/ax5/tests/cn_bypass.lua"
+  "tests/cn_bypass.lua": "profiles/ax5/tests/cn_bypass.lua",
+  "ax5/subscription-quota.sh": "shared/lib/subscription-quota.sh",
+  "tests/test_account_network.js": "shared/tests/test_account_network.js"
 }

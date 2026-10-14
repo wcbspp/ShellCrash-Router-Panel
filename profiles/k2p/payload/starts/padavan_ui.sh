@@ -36,7 +36,7 @@ control_token=$(cat /tmp/sc-admin/control-token)
 printf '{"token_b64":"%s","control_token":"%s"}\n' "$secret_b64" "$control_token" > /opt/share/www/custom/sc-auth.asp
 chmod 600 /opt/share/www/custom/sc-auth.asp
 mkdir -p /tmp/sc-admin
-for action in state logs memory incidents converters remoteconnection nodeprofile configprofile uploadreceipt traffic; do
+for action in state logs memory incidents converters remoteconnection nodeprofile configprofile uploadreceipt traffic quota quotacheck; do
  verb=$action; [ "$action" != state ] || verb=status
  printf '#!/bin/sh\nexec /etc/storage/ShellCrash/starts/manage.sh %s > /tmp/sc-admin/%s.out\n' "$verb" "$action" > "/tmp/sc-$action.sh"
  chmod 700 "/tmp/sc-$action.sh"

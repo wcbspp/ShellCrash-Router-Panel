@@ -232,5 +232,7 @@
   "payload/starts/cn-bypass-lib.sh": "shared/lib/cn-bypass.sh",
   "tests/test_cn_bypass.py": "shared/tests/test_cn_bypass.py",
   "tests/test_cn_bypass_ui.js": "shared/tests/test_cn_bypass_ui.js",
-  "tests/test_cn_bypass_check.py": "profiles/k2p/tests/test_cn_bypass_check.py"
+  "tests/test_cn_bypass_check.py": "profiles/k2p/tests/test_cn_bypass_check.py",
+  "payload/starts/subscription-quota.sh": "shared/lib/subscription-quota.sh",
+  "tests/test_account_network.js": "shared/tests/test_account_network.js"
 }
