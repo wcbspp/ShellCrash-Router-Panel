@@ -38,7 +38,7 @@ while IFS= read -r url;do
  attempt=$((attempt+1));case "$url" in https://*|http://*) :;;*)continue;;esac
  echo "高级面板下载：尝试源 $attempt"
  if curl -4 ${ca:+--cacert "$ca"} --noproxy '*' -fsSL --connect-timeout 5 --max-time 20 --max-filesize 1048576 "$url" -o /tmp/sc-dashboard.tar.gz;then
-  if command -v sha256sum >/dev/null 2>&1;then actual=$(sha256sum /tmp/sc-dashboard.tar.gz | cut -d ' ' -f1);else actual=$(openssl dgst -sha256 /tmp/sc-dashboard.tar.gz | awk '{print $NF}');fi
+  if type sha256sum >/dev/null 2>&1;then actual=$(sha256sum /tmp/sc-dashboard.tar.gz | cut -d ' ' -f1);else actual=$(openssl dgst -sha256 /tmp/sc-dashboard.tar.gz | awk '{print $NF}');fi
   if [ "$actual" = "$expected" ];then found=1;echo "高级面板文件校验通过：源 $attempt";break;fi
   echo '下载文件校验不符，尝试下一个源'
  fi

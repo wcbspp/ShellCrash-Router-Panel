@@ -10,7 +10,11 @@ case "$mode" in local|remote) :;;*)exit 2;;esac
 # duplicate the project files in RAM. The hidden root is excluded by the
 # installed Storage saver; its lock prevents a concurrent commit while built.
 available=$(awk '/MemAvailable:/{print $2;exit}' /proc/meminfo)
-[ "${available:-0}" -ge 12800 ] || { echo '可用内存不足以安全打包，现有服务保持运行';exit 1; }
+. "$C/starts/resource_health.sh"
+resource_limits
+[ "$rh_limits_valid" = 1 ] || { echo '内存保护设置无效，未创建备份';exit 1; }
+protect_kb=$((rh_protect_mb*1024))
+[ "${available:-0}" -ge "$((protect_kb+512))" ] || { echo '可用内存不足以安全打包，现有服务保持运行';exit 1; }
 mkdir /tmp/shellcrash-storage-save.lock 2>/dev/null || { echo 'Storage 正在保存，请稍后重试';exit 1; }
 lockheld=1
 umask 077
@@ -50,7 +54,7 @@ RESTORE
 # Reserve real remaining RAM instead of assuming the compressed archive is
 # as large as the uncompressed project. Bound the output while it is written.
 available=$(awk '/MemAvailable:/{print $2;exit}' /proc/meminfo)
-limit=$(( (available-12288-256)*1024 ));[ "$limit" -le 4000000 ] || limit=4000000
+limit=$(( (available-protect_kb-256)*1024 ));[ "$limit" -le 4000000 ] || limit=4000000
 [ "$limit" -ge 32768 ] || { echo '打包期间可用内存不足，当前服务保持运行';exit 1; }
 : > "$D/backup-tar.error"
 tar -cf - -C "$stage" . 2> "$D/backup-tar.error" | gzip -c | head -c "$((limit+1))" > "$file.new"
@@ -63,7 +67,7 @@ if [ "$mode" = local ];then
  # Release the file copy before allocating the encoded download representation.
  rm -rf "$stage"
  available=$(awk '/MemAvailable:/{print $2;exit}' /proc/meminfo)
- size=$(wc -c < "$file" | tr -d "[:space:]");required=$(( (size*4/3+1023)/1024+12288 ))
+ size=$(wc -c < "$file" | tr -d "[:space:]");required=$(( (size*4/3+1023)/1024+protect_kb ))
  [ "${available:-0}" -ge "$required" ] || { echo '可用内存不足以准备安全下载，备份文件已保留';exit 1; }
  sha=$(sha256sum "$file"|awk '{print $1}')
  { printf 'SCBACKUP1 %s %s\n' "$size" "$sha";base64 < "$file"; } > "$D/backup-download.txt.new"

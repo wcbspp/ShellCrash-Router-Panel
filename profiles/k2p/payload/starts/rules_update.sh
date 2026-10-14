@@ -23,7 +23,8 @@ if [ "$hash" = "$(sha256sum "$RULES_FILE" | awk '{print $1}')" ]; then
  fi
  phase done rules_unchanged; event 'Domestic IP rules already current; no restart'; return 0
 fi
-# Native templates own their IP rules; this control updates the router bypass table.
+# Native templates retain their explicit rules; startup derives the domestic
+# fallback from this table too, so its update also reaches the core.
 if [ -f "$C/configs/native-profile" ] || ! grep -q '\"ip_cidr\":' "$C/jsons/config.json";then
  cp "$C/jsons/config.json" "$R/candidate.json" || { fail rules_backup_failed;return 1; }
 else

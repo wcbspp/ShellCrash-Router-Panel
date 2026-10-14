@@ -18,10 +18,12 @@ assert(built.proxies[1].name=='node'and built['proxy-groups'][2].type=='url-test
 assert(built.rules[#built.rules]=='MATCH,Acl4SSR')
 assert(built.rules[9]=='DOMAIN-SUFFIX,custom.example,proxy-main')
 assert(built.rules[10]=='DOMAIN-SUFFIX,template.example,Acl4SSR')
+assert(built.rules[#built.rules-1]=='RULE-SET,panel-cn-ip,DIRECT')
+assert(built['rule-providers']['panel-cn-ip'].path==M.C..'/configs/cn_ip.txt')
 policy='';c._subscription_policy=nil -- publication clears the staged policy
 local followed=dofile(M.C..'/ax5/mihomo.lua').build(c)
-assert(#followed.rules==10 and followed.rules[9]=='DOMAIN-SUFFIX,template.example,Acl4SSR')
-assert(followed.rules[10]=='MATCH,Acl4SSR')
+assert(#followed.rules==11 and followed.rules[9]=='DOMAIN-SUFFIX,template.example,Acl4SSR')
+assert(followed.rules[10]=='RULE-SET,panel-cn-ip,DIRECT'and followed.rules[11]=='MATCH,Acl4SSR')
 policy='suffix\tcustom.example\tproxy-main\n'
 assert(built['external-controller']=='127.0.0.1:9999'and built['mixed-port']==7890)
 assert(built['rule-providers'].cn.type=='file')

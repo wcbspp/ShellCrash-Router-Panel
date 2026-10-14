@@ -43,7 +43,10 @@ parse_singbox_dns() { #dns转换
 }
 modify_json() {
     #提取配置文件以获得outbounds.json,providers.json及route.json
-    "$TMPDIR"/CrashCore format -c $core_config >"$TMPDIR"/format.json
+    . "$CRASHDIR/starts/cn_fallback.sh"
+    cn_fallback_prepare "$core_config" /tmp/panel-dns/route-config.json || { echo "国内 IP 兜底生成失败，取消启动" >&2;exit 1; }
+    "$TMPDIR"/CrashCore format -c /tmp/panel-dns/route-config.json >"$TMPDIR"/format.json || return 1
+    rm -f /tmp/panel-dns/route-config.json
     echo '{' >"$TMPDIR"/jsons/outbounds.json
     echo '{' >"$TMPDIR"/jsons/route.json
     cat "$TMPDIR"/format.json | sed -n '/"outbounds":/,/^  "[a-z]/p' | sed '$d' >>"$TMPDIR"/jsons/outbounds.json

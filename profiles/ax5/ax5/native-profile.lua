@@ -98,7 +98,14 @@ function A.merge(c,runtime)
  for _,r in ipairs(P.parse(c._subscription_policy or M.read(M.C..'/configs/policy.tsv'),c))do
   rules[#rules+1]=(r.domain and'DOMAIN,'or'DOMAIN-SUFFIX,')..(r.domain or r.domain_suffix)[1]..','..(r.outbound=='direct'and'DIRECT'or r.outbound)
  end
- for _,r in ipairs(base.rules)do rules[#rules+1]=r end;base.rules=rules
+ local fallback='RULE-SET,panel-cn-ip,DIRECT'
+ local inserted=false
+ for _,r in ipairs(base.rules)do
+  if r:match('^MATCH,')and not inserted then rules[#rules+1]=fallback;inserted=true end
+  rules[#rules+1]=r
+ end
+ if not inserted then rules[#rules+1]=fallback end
+ base.rules=rules
  base['rule-providers']=base['rule-providers']or{}
  assert(not base['rule-providers'].cn,'模板使用了本机保留的 cn 规则库名称')
  base['rule-providers'].cn=runtime['rule-providers'].cn
@@ -112,6 +119,8 @@ function A.merge(c,runtime)
    end
   end
  end
+ assert(not base['rule-providers']['panel-cn-ip'],'模板使用了本机保留的 panel-cn-ip 规则库名称')
+ base['rule-providers']['panel-cn-ip']={type='file',behavior='ipcidr',format='text',path=M.C..'/configs/cn_ip.txt'}
  return base
 end
 return A

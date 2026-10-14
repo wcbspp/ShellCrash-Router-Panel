@@ -129,5 +129,13 @@
   "tests/test_router_queue.js": "profiles/ax5/tests/test_router_queue.js",
   "ax5/core-stream.lua": "profiles/ax5/ax5/core-stream.lua",
   "tests/core_stream.lua": "profiles/ax5/tests/core_stream.lua",
-  "tests/test_backup_budget.py": "profiles/ax5/tests/test_backup_budget.py"
+  "tests/test_backup_budget.py": "profiles/ax5/tests/test_backup_budget.py",
+  "tests/test_dns_drafts.js": "profiles/ax5/tests/test_dns_drafts.js",
+  "tests/test_dashboard_cache.py": "profiles/ax5/tests/test_dashboard_cache.py",
+  "tests/advanced_assets.lua": "profiles/ax5/tests/advanced_assets.lua",
+  "tests/dns_noop.lua": "profiles/ax5/tests/dns_noop.lua",
+  "tests/test_auto_measure_pressure.js": "profiles/ax5/tests/test_auto_measure_pressure.js",
+  "tests/test_connection_rows.js": "profiles/ax5/tests/test_connection_rows.js",
+  "ax5/rules-update.lua": "profiles/ax5/ax5/rules-update.lua",
+  "tests/rules-update.lua": "profiles/ax5/tests/rules-update.lua"
 }

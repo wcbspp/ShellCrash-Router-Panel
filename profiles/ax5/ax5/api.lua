@@ -35,7 +35,7 @@ function A.read()
  elseif kind=='zerotier'then reply(M.zerotier());return
  elseif kind=='zerotierlog'then H.prepare_content('text/plain');H.write(M.read(M.R..'/zerotier-diagnostic',8192));return
  elseif kind=='inspect'then
-  local d,err,status=dofile(M.C..'/ax5/inspect.lua').query(H.formvalue('view')or'',tonumber(H.formvalue('page')or'0'),H.formvalue('q')or'')
+  local d,err,status=assert(loadfile(M.C..'/ax5/inspect.lua'))(M).query(H.formvalue('view')or'',tonumber(H.formvalue('page')or'0'),H.formvalue('q')or'')
   reply(d or{error=err},status);return
  elseif kind=='backup'or kind=='corebackup'then
   local path=kind=='backup'and(M.R..'/application-backup.tar.gz')or(M.C..'/cache/core-armv7.tar.gz')
@@ -90,7 +90,8 @@ function A.control()
  local id=args[1]or'';if id~=''and not id:match('^%x%x%x%x%x%x%x%x$')then os.remove(M.R..'/operation.lock');reply({error='invalid_id'},400);return end
  M.save(M.R..'/request.json',{action=action,args=args})
  M.save(M.R..'/job.json',{active=true,phase='working',id=id,message_b64=M.b64('service_operation')})
- M.run('(umask 077; lua '..M.C..'/ax5/job.lua > '..M.R..'/worker.log 2>&1) </dev/null >/dev/null 2>&1 &')
+ -- Let the control HTTP worker exit before allocating a configuration job.
+ M.run('(umask 077; sleep 1; lua '..M.C..'/ax5/job.lua > '..M.R..'/worker.log 2>&1) </dev/null >/dev/null 2>&1 &')
  reply({ok=true})
 end
 function A.api()
@@ -146,7 +147,17 @@ function A.advancedasset()
  local name=table.concat(parts,'/');if name==''then name='index.html'end
  if #name>180 or name:find('..',1,true)or not name:match('^[%w_./-]+$')or not name:match('%.%w+$')then reply({error='not_found'},404);return end
  local types={html='text/html',js='application/javascript',css='text/css',png='image/png',ico='image/x-icon',svg='image/svg+xml',webmanifest='application/manifest+json'};local ext=name:match('%.(%w+)$');if not types[ext]then reply({error='not_found'},404);return end
- local raw=M.read('/tmp/ShellCrash-dashboard/'..name,1048576);if raw==''then reply({error='not_found'},404);return end
- H.header('Cache-Control','no-store');H.prepare_content(types[ext]);H.write(raw)
+ local path='/tmp/ShellCrash-dashboard/'..name
+ local f=io.open(path,'rb');local compressed=false
+ if not f then f=io.open(path..'.gz','rb');compressed=f~=nil end
+ if not f then reply({error='not_found'},404);return end
+ H.header('Cache-Control','no-store');H.prepare_content(types[ext])
+ if compressed then
+  H.header('Vary','Accept-Encoding')
+  if (H.getenv('HTTP_ACCEPT_ENCODING')or''):find('gzip',1,true)then H.header('Content-Encoding','gzip')
+  else f:close();f=io.popen('gzip -cd '..M.quote(path..'.gz'),'r');if not f then return end end
+ end
+ while true do local block=f:read(4096);if not block then break end;H.write(block)end
+ f:close()
 end
 return A

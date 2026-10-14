@@ -81,7 +81,7 @@ fi
 servers=$work/configs/servers.list
 if [ "$mode" = convert ];then Url=$url;else Https=$url;fi
 logger(){ :; }
-ckcmd(){ command -v "$1" >/dev/null 2>&1; }
+ckcmd(){ type "$1" >/dev/null 2>&1; }
 # A failed request must not send private subscriptions to another converter automatically.
 ca=''
 if [ "$platform" = k2p ];then

@@ -13,10 +13,15 @@ if [ "$(cat "$R/.ready" 2>/dev/null || true)" = "$expected" ]; then
  cp "$C/ui/dashboard-bridge.js" "$R/dashboard-bridge.js"
  exit 0
 fi
+# Keep compressed assets in RAM and stream them to the browser. No full
+# unpacked copy is allocated; preserve the user's configured protection floor.
+protect=$(lua -e "print(dofile('$C/ax5/common.lua').limits().protect_mb)")
+case "$protect" in ''|*[!0-9]*) exit 1;;esac
+required=$((protect*1024+2560))
 avail=$(awk '/MemAvailable:/{print $2;exit}' /proc/meminfo)
-if [ "${avail:-0}" -lt 20000 ];then
+if [ "${avail:-0}" -lt "$required" ];then
  mkdir -p /tmp/ShellCrash
- printf '高级面板暂缓：可用 %s KB，安装至少需要 20000 KB；代理服务保持运行\n' "${avail:-0}" > /tmp/ShellCrash/dashboard-error
+ printf '高级面板暂缓：可用 %s KB，安装至少需要 %s KB；代理服务保持运行\n' "${avail:-0}" "$required" > /tmp/ShellCrash/dashboard-error
  cat /tmp/ShellCrash/dashboard-error;exit 1
 fi
 mkdir /tmp/sc-dashboard-install.lock 2>/dev/null || exit 1
@@ -41,7 +46,8 @@ while IFS= read -r url;do
  [ "$found" != 1 ] || break
  attempt=$((attempt+1));case "$url" in https://*|http://*) :;;*)continue;;esac
  echo "高级面板下载：尝试源 $attempt"
- if curl -4 ${ca:+--cacert "$ca"} --noproxy '*' -fsSL --connect-timeout 5 --max-time 20 --max-filesize 1048576 "$url" -o /tmp/sc-dashboard.tar.gz;then
+ { code=0;curl -4 ${ca:+--cacert "$ca"} --noproxy '*' -fsSL --connect-timeout 5 --max-time 20 "$url" || code=$?;printf '%s' "$code" > "$W/curl-code"; } | head -c 1048577 > /tmp/sc-dashboard.tar.gz
+ if [ "$(cat "$W/curl-code")" = 0 ] && [ "$(wc -c < /tmp/sc-dashboard.tar.gz)" -le 1048576 ];then
   if command -v sha256sum >/dev/null 2>&1;then actual=$(sha256sum /tmp/sc-dashboard.tar.gz | cut -d ' ' -f1);else actual=$(openssl dgst -sha256 /tmp/sc-dashboard.tar.gz | awk '{print $NF}');fi
   if [ "$actual" = "$expected" ];then found=1;echo "高级面板文件校验通过：源 $attempt";break;fi
   echo '下载文件校验不符，尝试下一个源'
@@ -52,7 +58,27 @@ if remote_ready && ! remote_has dashboard "$expected" tar.gz;then
  if ! remote_put dashboard /tmp/sc-dashboard.tar.gz tar.gz >/dev/null;then echo '高级面板可用；远程备份待重试';fi
 fi
 mkdir -p /tmp/sc-dashboard-stage
-tar -zxf /tmp/sc-dashboard.tar.gz -C /tmp/sc-dashboard-stage
+tar -ztf /tmp/sc-dashboard.tar.gz > "$W/files"
+[ "$(wc -l < "$W/files")" -le 100 ] || exit 1
+cached=0
+while IFS= read -r entry;do
+ name=${entry#./};case "$name" in ''|*/)continue;;esac
+ case "$name" in *..*|/*|*[!A-Za-z0-9_./-]*)exit 1;;esac
+ case "$name" in sw.js|registerSW.js)continue;;esac
+ target=/tmp/sc-dashboard-stage/$name
+ mkdir -p "$(dirname "$target")"
+ remaining=$((1048576-cached));[ "$remaining" -gt 0 ] || exit 1
+ : > "$W/tar-error"
+ case "$name" in
+  *.js|*.css|*.svg|*.webmanifest)
+   target=$target.gz
+   tar -zxOf /tmp/sc-dashboard.tar.gz "$entry" 2> "$W/tar-error" | gzip -c | head -c "$((remaining+1))" > "$target"
+   gzip -t "$target" || exit 1;;
+  *)tar -zxOf /tmp/sc-dashboard.tar.gz "$entry" 2> "$W/tar-error" | head -c "$((remaining+1))" > "$target";;
+ esac
+ [ ! -s "$W/tar-error" ] || exit 1
+ cached=$((cached+$(wc -c < "$target")));[ "$cached" -le 1048576 ] || exit 1
+done < "$W/files"
 [ -s /tmp/sc-dashboard-stage/index.html ]
 sed 's@<head>@<head><style>a[href="#/configs"],a[href="#/config"],a[href="#/logs"],a[href="#/home"],a[href="#/"]{display:none!important}</style><script src="./dashboard-bridge.js"></script>@;s@http://127.0.0.1:9090@http://shellcrash.invalid@g;s@<script id="vite-plugin-pwa:register-sw"[^<]*</script>@@' /tmp/sc-dashboard-stage/index.html > /tmp/sc-dashboard-stage/index.new
 mv /tmp/sc-dashboard-stage/index.new /tmp/sc-dashboard-stage/index.html

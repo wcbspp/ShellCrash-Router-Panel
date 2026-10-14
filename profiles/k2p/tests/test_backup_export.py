@@ -7,6 +7,7 @@ class BackupExport(unittest.TestCase):
   link_source=SOURCE.parent/'backup-links.sh'
   if not link_source.exists():link_source=Path(__file__).resolve().parents[3]/'shared/lib/backup-links.sh'
   (self.c/'starts/backup-links.sh').write_bytes(link_source.read_bytes())
+  (self.c/'starts/resource_health.sh').write_bytes((SOURCE.parent/'resource_health.sh').read_bytes())
   (self.c/'starts/remote.sh').write_text('remote_ready(){ :; }\n')
   (self.c/'configs/core-installed.info').write_text('version=1.12.13\nsha256='+('1'*64)+'\n')
   (self.c/'configs/webdav.auth').write_text('private fixture');(self.c/'configs/webdav.user').write_text('user')
@@ -42,3 +43,13 @@ class BackupExport(unittest.TestCase):
   result=self.run_backup();self.assertNotEqual(result.returncode,0);self.assertIn('未知软链接',result.stderr.decode());self.assertEqual((self.d/'application-backup.tar.gz').read_bytes(),old);self.clean()
  def test_existing_storage_commit_is_not_interrupted(self):
   self.lock.mkdir();self.assertNotEqual(self.run_backup().returncode,0);self.assertTrue(self.lock.exists());self.assertEqual(list(self.root.glob('.sc-backup-stage.*')),[])
+
+ def test_custom_protection_floor_rejects_before_storage_lock(self):
+  (self.c/'configs/memory.conf').write_text('warning_mb=20\nprotect_mb=14\ncleanup_mb=0\n')
+  self.mem.write_text('MemAvailable: 14000 kB\n');old=b'previous';(self.d/'application-backup.tar.gz').write_bytes(old)
+  result=self.run_backup();self.assertNotEqual(result.returncode,0);self.clean()
+  self.assertEqual((self.d/'application-backup.tar.gz').read_bytes(),old)
+ def test_invalid_memory_settings_fail_closed(self):
+  (self.c/'configs/memory.conf').write_text('protect_mb=1\n')
+  result=self.run_backup();self.assertNotEqual(result.returncode,0);self.clean()
+  self.assertIn('内存保护设置无效',result.stdout.decode())

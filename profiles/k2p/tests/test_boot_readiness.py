@@ -3,16 +3,16 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 
 class BootReadinessTests(unittest.TestCase):
- def run_case(self, dispatch=0, ready_after=0, api=True, manual=False, mode_ok=True):
+ def run_case(self, dispatch=0, ready_after=0, api=True, manual=False, mode_ok=True, previous_stop=False):
   with tempfile.TemporaryDirectory() as td:
    d=Path(td); c=d/'persist'; (c/'configs').mkdir(parents=True); b=d/'bin'; b.mkdir()
    (c/'configs/ShellCrash.cfg').write_text('secret=fixture\n')
    (c/'start.sh').write_text(f'#!/bin/sh\necho dispatch-diagnostic >&2\necho ${{SC_PANEL_STARTING:-missing}} > "{d}/starting"\nexit {dispatch}\n'); (c/'start.sh').chmod(0o755)
    (d/'ram').mkdir(); (d/'clock').write_text('0')
-   if manual: (d/'ram/manual-stop').touch()
+   if previous_stop: (d/'ram/manual-stop').touch()
    commands={
     'cut':f'#!/bin/sh\ncat "{d}/clock"\n',
-    'sleep':f'#!/bin/sh\nn=$(cat "{d}/clock"); echo $((n+30)) > "{d}/clock"\n',
+    'sleep':f'#!/bin/sh\nn=$(cat "{d}/clock"); echo $((n+30)) > "{d}/clock"\n'+(f'touch "{d}/ram/manual-stop"\n' if manual else ''),
     'pidof':f'#!/bin/sh\n[ $(cat "{d}/clock") -ge {ready_after} ] && echo 123\n',
     'curl':f'#!/bin/sh\ncase "$*" in *PATCH*)exit {0 if mode_ok else 1};;*)exit {0 if api else 1};;esac\n',
    }
@@ -33,5 +33,8 @@ class BootReadinessTests(unittest.TestCase):
  def test_process_without_authenticated_api_is_failure(self): self.assertEqual(self.run_case(api=False)[0],1)
  def test_background_start_waits_until_ready(self): self.assertEqual(self.run_case(ready_after=60),(0,''))
  def test_manual_stop_during_boot_is_respected(self): self.assertEqual(self.run_case(manual=True,ready_after=1000),(0,''))
+ def test_previous_stop_marker_waits_for_delayed_start(self): self.assertEqual(self.run_case(previous_stop=True,ready_after=60),(0,''))
+ def test_previous_stop_marker_does_not_hide_start_timeout(self):
+  code,log=self.run_case(previous_stop=True,ready_after=1000);self.assertEqual(code,1);self.assertIn('dispatch exit 0',log)
 
 if __name__=='__main__': unittest.main()

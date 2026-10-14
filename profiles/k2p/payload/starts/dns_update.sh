@@ -9,6 +9,10 @@ base64 -d "$R/upload.b64" > "$R/filter.gz" 2>/dev/null || { fail invalid_upload;
 if [ "$(head -c 2 "$R/filter.gz" | base64 | tr -d '\n')" = H4s= ]; then gzip -dc "$R/filter.gz" | head -c 16001 > "$R/filter.txt"; else head -c 16001 "$R/filter.gz" > "$R/filter.txt"; fi
 [ "$(stat -c %s "$R/filter.txt")" -le 16000 ] && awk -f "$C/starts/filter_compile.awk" "$R/filter.txt" > "$R/filter.json" || { fail invalid_filter_previous_kept; return 1; }
 mode=$3; case "$mode" in real) mode=redir_host;; mix) :;; *) fail invalid_upload; return 1;; esac
+current_mode=$(sed -n 's/^dns_mod=//p' "$C/configs/ShellCrash.cfg" | head -1)
+if [ "$current_mode" = "$mode" ] && ! grep -q '^disoverride=ON' "$C/configs/ShellCrash.cfg" && [ "$(sha256sum "$R/filter.txt" | cut -d ' ' -f1)" = "$(sha256sum "$C/configs/fake_ip_filter.list" | cut -d ' ' -f1)" ];then
+ phase done 'DNS 设置未变化，无需重启';return 0
+fi
 cp "$C/configs/fake_ip_filter.list" "$R/previous.filter"; cp "$C/configs/ShellCrash.cfg" "$R/previous.cfg"
 was_running=0; [ -z "$(pidof CrashCore)" ] || was_running=1
 configuration_core_prepare || return 1

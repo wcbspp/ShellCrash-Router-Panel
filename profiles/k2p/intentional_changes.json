@@ -20,16 +20,16 @@
     "removed": true
   },
   "payload/padavan/manager.js": {
-    "sha256": "467db95ae44b1490b270caee5f5914fc25554cddcfc44a3278352a9e39880c00",
-    "reason": "Highlighted imported/filter counts and reset warnings; version-bound stale draft isolation; automatic vs explicit UA kept distinct. Mode refresh uses shared font-safe final-node renderer; prevents raw Taiwan flag returning in header. Shared mode UI with K2P capability gate; no unsupported transport mutation. Private rc.2 candidate; final plain-language scope and cancelled draft handling. Reviewed 2026-10-14: compact kernel traffic counter sampling, since-core-start totals; actual transport-dependent flow labels and rule/DNS scope. K2P mixed delegates to official ShellCrash setter/start with running executable reuse, memory/capability guards, selector preservation and rollback; direct/global also handle owned UDP marking chains. Reviewed: serialize inspection rows as an array, handle zero-result legacy replies and reject malformed rows; prevent paused/background traffic requests from painting stale samples. Reviewed 2026-10-14: stream proxy objects and retain only group descriptors, collect per ten objects, use 2 MB inspection reserve instead of full-tree 4 MB; pause traffic relay while querying to avoid concurrent memory peaks. Empty result and protection regressions on firmware Lua. Reviewed: coalesce inspection changes instead of racing backend locks; AX read/relay queue bounds LuCI worker concurrency without a resident service. Queue rejection/cancellation regression. Reviewed: transport capability text separated from actual flow mode; DNS and quick override scope reflects direct/global pause, saving restarts into rule mode. Mode scope regression included."
+    "sha256": "daaeecce17dfc8e021e6887349f87348d88f758173a4da90f8c0081bda6be722",
+    "reason": "Highlighted imported/filter counts and reset warnings; version-bound stale draft isolation; automatic vs explicit UA kept distinct. Mode refresh uses shared font-safe final-node renderer; prevents raw Taiwan flag returning in header. Shared mode UI with K2P capability gate; no unsupported transport mutation. Private rc.2 candidate; final plain-language scope and cancelled draft handling. Reviewed 2026-10-14: compact kernel traffic counter sampling, since-core-start totals; actual transport-dependent flow labels and rule/DNS scope. K2P mixed delegates to official ShellCrash setter/start with running executable reuse, memory/capability guards, selector preservation and rollback; direct/global also handle owned UDP marking chains. Reviewed: serialize inspection rows as an array, handle zero-result legacy replies and reject malformed rows; prevent paused/background traffic requests from painting stale samples. Reviewed 2026-10-14: stream proxy objects and retain only group descriptors, collect per ten objects, use 2 MB inspection reserve instead of full-tree 4 MB; pause traffic relay while querying to avoid concurrent memory peaks. Empty result and protection regressions on firmware Lua. Reviewed: coalesce inspection changes instead of racing backend locks; AX read/relay queue bounds LuCI worker concurrency without a resident service. Queue rejection/cancellation regression. Reviewed: transport capability text separated from actual flow mode; DNS and quick override scope reflects direct/global pause, saving restarts into rule mode. Mode scope regression included. Acceptance continuation: exact DNS draft revert/pending-read preservation; retain last traffic numbers during pause/error without treating them as live, guarded sampling, connection details using existing native API snapshot only. Reviewed: explicitly label kernel totals as including DIRECT; domestic-table maintenance updates the core fallback, distinct from subscription geodata. Native Mihomo reload is atomic with count readback/rollback and no restart. K delayed startup clears only the previous stop marker before dispatch; later user cancellation still respected and fake readiness regression covered."
   },
   "payload/starts/backup-app.sh": {
-    "sha256": "a1eb7a725f7d22c188a2b0326e0d0005e888b981bed3fd19c8c3db800eb5720f",
-    "reason": "Make backup archives portable without runtime aliases, support minimal K2P utilities, record the actual panel release in local/remote metadata, and identify core files by SHA256."
+    "sha256": "f62bdc0888128fc389b5b7b89f29b23e9d96ded267d0eb3962a4900c1f37a485",
+    "reason": "Make backup archives portable without runtime aliases, support minimal K2P utilities, record the actual panel release in local/remote metadata, and identify core files by SHA256. Acceptance continuation: application packing and download encoding honor the validated configured protection threshold; invalid settings fail closed; custom-floor regression tests keep old exports and avoid snapshot/Storage lock creation."
   },
   "tests/test_backup_export.py": {
-    "sha256": "853d52553b9cd491e565782d1047dc75846a618cf79aa6513f378990f85734ac",
-    "reason": "Make backup archives portable without runtime aliases, support minimal K2P utilities, record the actual panel release in local/remote metadata, and identify core files by SHA256."
+    "sha256": "5e866cdba3a80edc6c2c73cf6bac3aeb14e2eb1dc6387c15c6ed478a6edf0028",
+    "reason": "Make backup archives portable without runtime aliases, support minimal K2P utilities, record the actual panel release in local/remote metadata, and identify core files by SHA256. Acceptance continuation: application packing and download encoding honor the validated configured protection threshold; invalid settings fail closed; custom-floor regression tests keep old exports and avoid snapshot/Storage lock creation."
   },
   "payload/starts/panel_bfstart.sh": {
     "sha256": "fb1bc025c339d9c1d33035bfba574dc741cf3332dc11878bfcdcf4f96bd07b76",
@@ -44,12 +44,12 @@
     "reason": "Make backup archives portable without runtime aliases, support minimal K2P utilities, record the actual panel release in local/remote metadata, and identify core files by SHA256."
   },
   "payload/starts/panel_boot.sh": {
-    "sha256": "1984e53e3f62cf1ba019035ee3846ccba338493b14041b51f545668a1c3ae66e",
-    "reason": "Separate startup firewall cleanup from manual stop, retry marked incomplete first boots through the existing minute watchdog with backoff, preserve stop/autostart controls and separate crash counts; verify readiness and retain dispatch errors."
+    "sha256": "6fded929d657d87c41a1cab0da064b05b243679cbe410aa19bcf1e9bd0ff8d16",
+    "reason": "Separate startup firewall cleanup from manual stop, retry marked incomplete first boots through the existing minute watchdog with backoff, preserve stop/autostart controls and separate crash counts; verify readiness and retain dispatch errors. Reviewed: explicitly label kernel totals as including DIRECT; domestic-table maintenance updates the core fallback, distinct from subscription geodata. Native Mihomo reload is atomic with count readback/rollback and no restart. K delayed startup clears only the previous stop marker before dispatch; later user cancellation still respected and fake readiness regression covered."
   },
   "tests/test_boot_readiness.py": {
-    "sha256": "b205595010ef54bd9d91c02e6a6fb06a746395c88308fde144c13bd189f6b192",
-    "reason": "Separate startup firewall cleanup from manual stop, retry marked incomplete first boots through the existing minute watchdog with backoff, preserve stop/autostart controls and separate crash counts; verify readiness and retain dispatch errors."
+    "sha256": "c76891cbdeb7fb6e62425d781b79db57c3f9469ae2e41104a2ea0c4fd2733eda",
+    "reason": "Separate startup firewall cleanup from manual stop, retry marked incomplete first boots through the existing minute watchdog with backoff, preserve stop/autostart controls and separate crash counts; verify readiness and retain dispatch errors. Reviewed: explicitly label kernel totals as including DIRECT; domestic-table maintenance updates the core fallback, distinct from subscription geodata. Native Mihomo reload is atomic with count readback/rollback and no restart. K delayed startup clears only the previous stop marker before dispatch; later user cancellation still respected and fake readiness regression covered."
   },
   "payload/starts/start_legacy_wd.sh": {
     "sha256": "84cfac45d43b761f093dc12a7592564176f53885292099433877b9331b38101a",
@@ -68,8 +68,8 @@
     "reason": "Reviewed: manual basic-node switching/rollback, scoped existing-flow reconnection, actual group names and routed probes, highlighted import counts/warnings, and version-bound browser subscription draft isolation. Website checks distinguish transport/TLS failures, API errors and HTTP 4xx/5xx responses; access errors use amber rather than success green. Regression includes all AX endpoint IDs/URLs."
   },
   "payload/ui/index.html": {
-    "sha256": "fc3bf0b4f1768e83924b04d9562bf42b4795430a1f6f9ece47acaa0b02a4e77c",
-    "reason": "Manual-only basic-node path with rollback and scoped reconnect; explicit auto-pin release/readback; truthful partial/expired measurements; native web origin preserved. Resolve final-node card text with cycle-bounded paths; show safe TW badge while preserving core keys. Nested auto/manual and cyclic graph regressions. Website checks distinguish transport/TLS failures, API errors and HTTP 4xx/5xx responses; access errors use amber rather than success green. Regression includes all AX endpoint IDs/URLs. Shared compact mode layout; K2P remains Redir and switch disabled, no heavy TUN additions. Reviewed 2026-10-14: compact kernel traffic counter sampling, since-core-start totals; actual transport-dependent flow labels and rule/DNS scope. K2P mixed delegates to official ShellCrash setter/start with running executable reuse, memory/capability guards, selector preservation and rollback; direct/global also handle owned UDP marking chains. Reviewed: native CSS zoom already resolves percent width; keep iframe at 100% to prevent double scaling and 390px overflow. Actual K mobile offender measured."
+    "sha256": "ac2ab8659beeee1d74401499f11ad76b9d6d1a5a0e118c56368a6a5b53024c86",
+    "reason": "Manual-only basic-node path with rollback and scoped reconnect; explicit auto-pin release/readback; truthful partial/expired measurements; native web origin preserved. Resolve final-node card text with cycle-bounded paths; show safe TW badge while preserving core keys. Nested auto/manual and cyclic graph regressions. Website checks distinguish transport/TLS failures, API errors and HTTP 4xx/5xx responses; access errors use amber rather than success green. Regression includes all AX endpoint IDs/URLs. Shared compact mode layout; K2P remains Redir and switch disabled, no heavy TUN additions. Reviewed 2026-10-14: compact kernel traffic counter sampling, since-core-start totals; actual transport-dependent flow labels and rule/DNS scope. K2P mixed delegates to official ShellCrash setter/start with running executable reuse, memory/capability guards, selector preservation and rollback; direct/global also handle owned UDP marking chains. Reviewed: native CSS zoom already resolves percent width; keep iframe at 100% to prevent double scaling and 390px overflow. Actual K mobile offender measured. Compact responsive speed/totals and explicit on-demand client connection navigation; preserve original traffic scope and no resident collector. Reviewed: explicitly label kernel totals as including DIRECT; domestic-table maintenance updates the core fallback, distinct from subscription geodata. Native Mihomo reload is atomic with count readback/rollback and no restart. K delayed startup clears only the previous stop marker before dispatch; later user cancellation still respected and fake readiness regression covered."
   },
   "tests/test_search.js": {
     "sha256": "0e745c08a710f917f9436ee927dadf120edb6055b6fbbf5ee1db75694324e6c1",
@@ -110,5 +110,29 @@
   "tests/test_traffic_mode.py": {
     "sha256": "c8ae3f30c03983eb992fdac86268ca2c8eb1f45aa7bc35b9b3ab5b3ada5e2b54",
     "reason": " Reviewed 2026-10-14: compact kernel traffic counter sampling, since-core-start totals; actual transport-dependent flow labels and rule/DNS scope. K2P mixed delegates to official ShellCrash setter/start with running executable reuse, memory/capability guards, selector preservation and rollback; direct/global also handle owned UDP marking chains. Reviewed: inspection reports actual memory reserve; K native/domain policies must reach core before owned country-IP bypass, preserving private exceptions and basic-config optimization. Tested base/native/custom modes and rollback."
+  },
+  "payload/starts/dashboard-install.sh": {
+    "sha256": "518e890c9515867f4d9deb6cd2c7b38042b0eb5876117484f49e0c16eeac50f4",
+    "reason": " Acceptance continuation: Use type for SHA utility detection because current Padavan /bin/sh lacks command builtin."
+  },
+  "payload/starts/subscription_tool.sh": {
+    "sha256": "8fd736ba3d80785963973b0c835b3dbda3f58a8a2b4b27fc265d01af9ef316db",
+    "reason": " Acceptance continuation: Use type for command detection on actual Padavan shell; retain direct-provider-only backend policy."
+  },
+  "payload/starts/dns_update.sh": {
+    "sha256": "ca472ac089bd65bd5ae5014b33226747575195956e372839276adf534f884e65",
+    "reason": " Acceptance continuation: After filter validation, unchanged enabled local DNS mode/filter returns done without core preparation, restart or Storage write; disabled local override must still apply."
+  },
+  "docs/CONTROL_TEST_CASES.csv": {
+    "sha256": "733ebffac76df9c5e3835554f28f7b2eb1f22f59be5b9ad450f882a68e60c23e",
+    "reason": " Reviewed canonical LF CSV serialization for clone-stable menu/button case coverage; no scenario expectations removed."
+  },
+  "payload/starts/singbox_modify.sh": {
+    "sha256": "e674b3548417edfacac691474df408ee46fbd3887deb6ecf7d5ddcc420e22d23",
+    "reason": " Reviewed domestic-IP fallback: derive from validated local ShellCrash CN table inside the kernel after explicit user/provider rules and before default proxy; preserve DNS, nodes, private/mode guards and source subscription; no resident service or country bypass that defeats overrides."
+  },
+  "payload/starts/rules_update.sh": {
+    "sha256": "2e19485c424ceeb26a35c01a6f472ff418fa21db1bb844c2e0fa3da45dbaf547",
+    "reason": " Reviewed: explicitly label kernel totals as including DIRECT; domestic-table maintenance updates the core fallback, distinct from subscription geodata. Native Mihomo reload is atomic with count readback/rollback and no restart. K delayed startup clears only the previous stop marker before dispatch; later user cancellation still respected and fake readiness regression covered."
   }
 }

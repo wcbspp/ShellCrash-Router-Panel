@@ -48,6 +48,9 @@ C=$CRASHDIR
 rules_ensure || exit 1
 ln -sf "$RULES_FILE" /tmp/ShellCrash/cn_ip.txt
 native_result=0
+# This is an authorized start. Clear the old stop marker before dispatching
+# delayed background preparation; a new marker still cancels the readiness wait.
+rm -f /tmp/ShellCrash/manual-stop
 mkdir -p /tmp/sc-admin
 SC_PANEL_STARTING=1 "$CRASHDIR/start.sh" start >> /tmp/sc-admin/service.log 2>&1 || native_result=$?
 # The official start_legacy path backgrounds preparation and start. Its zero

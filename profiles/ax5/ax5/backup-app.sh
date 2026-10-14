@@ -7,32 +7,34 @@ rm -f "$D/backup-error"
 mode=${1:-local}
 case "$mode" in local|remote) :;;*)exit 2;;esac
 [ "$mode" != remote ] || remote_ready || { echo '请先开启并验证远程仓库';exit 2; }
-# Budget the temporary copy and compressed archive before allocating tmpfs.
+# Hard-link snapshot on the same flash filesystem; only metadata is staged.
+# The archive is streamed into a bounded RAM output, preserving the old file on failure.
 available=$(awk '/MemAvailable:/{print $2;exit}' /proc/meminfo)
-staging=0
-for path in "$C/configs" "$C/ui" "$C/ax5" "$C/ruleset" "$C/cache/targets" /data/ShellCrash-tool;do
- if [ -e "$path" ];then bytes=$(du -sk "$path" | awk '{print $1}');staging=$((staging+bytes));fi
-done
-compressed=$staging;[ "$compressed" -le 4000 ] || compressed=4000
-required=$((staging+compressed+12288))
+protect=$(lua -e "print(dofile('$C/ax5/common.lua').limits().protect_mb)")
+case "$protect" in ''|*[!0-9]*) echo '无法读取内存保护设置，未创建备份';exit 1;;esac
+[ "$protect" -ge 12 ] && [ "$protect" -le 64 ] || { echo '内存保护设置无效，未创建备份';exit 1; }
+protect_kb=$((protect*1024))
+required=$((protect_kb+512))
 if [ "${available:-0}" -lt "$required" ];then
  mkdir -p "$D"
  printf '应用备份暂缓：可用 %s KB，安全打包至少需要 %s KB；当前服务保持运行\n' "${available:-0}" "$required" > "$D/backup-error"
  cat "$D/backup-error";exit 1
 fi
+flash=$(df -Pk "$C" | awk 'END{print $4}')
+[ "${flash:-0}" -ge 256 ] || { echo '应用备份暂缓：Flash 余量不足 256 KB，未创建快照';exit 1; }
 umask 077
 mkdir -p "$D"
-stage="$D/backup-stage"
+stage="$C/.backup-stage.$$"
 file="$D/application-backup.tar.gz"
 trap 'rm -rf "$stage";rm -f "$file.new"' EXIT
 rm -rf "$stage";mkdir -p "$stage"
 # Only project files, never firmware, Entware, ZeroTier identity, SSH keys or runtime logs.
 for folder in configs ui ax5 ruleset;do
- [ ! -d "$C/$folder" ] || cp -R "$C/$folder" "$stage/"
+ [ ! -d "$C/$folder" ] || cp -al "$C/$folder" "$stage/"
 done
 for name in webdav.auth webdav.user mirror-id mirror_key mirror_known_hosts remote.verified;do rm -f "$stage/configs/$name";done
-[ ! -d "$C/cache/targets" ] || { mkdir -p "$stage/cache";cp -R "$C/cache/targets" "$stage/cache/"; }
-cp -R /data/ShellCrash-tool "$stage/ShellCrash-tool"
+[ ! -d "$C/cache/targets" ] || { mkdir -p "$stage/cache";cp -al "$C/cache/targets" "$stage/cache/"; }
+cp -al /data/ShellCrash-tool "$stage/ShellCrash-tool"
 rm -f "$stage/ShellCrash-tool/configs/command.env"
 sh "$C/ax5/backup-links.sh" "$stage" ax5
 . "$C/ax5/core-env.sh"
@@ -58,9 +60,15 @@ RAM/small-flash operation is unchanged. Configure and verify WebDAV credentials 
 Verify LAN, nodes, rules, DNS, one watchdog, autostart, and ZeroTier after restoration.
 No automatic browser import is available in this version.
 RESTORE
-tar -czf "$file.new" -C "$stage" .
-[ "$(wc -c < "$file.new")" -le 4000000 ] || { rm -f "$file.new";echo '备份超出轻量限制';exit 1; }
+available=$(awk '/MemAvailable:/{print $2;exit}' /proc/meminfo)
+limit=$(( (available-protect_kb-256)*1024 ));[ "$limit" -le 4000000 ] || limit=4000000
+[ "$limit" -ge 32768 ] || { echo '打包期间可用内存不足，当前服务保持运行';exit 1; }
+: > "$D/backup-tar.error"
+tar -cf - -C "$stage" . 2> "$D/backup-tar.error" | gzip -c | head -c "$((limit+1))" > "$file.new"
+[ "$(wc -c < "$file.new")" -le "$limit" ] && [ ! -s "$D/backup-tar.error" ] || { echo '备份超过安全内存预算或打包失败，未替换旧备份';exit 1; }
+gzip -t "$file.new" || { echo '备份压缩校验失败';exit 1; }
 mv "$file.new" "$file"
+rm -rf "$stage"
 if [ "$mode" = remote ];then
  if ! remote_has core "$hash" tar.gz;then
   archive="$C/cache/core-armv7.tar.gz"

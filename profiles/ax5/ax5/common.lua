@@ -75,7 +75,7 @@ function M.state()
   local native=cfg._native_meta;index={mtime=statcfg.mtime,bytes=statcfg.size,ip_count=count,template_kind=cfg._template_kind,template_rules=native and #native.rules or cfg._template_kind and #(cfg.route.rules or{})or 0,template_groups=native and #native['proxy-groups']or 0,main_group=native and native['proxy-groups'][1]and native['proxy-groups'][1].name}
   pcall(M.save,M.R..'/config-index.json',index)
  end
- local count=index.ip_count or 0
+ local count=tonumber(M.read(M.C..'/configs/rules-count'))or index.ip_count or 0
  local sock=M.read('/proc/net/sockstat');local pages=tonumber(sock:match('TCP:[^\n]* mem (%d+)')) or 0
  local incidents=M.read(M.R..'/incidents');local recoveries=0;for _ in incidents:gmatch('\n') do recoveries=recoveries+1 end
  local coreenv=M.read(M.C..'/cache/core.env');local kind=coreenv:match('KIND=([^%s]+)')or'singbox';local ver=coreenv:match('VERSION=([^%s]+)')or'1.12.13'

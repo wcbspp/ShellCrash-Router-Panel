@@ -83,7 +83,7 @@ local function record_subscription(parser)
 end
 local function execute()
  local a=req.action
- if a=='advanced'then guard();os.remove(M.R..'/dashboard-error');if not M.run('sh '..M.C..'/ax5/dashboard-install.sh '..M.C..' '..M.state().core_kind..' >> '..M.R..'/worker.log 2>&1')then local reason=M.read(M.R..'/dashboard-error'):gsub('%s+$','');fail(reason~=''and reason or'高级面板下载或校验失败，请查看运行日志')end;phase('done','高级面板已准备',false)
+ if a=='advanced'then os.remove(M.R..'/dashboard-error');local advanced_kind=M.read(M.C..'/cache/core.env'):match('KIND=([^%s]+)')or'singbox';if not M.run('sh '..M.C..'/ax5/dashboard-install.sh '..M.C..' '..advanced_kind..' >> '..M.R..'/worker.log 2>&1')then local reason=M.read(M.R..'/dashboard-error'):gsub('%s+$','');fail(reason~=''and reason or'高级面板下载或校验失败，请查看运行日志')end;phase('done','高级面板已准备',false)
  elseif a=='transport'then
   local message=dofile(M.C..'/ax5/transport-mode.lua').apply(args[2],service,phase);phase('done',message,false)
  elseif a=='proxymode'then
@@ -145,6 +145,9 @@ local function execute()
   guard();local mode=args[2]=='real'and'redir_host'or args[2]=='mix'and'mix';if not mode then fail('invalid_upload')end
   local filter=upload('filter');if #filter>16000 then fail('invalid_filter_previous_kept')end
   if not M.run('awk -f '..M.C..'/ax5/filter_compile.awk '..M.R..'/upload-filter > '..M.R..'/filter.json')then fail('invalid_filter_previous_kept')end
+  if M.read(M.C..'/configs/fake_ip_filter.list')==filter and M.read(M.C..'/configs/dns-mode'):match('^%s*(%S+)')==mode then
+   phase('done','DNS 设置未变化，无需重启',false);return
+  end
   local f=M.load(M.R..'/filter.json');local cfg=current();local dns=cfg.dns;local servers={}
   for _,s in ipairs(dns.servers)do if s.type~='fakeip'then servers[#servers+1]=s end end
   local rules={};for _,r in ipairs(dns.rules)do
@@ -167,9 +170,16 @@ local function execute()
   if not M.run('awk -f '..M.C..'/ax5/rules_validate.awk '..M.R..'/rules.raw > '..M.R..'/rules.new')then fail('rules_invalid_previous_kept')end
   local ips={};for line in M.read(M.R..'/rules.new'):gmatch('[^\n]+')do ips[#ips+1]=line end
   if #ips<1000 or #ips>10000 then fail('rules_invalid_previous_kept')end
-  local cfg=current();local changed=0;for _,r in ipairs(cfg.route.rules)do if r.ip_cidr and #r.ip_cidr>1000 then r.ip_cidr=ips;changed=changed+1 end end
-  if changed~=1 then fail('configuration_template_missing')end
-  checked_save(cfg);M.write(M.C..'/configs/cn_ip.txt',table.concat(ips,'\n')..'\n');M.write(M.C..'/configs/rules-date',os.date('%Y-%m-%d %H:%M:%S'));os.remove(M.C..'/configs/needs-subscription');if M.run(M.C..'/ax5/backup-config.sh >> '..M.R..'/service.log 2>&1')then phase('done','rules_updated',false)else phase('done','configuration_saved_backup_pending',false)end
+  local cfg=current()
+  if cfg._native_meta and M.state().core_kind=='meta'and M.pid()>0 then
+   cfg=nil;collectgarbage('collect')
+   if not dofile(M.C..'/ax5/rules-update.lua').apply(M,table.concat(ips,'\n')..'\n',#ips)then phase('done','国内 IP 表未变化，无需重启',false);return end
+  else
+   local changed=0;for _,r in ipairs(cfg.route.rules)do if r.ip_cidr and #r.ip_cidr>1000 then r.ip_cidr=ips;changed=changed+1 end end
+   if changed~=1 then fail('configuration_template_missing')end
+   checked_save(cfg);M.write(M.C..'/configs/cn_ip.txt',table.concat(ips,'\n')..'\n')
+  end
+  M.write(M.C..'/configs/rules-count',tostring(#ips)..'\n');M.write(M.C..'/configs/rules-date',os.date('%Y-%m-%d %H:%M:%S'));os.remove(M.C..'/configs/needs-subscription');if M.run(M.C..'/ax5/backup-config.sh >> '..M.R..'/service.log 2>&1')then phase('done','国内 IP 兜底表已更新并加载',false)else phase('done','规则已加载，远端备份待同步',false)end
  elseif a=='coreupdate'then
   guard();local kind=args[2];if kind~='singbox'and kind~='meta'then fail('invalid_core')end
   phase('working','downloading_core_update',true)

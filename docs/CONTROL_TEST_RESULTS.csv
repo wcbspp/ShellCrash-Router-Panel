@@ -23,8 +23,8 @@ AX5-OPT-proxy-mode-2,AX5,桌面,部分通过,实机操作读回通过；本用�
 AX5-OPT-proxy-mode-2,AX5,手机窄屏,部分通过,实机操作读回通过；本用例全部边界仍待完成,私有 ax5-final-runtime；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
 AX5-CTRL-summary-home-1,AX5,桌面,未执行,,,,
 AX5-CTRL-summary-home-1,AX5,手机窄屏,未执行,,,,
-AX5-CTRL-advanced-open,AX5,桌面,未通过,正常路径未通过：内存预留不足暂缓；失败提示已改为实际预算，不降低阈值,私有 ax5-advanced-export-final；增量验收记录,2026-10-14,本地 rc.2，未发布
-AX5-CTRL-advanced-open,AX5,手机窄屏,未通过,正常路径未通过：内存预留不足暂缓；失败提示已改为实际预算，不降低阈值,私有 ax5-advanced-export-final；增量验收记录,2026-10-14,本地 rc.2，未发布
+AX5-CTRL-advanced-open,AX5,桌面,部分通过,两种布局正常规则/策略组/连接查询、DNS草稿撤销、高级子面板真实策略组可见及返回已实测；本控件完整边界待补。,私有 ax5-streamed-acceptance-final；LIVE_TEST_2026-10-14_ACCEPTANCE_CONTINUATION.md,2026-10-14,本地验收补丁；未发布
+AX5-CTRL-advanced-open,AX5,手机窄屏,部分通过,两种布局正常规则/策略组/连接查询、DNS草稿撤销、高级子面板真实策略组可见及返回已实测；本控件完整边界待补。,私有 ax5-streamed-acceptance-final；LIVE_TEST_2026-10-14_ACCEPTANCE_CONTINUATION.md,2026-10-14,本地验收补丁；未发布
 AX5-CTRL-dashboard-scale,AX5,桌面,未执行,,,,
 AX5-CTRL-dashboard-scale,AX5,手机窄屏,未执行,,,,
 AX5-OPT-dashboard-scale-0,AX5,桌面,未执行,,,,
@@ -35,24 +35,24 @@ AX5-OPT-dashboard-scale-2,AX5,桌面,未执行,,,,
 AX5-OPT-dashboard-scale-2,AX5,手机窄屏,未执行,,,,
 AX5-OPT-dashboard-scale-3,AX5,桌面,未执行,,,,
 AX5-OPT-dashboard-scale-3,AX5,手机窄屏,未执行,,,,
-AX5-CTRL-advanced-close,AX5,桌面,未执行,,,,
-AX5-CTRL-advanced-close,AX5,手机窄屏,未执行,,,,
-AX5-CTRL-tab-nodes,AX5,桌面,部分通过,实机操作读回通过；本用例全部边界仍待完成,私有 ax5-final-runtime；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
-AX5-CTRL-tab-nodes,AX5,手机窄屏,部分通过,实机操作读回通过；本用例全部边界仍待完成,私有 ax5-final-runtime；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
-AX5-CTRL-tab-checks,AX5,桌面,部分通过,实机操作读回通过；本用例全部边界仍待完成,私有 ax5-final-runtime；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
-AX5-CTRL-tab-checks,AX5,手机窄屏,部分通过,实机操作读回通过；本用例全部边界仍待完成,私有 ax5-final-runtime；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
-AX5-CTRL-tab-subscription,AX5,桌面,部分通过,实机操作读回通过；本用例全部边界仍待完成,私有 ax5-final-runtime；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
-AX5-CTRL-tab-subscription,AX5,手机窄屏,部分通过,实机操作读回通过；本用例全部边界仍待完成,私有 ax5-final-runtime；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
-AX5-CTRL-tab-backup,AX5,桌面,部分通过,实机操作读回通过；本用例全部边界仍待完成,私有 ax5-final-runtime；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
-AX5-CTRL-tab-backup,AX5,手机窄屏,部分通过,实机操作读回通过；本用例全部边界仍待完成,私有 ax5-final-runtime；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
-AX5-CTRL-tab-rules,AX5,桌面,部分通过,实机操作读回通过；本用例全部边界仍待完成,私有 ax5-final-runtime；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
-AX5-CTRL-tab-rules,AX5,手机窄屏,部分通过,实机操作读回通过；本用例全部边界仍待完成,私有 ax5-final-runtime；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
-AX5-CTRL-tab-dns,AX5,桌面,部分通过,实机操作读回通过；本用例全部边界仍待完成,私有 ax5-final-runtime；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
-AX5-CTRL-tab-dns,AX5,手机窄屏,部分通过,实机操作读回通过；本用例全部边界仍待完成,私有 ax5-final-runtime；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
-AX5-CTRL-tab-monitor,AX5,桌面,部分通过,实机操作读回通过；本用例全部边界仍待完成,私有 ax5-final-runtime；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
-AX5-CTRL-tab-monitor,AX5,手机窄屏,部分通过,实机操作读回通过；本用例全部边界仍待完成,私有 ax5-final-runtime；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
-AX5-CTRL-tab-logs,AX5,桌面,部分通过,实机操作读回通过；本用例全部边界仍待完成,私有 ax5-final-runtime；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
-AX5-CTRL-tab-logs,AX5,手机窄屏,部分通过,实机操作读回通过；本用例全部边界仍待完成,私有 ax5-final-runtime；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
+AX5-CTRL-advanced-close,AX5,桌面,部分通过,两种布局正常规则/策略组/连接查询、DNS草稿撤销、高级子面板真实策略组可见及返回已实测；本控件完整边界待补。,私有 ax5-streamed-acceptance-final；LIVE_TEST_2026-10-14_ACCEPTANCE_CONTINUATION.md,2026-10-14,本地验收补丁；未发布
+AX5-CTRL-advanced-close,AX5,手机窄屏,部分通过,两种布局正常规则/策略组/连接查询、DNS草稿撤销、高级子面板真实策略组可见及返回已实测；本控件完整边界待补。,私有 ax5-streamed-acceptance-final；LIVE_TEST_2026-10-14_ACCEPTANCE_CONTINUATION.md,2026-10-14,本地验收补丁；未发布
+AX5-CTRL-tab-nodes,AX5,桌面,部分通过,真实菜单操作及状态读回通过；版本检查未重启内核；其他异常/边界待测。,私有 ax5-normal-menu-checks,2026-10-14,本地验收补丁，未发布
+AX5-CTRL-tab-nodes,AX5,手机窄屏,部分通过,真实菜单操作及状态读回通过；版本检查未重启内核；其他异常/边界待测。,私有 ax5-normal-menu-checks,2026-10-14,本地验收补丁，未发布
+AX5-CTRL-tab-checks,AX5,桌面,部分通过,真实菜单操作及状态读回通过；版本检查未重启内核；其他异常/边界待测。,私有 ax5-normal-menu-checks,2026-10-14,本地验收补丁，未发布
+AX5-CTRL-tab-checks,AX5,手机窄屏,部分通过,真实菜单操作及状态读回通过；版本检查未重启内核；其他异常/边界待测。,私有 ax5-normal-menu-checks,2026-10-14,本地验收补丁，未发布
+AX5-CTRL-tab-subscription,AX5,桌面,部分通过,真实菜单操作及状态读回通过；版本检查未重启内核；其他异常/边界待测。,私有 ax5-normal-menu-checks,2026-10-14,本地验收补丁，未发布
+AX5-CTRL-tab-subscription,AX5,手机窄屏,部分通过,真实菜单操作及状态读回通过；版本检查未重启内核；其他异常/边界待测。,私有 ax5-normal-menu-checks,2026-10-14,本地验收补丁，未发布
+AX5-CTRL-tab-backup,AX5,桌面,部分通过,真实菜单操作及状态读回通过；版本检查未重启内核；其他异常/边界待测。,私有 ax5-normal-menu-checks,2026-10-14,本地验收补丁，未发布
+AX5-CTRL-tab-backup,AX5,手机窄屏,部分通过,真实菜单操作及状态读回通过；版本检查未重启内核；其他异常/边界待测。,私有 ax5-normal-menu-checks,2026-10-14,本地验收补丁，未发布
+AX5-CTRL-tab-rules,AX5,桌面,部分通过,真实菜单操作及状态读回通过；版本检查未重启内核；其他异常/边界待测。,私有 ax5-normal-menu-checks,2026-10-14,本地验收补丁，未发布
+AX5-CTRL-tab-rules,AX5,手机窄屏,部分通过,真实菜单操作及状态读回通过；版本检查未重启内核；其他异常/边界待测。,私有 ax5-normal-menu-checks,2026-10-14,本地验收补丁，未发布
+AX5-CTRL-tab-dns,AX5,桌面,部分通过,真实菜单操作及状态读回通过；版本检查未重启内核；其他异常/边界待测。,私有 ax5-normal-menu-checks,2026-10-14,本地验收补丁，未发布
+AX5-CTRL-tab-dns,AX5,手机窄屏,部分通过,真实菜单操作及状态读回通过；版本检查未重启内核；其他异常/边界待测。,私有 ax5-normal-menu-checks,2026-10-14,本地验收补丁，未发布
+AX5-CTRL-tab-monitor,AX5,桌面,部分通过,真实菜单操作及状态读回通过；版本检查未重启内核；其他异常/边界待测。,私有 ax5-normal-menu-checks,2026-10-14,本地验收补丁，未发布
+AX5-CTRL-tab-monitor,AX5,手机窄屏,部分通过,真实菜单操作及状态读回通过；版本检查未重启内核；其他异常/边界待测。,私有 ax5-normal-menu-checks,2026-10-14,本地验收补丁，未发布
+AX5-CTRL-tab-logs,AX5,桌面,部分通过,真实菜单操作及状态读回通过；版本检查未重启内核；其他异常/边界待测。,私有 ax5-normal-menu-checks,2026-10-14,本地验收补丁，未发布
+AX5-CTRL-tab-logs,AX5,手机窄屏,部分通过,真实菜单操作及状态读回通过；版本检查未重启内核；其他异常/边界待测。,私有 ax5-normal-menu-checks,2026-10-14,本地验收补丁，未发布
 AX5-CTRL-quick-follow,AX5,桌面,未执行,,,,
 AX5-CTRL-quick-follow,AX5,手机窄屏,未执行,,,,
 AX5-CTRL-quick-cancel,AX5,桌面,未执行,,,,
@@ -123,8 +123,8 @@ AX5-CTRL-summary-subscription-2,AX5,桌面,未执行,,,,
 AX5-CTRL-summary-subscription-2,AX5,手机窄屏,未执行,,,,
 AX5-CTRL-subscription-exclude,AX5,桌面,部分通过,本轮实际页面交互已执行；该用例全部边界与恢复场景未齐，不算全量通过,私有实机记录 ax5-full-forms；公开范围见 LIVE_TEST_2026-10-14_TRAFFIC_AND_K2P.md,2026-10-14,本地 rc.2 候选，未发布
 AX5-CTRL-subscription-exclude,AX5,手机窄屏,部分通过,本轮实际页面交互已执行；该用例全部边界与恢复场景未齐，不算全量通过,私有实机记录 ax5-full-forms；公开范围见 LIVE_TEST_2026-10-14_TRAFFIC_AND_K2P.md,2026-10-14,本地 rc.2 候选，未发布
-AX5-CTRL-subscription-defaults-refresh,AX5,桌面,部分通过,本轮实际页面交互已执行；该用例全部边界与恢复场景未齐，不算全量通过,私有实机记录 ax5-full-forms；公开范围见 LIVE_TEST_2026-10-14_TRAFFIC_AND_K2P.md,2026-10-14,本地 rc.2 候选，未发布
-AX5-CTRL-subscription-defaults-refresh,AX5,手机窄屏,部分通过,本轮实际页面交互已执行；该用例全部边界与恢复场景未齐，不算全量通过,私有实机记录 ax5-full-forms；公开范围见 LIVE_TEST_2026-10-14_TRAFFIC_AND_K2P.md,2026-10-14,本地 rc.2 候选，未发布
+AX5-CTRL-subscription-defaults-refresh,AX5,桌面,部分通过,真实菜单操作及状态读回通过；版本检查未重启内核；其他异常/边界待测。,私有 ax5-normal-menu-checks,2026-10-14,本地验收补丁，未发布
+AX5-CTRL-subscription-defaults-refresh,AX5,手机窄屏,部分通过,真实菜单操作及状态读回通过；版本检查未重启内核；其他异常/边界待测。,私有 ax5-normal-menu-checks,2026-10-14,本地验收补丁，未发布
 AX5-CTRL-summary-subscription-3,AX5,桌面,未执行,,,,
 AX5-CTRL-summary-subscription-3,AX5,手机窄屏,未执行,,,,
 AX5-CTRL-summary-subscription-4,AX5,桌面,未执行,,,,
@@ -141,8 +141,8 @@ AX5-CTRL-guard-save,AX5,桌面,未执行,,,,
 AX5-CTRL-guard-save,AX5,手机窄屏,未执行,,,,
 AX5-CTRL-summary-subscription-5,AX5,桌面,未执行,,,,
 AX5-CTRL-summary-subscription-5,AX5,手机窄屏,未执行,,,,
-AX5-CTRL-tool-check,AX5,桌面,未执行,,,,
-AX5-CTRL-tool-check,AX5,手机窄屏,未执行,,,,
+AX5-CTRL-tool-check,AX5,桌面,部分通过,真实菜单操作及状态读回通过；版本检查未重启内核；其他异常/边界待测。,私有 ax5-normal-menu-checks,2026-10-14,本地验收补丁，未发布
+AX5-CTRL-tool-check,AX5,手机窄屏,部分通过,真实菜单操作及状态读回通过；版本检查未重启内核；其他异常/边界待测。,私有 ax5-normal-menu-checks,2026-10-14,本地验收补丁，未发布
 AX5-CTRL-tool-update,AX5,桌面,未执行,,,,
 AX5-CTRL-tool-update,AX5,手机窄屏,未执行,,,,
 AX5-CTRL-core-kind,AX5,桌面,未执行,,,,
@@ -151,8 +151,8 @@ AX5-OPT-core-kind-0,AX5,桌面,未执行,,,,
 AX5-OPT-core-kind-0,AX5,手机窄屏,未执行,,,,
 AX5-OPT-core-kind-1,AX5,桌面,未执行,,,,
 AX5-OPT-core-kind-1,AX5,手机窄屏,未执行,,,,
-AX5-CTRL-core-check,AX5,桌面,未执行,,,,
-AX5-CTRL-core-check,AX5,手机窄屏,未执行,,,,
+AX5-CTRL-core-check,AX5,桌面,部分通过,真实菜单操作及状态读回通过；版本检查未重启内核；其他异常/边界待测。,私有 ax5-normal-menu-checks,2026-10-14,本地验收补丁，未发布
+AX5-CTRL-core-check,AX5,手机窄屏,部分通过,真实菜单操作及状态读回通过；版本检查未重启内核；其他异常/边界待测。,私有 ax5-normal-menu-checks,2026-10-14,本地验收补丁，未发布
 AX5-CTRL-core-update,AX5,桌面,未执行,,,,
 AX5-CTRL-core-update,AX5,手机窄屏,未执行,,,,
 AX5-CTRL-remote-enabled,AX5,桌面,部分通过,本轮实际页面交互已执行；该用例全部边界与恢复场景未齐，不算全量通过,私有实机记录 ax5-full-forms；公开范围见 LIVE_TEST_2026-10-14_TRAFFIC_AND_K2P.md,2026-10-14,本地 rc.2 候选，未发布
@@ -169,8 +169,8 @@ AX5-CTRL-mirror-save,AX5,桌面,部分通过,本轮实际页面交互已执行�
 AX5-CTRL-mirror-save,AX5,手机窄屏,部分通过,本轮实际页面交互已执行；该用例全部边界与恢复场景未齐，不算全量通过,私有实机记录 ax5-full-forms；公开范围见 LIVE_TEST_2026-10-14_TRAFFIC_AND_K2P.md,2026-10-14,本地 rc.2 候选，未发布
 AX5-CTRL-mirror-sync,AX5,桌面,未执行,,,,
 AX5-CTRL-mirror-sync,AX5,手机窄屏,未执行,,,,
-AX5-CTRL-backup-local,AX5,桌面,未通过,正常路径未通过：内存预留不足暂缓；失败提示已改为实际预算，不降低阈值,私有 ax5-advanced-export-final；增量验收记录,2026-10-14,本地 rc.2，未发布
-AX5-CTRL-backup-local,AX5,手机窄屏,未通过,正常路径未通过：内存预留不足暂缓；失败提示已改为实际预算，不降低阈值,私有 ax5-advanced-export-final；增量验收记录,2026-10-14,本地 rc.2，未发布
+AX5-CTRL-backup-local,AX5,桌面,部分通过,两种布局实际导出tar.gz；压缩CRC、格式及路径校验通过。其他异常/恢复边界待补。,私有 ax5-export-only / ax5-export-archive-validation；LIVE_TEST_2026-10-14_ACCEPTANCE_CONTINUATION.md,2026-10-14,本地验收补丁；未发布
+AX5-CTRL-backup-local,AX5,手机窄屏,部分通过,两种布局实际导出tar.gz；压缩CRC、格式及路径校验通过。其他异常/恢复边界待补。,私有 ax5-export-only / ax5-export-archive-validation；LIVE_TEST_2026-10-14_ACCEPTANCE_CONTINUATION.md,2026-10-14,本地验收补丁；未发布
 AX5-CTRL-backup-core,AX5,桌面,未执行,,,,
 AX5-CTRL-backup-core,AX5,手机窄屏,未执行,,,,
 AX5-CTRL-summary-backup-6,AX5,桌面,未执行,,,,
@@ -187,14 +187,14 @@ AX5-CTRL-policy-target,AX5,桌面,未执行,,,,
 AX5-CTRL-policy-target,AX5,手机窄屏,未执行,,,,
 AX5-CTRL-policy-add-submit,AX5,桌面,部分通过,本轮实际页面交互已执行；该用例全部边界与恢复场景未齐，不算全量通过,私有实机记录 ax5-full-forms；公开范围见 LIVE_TEST_2026-10-14_TRAFFIC_AND_K2P.md,2026-10-14,本地 rc.2 候选，未发布
 AX5-CTRL-policy-add-submit,AX5,手机窄屏,部分通过,本轮实际页面交互已执行；该用例全部边界与恢复场景未齐，不算全量通过,私有实机记录 ax5-full-forms；公开范围见 LIVE_TEST_2026-10-14_TRAFFIC_AND_K2P.md,2026-10-14,本地 rc.2 候选，未发布
-AX5-CTRL-policy-save,AX5,桌面,未执行,,,,
-AX5-CTRL-policy-save,AX5,手机窄屏,部分通过,临时后缀直连保存、删除、新连接命中及原配置恢复；其他边界待测,LIVE_TEST_2026-10-13.md,2026-10-13,1.0.0-rc.1
+AX5-CTRL-policy-save,AX5,桌面,部分通过,实际保存测试后缀直连，新CONNECT连接命中并走DIRECT；原规则已恢复。其余多条/异常边界待补。,私有 ax5-policy-live；LIVE_TEST_2026-10-14_ACCEPTANCE_CONTINUATION.md,2026-10-14,本地验收补丁；未发布
+AX5-CTRL-policy-save,AX5,手机窄屏,部分通过,实际保存测试后缀直连，新CONNECT连接命中并走DIRECT；原规则已恢复。其余多条/异常边界待补。,私有 ax5-policy-live；LIVE_TEST_2026-10-14_ACCEPTANCE_CONTINUATION.md,2026-10-14,本地验收补丁；未发布
 AX5-CTRL-summary-rules-7,AX5,桌面,未执行,,,,
 AX5-CTRL-summary-rules-7,AX5,手机窄屏,未执行,,,,
-AX5-CTRL-inspect-refresh,AX5,桌面,部分通过,低内存保护实际触发，提示余量/门槛；正常查询路径未完成,私有 ax5-final-runtime；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
-AX5-CTRL-inspect-refresh,AX5,手机窄屏,部分通过,低内存保护实际触发，提示余量/门槛；正常查询路径未完成,私有 ax5-final-runtime；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
-AX5-CTRL-inspect-kind,AX5,桌面,部分通过,低内存保护实际触发，提示余量/门槛；正常查询路径未完成,私有 ax5-final-runtime；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
-AX5-CTRL-inspect-kind,AX5,手机窄屏,部分通过,低内存保护实际触发，提示余量/门槛；正常查询路径未完成,私有 ax5-final-runtime；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
+AX5-CTRL-inspect-refresh,AX5,桌面,部分通过,两种布局正常规则/策略组/连接查询、DNS草稿撤销、高级子面板真实策略组可见及返回已实测；本控件完整边界待补。,私有 ax5-streamed-acceptance-final；LIVE_TEST_2026-10-14_ACCEPTANCE_CONTINUATION.md,2026-10-14,本地验收补丁；未发布
+AX5-CTRL-inspect-refresh,AX5,手机窄屏,部分通过,两种布局正常规则/策略组/连接查询、DNS草稿撤销、高级子面板真实策略组可见及返回已实测；本控件完整边界待补。,私有 ax5-streamed-acceptance-final；LIVE_TEST_2026-10-14_ACCEPTANCE_CONTINUATION.md,2026-10-14,本地验收补丁；未发布
+AX5-CTRL-inspect-kind,AX5,桌面,部分通过,两种布局正常规则/策略组/连接查询、DNS草稿撤销、高级子面板真实策略组可见及返回已实测；本控件完整边界待补。,私有 ax5-streamed-acceptance-final；LIVE_TEST_2026-10-14_ACCEPTANCE_CONTINUATION.md,2026-10-14,本地验收补丁；未发布
+AX5-CTRL-inspect-kind,AX5,手机窄屏,部分通过,两种布局正常规则/策略组/连接查询、DNS草稿撤销、高级子面板真实策略组可见及返回已实测；本控件完整边界待补。,私有 ax5-streamed-acceptance-final；LIVE_TEST_2026-10-14_ACCEPTANCE_CONTINUATION.md,2026-10-14,本地验收补丁；未发布
 AX5-OPT-inspect-kind-0,AX5,桌面,部分通过,低内存保护实际触发，提示余量/门槛；正常查询路径未完成,私有 ax5-final-runtime；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
 AX5-OPT-inspect-kind-0,AX5,手机窄屏,部分通过,低内存保护实际触发，提示余量/门槛；正常查询路径未完成,私有 ax5-final-runtime；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
 AX5-OPT-inspect-kind-1,AX5,桌面,部分通过,低内存保护实际触发，提示余量/门槛；正常查询路径未完成,私有 ax5-final-runtime；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
@@ -211,24 +211,24 @@ AX5-CTRL-inspect-next,AX5,桌面,未执行,,,,
 AX5-CTRL-inspect-next,AX5,手机窄屏,未执行,,,,
 AX5-CTRL-summary-rules-8,AX5,桌面,未执行,,,,
 AX5-CTRL-summary-rules-8,AX5,手机窄屏,未执行,,,,
-AX5-CTRL-rules-update,AX5,桌面,未执行,,,,
-AX5-CTRL-rules-update,AX5,手机窄屏,未执行,,,,
+AX5-CTRL-rules-update,AX5,桌面,部分通过,桌面更新国内表并确认加载；手机同值更新不重启。AX5 原生 provider 无感刷新；K2P 复用内核重启。网络失败及所有边界仍未齐。,私有 ax5-domestic-rules-update.private.json；见 LIVE_TEST_2026-10-14_DOMESTIC_FALLBACK.md,2026-10-14,本地候选；未发布
+AX5-CTRL-rules-update,AX5,手机窄屏,部分通过,桌面更新国内表并确认加载；手机同值更新不重启。AX5 原生 provider 无感刷新；K2P 复用内核重启。网络失败及所有边界仍未齐。,私有 ax5-domestic-rules-update.private.json；见 LIVE_TEST_2026-10-14_DOMESTIC_FALLBACK.md,2026-10-14,本地候选；未发布
 AX5-CTRL-domain-update,AX5,桌面,未执行,,,,
 AX5-CTRL-domain-update,AX5,手机窄屏,未执行,,,,
 AX5-CTRL-summary-rules-9,AX5,桌面,未执行,,,,
 AX5-CTRL-summary-rules-9,AX5,手机窄屏,未执行,,,,
-AX5-CTRL-dns-mode,AX5,桌面,部分通过,本轮实际页面交互已执行；该用例全部边界与恢复场景未齐，不算全量通过,私有实机记录 ax5-full-forms；公开范围见 LIVE_TEST_2026-10-14_TRAFFIC_AND_K2P.md,2026-10-14,本地 rc.2 候选，未发布
-AX5-CTRL-dns-mode,AX5,手机窄屏,部分通过,本轮实际页面交互已执行；该用例全部边界与恢复场景未齐，不算全量通过,私有实机记录 ax5-full-forms；公开范围见 LIVE_TEST_2026-10-14_TRAFFIC_AND_K2P.md,2026-10-14,本地 rc.2 候选，未发布
+AX5-CTRL-dns-mode,AX5,桌面,部分通过,两种布局正常规则/策略组/连接查询、DNS草稿撤销、高级子面板真实策略组可见及返回已实测；本控件完整边界待补。,私有 ax5-streamed-acceptance-final；LIVE_TEST_2026-10-14_ACCEPTANCE_CONTINUATION.md,2026-10-14,本地验收补丁；未发布
+AX5-CTRL-dns-mode,AX5,手机窄屏,部分通过,两种布局正常规则/策略组/连接查询、DNS草稿撤销、高级子面板真实策略组可见及返回已实测；本控件完整边界待补。,私有 ax5-streamed-acceptance-final；LIVE_TEST_2026-10-14_ACCEPTANCE_CONTINUATION.md,2026-10-14,本地验收补丁；未发布
 AX5-OPT-dns-mode-0,AX5,桌面,部分通过,本轮实际页面交互已执行；该用例全部边界与恢复场景未齐，不算全量通过,私有实机记录 ax5-full-forms；公开范围见 LIVE_TEST_2026-10-14_TRAFFIC_AND_K2P.md,2026-10-14,本地 rc.2 候选，未发布
 AX5-OPT-dns-mode-0,AX5,手机窄屏,部分通过,本轮实际页面交互已执行；该用例全部边界与恢复场景未齐，不算全量通过,私有实机记录 ax5-full-forms；公开范围见 LIVE_TEST_2026-10-14_TRAFFIC_AND_K2P.md,2026-10-14,本地 rc.2 候选，未发布
 AX5-OPT-dns-mode-1,AX5,桌面,部分通过,本轮实际页面交互已执行；该用例全部边界与恢复场景未齐，不算全量通过,私有实机记录 ax5-full-forms；公开范围见 LIVE_TEST_2026-10-14_TRAFFIC_AND_K2P.md,2026-10-14,本地 rc.2 候选，未发布
 AX5-OPT-dns-mode-1,AX5,手机窄屏,部分通过,本轮实际页面交互已执行；该用例全部边界与恢复场景未齐，不算全量通过,私有实机记录 ax5-full-forms；公开范围见 LIVE_TEST_2026-10-14_TRAFFIC_AND_K2P.md,2026-10-14,本地 rc.2 候选，未发布
-AX5-CTRL-dns-save,AX5,桌面,未执行,,,,
-AX5-CTRL-dns-save,AX5,手机窄屏,未执行,,,,
+AX5-CTRL-dns-save,AX5,桌面,部分通过,实际新增DNS例外后返回真实A记录；手机布局恢复原过滤表后回到Fake-IP。同值保存无需重启。非法输入/重启恢复边界待补。,私有 ax5-dns-live / ax5-dns-save-noop；LIVE_TEST_2026-10-14_ACCEPTANCE_CONTINUATION.md,2026-10-14,本地验收补丁；未发布
+AX5-CTRL-dns-save,AX5,手机窄屏,部分通过,实际新增DNS例外后返回真实A记录；手机布局恢复原过滤表后回到Fake-IP。同值保存无需重启。非法输入/重启恢复边界待补。,私有 ax5-dns-live / ax5-dns-save-noop；LIVE_TEST_2026-10-14_ACCEPTANCE_CONTINUATION.md,2026-10-14,本地验收补丁；未发布
 AX5-CTRL-dns-index,AX5,桌面,部分通过,本轮实际页面交互已执行；该用例全部边界与恢复场景未齐，不算全量通过,私有实机记录 ax5-full-forms；公开范围见 LIVE_TEST_2026-10-14_TRAFFIC_AND_K2P.md,2026-10-14,本地 rc.2 候选，未发布
 AX5-CTRL-dns-index,AX5,手机窄屏,部分通过,本轮实际页面交互已执行；该用例全部边界与恢复场景未齐，不算全量通过,私有实机记录 ax5-full-forms；公开范围见 LIVE_TEST_2026-10-14_TRAFFIC_AND_K2P.md,2026-10-14,本地 rc.2 候选，未发布
-AX5-CTRL-dns-filter,AX5,桌面,部分通过,本轮实际页面交互已执行；该用例全部边界与恢复场景未齐，不算全量通过,私有实机记录 ax5-full-forms；公开范围见 LIVE_TEST_2026-10-14_TRAFFIC_AND_K2P.md,2026-10-14,本地 rc.2 候选，未发布
-AX5-CTRL-dns-filter,AX5,手机窄屏,部分通过,本轮实际页面交互已执行；该用例全部边界与恢复场景未齐，不算全量通过,私有实机记录 ax5-full-forms；公开范围见 LIVE_TEST_2026-10-14_TRAFFIC_AND_K2P.md,2026-10-14,本地 rc.2 候选，未发布
+AX5-CTRL-dns-filter,AX5,桌面,部分通过,实际新增DNS例外后返回真实A记录；手机布局恢复原过滤表后回到Fake-IP。同值保存无需重启。非法输入/重启恢复边界待补。,私有 ax5-dns-live / ax5-dns-save-noop；LIVE_TEST_2026-10-14_ACCEPTANCE_CONTINUATION.md,2026-10-14,本地验收补丁；未发布
+AX5-CTRL-dns-filter,AX5,手机窄屏,部分通过,实际新增DNS例外后返回真实A记录；手机布局恢复原过滤表后回到Fake-IP。同值保存无需重启。非法输入/重启恢复边界待补。,私有 ax5-dns-live / ax5-dns-save-noop；LIVE_TEST_2026-10-14_ACCEPTANCE_CONTINUATION.md,2026-10-14,本地验收补丁；未发布
 AX5-CTRL-zt-refresh,AX5,桌面,部分通过,实机操作读回通过；本用例全部边界仍待完成,私有 ax5-final-runtime；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
 AX5-CTRL-zt-refresh,AX5,手机窄屏,部分通过,实机操作读回通过；本用例全部边界仍待完成,私有 ax5-final-runtime；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
 AX5-CTRL-summary-monitor-10,AX5,桌面,未执行,,,,
@@ -351,8 +351,8 @@ K2P-OPT-proxy-mode-2,K2P,桌面,部分通过,实机操作读回通过；本用�
 K2P-OPT-proxy-mode-2,K2P,手机窄屏,部分通过,实机操作读回通过；本用例全部边界仍待完成,私有 k2p-final-runtime；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
 K2P-CTRL-summary-home-1,K2P,桌面,未执行,,,,
 K2P-CTRL-summary-home-1,K2P,手机窄屏,未执行,,,,
-K2P-CTRL-advanced-open,K2P,桌面,部分通过,actual dashboard load; light panel paused; no node mutation,私有 k2p-advanced-export；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
-K2P-CTRL-advanced-open,K2P,手机窄屏,部分通过,actual dashboard load; light panel paused; no node mutation,私有 k2p-advanced-export；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
+K2P-CTRL-advanced-open,K2P,桌面,部分通过,两种布局正常规则/策略组/连接查询、DNS草稿撤销、高级子面板真实策略组可见及返回已实测；本控件完整边界待补。,私有 k2p-streamed-acceptance-content；LIVE_TEST_2026-10-14_ACCEPTANCE_CONTINUATION.md,2026-10-14,本地验收补丁；未发布
+K2P-CTRL-advanced-open,K2P,手机窄屏,部分通过,两种布局正常规则/策略组/连接查询、DNS草稿撤销、高级子面板真实策略组可见及返回已实测；本控件完整边界待补。,私有 k2p-streamed-acceptance-content；LIVE_TEST_2026-10-14_ACCEPTANCE_CONTINUATION.md,2026-10-14,本地验收补丁；未发布
 K2P-CTRL-dashboard-scale,K2P,桌面,部分通过,实机操作读回通过；本用例全部边界仍待完成,私有 k2p-advanced-export；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
 K2P-CTRL-dashboard-scale,K2P,手机窄屏,部分通过,实机操作读回通过；本用例全部边界仍待完成,私有 k2p-advanced-export；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
 K2P-OPT-dashboard-scale-0,K2P,桌面,部分通过,实机操作读回通过；本用例全部边界仍待完成,私有 k2p-advanced-export；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
@@ -363,24 +363,24 @@ K2P-OPT-dashboard-scale-2,K2P,桌面,部分通过,实机操作读回通过；本
 K2P-OPT-dashboard-scale-2,K2P,手机窄屏,部分通过,实机操作读回通过；本用例全部边界仍待完成,私有 k2p-advanced-export；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
 K2P-OPT-dashboard-scale-3,K2P,桌面,部分通过,实机操作读回通过；本用例全部边界仍待完成,私有 k2p-advanced-export；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
 K2P-OPT-dashboard-scale-3,K2P,手机窄屏,部分通过,实机操作读回通过；本用例全部边界仍待完成,私有 k2p-advanced-export；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
-K2P-CTRL-advanced-close,K2P,桌面,部分通过,实机操作读回通过；本用例全部边界仍待完成,私有 k2p-advanced-export；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
-K2P-CTRL-advanced-close,K2P,手机窄屏,部分通过,实机操作读回通过；本用例全部边界仍待完成,私有 k2p-advanced-export；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
-K2P-CTRL-tab-nodes,K2P,桌面,部分通过,实机操作读回通过；本用例全部边界仍待完成,私有 k2p-final-runtime；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
-K2P-CTRL-tab-nodes,K2P,手机窄屏,部分通过,实机操作读回通过；本用例全部边界仍待完成,私有 k2p-final-runtime；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
-K2P-CTRL-tab-checks,K2P,桌面,部分通过,实机操作读回通过；本用例全部边界仍待完成,私有 k2p-final-runtime；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
-K2P-CTRL-tab-checks,K2P,手机窄屏,部分通过,实机操作读回通过；本用例全部边界仍待完成,私有 k2p-final-runtime；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
-K2P-CTRL-tab-subscription,K2P,桌面,部分通过,实机操作读回通过；本用例全部边界仍待完成,私有 k2p-final-runtime；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
-K2P-CTRL-tab-subscription,K2P,手机窄屏,部分通过,实机操作读回通过；本用例全部边界仍待完成,私有 k2p-final-runtime；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
-K2P-CTRL-tab-backup,K2P,桌面,部分通过,实机操作读回通过；本用例全部边界仍待完成,私有 k2p-final-runtime；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
-K2P-CTRL-tab-backup,K2P,手机窄屏,部分通过,实机操作读回通过；本用例全部边界仍待完成,私有 k2p-final-runtime；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
-K2P-CTRL-tab-rules,K2P,桌面,部分通过,实机操作读回通过；本用例全部边界仍待完成,私有 k2p-final-runtime；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
-K2P-CTRL-tab-rules,K2P,手机窄屏,部分通过,实机操作读回通过；本用例全部边界仍待完成,私有 k2p-final-runtime；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
-K2P-CTRL-tab-dns,K2P,桌面,部分通过,实机操作读回通过；本用例全部边界仍待完成,私有 k2p-final-runtime；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
-K2P-CTRL-tab-dns,K2P,手机窄屏,部分通过,实机操作读回通过；本用例全部边界仍待完成,私有 k2p-final-runtime；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
-K2P-CTRL-tab-monitor,K2P,桌面,部分通过,实机操作读回通过；本用例全部边界仍待完成,私有 k2p-final-runtime；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
-K2P-CTRL-tab-monitor,K2P,手机窄屏,部分通过,实机操作读回通过；本用例全部边界仍待完成,私有 k2p-final-runtime；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
-K2P-CTRL-tab-logs,K2P,桌面,部分通过,实机操作读回通过；本用例全部边界仍待完成,私有 k2p-final-runtime；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
-K2P-CTRL-tab-logs,K2P,手机窄屏,部分通过,实机操作读回通过；本用例全部边界仍待完成,私有 k2p-final-runtime；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
+K2P-CTRL-advanced-close,K2P,桌面,部分通过,两种布局正常规则/策略组/连接查询、DNS草稿撤销、高级子面板真实策略组可见及返回已实测；本控件完整边界待补。,私有 k2p-streamed-acceptance-content；LIVE_TEST_2026-10-14_ACCEPTANCE_CONTINUATION.md,2026-10-14,本地验收补丁；未发布
+K2P-CTRL-advanced-close,K2P,手机窄屏,部分通过,两种布局正常规则/策略组/连接查询、DNS草稿撤销、高级子面板真实策略组可见及返回已实测；本控件完整边界待补。,私有 k2p-streamed-acceptance-content；LIVE_TEST_2026-10-14_ACCEPTANCE_CONTINUATION.md,2026-10-14,本地验收补丁；未发布
+K2P-CTRL-tab-nodes,K2P,桌面,部分通过,真实菜单操作及状态读回通过；版本检查未重启内核；其他异常/边界待测。,私有 k2p-normal-menu-checks,2026-10-14,本地验收补丁，未发布
+K2P-CTRL-tab-nodes,K2P,手机窄屏,部分通过,真实菜单操作及状态读回通过；版本检查未重启内核；其他异常/边界待测。,私有 k2p-normal-menu-checks,2026-10-14,本地验收补丁，未发布
+K2P-CTRL-tab-checks,K2P,桌面,部分通过,真实菜单操作及状态读回通过；版本检查未重启内核；其他异常/边界待测。,私有 k2p-normal-menu-checks,2026-10-14,本地验收补丁，未发布
+K2P-CTRL-tab-checks,K2P,手机窄屏,部分通过,真实菜单操作及状态读回通过；版本检查未重启内核；其他异常/边界待测。,私有 k2p-normal-menu-checks,2026-10-14,本地验收补丁，未发布
+K2P-CTRL-tab-subscription,K2P,桌面,部分通过,真实菜单操作及状态读回通过；版本检查未重启内核；其他异常/边界待测。,私有 k2p-normal-menu-checks,2026-10-14,本地验收补丁，未发布
+K2P-CTRL-tab-subscription,K2P,手机窄屏,部分通过,真实菜单操作及状态读回通过；版本检查未重启内核；其他异常/边界待测。,私有 k2p-normal-menu-checks,2026-10-14,本地验收补丁，未发布
+K2P-CTRL-tab-backup,K2P,桌面,部分通过,真实菜单操作及状态读回通过；版本检查未重启内核；其他异常/边界待测。,私有 k2p-normal-menu-checks,2026-10-14,本地验收补丁，未发布
+K2P-CTRL-tab-backup,K2P,手机窄屏,部分通过,真实菜单操作及状态读回通过；版本检查未重启内核；其他异常/边界待测。,私有 k2p-normal-menu-checks,2026-10-14,本地验收补丁，未发布
+K2P-CTRL-tab-rules,K2P,桌面,部分通过,真实菜单操作及状态读回通过；版本检查未重启内核；其他异常/边界待测。,私有 k2p-normal-menu-checks,2026-10-14,本地验收补丁，未发布
+K2P-CTRL-tab-rules,K2P,手机窄屏,部分通过,真实菜单操作及状态读回通过；版本检查未重启内核；其他异常/边界待测。,私有 k2p-normal-menu-checks,2026-10-14,本地验收补丁，未发布
+K2P-CTRL-tab-dns,K2P,桌面,部分通过,真实菜单操作及状态读回通过；版本检查未重启内核；其他异常/边界待测。,私有 k2p-normal-menu-checks,2026-10-14,本地验收补丁，未发布
+K2P-CTRL-tab-dns,K2P,手机窄屏,部分通过,真实菜单操作及状态读回通过；版本检查未重启内核；其他异常/边界待测。,私有 k2p-normal-menu-checks,2026-10-14,本地验收补丁，未发布
+K2P-CTRL-tab-monitor,K2P,桌面,部分通过,真实菜单操作及状态读回通过；版本检查未重启内核；其他异常/边界待测。,私有 k2p-normal-menu-checks,2026-10-14,本地验收补丁，未发布
+K2P-CTRL-tab-monitor,K2P,手机窄屏,部分通过,真实菜单操作及状态读回通过；版本检查未重启内核；其他异常/边界待测。,私有 k2p-normal-menu-checks,2026-10-14,本地验收补丁，未发布
+K2P-CTRL-tab-logs,K2P,桌面,部分通过,真实菜单操作及状态读回通过；版本检查未重启内核；其他异常/边界待测。,私有 k2p-normal-menu-checks,2026-10-14,本地验收补丁，未发布
+K2P-CTRL-tab-logs,K2P,手机窄屏,部分通过,真实菜单操作及状态读回通过；版本检查未重启内核；其他异常/边界待测。,私有 k2p-normal-menu-checks,2026-10-14,本地验收补丁，未发布
 K2P-CTRL-quick-follow,K2P,桌面,部分通过,点击并保存恢复无覆盖；辅助组保留，测试后从原快照完全恢复,LIVE_TEST_2026-10-13.md,2026-10-13,1.0.0-rc.1
 K2P-CTRL-quick-follow,K2P,手机窄屏,未执行,,,,
 K2P-CTRL-quick-cancel,K2P,桌面,部分通过,四项同时修改，一次取消恢复；其他边界待测,LIVE_TEST_2026-10-13.md,2026-10-13,1.0.0-rc.1
@@ -437,8 +437,8 @@ K2P-CTRL-summary-subscription-2,K2P,桌面,未执行,,,,
 K2P-CTRL-summary-subscription-2,K2P,手机窄屏,未执行,,,,
 K2P-CTRL-subscription-exclude,K2P,桌面,部分通过,本轮实际页面交互已执行；该用例全部边界与恢复场景未齐，不算全量通过,私有实机记录 k2p-full-forms；公开范围见 LIVE_TEST_2026-10-14_TRAFFIC_AND_K2P.md,2026-10-14,本地 rc.2 候选，未发布
 K2P-CTRL-subscription-exclude,K2P,手机窄屏,部分通过,本轮实际页面交互已执行；该用例全部边界与恢复场景未齐，不算全量通过,私有实机记录 k2p-full-forms；公开范围见 LIVE_TEST_2026-10-14_TRAFFIC_AND_K2P.md,2026-10-14,本地 rc.2 候选，未发布
-K2P-CTRL-subscription-defaults-refresh,K2P,桌面,部分通过,本轮实际页面交互已执行；该用例全部边界与恢复场景未齐，不算全量通过,私有实机记录 k2p-full-forms；公开范围见 LIVE_TEST_2026-10-14_TRAFFIC_AND_K2P.md,2026-10-14,本地 rc.2 候选，未发布
-K2P-CTRL-subscription-defaults-refresh,K2P,手机窄屏,部分通过,本轮实际页面交互已执行；该用例全部边界与恢复场景未齐，不算全量通过,私有实机记录 k2p-full-forms；公开范围见 LIVE_TEST_2026-10-14_TRAFFIC_AND_K2P.md,2026-10-14,本地 rc.2 候选，未发布
+K2P-CTRL-subscription-defaults-refresh,K2P,桌面,部分通过,真实菜单操作及状态读回通过；版本检查未重启内核；其他异常/边界待测。,私有 k2p-normal-menu-checks,2026-10-14,本地验收补丁，未发布
+K2P-CTRL-subscription-defaults-refresh,K2P,手机窄屏,部分通过,真实菜单操作及状态读回通过；版本检查未重启内核；其他异常/边界待测。,私有 k2p-normal-menu-checks,2026-10-14,本地验收补丁，未发布
 K2P-CTRL-summary-subscription-3,K2P,桌面,未执行,,,,
 K2P-CTRL-summary-subscription-3,K2P,手机窄屏,未执行,,,,
 K2P-CTRL-summary-subscription-4,K2P,桌面,未执行,,,,
@@ -451,12 +451,12 @@ K2P-OPT-guard-mode-0,K2P,桌面,未执行,,,,
 K2P-OPT-guard-mode-0,K2P,手机窄屏,未执行,,,,
 K2P-CTRL-summary-subscription-5,K2P,桌面,未执行,,,,
 K2P-CTRL-summary-subscription-5,K2P,手机窄屏,未执行,,,,
-K2P-CTRL-tool-check,K2P,桌面,未执行,,,,
-K2P-CTRL-tool-check,K2P,手机窄屏,未执行,,,,
+K2P-CTRL-tool-check,K2P,桌面,部分通过,真实菜单操作及状态读回通过；版本检查未重启内核；其他异常/边界待测。,私有 k2p-normal-menu-checks,2026-10-14,本地验收补丁，未发布
+K2P-CTRL-tool-check,K2P,手机窄屏,部分通过,真实菜单操作及状态读回通过；版本检查未重启内核；其他异常/边界待测。,私有 k2p-normal-menu-checks,2026-10-14,本地验收补丁，未发布
 K2P-CTRL-tool-update,K2P,桌面,未执行,,,,
 K2P-CTRL-tool-update,K2P,手机窄屏,未执行,,,,
-K2P-CTRL-core-check,K2P,桌面,未执行,,,,
-K2P-CTRL-core-check,K2P,手机窄屏,未执行,,,,
+K2P-CTRL-core-check,K2P,桌面,部分通过,真实菜单操作及状态读回通过；版本检查未重启内核；其他异常/边界待测。,私有 k2p-normal-menu-checks,2026-10-14,本地验收补丁，未发布
+K2P-CTRL-core-check,K2P,手机窄屏,部分通过,真实菜单操作及状态读回通过；版本检查未重启内核；其他异常/边界待测。,私有 k2p-normal-menu-checks,2026-10-14,本地验收补丁，未发布
 K2P-CTRL-core-update,K2P,桌面,未执行,,,,
 K2P-CTRL-core-update,K2P,手机窄屏,未执行,,,,
 K2P-CTRL-summary-subscription-6,K2P,桌面,未执行,,,,
@@ -475,8 +475,8 @@ K2P-CTRL-mirror-save,K2P,桌面,部分通过,本轮实际页面交互已执行�
 K2P-CTRL-mirror-save,K2P,手机窄屏,部分通过,本轮实际页面交互已执行；该用例全部边界与恢复场景未齐，不算全量通过,私有实机记录 k2p-full-forms；公开范围见 LIVE_TEST_2026-10-14_TRAFFIC_AND_K2P.md,2026-10-14,本地 rc.2 候选，未发布
 K2P-CTRL-mirror-sync,K2P,桌面,未执行,,,,
 K2P-CTRL-mirror-sync,K2P,手机窄屏,未执行,,,,
-K2P-CTRL-backup-local,K2P,桌面,部分通过,实机操作读回通过；本用例全部边界仍待完成,私有 k2p-advanced-export；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
-K2P-CTRL-backup-local,K2P,手机窄屏,部分通过,实机操作读回通过；本用例全部边界仍待完成,私有 k2p-advanced-export；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
+K2P-CTRL-backup-local,K2P,桌面,部分通过,两种布局实际导出tar.gz；压缩CRC、格式及路径校验通过。其他异常/恢复边界待补。,私有 k2p-export-only / k2p-export-archive-validation；LIVE_TEST_2026-10-14_ACCEPTANCE_CONTINUATION.md,2026-10-14,本地验收补丁；未发布
+K2P-CTRL-backup-local,K2P,手机窄屏,部分通过,两种布局实际导出tar.gz；压缩CRC、格式及路径校验通过。其他异常/恢复边界待补。,私有 k2p-export-only / k2p-export-archive-validation；LIVE_TEST_2026-10-14_ACCEPTANCE_CONTINUATION.md,2026-10-14,本地验收补丁；未发布
 K2P-CTRL-summary-backup-7,K2P,桌面,未执行,,,,
 K2P-CTRL-summary-backup-7,K2P,手机窄屏,未执行,,,,
 K2P-CTRL-policy-domain,K2P,桌面,部分通过,本轮实际页面交互已执行；该用例全部边界与恢复场景未齐，不算全量通过,私有实机记录 k2p-full-forms；公开范围见 LIVE_TEST_2026-10-14_TRAFFIC_AND_K2P.md,2026-10-14,本地 rc.2 候选，未发布
@@ -491,14 +491,14 @@ K2P-CTRL-policy-target,K2P,桌面,未执行,,,,
 K2P-CTRL-policy-target,K2P,手机窄屏,未执行,,,,
 K2P-CTRL-policy-add-submit,K2P,桌面,部分通过,本轮实际页面交互已执行；该用例全部边界与恢复场景未齐，不算全量通过,私有实机记录 k2p-full-forms；公开范围见 LIVE_TEST_2026-10-14_TRAFFIC_AND_K2P.md,2026-10-14,本地 rc.2 候选，未发布
 K2P-CTRL-policy-add-submit,K2P,手机窄屏,部分通过,本轮实际页面交互已执行；该用例全部边界与恢复场景未齐，不算全量通过,私有实机记录 k2p-full-forms；公开范围见 LIVE_TEST_2026-10-14_TRAFFIC_AND_K2P.md,2026-10-14,本地 rc.2 候选，未发布
-K2P-CTRL-policy-save,K2P,桌面,统一包实机部分通过,单条 example.com 后缀直连规则保存成功，撤销后 policy.tsv 为 0 字节；页面确认恢复。多条事务与新连接命中仍待该用例完整重测。,LIVE_TEST_2026-10-13.md,2026-10-13,1.0.0-rc.1；sing-box mini 1.12.13
-K2P-CTRL-policy-save,K2P,手机窄屏,未执行,,,,
+K2P-CTRL-policy-save,K2P,桌面,部分通过,实际保存测试后缀直连，新CONNECT连接命中并走DIRECT；原规则已恢复。其余多条/异常边界待补。 sing-box API条件/动作合并返回；旧脚本断言不匹配，按实测字段补验。,私有 k2p-policy-live / k2p-policy-flow / k2p-policy-restore-explicit；LIVE_TEST_2026-10-14_ACCEPTANCE_CONTINUATION.md,2026-10-14,本地验收补丁；未发布
+K2P-CTRL-policy-save,K2P,手机窄屏,部分通过,实际保存测试后缀直连，新CONNECT连接命中并走DIRECT；原规则已恢复。其余多条/异常边界待补。 sing-box API条件/动作合并返回；旧脚本断言不匹配，按实测字段补验。,私有 k2p-policy-live / k2p-policy-flow / k2p-policy-restore-explicit；LIVE_TEST_2026-10-14_ACCEPTANCE_CONTINUATION.md,2026-10-14,本地验收补丁；未发布
 K2P-CTRL-summary-rules-8,K2P,桌面,未执行,,,,
 K2P-CTRL-summary-rules-8,K2P,手机窄屏,未执行,,,,
-K2P-CTRL-inspect-refresh,K2P,桌面,部分通过,live normal and empty-result query,私有 k2p-final-runtime；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
-K2P-CTRL-inspect-refresh,K2P,手机窄屏,部分通过,live normal and empty-result query,私有 k2p-final-runtime；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
-K2P-CTRL-inspect-kind,K2P,桌面,部分通过,live normal and empty-result query,私有 k2p-final-runtime；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
-K2P-CTRL-inspect-kind,K2P,手机窄屏,部分通过,live normal and empty-result query,私有 k2p-final-runtime；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
+K2P-CTRL-inspect-refresh,K2P,桌面,部分通过,两种布局正常规则/策略组/连接查询、DNS草稿撤销、高级子面板真实策略组可见及返回已实测；本控件完整边界待补。,私有 k2p-streamed-acceptance-content；LIVE_TEST_2026-10-14_ACCEPTANCE_CONTINUATION.md,2026-10-14,本地验收补丁；未发布
+K2P-CTRL-inspect-refresh,K2P,手机窄屏,部分通过,两种布局正常规则/策略组/连接查询、DNS草稿撤销、高级子面板真实策略组可见及返回已实测；本控件完整边界待补。,私有 k2p-streamed-acceptance-content；LIVE_TEST_2026-10-14_ACCEPTANCE_CONTINUATION.md,2026-10-14,本地验收补丁；未发布
+K2P-CTRL-inspect-kind,K2P,桌面,部分通过,两种布局正常规则/策略组/连接查询、DNS草稿撤销、高级子面板真实策略组可见及返回已实测；本控件完整边界待补。,私有 k2p-streamed-acceptance-content；LIVE_TEST_2026-10-14_ACCEPTANCE_CONTINUATION.md,2026-10-14,本地验收补丁；未发布
+K2P-CTRL-inspect-kind,K2P,手机窄屏,部分通过,两种布局正常规则/策略组/连接查询、DNS草稿撤销、高级子面板真实策略组可见及返回已实测；本控件完整边界待补。,私有 k2p-streamed-acceptance-content；LIVE_TEST_2026-10-14_ACCEPTANCE_CONTINUATION.md,2026-10-14,本地验收补丁；未发布
 K2P-OPT-inspect-kind-0,K2P,桌面,部分通过,live normal and empty-result query,私有 k2p-final-runtime；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
 K2P-OPT-inspect-kind-0,K2P,手机窄屏,部分通过,live normal and empty-result query,私有 k2p-final-runtime；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
 K2P-OPT-inspect-kind-1,K2P,桌面,部分通过,live normal and empty-result query,私有 k2p-final-runtime；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
@@ -515,20 +515,20 @@ K2P-CTRL-inspect-next,K2P,桌面,未执行,,,,
 K2P-CTRL-inspect-next,K2P,手机窄屏,未执行,,,,
 K2P-CTRL-summary-rules-9,K2P,桌面,未执行,,,,
 K2P-CTRL-summary-rules-9,K2P,手机窄屏,未执行,,,,
-K2P-CTRL-rules-update,K2P,桌面,未执行,,,,
-K2P-CTRL-rules-update,K2P,手机窄屏,未执行,,,,
-K2P-CTRL-dns-mode,K2P,桌面,部分通过,本轮实际页面交互已执行；该用例全部边界与恢复场景未齐，不算全量通过,私有实机记录 k2p-full-forms；公开范围见 LIVE_TEST_2026-10-14_TRAFFIC_AND_K2P.md,2026-10-14,本地 rc.2 候选，未发布
-K2P-CTRL-dns-mode,K2P,手机窄屏,部分通过,本轮实际页面交互已执行；该用例全部边界与恢复场景未齐，不算全量通过,私有实机记录 k2p-full-forms；公开范围见 LIVE_TEST_2026-10-14_TRAFFIC_AND_K2P.md,2026-10-14,本地 rc.2 候选，未发布
+K2P-CTRL-rules-update,K2P,桌面,部分通过,桌面更新国内表并确认加载；手机同值更新不重启。AX5 原生 provider 无感刷新；K2P 复用内核重启。网络失败及所有边界仍未齐。,私有 k2p-domestic-rules-update.private.json；见 LIVE_TEST_2026-10-14_DOMESTIC_FALLBACK.md,2026-10-14,本地候选；未发布
+K2P-CTRL-rules-update,K2P,手机窄屏,部分通过,桌面更新国内表并确认加载；手机同值更新不重启。AX5 原生 provider 无感刷新；K2P 复用内核重启。网络失败及所有边界仍未齐。,私有 k2p-domestic-rules-update.private.json；见 LIVE_TEST_2026-10-14_DOMESTIC_FALLBACK.md,2026-10-14,本地候选；未发布
+K2P-CTRL-dns-mode,K2P,桌面,部分通过,两种布局正常规则/策略组/连接查询、DNS草稿撤销、高级子面板真实策略组可见及返回已实测；本控件完整边界待补。,私有 k2p-streamed-acceptance-content；LIVE_TEST_2026-10-14_ACCEPTANCE_CONTINUATION.md,2026-10-14,本地验收补丁；未发布
+K2P-CTRL-dns-mode,K2P,手机窄屏,部分通过,两种布局正常规则/策略组/连接查询、DNS草稿撤销、高级子面板真实策略组可见及返回已实测；本控件完整边界待补。,私有 k2p-streamed-acceptance-content；LIVE_TEST_2026-10-14_ACCEPTANCE_CONTINUATION.md,2026-10-14,本地验收补丁；未发布
 K2P-OPT-dns-mode-0,K2P,桌面,部分通过,本轮实际页面交互已执行；该用例全部边界与恢复场景未齐，不算全量通过,私有实机记录 k2p-full-forms；公开范围见 LIVE_TEST_2026-10-14_TRAFFIC_AND_K2P.md,2026-10-14,本地 rc.2 候选，未发布
 K2P-OPT-dns-mode-0,K2P,手机窄屏,部分通过,本轮实际页面交互已执行；该用例全部边界与恢复场景未齐，不算全量通过,私有实机记录 k2p-full-forms；公开范围见 LIVE_TEST_2026-10-14_TRAFFIC_AND_K2P.md,2026-10-14,本地 rc.2 候选，未发布
 K2P-OPT-dns-mode-1,K2P,桌面,部分通过,本轮实际页面交互已执行；该用例全部边界与恢复场景未齐，不算全量通过,私有实机记录 k2p-full-forms；公开范围见 LIVE_TEST_2026-10-14_TRAFFIC_AND_K2P.md,2026-10-14,本地 rc.2 候选，未发布
 K2P-OPT-dns-mode-1,K2P,手机窄屏,部分通过,本轮实际页面交互已执行；该用例全部边界与恢复场景未齐，不算全量通过,私有实机记录 k2p-full-forms；公开范围见 LIVE_TEST_2026-10-14_TRAFFIC_AND_K2P.md,2026-10-14,本地 rc.2 候选，未发布
-K2P-CTRL-dns-save,K2P,桌面,未执行,,,,
-K2P-CTRL-dns-save,K2P,手机窄屏,未执行,,,,
+K2P-CTRL-dns-save,K2P,桌面,部分通过,实际新增DNS例外后返回真实A记录；手机布局恢复原过滤表后回到Fake-IP。同值保存无需重启。非法输入/重启恢复边界待补。,私有 k2p-dns-live / k2p-dns-save-noop；LIVE_TEST_2026-10-14_ACCEPTANCE_CONTINUATION.md,2026-10-14,本地验收补丁；未发布
+K2P-CTRL-dns-save,K2P,手机窄屏,部分通过,实际新增DNS例外后返回真实A记录；手机布局恢复原过滤表后回到Fake-IP。同值保存无需重启。非法输入/重启恢复边界待补。,私有 k2p-dns-live / k2p-dns-save-noop；LIVE_TEST_2026-10-14_ACCEPTANCE_CONTINUATION.md,2026-10-14,本地验收补丁；未发布
 K2P-CTRL-dns-index,K2P,桌面,部分通过,本轮实际页面交互已执行；该用例全部边界与恢复场景未齐，不算全量通过,私有实机记录 k2p-full-forms；公开范围见 LIVE_TEST_2026-10-14_TRAFFIC_AND_K2P.md,2026-10-14,本地 rc.2 候选，未发布
 K2P-CTRL-dns-index,K2P,手机窄屏,部分通过,本轮实际页面交互已执行；该用例全部边界与恢复场景未齐，不算全量通过,私有实机记录 k2p-full-forms；公开范围见 LIVE_TEST_2026-10-14_TRAFFIC_AND_K2P.md,2026-10-14,本地 rc.2 候选，未发布
-K2P-CTRL-dns-filter,K2P,桌面,部分通过,本轮实际页面交互已执行；该用例全部边界与恢复场景未齐，不算全量通过,私有实机记录 k2p-full-forms；公开范围见 LIVE_TEST_2026-10-14_TRAFFIC_AND_K2P.md,2026-10-14,本地 rc.2 候选，未发布
-K2P-CTRL-dns-filter,K2P,手机窄屏,部分通过,本轮实际页面交互已执行；该用例全部边界与恢复场景未齐，不算全量通过,私有实机记录 k2p-full-forms；公开范围见 LIVE_TEST_2026-10-14_TRAFFIC_AND_K2P.md,2026-10-14,本地 rc.2 候选，未发布
+K2P-CTRL-dns-filter,K2P,桌面,部分通过,实际新增DNS例外后返回真实A记录；手机布局恢复原过滤表后回到Fake-IP。同值保存无需重启。非法输入/重启恢复边界待补。,私有 k2p-dns-live / k2p-dns-save-noop；LIVE_TEST_2026-10-14_ACCEPTANCE_CONTINUATION.md,2026-10-14,本地验收补丁；未发布
+K2P-CTRL-dns-filter,K2P,手机窄屏,部分通过,实际新增DNS例外后返回真实A记录；手机布局恢复原过滤表后回到Fake-IP。同值保存无需重启。非法输入/重启恢复边界待补。,私有 k2p-dns-live / k2p-dns-save-noop；LIVE_TEST_2026-10-14_ACCEPTANCE_CONTINUATION.md,2026-10-14,本地验收补丁；未发布
 K2P-CTRL-monitor-refresh,K2P,桌面,部分通过,实机操作读回通过；本用例全部边界仍待完成,私有 k2p-final-runtime；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
 K2P-CTRL-monitor-refresh,K2P,手机窄屏,部分通过,实机操作读回通过；本用例全部边界仍待完成,私有 k2p-final-runtime；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
 K2P-CTRL-memory-cleanup,K2P,桌面,未执行,,,,
@@ -671,3 +671,7 @@ K2P-DATA-traffic-up-total,K2P,桌面,部分通过,本轮实际页面交互已执
 K2P-DATA-traffic-up-total,K2P,手机窄屏,部分通过,本轮实际页面交互已执行；该用例全部边界与恢复场景未齐，不算全量通过,私有实机记录 k2p-full-runtime；公开范围见 LIVE_TEST_2026-10-14_TRAFFIC_AND_K2P.md,2026-10-14,本地 rc.2 候选，未发布
 K2P-DATA-traffic-down-total,K2P,桌面,部分通过,本轮实际页面交互已执行；该用例全部边界与恢复场景未齐，不算全量通过,私有实机记录 k2p-full-runtime；公开范围见 LIVE_TEST_2026-10-14_TRAFFIC_AND_K2P.md,2026-10-14,本地 rc.2 候选，未发布
 K2P-DATA-traffic-down-total,K2P,手机窄屏,部分通过,本轮实际页面交互已执行；该用例全部边界与恢复场景未齐，不算全量通过,私有实机记录 k2p-full-runtime；公开范围见 LIVE_TEST_2026-10-14_TRAFFIC_AND_K2P.md,2026-10-14,本地 rc.2 候选，未发布
+AX5-CTRL-traffic-connections,AX5,桌面,部分通过,桌面/手机按需跳至活动连接并显示客户端、IP端口、协议、实际出口和连接流量；暂停保留数值，无横向溢出。断网等其他边界由回归覆盖，实机仍待补。,私有 ax5-traffic-redesign,2026-10-14,本地验收补丁，未发布
+AX5-CTRL-traffic-connections,AX5,手机窄屏,部分通过,桌面/手机按需跳至活动连接并显示客户端、IP端口、协议、实际出口和连接流量；暂停保留数值，无横向溢出。断网等其他边界由回归覆盖，实机仍待补。,私有 ax5-traffic-redesign,2026-10-14,本地验收补丁，未发布
+K2P-CTRL-traffic-connections,K2P,桌面,部分通过,桌面/手机按需跳至活动连接并显示客户端、IP端口、协议、实际出口和连接流量；暂停保留数值，无横向溢出。断网等其他边界由回归覆盖，实机仍待补。,私有 k2p-traffic-redesign,2026-10-14,本地验收补丁，未发布
+K2P-CTRL-traffic-connections,K2P,手机窄屏,部分通过,桌面/手机按需跳至活动连接并显示客户端、IP端口、协议、实际出口和连接流量；暂停保留数值，无横向溢出。断网等其他边界由回归覆盖，实机仍待补。,私有 k2p-traffic-redesign,2026-10-14,本地验收补丁，未发布
