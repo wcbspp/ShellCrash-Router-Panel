@@ -48,7 +48,10 @@ stop_rules() {
  iptables -D FORWARD -d 198.18.0.0/15 -p udp -m comment --comment SC_AX5_FAKE_UDP -j REJECT 2>/dev/null
 }
 stop_rules
-[ "${1:-start}" = start ] || exit 0
+if [ "${1:-start}" != start ];then
+ [ ! -f "$C/configs/cn-bypass" ] || SC_CN_FLOW_MODE=direct "$C/ax5/cn-bypass.sh" apply
+ exit 0
+fi
 [ -s "$R/core.pid" ] && kill -0 "$(cat "$R/core.pid")" 2>/dev/null || exit 0
 trap 'rc=$?; if [ "$rc" -ne 0 ]; then stop_rules; fi' EXIT
 set -e
@@ -95,5 +98,6 @@ else
 fi
 https_rules
 printf '%s\n' "$transport" > "$R/transport-mode"
+[ ! -f "$C/configs/cn-bypass" ] || "$C/ax5/cn-bypass.sh" apply
 # DNS interception is removed on stop. Original dnsmasq configuration stays intact.
 exit 0

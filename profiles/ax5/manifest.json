@@ -137,5 +137,11 @@
   "tests/test_auto_measure_pressure.js": "profiles/ax5/tests/test_auto_measure_pressure.js",
   "tests/test_connection_rows.js": "profiles/ax5/tests/test_connection_rows.js",
   "ax5/rules-update.lua": "profiles/ax5/ax5/rules-update.lua",
-  "tests/rules-update.lua": "profiles/ax5/tests/rules-update.lua"
+  "tests/rules-update.lua": "profiles/ax5/tests/rules-update.lua",
+  "ax5/cn-bypass.lua": "profiles/ax5/ax5/cn-bypass.lua",
+  "ax5/cn-bypass.sh": "profiles/ax5/ax5/cn-bypass.sh",
+  "ax5/cn-bypass-lib.sh": "shared/lib/cn-bypass.sh",
+  "tests/test_cn_bypass.py": "shared/tests/test_cn_bypass.py",
+  "tests/test_cn_bypass_ui.js": "shared/tests/test_cn_bypass_ui.js",
+  "tests/cn_bypass.lua": "profiles/ax5/tests/cn_bypass.lua"
 }

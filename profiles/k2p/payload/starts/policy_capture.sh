@@ -2,7 +2,7 @@
 # Domain overrides and imported rules must reach the core before country-IP decisions.
 # Keep ShellCrash's configured optimization for basic node-only setups.
 policy_capture_apply(){
- [ -s "$C/configs/policy.tsv" ] || [ -s "$C/configs/native-profile" ] || return 0
+ [ -s "$C/configs/policy.tsv" ] || [ -s "$C/configs/native-profile" ] || [ -f "$C/configs/cn-bypass" ] || return 0
  for table in nat mangle;do
   case "$table" in nat) chains='shellcrash shellcrash_out';; mangle) chains='shellcrash_mark shellcrash_mark_out';; esac
   for chain in $chains;do
@@ -11,5 +11,6 @@ policy_capture_apply(){
    if iptables -t "$table" -S "$chain" 2>/dev/null | grep -q -- '--match-set cn_ip dst -j RETURN';then return 1;fi
   done
  done
+ if [ -f "$C/configs/cn-bypass" ];then . "$C/starts/cn_bypass.sh";cb_rules rule || return 1;fi
  return 0
 }

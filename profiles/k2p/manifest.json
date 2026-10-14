@@ -226,5 +226,11 @@
   "tests/test_traffic_sample.py": "profiles/k2p/tests/test_traffic_sample.py",
   "payload/starts/cn_fallback.sh": "profiles/k2p/payload/starts/cn_fallback.sh",
   "payload/starts/cn_fallback.awk": "profiles/k2p/payload/starts/cn_fallback.awk",
-  "tests/test_cn_fallback.py": "profiles/k2p/tests/test_cn_fallback.py"
+  "tests/test_cn_fallback.py": "profiles/k2p/tests/test_cn_fallback.py",
+  "payload/starts/cn_bypass.sh": "profiles/k2p/payload/starts/cn_bypass.sh",
+  "payload/starts/cn_bypass_check.awk": "profiles/k2p/payload/starts/cn_bypass_check.awk",
+  "payload/starts/cn-bypass-lib.sh": "shared/lib/cn-bypass.sh",
+  "tests/test_cn_bypass.py": "shared/tests/test_cn_bypass.py",
+  "tests/test_cn_bypass_ui.js": "shared/tests/test_cn_bypass_ui.js",
+  "tests/test_cn_bypass_check.py": "profiles/k2p/tests/test_cn_bypass_check.py"
 }

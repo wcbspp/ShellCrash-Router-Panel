@@ -675,3 +675,11 @@ AX5-CTRL-traffic-connections,AX5,桌面,部分通过,桌面/手机按需跳至�
 AX5-CTRL-traffic-connections,AX5,手机窄屏,部分通过,桌面/手机按需跳至活动连接并显示客户端、IP端口、协议、实际出口和连接流量；暂停保留数值，无横向溢出。断网等其他边界由回归覆盖，实机仍待补。,私有 ax5-traffic-redesign,2026-10-14,本地验收补丁，未发布
 K2P-CTRL-traffic-connections,K2P,桌面,部分通过,桌面/手机按需跳至活动连接并显示客户端、IP端口、协议、实际出口和连接流量；暂停保留数值，无横向溢出。断网等其他边界由回归覆盖，实机仍待补。,私有 k2p-traffic-redesign,2026-10-14,本地验收补丁，未发布
 K2P-CTRL-traffic-connections,K2P,手机窄屏,部分通过,桌面/手机按需跳至活动连接并显示客户端、IP端口、协议、实际出口和连接流量；暂停保留数值，无横向溢出。断网等其他边界由回归覆盖，实机仍待补。,私有 k2p-traffic-redesign,2026-10-14,本地验收补丁，未发布
+AX5-CTRL-cn-bypass-enabled,AX5,桌面,部分通过,两端实际开关/模式联动及恢复通过；K2P桌面开启另有早期超时记录，最终轮起始状态已开启；故不把全组合及异常设备测试标为全通过,docs/LIVE_TEST_2026-10-14_DOMESTIC_BYPASS.md,2026-10-14,未发布 main；新源已部署
+AX5-CTRL-cn-bypass-enabled,AX5,手机窄屏,部分通过,两端实际开关/模式联动及恢复通过；K2P桌面开启另有早期超时记录，最终轮起始状态已开启；故不把全组合及异常设备测试标为全通过,docs/LIVE_TEST_2026-10-14_DOMESTIC_BYPASS.md,2026-10-14,未发布 main；新源已部署
+AX5-CTRL-cn-bypass-save,AX5,桌面,部分通过,两端实际开关/模式联动及恢复通过；K2P桌面开启另有早期超时记录，最终轮起始状态已开启；故不把全组合及异常设备测试标为全通过,docs/LIVE_TEST_2026-10-14_DOMESTIC_BYPASS.md,2026-10-14,未发布 main；新源已部署
+AX5-CTRL-cn-bypass-save,AX5,手机窄屏,部分通过,两端实际开关/模式联动及恢复通过；K2P桌面开启另有早期超时记录，最终轮起始状态已开启；故不把全组合及异常设备测试标为全通过,docs/LIVE_TEST_2026-10-14_DOMESTIC_BYPASS.md,2026-10-14,未发布 main；新源已部署
+K2P-CTRL-cn-bypass-enabled,K2P,桌面,部分通过,两端实际开关/模式联动及恢复通过；K2P桌面开启另有早期超时记录，最终轮起始状态已开启；故不把全组合及异常设备测试标为全通过,docs/LIVE_TEST_2026-10-14_DOMESTIC_BYPASS.md,2026-10-14,未发布 main；新源已部署
+K2P-CTRL-cn-bypass-enabled,K2P,手机窄屏,部分通过,两端实际开关/模式联动及恢复通过；K2P桌面开启另有早期超时记录，最终轮起始状态已开启；故不把全组合及异常设备测试标为全通过,docs/LIVE_TEST_2026-10-14_DOMESTIC_BYPASS.md,2026-10-14,未发布 main；新源已部署
+K2P-CTRL-cn-bypass-save,K2P,桌面,部分通过,两端实际开关/模式联动及恢复通过；K2P桌面开启另有早期超时记录，最终轮起始状态已开启；故不把全组合及异常设备测试标为全通过,docs/LIVE_TEST_2026-10-14_DOMESTIC_BYPASS.md,2026-10-14,未发布 main；新源已部署
+K2P-CTRL-cn-bypass-save,K2P,手机窄屏,部分通过,两端实际开关/模式联动及恢复通过；K2P桌面开启另有早期超时记录，最终轮起始状态已开启；故不把全组合及异常设备测试标为全通过,docs/LIVE_TEST_2026-10-14_DOMESTIC_BYPASS.md,2026-10-14,未发布 main；新源已部署

@@ -12,11 +12,12 @@ class StatusJSON(unittest.TestCase):
    (c/'starts/panel_env.sh').write_text('PANEL_LAN_IP=192.168.1.1;PANEL_MAIN_GROUP=proxy-main\n')
    (c/'starts/resource_health.sh').write_text('resource_read(){ rh_warning_mb=20;rh_protect_mb=12;rh_cleanup_mb=20;rh_available=24576;rh_pressure=normal;rh_shmem=0;rh_slab=0;rh_tcp=0;rh_conn=0; }\n')
    (c/'starts/mirror_lib.sh').write_text('mirror_get(){ :; };remote_enabled(){ return 1; };remote_ready(){ return 1; };remote_transport(){ echo webdav; }\n')
+   (c/'starts/cn_bypass.sh').write_text('cb_enabled(){ return 1; };cb_safe(){ echo ready; };cb_refresh(){ :; };cb_warning(){ echo ready; }\n')
    (c/'starts/transport_mode.sh').write_text('transport_configured(){ echo mixed; };transport_available(){ return 0; }\n')
    for name,code in [('pidof','echo 37'),('crontab','exit 1')]:
     f=b/name;f.write_text('#!/bin/sh\n'+code+'\n');f.chmod(0o700)
    f=p/'manage.sh';f.write_text((ROOT/'payload/starts/manage.sh').read_text().replace('/etc/storage/ShellCrash',str(c)).replace('/tmp/sc-admin',str(d)).replace('/tmp/ShellCrash',str(r)))
    q=subprocess.run(['sh',str(f),'status'],env={**os.environ,'PATH':str(b)+':'+os.environ['PATH']},capture_output=True,text=True)
    self.assertEqual(q.returncode,0,q.stderr);data=json.loads(q.stdout)
-   self.assertEqual(data['pid'],37);self.assertEqual(data['transport'],{'configured':'mixed','active':'mixed','mixed_available':True});self.assertEqual(data['available_kb'],24576)
+   self.assertEqual(data['cn_bypass'],{'enabled':False,'active':False,'eligible':'ready','warning':'ready'});self.assertEqual(data['pid'],37);self.assertEqual(data['transport'],{'configured':'mixed','active':'mixed','mixed_available':True});self.assertEqual(data['available_kb'],24576)
 if __name__=='__main__':unittest.main()

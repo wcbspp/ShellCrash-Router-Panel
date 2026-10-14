@@ -1,0 +1,7 @@
+local A=dofile(arg[1]);local direct={outbounds={{type='direct',tag='direct'}},route={rules={{clash_mode='Global',outbound='proxy-main'},{action='sniff'},{protocol='dns',action='hijack-dns'},{ip_cidr={'8.152.0.0/13'},outbound='direct'},{outbound='proxy-main'}}}}
+assert(A.check(direct,'','mix')=='ready');assert(A.warning(direct,'suffix\texample.test\tnode\n','mix')=='policy');assert(A.check(direct,'','fake-ip')=='fakeip')
+for _,r in ipairs({{domain={'example.test'},outbound='proxy-main'},{action='reject'},{outbound='direct',rules={{outbound='proxy-main'}}},{clash_mode='Rule',outbound='proxy-main'},{clash_mode='Global',domain={'example.test'},outbound='proxy-main'}})do direct.route.rules={r};assert(A.check(direct,'','mix')=='ready');assert(A.warning(direct,'','mix')=='rules')end
+assert(A.check({_native_meta={rules={'DOMAIN-SUFFIX,cn.test,DIRECT','MATCH,proxy-main'}}},'','mix')=='ready');assert(A.warning({_native_meta={rules={'DOMAIN,cn.test,node','MATCH,proxy-main'}}},'','mix')=='rules')
+local M={pid=function()return 1 end,C='/fixture',R='/tmp',read=function()return '1\n'end,load=function()return{active=false,reason='global'}end};local state=A.state(M,{cn_eligible='ready'});assert(state.enabled and state.available and not state.active and state.reason=='global')
+M.pid=function()return 0 end;state=A.state(M,{cn_eligible='ready'});assert(not state.active and state.reason=='stopped');assert(A.warning({_native_meta={rules={'MATCH,REJECT'}}},'','mix')=='rules')
+print('CN bypass: conservative eligibility, DNS/policy conflicts and suspended state passed')

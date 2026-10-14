@@ -233,3 +233,5 @@ GPL-3.0-only。第三方组件与商标沿用各自许可，见 [LICENSE](LICENS
 首页流量统计的是内核处理量，包含代理与内核 DIRECT；绕过内核的流量不计入，也不能等同订阅消耗。连接明细按需查询当前活动连接，不保存客户端历史。
 
 本轮实测范围见 [查询、导出、DNS 与流量增量验收](docs/LIVE_TEST_2026-10-14_ACCEPTANCE_CONTINUATION.md) 和 [国内 IP 兜底修复](docs/LIVE_TEST_2026-10-14_DOMESTIC_FALLBACK.md)。全量控件与场景验收尚未完成，新候选发布暂停。
+
+国内直连加速的作用范围、规则优先级与流量口径见[使用说明](docs/DOMESTIC_BYPASS.md)。

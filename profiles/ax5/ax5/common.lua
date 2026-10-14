@@ -70,9 +70,11 @@ function M.state()
  local job=M.load(M.R..'/job.json',{phase='done',active=false,message_b64=M.b64('service_operation_complete')})
  if job.active then local t=tonumber(M.read(M.R..'/operation.lock.time'));if t and os.time()-t>900 then job.active=false;job.phase='error';job.message_b64=M.b64('operation_timed_out');M.save(M.R..'/job.json',job)end end
  local fs=require('nixio.fs');local statcfg=fs.stat(M.C..'/configs/config.json')or{};local index=M.load(M.R..'/config-index.json')
- if index.mtime~=statcfg.mtime or index.bytes~=statcfg.size then
+ local cn_policy=M.read(M.C..'/configs/policy.tsv');local cn_dns=M.read(M.C..'/configs/dns-mode'):gsub('%s+$','')
+ if index.mtime~=statcfg.mtime or index.bytes~=statcfg.size or index.native_mihomo==nil or not index.cn_warning or not index.cn_eligible or index.cn_policy~=cn_policy or index.cn_dns~=cn_dns then
   local cfg=M.load(M.C..'/configs/config.json');local count=0;for _,r in ipairs((cfg.route or{}).rules or{})do count=count+#(r.ip_cidr or{})end
-  local native=cfg._native_meta;index={mtime=statcfg.mtime,bytes=statcfg.size,ip_count=count,template_kind=cfg._template_kind,template_rules=native and #native.rules or cfg._template_kind and #(cfg.route.rules or{})or 0,template_groups=native and #native['proxy-groups']or 0,main_group=native and native['proxy-groups'][1]and native['proxy-groups'][1].name}
+  local native=cfg._native_meta;index={native_mihomo=native~=nil,mtime=statcfg.mtime,bytes=statcfg.size,ip_count=count,template_kind=cfg._template_kind,template_rules=native and #native.rules or cfg._template_kind and #(cfg.route.rules or{})or 0,template_groups=native and #native['proxy-groups']or 0,main_group=native and native['proxy-groups'][1]and native['proxy-groups'][1].name}
+  local CB=dofile(M.C..'/ax5/cn-bypass.lua');index.cn_eligible=CB.check(cfg,cn_policy,cn_dns);index.cn_warning=CB.warning(cfg,cn_policy,cn_dns);index.cn_policy=cn_policy;index.cn_dns=cn_dns
   pcall(M.save,M.R..'/config-index.json',index)
  end
  local count=tonumber(M.read(M.C..'/configs/rules-count'))or index.ip_count or 0
@@ -80,9 +82,11 @@ function M.state()
  local incidents=M.read(M.R..'/incidents');local recoveries=0;for _ in incidents:gmatch('\n') do recoveries=recoveries+1 end
  local coreenv=M.read(M.C..'/cache/core.env');local kind=coreenv:match('KIND=([^%s]+)')or'singbox';local ver=coreenv:match('VERSION=([^%s]+)')or'1.12.13'
  local s={running=pid>0,pid=pid,core_uptime_seconds=M.core_uptime(pid),available_kb=avail,free_kb=mem.MemFree or 0,rss_kb=tonumber(stat:match('VmRSS:%s+(%d+)')) or 0,shmem_kb=mem.Shmem or 0,slab_kb=mem.Slab or 0,tcp_kb=pages*4,conntrack=tonumber(M.read('/proc/sys/net/netfilter/nf_conntrack_count')) or 0,pressure=avail<limits.protect_mb*1024 and 'protect' or avail<limits.warning_mb*1024 and 'warning' or 'normal',memory_limits=limits,dns_mode=M.read(M.C..'/configs/dns-mode'):gsub('%s+$',''),url_b64=M.b64(M.read(M.C..'/configs/subscription'):gsub('%s+$','')),core_kind=kind,core_version=ver,core_blob=M.read(M.C..'/cache/core.sha256'):match('^(%x+)'),rules_count=count,rules_date_b64=M.b64(M.read(M.C..'/configs/rules-date')),recoveries=recoveries,cleanup=M.load(M.R..'/cleanup.json')}
+ s.cn_bypass=dofile(M.C..'/ax5/cn-bypass.lua').state(M,index)
+ if s.cn_bypass.enabled and s.running and not fs.access(M.R..'/operation.lock') then local raw,code=M.request('/configs');local ok,d=pcall(M.json.decode,raw);if code==200 and ok then local mode=tostring(d.mode):lower();local applied=M.read(M.R..'/cn-checked'):gsub('%s+$','');if applied~=mode..':'..index.cn_eligible then M.run('SC_CN_FLOW_MODE='..M.quote(mode)..' '..M.C..'/ax5/cn-bypass.sh apply');s.cn_bypass=dofile(M.C..'/ax5/cn-bypass.lua').state(M,index)end end end
  s.transport=dofile(M.C..'/ax5/transport-mode.lua').state()
  s.traffic_mode=M.read(M.R..'/traffic-mode'):gsub('%s+$','');if not({rule=true,direct=true,global=true})[s.traffic_mode]then s.traffic_mode='rule'end
- s.subscription=M.load(M.C..'/configs/subscription-state.json');s.template_kind=index.template_kind;s.template_rules=index.template_rules;s.template_groups=index.template_groups;s.main_group=index.main_group
+ s.subscription=M.load(M.C..'/configs/subscription-state.json');s.domestic_hot_reload=kind=='meta'and index.native_mihomo==true;s.template_kind=index.template_kind;s.template_rules=index.template_rules;s.template_groups=index.template_groups;s.main_group=index.main_group
  local toolcfg='\n'..M.read('/data/ShellCrash-tool/configs/ShellCrash.cfg')
  s.autostart=not fs.stat('/data/ShellCrash-tool/.dis_startup') and fs.stat('/etc/rc.d/S99shellcrash')~=nil
  s.guard_mode=toolcfg:match('\nstart_old=ON[\r\n]') and 'conservative' or 'procd'

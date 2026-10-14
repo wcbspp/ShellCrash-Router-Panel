@@ -84,6 +84,8 @@ end
 local function execute()
  local a=req.action
  if a=='advanced'then os.remove(M.R..'/dashboard-error');local advanced_kind=M.read(M.C..'/cache/core.env'):match('KIND=([^%s]+)')or'singbox';if not M.run('sh '..M.C..'/ax5/dashboard-install.sh '..M.C..' '..advanced_kind..' >> '..M.R..'/worker.log 2>&1')then local reason=M.read(M.R..'/dashboard-error'):gsub('%s+$','');fail(reason~=''and reason or'高级面板下载或校验失败，请查看运行日志')end;phase('done','高级面板已准备',false)
+ elseif a=='cnbypass'then
+  if args[2]=='1'then guard()end;dofile(M.C..'/ax5/cn-bypass.lua').apply(M,args[2]);phase('done','国内 IP 绕过设置已保存；只影响新连接',false)
  elseif a=='transport'then
   local message=dofile(M.C..'/ax5/transport-mode.lua').apply(args[2],service,phase);phase('done',message,false)
  elseif a=='proxymode'then

@@ -43,9 +43,16 @@ lock(){
 }
 valid_id(){ printf '%s' "$1" | grep -Eq '^[a-f0-9]{8}$'; }
 status(){
+ . "$C/starts/cn_bypass.sh"
+ if cb_enabled;then cb_refresh;fi
+ cn_state=$(cat "$D/cn-state.json" 2>/dev/null)
+ [ -n "$cn_state" ] || cn_state='{ "enabled":false,"active":false }'
+ cn_safe=$(cb_safe);cn_warning=$(cb_warning)
+ cn_state=$(printf '%s' "$cn_state"|sed 's/}$/,"eligible":"'"$cn_safe"'","warning":"'"$cn_warning"'"}/')
  . "$C/starts/resource_health.sh"
  resource_read
  pid=$(pidof CrashCore | awk '{print $1}'); running=false; [ -n "$pid" ] && running=true
+ if [ "$running" = false ];then cn_state=$(printf '%s' "$cn_state"|sed 's/"active":true/"active":false/;s/"reason":"[A-Za-z]*"/"reason":"stopped"/');fi
  core_uptime=null
  if [ -n "$pid" ]; then
   core_uptime=$(awk 'NR==FNR {now=$1;next} {sub(/^[0-9]+ \(.*\) /, ""); if ($20 ~ /^[0-9]+$/ && $20/100<=now) {printf "%d", now-$20/100;ok=1}} END {if (!ok) printf "null"}' /proc/uptime "/proc/$pid/stat" 2>/dev/null)
@@ -84,7 +91,8 @@ status(){
  transport_active=$(cat /tmp/ShellCrash/transport-runtime 2>/dev/null)
  [ "$running" = true ] || transport_active=''
  case "$transport_active" in redir|mixed|'') :;; *) transport_active=unknown;;esac
- printf '{"pid":%s,"transport":{"configured":"%s","active":"%s","mixed_available":%s},' "${pid:-0}" "$configured" "$transport_active" "$mixed_available"
+ printf '{"cn_bypass":%s,' "$cn_state"
+ printf '"pid":%s,"transport":{"configured":"%s","active":"%s","mixed_available":%s},' "${pid:-0}" "$configured" "$transport_active" "$mixed_available"
  native_kind='';[ ! -f "$C/configs/native-profile" ] || native_kind=singbox
  printf '"template_kind":"%s","traffic_mode":"%s",' "$native_kind" "$traffic_mode"
  printf '"main_group":"%s","tool_version":"%s","tool_check":%s,"local_archive":false,"mirror_pending_b64":"%s",' "$PANEL_MAIN_GROUP" "$tool_version" "$tool_check" "$(cat "$C/configs/mirror.pending" 2>/dev/null | base64 | tr -d '\n')"
@@ -159,6 +167,10 @@ case "$act" in
 esac
 case "$act" in apply|dns|rules|policy|groupmode|grouplayout|transport) . "$C/starts/config_core.sh" || exit 1;;esac
 case "$act" in
+ cnbypass)
+  valid_id "$id" || exit 1;case "$3" in 0|1) :;;*)exit 1;;esac
+  lock || exit 1;echo "$id" > "$D/id";phase working '正在应用国内 IP 绕过'
+  . "$C/starts/cn_bypass.sh";cb_save "$3" || exit 1;;
  traffic)
   . "$C/starts/traffic_sample.sh";traffic_sample;exit 0;;
  transport)

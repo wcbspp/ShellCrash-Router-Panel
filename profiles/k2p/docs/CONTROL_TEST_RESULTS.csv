@@ -623,3 +623,7 @@ K2P-DYN-site-github,K2P,桌面,未执行,,,,
 K2P-DYN-site-github,K2P,手机窄屏,未执行,,,,
 K2P-DYN-site-openai,K2P,桌面,未执行,,,,
 K2P-DYN-site-openai,K2P,手机窄屏,未执行,,,,
+K2P-CTRL-cn-bypass-enabled,K2P,桌面,部分通过,两端实际开关/模式联动及恢复通过；K2P桌面开启另有早期超时记录，最终轮起始状态已开启；故不把全组合及异常设备测试标为全通过,docs/LIVE_TEST_2026-10-14_DOMESTIC_BYPASS.md,2026-10-14,未发布 main；新源已部署
+K2P-CTRL-cn-bypass-enabled,K2P,手机窄屏,部分通过,两端实际开关/模式联动及恢复通过；K2P桌面开启另有早期超时记录，最终轮起始状态已开启；故不把全组合及异常设备测试标为全通过,docs/LIVE_TEST_2026-10-14_DOMESTIC_BYPASS.md,2026-10-14,未发布 main；新源已部署
+K2P-CTRL-cn-bypass-save,K2P,桌面,部分通过,两端实际开关/模式联动及恢复通过；K2P桌面开启另有早期超时记录，最终轮起始状态已开启；故不把全组合及异常设备测试标为全通过,docs/LIVE_TEST_2026-10-14_DOMESTIC_BYPASS.md,2026-10-14,未发布 main；新源已部署
+K2P-CTRL-cn-bypass-save,K2P,手机窄屏,部分通过,两端实际开关/模式联动及恢复通过；K2P桌面开启另有早期超时记录，最终轮起始状态已开启；故不把全组合及异常设备测试标为全通过,docs/LIVE_TEST_2026-10-14_DOMESTIC_BYPASS.md,2026-10-14,未发布 main；新源已部署

@@ -20,6 +20,7 @@ function A.apply(M,text,count)
   local restored=pcall(reload,previous)
   error(restored and '国内 IP 表加载失败，已恢复旧规则' or '国内 IP 旧文件已恢复，内核加载状态待确认',0)
  end
+ if M.read(M.C..'/configs/cn-bypass'):match('^1')then local raw,code=M.request('/configs');if code==200 then local mode=tostring(M.json.decode(raw).mode):lower();M.run('SC_CN_FLOW_MODE='..M.quote(mode)..' '..M.C..'/ax5/cn-bypass.sh apply')end end
  return true
 end
 return A

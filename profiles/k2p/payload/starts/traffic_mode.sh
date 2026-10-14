@@ -38,6 +38,7 @@ traffic_mode_apply(){
  traffic_fw(){
   traffic_unhook
   traffic_restore "$T/base" || return 1
+  if [ -f "$C/configs/cn-bypass" ];then . "$C/starts/cn_bypass.sh";cb_rules "$1" || return 1;fi
   if [ "$1" = rule ];then
    . "$C/starts/policy_capture.sh"
    policy_capture_apply || return 1
