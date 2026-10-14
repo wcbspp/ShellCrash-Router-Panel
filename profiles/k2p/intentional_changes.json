@@ -20,8 +20,8 @@
     "removed": true
   },
   "payload/padavan/manager.js": {
-    "sha256": "b1a6d8c9b831a40b8fa364decb35babf01189864f6117c3d81f95adcfff98aed",
-    "reason": "Reviewed one-shot quota refresh hooks after ready startup/successful import, cache revision display, automatic domestic/international IP and geolocation probes; preserve config, source isolation, and existing memory floors."
+    "sha256": "1527240d7976c3d94d86d1c631ffeb1da40dc8ae9a0475186c6f6c61c20c8e0a",
+    "reason": "Backup catalog read and explicit refresh, with distinct error and empty states; shared UI changes"
   },
   "payload/starts/backup-app.sh": {
     "sha256": "f62bdc0888128fc389b5b7b89f29b23e9d96ded267d0eb3962a4900c1f37a485",
@@ -32,20 +32,20 @@
     "reason": "Make backup archives portable without runtime aliases, support minimal K2P utilities, record the actual panel release in local/remote metadata, and identify core files by SHA256. Acceptance continuation: application packing and download encoding honor the validated configured protection threshold; invalid settings fail closed; custom-floor regression tests keep old exports and avoid snapshot/Storage lock creation."
   },
   "payload/starts/panel_bfstart.sh": {
-    "sha256": "fb1bc025c339d9c1d33035bfba574dc741cf3332dc11878bfcdcf4f96bd07b76",
-    "reason": "Make backup archives portable without runtime aliases, support minimal K2P utilities, record the actual panel release in local/remote metadata, and identify core files by SHA256."
+    "sha256": "f92ed90fe2ae30a4ee6da7f32acbfe5d46832156c7a21cddb3a6353bfe3d0559",
+    "reason": "Reboot acceptance fixes: initialized routing hooks, safe executable reuse, remote domain cache, pre-download startup delay and explicit remote backup catalog query"
   },
   "payload/starts/webdav.sh": {
-    "sha256": "6372a90d51eb9933e3bf9210e0d34ac2ffc439146a8ac33fcd62264d4d4ae215",
-    "reason": "Make backup archives portable without runtime aliases, support minimal K2P utilities, record the actual panel release in local/remote metadata, and identify core files by SHA256."
+    "sha256": "790433eb9216cf074053b96955d3640263806f4f5992ca3bf3025757306feb82",
+    "reason": "Read the latest remote backup catalog on entering backup tab and explicit refresh; distinguish unavailable query from genuinely empty catalog; preserve disabled gating and bounded responses"
   },
   "tests/test_webdav.py": {
-    "sha256": "9abb8314aca878287d2f428a17f4fab74065684eb142d52193f7699e2bcb7a31",
-    "reason": "Make backup archives portable without runtime aliases, support minimal K2P utilities, record the actual panel release in local/remote metadata, and identify core files by SHA256."
+    "sha256": "37e8289d5edb29d0864a2a5e4ea29673c9b0c1f4739bd2ca774425950113d87a",
+    "reason": "Add remote latest-catalog RAM reset, error vs 404, last-good record and disabled-no-request regression test"
   },
   "payload/starts/panel_boot.sh": {
-    "sha256": "6fded929d657d87c41a1cab0da064b05b243679cbe410aa19bcf1e9bd0ff8d16",
-    "reason": "Separate startup firewall cleanup from manual stop, retry marked incomplete first boots through the existing minute watchdog with backoff, preserve stop/autostart controls and separate crash counts; verify readiness and retain dispatch errors. Reviewed: explicitly label kernel totals as including DIRECT; domestic-table maintenance updates the core fallback, distinct from subscription geodata. Native Mihomo reload is atomic with count readback/rollback and no restart. K delayed startup clears only the previous stop marker before dispatch; later user cancellation still respected and fake readiness regression covered."
+    "sha256": "34b11e593bbc6f246ad1dcc3916d0c80fdee3a1ddbb621b8f571d81f9aebb03e",
+    "reason": "Reboot acceptance fixes: initialized routing hooks, safe executable reuse, remote domain cache, pre-download startup delay and explicit remote backup catalog query"
   },
   "tests/test_boot_readiness.py": {
     "sha256": "c76891cbdeb7fb6e62425d781b79db57c3f9469ae2e41104a2ea0c4fd2733eda",
@@ -68,8 +68,8 @@
     "reason": "Reviewed quota lifecycle hooks, bounded/coalesced event worker, automatic cache display; once-per-load domestic/international IP and location probes with cancellation and bounded JSON."
   },
   "payload/ui/index.html": {
-    "sha256": "e6dfc1fa74ec7707d79861ee29d2246d8477018a2511aaa3565882f76a104aba",
-    "reason": "Reviewed one-shot quota refresh hooks after ready startup/successful import, cache revision display, automatic domestic/international IP and geolocation probes; preserve config, source isolation, and existing memory floors."
+    "sha256": "e3c271d6bf5614f71d183a3d7c1f8378839d1ba1238ffa995384b62a8e0934b0",
+    "reason": "Shared backup tab adds explicit bounded remote catalog refresh and accurate read status"
   },
   "tests/test_search.js": {
     "sha256": "0e745c08a710f917f9436ee927dadf120edb6055b6fbbf5ee1db75694324e6c1",
@@ -84,8 +84,8 @@
     "reason": "Regression coverage for manual path rollback/pin readback, partial and stale measurements, UA choice/state isolation and truthful filtered counts."
   },
   "payload/starts/manage.sh": {
-    "sha256": "466df9e521cf5d1d2e2dcc045daf8a3d5a446879275b7e40a224f212f7b9c939",
-    "reason": "Reviewed one-shot quota refresh hooks after ready startup/successful import, cache revision display, automatic domestic/international IP and geolocation probes; preserve config, source isolation, and existing memory floors."
+    "sha256": "32676c1dc554eb3f99127c283842dc393a6d1ad0fedc57fece1d794d4f902dc9",
+    "reason": "Reboot acceptance fixes: initialized routing hooks, safe executable reuse, remote domain cache, pre-download startup delay and explicit remote backup catalog query"
   },
   "tests/test_proxy_mode.js": {
     "sha256": "0d476681fd7c939c813fea8283fbb786eab2d3a1432fd0b4cedf240ef4489183",
@@ -96,12 +96,12 @@
     "reason": " Website checks distinguish transport/TLS failures, API errors and HTTP 4xx/5xx responses; access errors use amber rather than success green. Regression includes all AX endpoint IDs/URLs. Reviewed 2026-10-14: website cards now test network reachability and HTTPS request time only; HTTP 403/429/5xx count as reachable rather than access errors, TLS/malformed delay/API failures remain failed. Global/direct mode applies to domestic targets too. No service-unlock or CF diagnosis, no new timers or processes. Includes DOM regression for green 403 reachability, diagnostic-only HTTP code, and TLS failure rendering."
   },
   "payload/starts/padavan_ui.sh": {
-    "sha256": "eb27940a411e09c59ed579bddc1c78b5986fc75d44e7ace2a23273139f26d04c",
-    "reason": "Add on-demand browser exit IP and provider-header quota; preserve settings, use bounded requests and no background polling."
+    "sha256": "5deb2cc6c19296280d14dcbfde2cef953ca816c56610536aa35b3b315d3b0c08",
+    "reason": "Reboot acceptance fixes: initialized routing hooks, safe executable reuse, remote domain cache, pre-download startup delay and explicit remote backup catalog query"
   },
   "payload/starts/panel_afstart.sh": {
-    "sha256": "52a2630f480ea7bb7cf8fa9b2a457f28e2129c758654b6de2d8336a1958e4c66",
-    "reason": "Reviewed one-shot quota refresh hooks after ready startup/successful import, cache revision display, automatic domestic/international IP and geolocation probes; preserve config, source isolation, and existing memory floors."
+    "sha256": "810aa59a84ed47cc5acf0f03ad1e089a3ae0fab4a6a3e1f5d1ac7860fdad31cc",
+    "reason": "Initialize firmware PATH, runtime directory and LAN API context before post-start routing and quota hooks; preserve mixed-mode handling."
   },
   "payload/starts/traffic_mode.sh": {
     "sha256": "9d0856defd8b8a0088427d9ddf6ea8c6e8a8d55c5f1ac74f54da16c2696d5842",
@@ -134,5 +134,13 @@
   "payload/starts/rules_update.sh": {
     "sha256": "2e19485c424ceeb26a35c01a6f472ff418fa21db1bb844c2e0fa3da45dbaf547",
     "reason": " Reviewed: explicitly label kernel totals as including DIRECT; domestic-table maintenance updates the core fallback, distinct from subscription geodata. Native Mihomo reload is atomic with count readback/rollback and no restart. K delayed startup clears only the previous stop marker before dispatch; later user cancellation still respected and fake readiness regression covered."
+  },
+  "payload/starts/afstart.sh": {
+    "sha256": "59a5246f877eae679f30ca0c88a2c49a0e659b71a883f0b6b3c9cdea5e30ea91",
+    "reason": "Reboot acceptance fixes: initialized routing hooks, safe executable reuse, remote domain cache, pre-download startup delay and explicit remote backup catalog query"
+  },
+  "payload/starts/mirror_update.sh": {
+    "sha256": "60f05136e646380afa9894c410d19ac09ba25ef7431aa142c465e55c63e8e2f1",
+    "reason": "Reboot acceptance fixes: initialized routing hooks, safe executable reuse, remote domain cache, pre-download startup delay and explicit remote backup catalog query"
   }
 }

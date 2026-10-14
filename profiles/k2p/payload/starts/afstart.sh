@@ -11,7 +11,7 @@
 #缺省值
 [ -z "$firewall_area" ] && firewall_area=1
 #延迟启动
-[ ! -f "$TMPDIR"/crash_start_time ] && [ -n "$start_delay" ] && [ "$start_delay" -gt 0 ] && {
+[ "${SC_BOOT_DELAY_APPLIED:-0}" != 1 ] && [ ! -f "$TMPDIR"/crash_start_time ] && [ -n "$start_delay" ] && [ "$start_delay" -gt 0 ] && {
 	logger "ShellCrash将延迟$start_delay秒启动" 31
 	sleep "$start_delay"
 }

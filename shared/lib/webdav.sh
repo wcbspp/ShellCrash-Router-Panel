@@ -46,9 +46,28 @@ dav_publish_backup()(
  fi
 )
 dav_refresh_catalog(){
+ remote_ready || return 2
+ catalog_error=0;catalog_found=0
+ catalog_key=$(remote_fingerprint)
+ if [ "$catalog_key" != "$(cat "$D/remote-catalog.key" 2>/dev/null)" ];then rm -f "$D/remote-application.json" "$D/remote-config.json";fi
  for scope in application config;do
-  if dav_latest "$scope" > "$D/remote-$scope.new" && [ "$(wc -c < "$D/remote-$scope.new")" -le 2048 ] && grep -q '"format":1' "$D/remote-$scope.new";then mv "$D/remote-$scope.new" "$D/remote-$scope.json";else rm -f "$D/remote-$scope.new" "$D/remote-$scope.json";fi
+  catalog_code=$(dav_curl --max-time 3 --max-filesize 2048 -o "$D/remote-$scope.new" -w '%{http_code}' "$(dav_base)/backups/$scope-latest.json" 2>/dev/null) || catalog_code=000
+  if [ "$catalog_code" = 200 ] && [ "$(wc -c < "$D/remote-$scope.new")" -le 2048 ] && grep -q '"format":1' "$D/remote-$scope.new";then
+   mv "$D/remote-$scope.new" "$D/remote-$scope.json";catalog_found=$((catalog_found+1))
+  elif [ "$catalog_code" = 404 ];then rm -f "$D/remote-$scope.json"
+  else catalog_error=1;fi
+  rm -f "$D/remote-$scope.new"
  done
+ printf '%s\n' "$catalog_key" > "$D/remote-catalog.key"
+ if [ "$catalog_error" = 1 ];then echo error;elif [ "$catalog_found" = 0 ];then echo empty;else echo ready;fi > "$D/remote-catalog.state"
+ return "$catalog_error"
+}
+dav_catalog(){
+ remote_ready || { printf '{"state":"disabled"}\n';return; }
+ if ! mkdir "$D/remote-catalog.lock" 2>/dev/null;then printf '{"state":"busy"}\n';return;fi
+ dav_refresh_catalog || :
+ rmdir "$D/remote-catalog.lock" 2>/dev/null
+ printf '{"state":"%s","application_b64":"%s","config_b64":"%s"}\n' "$(cat "$D/remote-catalog.state")" "$(head -c 2048 "$D/remote-application.json" 2>/dev/null|base64|tr -d '\n')" "$(head -c 2048 "$D/remote-config.json" 2>/dev/null|base64|tr -d '\n')"
 }
 dav_fetch()(
  remote_ready || return 2
@@ -95,7 +114,7 @@ dav_verify()(
  [ "$(dav_read_hash "$url")" = "$h" ] || { echo 'WebDAV 读取或校验失败';return 1; }
  dav_curl --fail -X DELETE "$url" -o /dev/null || { echo 'WebDAV 测试文件清理失败，请检查删除权限';return 1; }
  remote_fingerprint > "$C/configs/remote.verified";date +%s > "$C/configs/remote.checked"
- dav_refresh_catalog
+ dav_refresh_catalog || :
  echo 'WebDAV 写入、读取和清理验证通过'
 )
 

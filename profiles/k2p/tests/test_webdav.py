@@ -182,5 +182,30 @@ class WebDAV(unittest.TestCase):
         self.assertNotEqual(self.save(password=b'', user=b'other').returncode, 0)
         self.assertEqual((self.root/'configs/webdav.auth').stat().st_mode & 0o777, 0o600)
 
+
+    def test_catalog_survives_ram_reset_and_distinguishes_failure_from_absence(self):
+        import json
+        self.verify()
+        record={"format":1,"created":123,"sha256":"a"*64,"size":1234}
+        pointer='/dav/shellcrash-panel/K2P/backups/application-latest.json'
+        # Discover the fixture base path instead of assuming the caller's URL path.
+        from urllib.parse import urlparse
+        pointer=urlparse(self.base).path.rstrip('/')+'/shellcrash-panel/K2P/backups/application-latest.json'
+        self.server.objects[pointer]=json.dumps(record,separators=(',',':')).encode()
+        for name in ['remote-application.json','remote-config.json','remote-catalog.key']:
+            (self.root/name).unlink(missing_ok=True)
+        data=json.loads(self.run_shell('dav_catalog').stdout)
+        self.assertEqual(data['state'],'ready')
+        self.assertEqual(json.loads(base64.b64decode(data['application_b64'])),record)
+        self.server.auth='Basic rejected'
+        data=json.loads(self.run_shell('dav_catalog').stdout)
+        self.assertEqual(data['state'],'error');self.assertTrue(data['application_b64'])
+        self.server.auth=AUTH;del self.server.objects[pointer]
+        data=json.loads(self.run_shell('dav_catalog').stdout)
+        self.assertEqual(data['state'],'empty');self.assertEqual(data['application_b64'],'')
+        self.save(enabled='0');self.server.calls.clear()
+        self.assertEqual(json.loads(self.run_shell('dav_catalog').stdout)['state'],'disabled')
+        self.assertEqual(self.server.calls,[])
+
 if __name__ == '__main__':
     unittest.main(verbosity=2)

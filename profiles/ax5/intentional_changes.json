@@ -8,8 +8,8 @@
     "removed": true
   },
   "ui/manager.js": {
-    "sha256": "85e6ceac19b0730672d9a698bf4bc496bfca367c604f394e353f547bb1c0ee7f",
-    "reason": "Reviewed one-shot quota refresh hooks after ready startup/successful import, cache revision display, automatic domestic/international IP and geolocation probes; preserve config, source isolation, and existing memory floors."
+    "sha256": "b926532dba148dc54c225fd51d200b6518711eb5c5cc41d2b532bfeb946c6619",
+    "reason": "Read the latest remote backup catalog on entering backup tab and explicit refresh; distinguish unavailable query from genuinely empty catalog; preserve disabled gating and bounded responses"
   },
   "tests/test_upload.js": {
     "sha256": "0dce5a8da15fe6746c8244fe11aa86d7acbc23b1d5b3e20ed9e5f4769133f018",
@@ -20,16 +20,16 @@
     "reason": "Make backup archives portable without runtime aliases, support minimal K2P utilities, record the actual panel release in local/remote metadata, and identify core files by SHA256. Reviewed: preserve existing safe packaging memory budget; propagate measured available/required memory to highlighted backup feedback instead of generic failure. Clear stale failure before each attempt. Acceptance continuation: Use same-flash hardlink metadata snapshots, preserve live configuration, exclude credentials/runtime aliases, enforce a bounded gzip archive and keep old archive on failure; desktop/mobile real exports validated. Acceptance continuation: application packing and download encoding honor the validated configured protection threshold; invalid settings fail closed; custom-floor regression tests keep old exports and avoid snapshot/Storage lock creation."
   },
   "ax5/api.lua": {
-    "sha256": "2dcbaaa3535ac1fc437b7f6514d1a715810ab20ea2db45d987e94488298a5f92",
-    "reason": "Add on-demand browser exit IP and provider-header quota; preserve settings, use bounded requests and no background polling."
+    "sha256": "96f351a5becfbb60bd76d5ab8d2231cc13974d5fa707343aa3d2907da7adcf47",
+    "reason": "Read the latest remote backup catalog on entering backup tab and explicit refresh; distinguish unavailable query from genuinely empty catalog; preserve disabled gating and bounded responses"
   },
   "ax5/webdav.sh": {
-    "sha256": "6372a90d51eb9933e3bf9210e0d34ac2ffc439146a8ac33fcd62264d4d4ae215",
-    "reason": "Make backup archives portable without runtime aliases, support minimal K2P utilities, record the actual panel release in local/remote metadata, and identify core files by SHA256."
+    "sha256": "790433eb9216cf074053b96955d3640263806f4f5992ca3bf3025757306feb82",
+    "reason": "Read the latest remote backup catalog on entering backup tab and explicit refresh; distinguish unavailable query from genuinely empty catalog; preserve disabled gating and bounded responses"
   },
   "tests/test_webdav.py": {
-    "sha256": "dd7686bae363e6727d6284e40b69222903d3a21225b29dcd77fce2fd8780f42f",
-    "reason": "Make backup archives portable without runtime aliases, support minimal K2P utilities, record the actual panel release in local/remote metadata, and identify core files by SHA256."
+    "sha256": "575223ae352900d93662fb7e174dd5dd968be2bdbccc6c6bfea36ee7651bb13c",
+    "reason": "Add remote latest-catalog RAM reset, error vs 404, last-good record and disabled-no-request regression test"
   },
   "ax5/mihomo.lua": {
     "sha256": "b0710a6b128a212e311bfc9fd4982a7dee1258233a83a2bb4fa01c3de43c55c6",
@@ -52,8 +52,8 @@
     "reason": "Regression tests for converter recovery while proxy fails and direct provider mode never contacting conversion endpoints."
   },
   "ui/index.html": {
-    "sha256": "c1a0bc8da97f40a8d7330c5d240e2f59b15a0abf1fdcf7c30e82ae94a1c1af2c",
-    "reason": "Reviewed one-shot quota refresh hooks after ready startup/successful import, cache revision display, automatic domestic/international IP and geolocation probes; preserve config, source isolation, and existing memory floors."
+    "sha256": "0b08da4ef03f6c0c4ac6cac092f4b09afca290c1bdf0c7ebbd68591b53d998d3",
+    "reason": "Read the latest remote backup catalog on entering backup tab and explicit refresh; distinguish unavailable query from genuinely empty catalog; preserve disabled gating and bounded responses"
   },
   "ui/sites.js": {
     "sha256": "59f344a411b9ce54279f7f5bb7dcf7ec76c7abedaeea2416724911c9d9dd0775",

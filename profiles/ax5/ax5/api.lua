@@ -46,6 +46,8 @@ function A.read()
   while true do local chunk=f:read(32768);if not chunk then break end;H.write(chunk)end;f:close();return
  elseif kind=='remoteconnection'then
   M.run('C='..M.C..' D='..M.R..' sh -c \'. "$C/ax5/remote.sh"; dav_status > "$D/remote-connection.out"\'');H.prepare_content('application/json');H.write(M.read(M.R..'/remote-connection.out',512));return
+ elseif kind=='remotecatalog'then
+  M.run('C='..M.C..' D='..M.R..' sh -c \'. "$C/ax5/remote.sh"; dav_catalog > "$D/remote-catalog.out"\'');H.prepare_content('application/json');H.write(M.read(M.R..'/remote-catalog.out',6144));return
  elseif kind=='quota'or kind=='quotacheck'then
   local result=M.exec('sh '..M.C..'/ax5/subscription-quota.sh ax5 '..(kind=='quota'and'read'or'check'));local ok,v=pcall(M.json.decode,result);reply(ok and v or{state='request_failed'});return
  elseif kind=='state'then reply(M.state());return end

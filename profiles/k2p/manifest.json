@@ -234,5 +234,9 @@
   "tests/test_cn_bypass_ui.js": "shared/tests/test_cn_bypass_ui.js",
   "tests/test_cn_bypass_check.py": "profiles/k2p/tests/test_cn_bypass_check.py",
   "payload/starts/subscription-quota.sh": "shared/lib/subscription-quota.sh",
-  "tests/test_account_network.js": "shared/tests/test_account_network.js"
+  "tests/test_account_network.js": "shared/tests/test_account_network.js",
+  "tests/test_boot_routing_hook.py": "profiles/k2p/tests/test_boot_routing_hook.py",
+  "tests/test_service_restart.py": "profiles/k2p/tests/test_service_restart.py",
+  "payload/starts/domain_asset.sh": "profiles/k2p/payload/starts/domain_asset.sh",
+  "tests/test_boot_remote_assets.py": "profiles/k2p/tests/test_boot_remote_assets.py"
 }

@@ -24,6 +24,10 @@ fi
 remote_ready || { fail '请先开启并验证远程仓库';exit 1; }
 phase syncing mirror_syncing
 "$C/starts/backup-app.sh" remote >> "$D/worker.log" 2>&1 || { fail mirror_sync_failed;exit 1; }
+. "$C/starts/domain_asset.sh"
+domain_hash=3b83cff9903602f27c3a6737c775f742253a24a60165ff4d9b9ef28ac22bc140
+domain_file=/tmp/ShellCrash/ruleset/cn.srs
+if domain_asset_valid "$domain_hash" "$domain_file";then domain_asset_sync;fi
 . "$C/starts/core_release.sh"
 mirror_probe
 save_safe || { fail persistent_save_failed;exit 1; }

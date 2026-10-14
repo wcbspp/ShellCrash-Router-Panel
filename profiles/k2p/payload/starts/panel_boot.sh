@@ -33,6 +33,17 @@ trap 'boot_status=$?;rm -f /tmp/shellcrash-bootstrap.lock/owner;rmdir /tmp/shell
 mkdir -p /tmp/ShellCrash
 # Reuse the existing minute watchdog for a failed first boot, without counting a crash.
 [ "$1" != boot ] || : > /tmp/ShellCrash/boot-pending
+if [ "$1" = boot ];then
+ boot_delay=$(sed -n 's/^start_delay=//p' "$CRASHDIR/configs/ShellCrash.cfg" | head -1)
+ case "$boot_delay" in ''|*[!0-9]*) boot_delay=0;;esac
+ # Apply the user's delay before any network-dependent downloads, once only.
+ if [ "$boot_delay" -gt 0 ] && [ "$boot_delay" -le 3600 ];then
+  printf '%s Boot waits %s seconds before resource downloads\n' "$(date '+%m-%d %H:%M:%S')" "$boot_delay" >> /tmp/sc-admin/events.log
+  sleep "$boot_delay"
+  [ ! -f "$CRASHDIR/configs/panel-disabled" ] && [ ! -f "$CRASHDIR/.dis_startup" ] || exit 0
+ fi
+ SC_BOOT_DELAY_APPLIED=1;export SC_BOOT_DELAY_APPLIED
+fi
 mount -t tmpfs -o remount,rw,size=45M tmpfs /tmp
 # Configuration transactions can supply the already verified executable without an archive.
 printf '%s core_reuse=%s executable=%s\n' "$(date '+%m-%d %H:%M:%S')" "${SC_REUSE_RUNNING_CORE:-0}" "$(test -x /tmp/ShellCrash/CrashCore && echo 1 || echo 0)" >> /tmp/sc-admin/events.log

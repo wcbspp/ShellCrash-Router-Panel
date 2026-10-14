@@ -201,6 +201,7 @@ case "$act" in
   f="$C/configs/servers.list"; [ -s "$f" ] || f="$C/servers.list"
   awk -v cfgfile="$C/configs/ShellCrash.cfg" -f "$C/padavan/subscription_defaults.awk" "$f";;
  remoteconnection) . "$C/starts/remote.sh";dav_status;;
+ remotecatalog) . "$C/starts/remote.sh";dav_catalog;;
  status) status;;
  incidents) [ ! -f "$D/incidents.log" ] || tail -100 "$D/incidents.log";;
  memory) [ ! -f "$D/resources.csv" ] || awk -F, 'NF==15{print $1 "," $2 "," $3 "," $4 "," $5 ",0"}' "$D/resources.csv";;
@@ -346,6 +347,11 @@ case "$act" in
    stop_core || { fail service_stop_failed; exit 1; }
    if ! save_safe; then fail persistent_save_failed; exit 1; fi
   else
+   if [ "$act" = restart ] && [ -n "$(pidof CrashCore)" ];then
+    . "$C/starts/resource_health.sh"
+    . "$C/starts/config_core.sh"
+    configuration_core_prepare || exit 1
+   fi
    rm -f "$C/configs/panel-disabled"
    if [ "$act" = restart ]; then stop_core || { fail service_stop_failed; exit 1; }; fi
    [ -n "$(pidof CrashCore)" ] || start_core || { fail service_start_failed; exit 1; }

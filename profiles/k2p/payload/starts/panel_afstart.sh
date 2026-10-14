@@ -1,4 +1,12 @@
 #!/bin/sh
+PATH=/usr/sbin:/usr/bin:/sbin:/bin
+export PATH
+C=/etc/storage/ShellCrash
+D=/tmp/sc-admin
+CRASHDIR=$C
+export CRASHDIR
+mkdir -p "$D"
+. "$C/starts/panel_env.sh" || exit 1
 [ -z "$(pidof CrashCore)" ] || rm -f /tmp/ShellCrash/CrashCore.tar.gz
 rm -f /tmp/ShellCrash/traffic-mode /tmp/ShellCrash/traffic/base
 transport=$(sed -n 's/^redir_mod=//p' /etc/storage/ShellCrash/configs/ShellCrash.cfg | head -1)
@@ -10,7 +18,6 @@ if [ "$transport" = '混合模式' ];then
   logger -t ShellCrash 'Mixed interception not ready; check TUN and marking chain'
  fi
 else echo redir > /tmp/ShellCrash/transport-runtime;fi
-C=/etc/storage/ShellCrash
 sh "$C/starts/subscription-quota.sh" k2p auto || :
 . "$C/starts/policy_capture.sh"
 policy_capture_apply || logger -t ShellCrash 'Domain routing capture failed; check owned country-IP bypass'

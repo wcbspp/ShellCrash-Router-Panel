@@ -237,3 +237,5 @@ GPL-3.0-only。第三方组件与商标沿用各自许可，见 [LICENSE](LICENS
 国内直连加速的作用范围、规则优先级与流量口径见[使用说明](docs/DOMESTIC_BYPASS.md)。
 
 出口 IP、订阅余量与本轮资源清理见[实机记录](docs/LIVE_TEST_2026-10-14_IP_QUOTA_RESOURCES.md)。余量只读服务商数据，不使用内核累计量推算；内核就绪、订阅成功加载后自动查询一次。没有持续服务商轮询。出口 IP 随页面加载自动检测，首次打开检测页不重复请求。最新行为见[自动同步与归属地记录](docs/LIVE_TEST_2026-10-14_AUTOMATIC_QUOTA_GEO.md)。
+
+最新实机验收与已知限制：[重启、启动资源缓存和远端备份](docs/LIVE_TEST_2026-10-14_REBOOT_REMOTE.md)。K2P 开机延迟在资源下载前执行；WebDAV 关闭时不连接。备份页从远端读取最新记录，可手动刷新。

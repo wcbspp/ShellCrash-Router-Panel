@@ -33,7 +33,9 @@ cb_refresh(){
  [ ! -d "$D/operation.lock" ] || return 0
  if cb_enabled;then
   mode=$(cb_mode);safe=$(cb_safe)
-  [ "$mode:$safe" = "$(cat "$D/cn-checked" 2>/dev/null)" ] || cb_rules "$mode"
+  # A status read can precede ShellCrash's firewall setup during boot.
+  # A stopped-chain result must be rechecked after those chains appear.
+  if [ "$mode:$safe" != "$(cat "$D/cn-checked" 2>/dev/null)" ] || [ "$(cat "$D/cn-applied" 2>/dev/null)" = 'rule:stopped' ];then cb_rules "$mode";fi
  fi
 }
 cb_save(){
