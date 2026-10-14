@@ -50,25 +50,45 @@ async function checkSites(id){
 window.addEventListener('pagehide',pauseSites);document.addEventListener('visibilitychange',()=>{if(document.hidden&&siteBusy)pauseSites()});
 initializeSites();
 
-// On-demand browser IP and provider quota checks; no polling or resident collector.
-let ipControllers=[],ipGeneration=0,quotaBusy=false,quotaSource=0,quotaGeneration=0,quotaLast=null;
+// One automatic browser probe per page load, plus manual refresh. No polling.
+let ipControllers=[],ipGeneration=0,ipAutoStarted=false,quotaBusy=false,quotaSource=0,quotaGeneration=0,quotaLast=null,quotaSeenRevision='';
 function validExitIP(text,v6){
  if(typeof text!=='string'||text.length>45)return false;
- if(v6)return text.includes(':')&&/^[a-fA-F0-9:]+$/.test(text)&&text.split(':').length>=3;
+ if(v6){try{return text.includes(':')&&new URL('http://['+text+']/').hostname.startsWith('[')}catch{return false}}
  const p=text.split('.');return p.length===4&&p.every(n=>/^\d{1,3}$/.test(n)&&Number(n)<=255);
 }
-function cancelIPCheck(){ipGeneration++;for(const c of ipControllers)c.abort();if(ipControllers.length){for(const v of ['v4','v6'])if(el('ip-'+v).textContent==='检测中…')el('ip-'+v).textContent='检测已暂停';el('ip-summary').textContent='检测已暂停，点击检测 IP 可重试。'}ipControllers=[];el('ip-check').disabled=false;}
-function resetExitIP(){cancelIPCheck();for(const v of ['v4','v6'])el('ip-'+v).textContent='尚未检测';el('ip-summary').textContent='出口可能已改变，请重新检测 IP。';}
+function geoLabel(data){
+ const clean=s=>typeof s==='string'?s.replace(/[\x00-\x1f]/g,'').slice(0,80):'';
+ if(Array.isArray(data?.data?.location))return [...new Set(data.data.location.map(clean).filter(Boolean))].join(' · ');
+ let country=clean(data?.country_name||data?.country);const code=data?.country_code;
+ if(typeof code==='string'&&/^[A-Z]{2}$/.test(code)){try{country=new Intl.DisplayNames(['zh-CN'],{type:'region'}).of(code)}catch{}}
+ return [...new Set([country,clean(data?.region),clean(data?.city),clean(data?.isp||data?.organization||data?.org)].filter(Boolean))].join(' · ');
+}
+async function ipJSON(url,signal){
+ const r=await fetch(url,{signal,cache:'no-store',credentials:'omit'});if(!r.ok)throw Error();
+ const reader=r.body.getReader();let text='',bytes=0;const decoder=new TextDecoder();
+ try{while(true){const v=await reader.read();if(v.done)break;bytes+=v.value.byteLength;if(bytes>4096)throw Error();text+=decoder.decode(v.value,{stream:true})}return JSON.parse(text+decoder.decode())}finally{await reader.cancel().catch(()=>{})}
+}
+function cancelIPCheck(){ipGeneration++;for(const c of ipControllers)c.abort();if(ipControllers.length){for(const v of ['cn','world','v6'])if(el('ip-'+v).textContent==='检测中…')el('ip-'+v).textContent='检测已暂停';el('ip-summary').textContent='检测已暂停，点击检测 IP 可重试。'}ipControllers=[];el('ip-check').disabled=false;}
+function resetExitIP(){cancelIPCheck();for(const v of ['cn','world','v6']){el('ip-'+v).textContent='尚未检测';el('ip-geo-'+v).textContent=''}el('ip-summary').textContent='出口可能已改变，请重新检测 IP。';}
+function autoExitIP(){if(ipAutoStarted||document.hidden)return;ipAutoStarted=true;checkExitIP();}
 async function checkExitIP(){
- cancelIPCheck();const generation=ipGeneration;el('ip-check').disabled=true;el('ip-summary').textContent='正在检测当前浏览器的出口…';
- const results=await Promise.all([['v4','https://api.ipify.org?format=json'],['v6','https://api6.ipify.org?format=json']].map(async([version,url])=>{
-  const c=new AbortController();ipControllers.push(c);const timer=setTimeout(()=>c.abort(),6000);el('ip-'+version).textContent='检测中…';
-  try{const r=await fetch(url,{signal:c.signal,cache:'no-store',credentials:'omit'});if(!r.ok)throw Error();const raw=await r.text();if(raw.length>128)throw Error();const ip=JSON.parse(raw).ip;if(!validExitIP(ip,version==='v6'))throw Error();if(generation===ipGeneration)el('ip-'+version).textContent=ip;return true}
-  catch{if(generation===ipGeneration)el('ip-'+version).textContent=version==='v6'?'未检测到 IPv6 出口':'检测未完成';return false}
+ ipAutoStarted=true;cancelIPCheck();const generation=ipGeneration;el('ip-check').disabled=true;el('ip-summary').textContent='正在检测国内、国外网站看到的出口…';
+ const jobs=[['cn','https://myip.ipip.net/json'],['world','https://api.ip.sb/geoip'],['v6','https://api6.ipify.org?format=json']];
+ const results=await Promise.all(jobs.map(async([id,url])=>{
+  const c=new AbortController();ipControllers.push(c);let timer;const request=async u=>{clearTimeout(timer);timer=setTimeout(()=>c.abort(),6000);return ipJSON(u,c.signal)};
+  el('ip-'+id).textContent='检测中…';el('ip-geo-'+id).textContent='';
+  try{
+   let d;try{d=await request(url)}catch(e){if(id!=='world'||c.signal.aborted)throw e;d=await request('https://api.ipify.org?format=json')}
+   const ip=d.ip||d.data?.ip;if(!validExitIP(ip,ip?.includes(':')))throw Error();if(id==='v6'&&!ip.includes(':'))throw Error();
+   if(generation!==ipGeneration)return false;el('ip-'+id).textContent=ip;
+   let geo=geoLabel(d);if(!geo){try{const g=await request('https://api.ip.sb/geoip/'+encodeURIComponent(ip));if(g.ip===ip)geo=geoLabel(g)}catch{}}
+   if(generation===ipGeneration)el('ip-geo-'+id).textContent=geo||'归属地暂未获取';return true;
+  }catch{if(generation===ipGeneration){el('ip-'+id).textContent=id==='v6'?'未检测到 IPv6 出口':'检测未完成';el('ip-geo-'+id).textContent='可稍后重试'}return false}
   finally{clearTimeout(timer)}
  }));
  if(generation!==ipGeneration)return;ipControllers=[];el('ip-check').disabled=false;
- el('ip-summary').textContent=results.every(Boolean)?'当前浏览器的出口；不同网站可能按规则使用不同出口。':results[0]?'已检测 IPv4，未检测到 IPv6 出口。不影响 IPv4 上网。':results[1]?'已检测 IPv6，IPv4 检测服务未响应，可重试。':'IP 检测服务未响应，可稍后重试。';
+ el('ip-summary').textContent=results[0]||results[1]?'当前浏览器按现有规则访问国内 / 国外测试站点；归属地来自 IP 数据库。':'IP 检测服务未响应，可稍后重试。';
 }
 function quotaView(q){
  const state=q?.state,known=n=>typeof n==='number'&&Number.isSafeInteger(n)&&n>=0;
@@ -82,12 +102,13 @@ function quotaView(q){
  if(known(q.checked)&&q.checked>0)detail+=' · 查询于 '+new Date(q.checked*1000).toLocaleString('zh-CN',{hour12:false});
  return {summary,detail,percent:used!==null&&total!==null?Math.min(100,used/total*100):null,bad:total!==null&&used>=total||known(q.expire)&&q.expire>0&&q.expire*1000<Date.now()};
 }
-function paintQuota(q){if(q?.state==='ok')quotaLast=q;else if(!['memory','busy','request_failed'].includes(q?.state))quotaLast=null;const warning=q?.state!=='ok'&&quotaLast?quotaView(q).summary:'',v=quotaView(warning?quotaLast:q),s=el('quota-summary'),p=el('quota-progress');s.textContent=v.summary;s.classList.toggle('bad',!!v.bad||!!warning);s.classList.toggle('good',q?.state==='ok'&&!v.bad);el('quota-detail').textContent=v.detail+(warning?' · '+warning+'（显示上次查询数据）':'');p.hidden=v.percent===null;if(!p.hidden)p.value=v.percent;}
+function paintQuota(q){if(q?.state==='ok')quotaLast=q;else if(!['memory','busy','request_failed'].includes(q?.state))quotaLast=null;const warning=q?.attempt_state?quotaView({state:q.attempt_state}).summary:q?.state!=='ok'&&quotaLast?quotaView(q).summary:'',v=quotaView(warning?quotaLast:q),s=el('quota-summary'),p=el('quota-progress');s.textContent=v.summary;s.classList.toggle('bad',!!v.bad||!!warning);s.classList.toggle('good',q?.state==='ok'&&!v.bad&&!warning);el('quota-detail').textContent=v.detail+(warning?' · '+warning+'（显示上次查询数据）':'');p.hidden=v.percent===null;if(!p.hidden)p.value=v.percent;}
 function resetQuotaSource(source){if(quotaSource!==source){quotaSource=source;quotaGeneration++;quotaLast=null;paintQuota({state:'unknown'})}}
 async function refreshQuota(check){
  if(quotaBusy||manageBusy||nativeState?.active)return;quotaBusy=true;const generation=quotaGeneration;el('quota-refresh').disabled=true;if(check)el('quota-summary').textContent='正在向当前订阅提供者查询…';
- try{const raw=await nativeRead(check?'quotacheck':'quota');if(generation===quotaGeneration)paintQuota(typeof raw==='string'?JSON.parse(raw):raw)}catch{if(generation===quotaGeneration)paintQuota({state:'request_failed'})}
+ try{const raw=await nativeRead(check?'quotacheck':'quota');if(generation===quotaGeneration)paintQuota(typeof raw==='string'?JSON.parse(raw):raw);return true}catch{if(generation===quotaGeneration)paintQuota({state:'request_failed'});return false}
  finally{quotaBusy=false;el('quota-refresh').disabled=false}
 }
+function syncQuotaRevision(s){const revision=s.quota_revision_b64||'';if(revision&&revision!==quotaSeenRevision&&!quotaBusy&&!manageBusy&&!s.active)refreshQuota(false).then(ok=>{if(ok)quotaSeenRevision=revision});}
 el('ip-check').onclick=checkExitIP;el('quota-refresh').onclick=()=>refreshQuota(true);
 window.addEventListener('pagehide',cancelIPCheck);document.addEventListener('visibilitychange',()=>{if(document.hidden)cancelIPCheck()});

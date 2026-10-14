@@ -96,6 +96,7 @@ status(){
  native_kind='';[ ! -f "$C/configs/native-profile" ] || native_kind=singbox
  printf '"template_kind":"%s","traffic_mode":"%s",' "$native_kind" "$traffic_mode"
  printf '"main_group":"%s","tool_version":"%s","tool_check":%s,"local_archive":false,"mirror_pending_b64":"%s",' "$PANEL_MAIN_GROUP" "$tool_version" "$tool_check" "$(cat "$C/configs/mirror.pending" 2>/dev/null | base64 | tr -d '\n')"
+ printf '"quota_revision_b64":"%s",' "$(head -c 64 "$D/subscription-quota.revision" 2>/dev/null | base64 | tr -d '\n')"
  printf '"subscription_info_b64":"%s",' "$(head -c 8192 "$C/configs/subscription-state.json" 2>/dev/null | base64 | tr -d '\n')"
  remote_enabled=false;remote_enabled && remote_enabled=true
  remote_verified=false;remote_ready && remote_verified=true
@@ -454,6 +455,7 @@ case "$act" in
   [ "$was_running" = 1 ] || rm -f /tmp/ShellCrash/CrashCore
   [ "$parser" != native ] || native_resources_backup >> "$D/worker.log" 2>&1
   phase done subscription_updated; event 'Subscription validated, saved and applied'
+  sh "$C/starts/subscription-quota.sh" k2p auto || :
   rm -f "$D/previous.json" "$D/candidate.json" "$D/bounds.gz" "$D/bounds.json" "$D/upload.b64" "$D/upload.parts" "$D/check.json";;
  *) exit 1;;
 esac

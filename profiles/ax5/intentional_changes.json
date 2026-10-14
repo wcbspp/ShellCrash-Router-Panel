@@ -8,8 +8,8 @@
     "removed": true
   },
   "ui/manager.js": {
-    "sha256": "71a2c38fe97f775eed941c318a8c034884b326948f4afb3d320266116b48dbd0",
-    "reason": "Reviewed on-demand browser exit IP and bounded provider-header quota with source invalidation, preserved data on transient failure, configured memory floor, and scoped menu/button results."
+    "sha256": "85e6ceac19b0730672d9a698bf4bc496bfca367c604f394e353f547bb1c0ee7f",
+    "reason": "Reviewed one-shot quota refresh hooks after ready startup/successful import, cache revision display, automatic domestic/international IP and geolocation probes; preserve config, source isolation, and existing memory floors."
   },
   "tests/test_upload.js": {
     "sha256": "0dce5a8da15fe6746c8244fe11aa86d7acbc23b1d5b3e20ed9e5f4769133f018",
@@ -52,12 +52,12 @@
     "reason": "Regression tests for converter recovery while proxy fails and direct provider mode never contacting conversion endpoints."
   },
   "ui/index.html": {
-    "sha256": "464ec741cee97306507f5f65c41ef44aa9129a7d1fe262145e2ba96df7360b1b",
-    "reason": "Add on-demand browser exit IP and provider-header quota; preserve settings, use bounded requests and no background polling."
+    "sha256": "c1a0bc8da97f40a8d7330c5d240e2f59b15a0abf1fdcf7c30e82ae94a1c1af2c",
+    "reason": "Reviewed one-shot quota refresh hooks after ready startup/successful import, cache revision display, automatic domestic/international IP and geolocation probes; preserve config, source isolation, and existing memory floors."
   },
   "ui/sites.js": {
-    "sha256": "4f45ba59de97b644e3d671cbe8dbf79bfc7f83c5350aa9b0d1ef17ae254f3f16",
-    "reason": "Reviewed on-demand browser exit IP and bounded provider-header quota with source invalidation, preserved data on transient failure, configured memory floor, and scoped menu/button results."
+    "sha256": "59f344a411b9ce54279f7f5bb7dcf7ec76c7abedaeea2416724911c9d9dd0775",
+    "reason": "Reviewed quota lifecycle hooks, bounded/coalesced event worker, automatic cache display; once-per-load domestic/international IP and location probes with cancellation and bounded JSON."
   },
   "tests/test_search.js": {
     "sha256": "0e745c08a710f917f9436ee927dadf120edb6055b6fbbf5ee1db75694324e6c1",
@@ -72,8 +72,8 @@
     "reason": "Regression coverage for manual path rollback/pin readback, partial and stale measurements, UA choice/state isolation and truthful filtered counts."
   },
   "ax5/job.lua": {
-    "sha256": "847d097760fee1ca01687a40ce1338cd550fcdf276accea43dcfe84115889366",
-    "reason": "Record explicit requested User-Agent separately from effective ShellCrash UA; default stays automatic on next update. Switch ShellCrash redir_mod through official setconfig and existing start bridge, wait for ready service, roll back failures and preserve flow mode. Reviewed: preserve existing safe packaging memory budget; propagate measured available/required memory to highlighted backup feedback instead of generic failure. Clear stale failure before each attempt. Reviewed: report measured advanced-panel installation reserve separately from network/download failure; clear stale diagnostic per operation. Preserve 20 MB guard. Regression uses actual script with low-memory fixture and confirms no download. Acceptance continuation: Ready dashboard cache uses installer-owned allocation guard, cold download still protected; unchanged valid DNS skips config allocation, restart and remote backup. Reviewed: explicitly label kernel totals as including DIRECT; domestic-table maintenance updates the core fallback, distinct from subscription geodata. Native Mihomo reload is atomic with count readback/rollback and no restart. K delayed startup clears only the previous stop marker before dispatch; later user cancellation still respected and fake readiness regression covered. Reviewed domestic maintenance: report the actual local table count after native hot reload rather than the legacy skeleton count; update metadata only after loading/readback succeeds. Reviewed 2026-10-14: opt-in domestic IPv4 firewall bypass with conservative rule/DNS eligibility, owned atomic chain application, no core restart, explicit global/direct suspension and conflict rejection; short rule-maintenance explanations; traffic scope follows actual mode without relabelling historical totals as proxy quota. Added scoped control inventory and regression coverage."
+    "sha256": "4f01f6b8630f93982ddacd7d9d1bfdf62dcebe2894bb01a3107d4e71e25dcbdc",
+    "reason": "Reviewed one-shot quota refresh hooks after ready startup/successful import, cache revision display, automatic domestic/international IP and geolocation probes; preserve config, source isolation, and existing memory floors."
   },
   "tests/test_proxy_mode.js": {
     "sha256": "0d476681fd7c939c813fea8283fbb786eab2d3a1432fd0b4cedf240ef4489183",
@@ -96,8 +96,8 @@
     "reason": "Optional MAC-scoped HTTPS fallback rejects only selected LAN clients UDP443; inactive without config, removed in direct mode; no UDP9993 or other-device change. Idempotent owned-chain cleanup and bounded validated MAC list. Rule/global activation ignores stale former-direct state; isolated https refresh respects actual direct state. Mixed mode adds only owned LAN UDP marking/system-TUN route; private/DNS bypass; exact stop/failure cleanup; retain Redir compatibility fallback. Reviewed 2026-10-14: opt-in domestic IPv4 firewall bypass with conservative rule/DNS eligibility, owned atomic chain application, no core restart, explicit global/direct suspension and conflict rejection; short rule-maintenance explanations; traffic scope follows actual mode without relabelling historical totals as proxy quota. Added scoped control inventory and regression coverage."
   },
   "ax5/common.lua": {
-    "sha256": "208fb3c6a5a0a8a7c58491cd034db8361621a148a6bddfb7dcaa93b233afd2cb",
-    "reason": " Expose configured versus actually running interception mode and TUN capability; preserve existing status fields. Reviewed: serialize inspection rows as an array, handle zero-result legacy replies and reject malformed rows; prevent paused/background traffic requests from painting stale samples. Reviewed domestic maintenance: report the actual local table count after native hot reload rather than the legacy skeleton count; update metadata only after loading/readback succeeds. Reviewed 2026-10-14: opt-in domestic IPv4 firewall bypass with conservative rule/DNS eligibility, owned atomic chain application, no core restart, explicit global/direct suspension and conflict rejection; short rule-maintenance explanations; traffic scope follows actual mode without relabelling historical totals as proxy quota. Added scoped control inventory and regression coverage. Reviewed priority change requested by user: proxy/custom rules no longer forbid opt-in CN-IP bypass; domestic IPv4 takes firewall priority, foreign IPs retain native rules. Pure Fake-IP and invalid configuration still reject; disclose domestic proxy/reject rule skip. Preserve disabled state with stopped core, flash-save progress, dynamic current scope and fixed kernel-total meaning. Reviewed: report native-Mihomo hot reload from backend config metadata, rather than guessing a template-kind string; firmware state and both real viewport captions verified."
+    "sha256": "2835217adf2460f57f634e08f74dfd041fc33e07148f1785963ab75620c56c6b",
+    "reason": "Reviewed one-shot quota refresh hooks after ready startup/successful import, cache revision display, automatic domestic/international IP and geolocation probes; preserve config, source isolation, and existing memory floors."
   },
   "ax5/native-profile.lua": {
     "sha256": "27d9f2daceaaabaa1fe9e74c877bc507853b3cf5883a855e04f1e1cbf992ff9f",
@@ -108,8 +108,8 @@
     "reason": " Validate and record prepared interception mode after runtime/core checks."
   },
   "ax5/run.sh": {
-    "sha256": "10cd1109dd5be2998c4c548f25e3c7d89f327e907721e94a5e6cc6b4c3083982",
-    "reason": " Publish readiness only after interception and selection restore; clear stale readiness on stop/failure."
+    "sha256": "9b9dd0d16ab66b44adf7b00ad9cf8954d1794e9eaaf7fbac28123ad5a5ff4527",
+    "reason": "Reviewed one-shot quota refresh hooks after ready startup/successful import, cache revision display, automatic domestic/international IP and geolocation probes; preserve config, source isolation, and existing memory floors."
   },
   "tests/mihomo-protocols.lua": {
     "sha256": "c651308979570ddf1fa76b5ca2382947b3f9d04ef1f496338154b4f59104fc21",

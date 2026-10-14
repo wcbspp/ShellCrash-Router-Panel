@@ -86,7 +86,7 @@ function M.state()
  if s.cn_bypass.enabled and s.running and not fs.access(M.R..'/operation.lock') then local raw,code=M.request('/configs');local ok,d=pcall(M.json.decode,raw);if code==200 and ok then local mode=tostring(d.mode):lower();local applied=M.read(M.R..'/cn-checked'):gsub('%s+$','');if applied~=mode..':'..index.cn_eligible then M.run('SC_CN_FLOW_MODE='..M.quote(mode)..' '..M.C..'/ax5/cn-bypass.sh apply');s.cn_bypass=dofile(M.C..'/ax5/cn-bypass.lua').state(M,index)end end end
  s.transport=dofile(M.C..'/ax5/transport-mode.lua').state()
  s.traffic_mode=M.read(M.R..'/traffic-mode'):gsub('%s+$','');if not({rule=true,direct=true,global=true})[s.traffic_mode]then s.traffic_mode='rule'end
- s.subscription=M.load(M.C..'/configs/subscription-state.json');s.domestic_hot_reload=kind=='meta'and index.native_mihomo==true;s.template_kind=index.template_kind;s.template_rules=index.template_rules;s.template_groups=index.template_groups;s.main_group=index.main_group
+ s.quota_revision_b64=M.b64(M.read(M.R..'/subscription-quota.revision',64));s.subscription=M.load(M.C..'/configs/subscription-state.json');s.domestic_hot_reload=kind=='meta'and index.native_mihomo==true;s.template_kind=index.template_kind;s.template_rules=index.template_rules;s.template_groups=index.template_groups;s.main_group=index.main_group
  local toolcfg='\n'..M.read('/data/ShellCrash-tool/configs/ShellCrash.cfg')
  s.autostart=not fs.stat('/data/ShellCrash-tool/.dis_startup') and fs.stat('/etc/rc.d/S99shellcrash')~=nil
  s.guard_mode=toolcfg:match('\nstart_old=ON[\r\n]') and 'conservative' or 'procd'

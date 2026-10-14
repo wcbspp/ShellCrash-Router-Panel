@@ -11,8 +11,79 @@ esac
 fingerprint(){ md5sum "$C/configs/subscription" "$C/configs/subscription.url.b64" "$C/configs/subscription-state.json" 2>/dev/null | md5sum | cut -d' ' -f1; }
 key=$(fingerprint)
 cache=$R/subscription-quota.json
+core_epoch(){
+ p=$(pidof CrashCore | awk '{print $1}')
+ [ -n "$p" ] || return 0
+ ticks=$(awk '{sub(/^[0-9]+ \(.*\) /, "");print $20}' "/proc/$p/stat" 2>/dev/null || :)
+ [ -z "$ticks" ] || printf '%s-%s' "$p" "$ticks"
+}
+# Coalesce startup and successful-import events into one bounded background job.
+# No cron, daemon, or recurring provider queries are added.
+if [ "$action" = auto ];then
+ epoch=$(core_epoch);[ -n "$epoch" ] || exit 0
+ mkdir -p "$R"
+ request=$epoch:$key
+ [ "$(cat "$R/quota-auto.done" 2>/dev/null || :)" != "$request" ] || exit 0
+ printf '%s' "$request" > "$R/quota-auto.request.$$";mv "$R/quota-auto.request.$$" "$R/quota-auto.request"
+ if ! mkdir "$R/quota-auto.lock" 2>/dev/null;then
+  owner=$(cat "$R/quota-auto.lock/owner" 2>/dev/null || :)
+  case "$owner" in ''|*[!0-9]*) exit 0;;esac
+  kill -0 "$owner" 2>/dev/null && exit 0
+  rm -f "$R/quota-auto.lock/owner";rmdir "$R/quota-auto.lock" 2>/dev/null || exit 0
+  mkdir "$R/quota-auto.lock" 2>/dev/null || exit 0
+ fi
+ sh "$0" "$model" worker </dev/null >/dev/null 2>&1 &
+ printf '%s' "$!" > "$R/quota-auto.lock/owner"
+ exit 0
+fi
+if [ "$action" = worker ];then
+ request=''
+ auto_cleanup(){
+  rm -f "$R/quota-auto.lock/owner";rmdir "$R/quota-auto.lock" 2>/dev/null || :
+  [ "$(cat "$R/quota-auto.request" 2>/dev/null || :)" = "$request" ] || sh "$0" "$model" auto >/dev/null 2>&1
+ }
+ trap auto_cleanup EXIT
+ trap 'exit 0' HUP INT TERM
+ n=0
+ while [ "$n" -lt 60 ];do
+  request=$(cat "$R/quota-auto.request" 2>/dev/null || :)
+  epoch=$(core_epoch);[ -n "$epoch" ] || exit 0
+  key=$(fingerprint)
+  case "$request" in "$epoch":*) :;; *) exit 0;;esac
+  if [ "$epoch:$(fingerprint)" != "$request" ];then
+   [ -e "$R/operation.lock" ] || exit 0
+   n=$((n+1));sleep 2;continue
+  fi
+  if [ ! -e "$R/operation.lock" ] && [ ! -d "$R/quota.lock" ];then
+   result=$(sh "$0" "$model" check)
+   case "$result" in *'"state":"memory"'*|*'"state":"busy"'*) :;;
+    *) printf '%s' "$request" > "$R/quota-auto.done"
+       [ "$(cat "$R/quota-auto.request")" != "$request" ] || exit 0;;
+   esac
+  fi
+  n=$((n+1));sleep 2
+ done
+ # A deferred query that cannot run must leave a visible stale-data reason.
+ if [ "$(core_epoch):$(fingerprint)" = "$request" ] && [ ! -d "$R/quota.lock" ];then
+  reason=memory;[ ! -e "$R/operation.lock" ] || reason=busy
+  if [ "$(cat "$R/subscription-quota.key" 2>/dev/null || :)" = "$key" ] && grep -q '"state":"ok"' "$cache" 2>/dev/null;then
+   printf '%s' "$reason" > "$R/subscription-quota.attempt"
+  else
+   printf '{"state":"%s"}\n' "$reason" > "$cache"
+   printf '%s' "$key" > "$R/subscription-quota.key"
+  fi
+  printf '%s-%s' "$(date +%s)" "$$" > "$R/subscription-quota.revision"
+ fi
+ exit 0
+fi
+read_cache(){
+ if [ "$(cat "$R/subscription-quota.key" 2>/dev/null || :)" = "$key" ] && [ -s "$cache" ];then
+  attempt=$(cat "$R/subscription-quota.attempt" 2>/dev/null || :)
+  case "$attempt" in request_failed|unavailable|memory|busy) sed 's/}$/,"attempt_state":"'"$attempt"'"}/' "$cache";; *) cat "$cache";;esac
+ else printf '{"state":"unknown"}\n';fi
+}
 if [ "$action" = read ];then
- if [ "$(cat "$R/subscription-quota.key" 2>/dev/null || :)" = "$key" ] && [ -s "$cache" ];then cat "$cache";else printf '{"state":"unknown"}\n';fi
+ read_cache
  exit 0
 fi
 [ "$action" = check ] || exit 2
@@ -60,5 +131,12 @@ curl -4 -sS -I -L --max-redirs 2 --connect-timeout 3 --max-time 6 -A "$ua" "$@" 
 # A concurrently completed subscription must not inherit an older provider's quota.
 newkey=$(fingerprint)
 [ "$newkey" = "$key" ] || { printf '{"state":"unknown"}\n';exit 0; }
-cp "$R/quota.lock/result" "$cache.new";mv "$cache.new" "$cache"
-printf '%s' "$key" > "$R/subscription-quota.key";cat "$cache"
+result_state=$(sed -n 's/.*"state":"\([a-z_]*\)".*/\1/p' "$R/quota.lock/result")
+if [ "$result_state" != ok ] && [ "$(cat "$R/subscription-quota.key" 2>/dev/null || :)" = "$key" ] && grep -q '"state":"ok"' "$cache" 2>/dev/null;then
+ printf '%s' "$result_state" > "$R/subscription-quota.attempt"
+else
+ cp "$R/quota.lock/result" "$cache.new";mv "$cache.new" "$cache"
+ printf '%s' "$key" > "$R/subscription-quota.key";rm -f "$R/subscription-quota.attempt"
+fi
+printf '%s-%s' "$(date +%s)" "$$" > "$R/subscription-quota.revision.new";mv "$R/subscription-quota.revision.new" "$R/subscription-quota.revision"
+read_cache

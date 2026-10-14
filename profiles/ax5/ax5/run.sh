@@ -32,6 +32,7 @@ for i in 1 2 3 4 5; do
   if lua -e 'dofile("/data/ShellCrash/ax5/traffic-mode.lua").apply("rule")' && lua "$C/ax5/state.lua" restore; then
    cp "$R/transport-prepared" "$R/transport-runtime"
    printf '1\n' > "$R/service-ready"
+   sh "$C/ax5/subscription-quota.sh" ax5 auto || :
    break
   fi
   kill -TERM "$child" 2>/dev/null

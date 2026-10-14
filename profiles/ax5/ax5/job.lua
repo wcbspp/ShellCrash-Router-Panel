@@ -233,3 +233,4 @@ if req.action=='apply'or req.action=='dns'or req.action=='policy'or req.action==
  os.remove(M.R..'/subscription.raw');os.remove(M.R..'/subscription.nodes.raw')
 end
 os.remove(M.R..'/operation.lock')
+if ok and(req.action=='apply'or req.action=='start'or req.action=='restart')then M.run('sh '..M.C..'/ax5/subscription-quota.sh ax5 auto >/dev/null 2>&1')end

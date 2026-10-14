@@ -11,6 +11,7 @@ if [ "$transport" = '混合模式' ];then
  fi
 else echo redir > /tmp/ShellCrash/transport-runtime;fi
 C=/etc/storage/ShellCrash
+sh "$C/starts/subscription-quota.sh" k2p auto || :
 . "$C/starts/policy_capture.sh"
 policy_capture_apply || logger -t ShellCrash 'Domain routing capture failed; check owned country-IP bypass'
 # Ordinary UDP stays direct; reject UDP to virtual IPs to permit TCP fallback.

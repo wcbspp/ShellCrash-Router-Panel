@@ -20,8 +20,8 @@
     "removed": true
   },
   "payload/padavan/manager.js": {
-    "sha256": "a373ecfaee5d4a337cb41fa6ea095e7c65dc5688269fcba9e26d6a38bbbdb5bd",
-    "reason": "Reviewed on-demand browser exit IP and bounded provider-header quota with source invalidation, preserved data on transient failure, configured memory floor, and scoped menu/button results."
+    "sha256": "b1a6d8c9b831a40b8fa364decb35babf01189864f6117c3d81f95adcfff98aed",
+    "reason": "Reviewed one-shot quota refresh hooks after ready startup/successful import, cache revision display, automatic domestic/international IP and geolocation probes; preserve config, source isolation, and existing memory floors."
   },
   "payload/starts/backup-app.sh": {
     "sha256": "f62bdc0888128fc389b5b7b89f29b23e9d96ded267d0eb3962a4900c1f37a485",
@@ -64,12 +64,12 @@
     "reason": "Separate startup firewall cleanup from manual stop, retry marked incomplete first boots through the existing minute watchdog with backoff, preserve stop/autostart controls and separate crash counts; verify readiness and retain dispatch errors."
   },
   "payload/padavan/sites.js": {
-    "sha256": "4f45ba59de97b644e3d671cbe8dbf79bfc7f83c5350aa9b0d1ef17ae254f3f16",
-    "reason": "Reviewed on-demand browser exit IP and bounded provider-header quota with source invalidation, preserved data on transient failure, configured memory floor, and scoped menu/button results."
+    "sha256": "59f344a411b9ce54279f7f5bb7dcf7ec76c7abedaeea2416724911c9d9dd0775",
+    "reason": "Reviewed quota lifecycle hooks, bounded/coalesced event worker, automatic cache display; once-per-load domestic/international IP and location probes with cancellation and bounded JSON."
   },
   "payload/ui/index.html": {
-    "sha256": "cdbe61f694c4b1e3edc0b4b756980a4185905d29f454d5a57c63d8e051ff64b0",
-    "reason": "Add on-demand browser exit IP and provider-header quota; preserve settings, use bounded requests and no background polling."
+    "sha256": "e6dfc1fa74ec7707d79861ee29d2246d8477018a2511aaa3565882f76a104aba",
+    "reason": "Reviewed one-shot quota refresh hooks after ready startup/successful import, cache revision display, automatic domestic/international IP and geolocation probes; preserve config, source isolation, and existing memory floors."
   },
   "tests/test_search.js": {
     "sha256": "0e745c08a710f917f9436ee927dadf120edb6055b6fbbf5ee1db75694324e6c1",
@@ -84,8 +84,8 @@
     "reason": "Regression coverage for manual path rollback/pin readback, partial and stale measurements, UA choice/state isolation and truthful filtered counts."
   },
   "payload/starts/manage.sh": {
-    "sha256": "002579e55b775a87264832cd1a7505687e893782ef3a69efa4d4457aee504f41",
-    "reason": "Add on-demand browser exit IP and provider-header quota; preserve settings, use bounded requests and no background polling."
+    "sha256": "466df9e521cf5d1d2e2dcc045daf8a3d5a446879275b7e40a224f212f7b9c939",
+    "reason": "Reviewed one-shot quota refresh hooks after ready startup/successful import, cache revision display, automatic domestic/international IP and geolocation probes; preserve config, source isolation, and existing memory floors."
   },
   "tests/test_proxy_mode.js": {
     "sha256": "0d476681fd7c939c813fea8283fbb786eab2d3a1432fd0b4cedf240ef4489183",
@@ -100,8 +100,8 @@
     "reason": "Add on-demand browser exit IP and provider-header quota; preserve settings, use bounded requests and no background polling."
   },
   "payload/starts/panel_afstart.sh": {
-    "sha256": "52e8adef82297a0bec88a00292296ed5b23c934696eac3045dd702c3552189ef",
-    "reason": " Reviewed 2026-10-14: compact kernel traffic counter sampling, since-core-start totals; actual transport-dependent flow labels and rule/DNS scope. K2P mixed delegates to official ShellCrash setter/start with running executable reuse, memory/capability guards, selector preservation and rollback; direct/global also handle owned UDP marking chains. Reviewed: inspection reports actual memory reserve; K native/domain policies must reach core before owned country-IP bypass, preserving private exceptions and basic-config optimization. Tested base/native/custom modes and rollback."
+    "sha256": "52a2630f480ea7bb7cf8fa9b2a457f28e2129c758654b6de2d8336a1958e4c66",
+    "reason": "Reviewed one-shot quota refresh hooks after ready startup/successful import, cache revision display, automatic domestic/international IP and geolocation probes; preserve config, source isolation, and existing memory floors."
   },
   "payload/starts/traffic_mode.sh": {
     "sha256": "9d0856defd8b8a0088427d9ddf6ea8c6e8a8d55c5f1ac74f54da16c2696d5842",
