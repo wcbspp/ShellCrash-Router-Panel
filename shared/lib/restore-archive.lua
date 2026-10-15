@@ -41,6 +41,8 @@ local function kv(raw)
  return result
 end
 local metadata={}
+local resource_bytes,resource_members=0,0
+local resource_files={}
 local ok,err=pcall(function()
  while true do
   local header=read(512);if not header then break end
@@ -84,6 +86,11 @@ local ok,err=pcall(function()
    end
    assert(not directory or size==0,'directory contains data')
    if regular then unpacked=unpacked+size end
+   if component=='application'and model=='AX5'and arg[6]=='resources'and regular and(name:match('^ruleset/')or name=='configs/cn_ip.txt'or name=='configs/policy.tsv')then
+    resource_bytes=resource_bytes+size;resource_members=resource_members+1
+    assert(size<=2000000 and resource_bytes<=math.min(4000000,tonumber(os.getenv("SC_RECOVERY_RESOURCE_MAX"))or 4000000),'preflight resources exceed capture budget')
+    limits[name]=2000000;resource_files[name]=true
+   end
    if limits[name]then assert(size<=limits[name],'metadata file exceeds limit')end
    local remaining=size;local parts={};local first=true
    while remaining>0 do
@@ -106,6 +113,7 @@ local ok,err=pcall(function()
   if captured['cache/core.sha256']then assert(captured['cache/core.sha256']:gsub('%s+$','')==expected,'core record mismatch')end
   assert(captured['configs/enabled']:match('^[01]%s*$'),'invalid startup state')
   local config=require('cjson').decode(captured['configs/config.json']);assert(type(config)=='table','invalid configuration')
+  metadata.enabled=tonumber(captured['configs/enabled']);metadata.autostart=seen['ShellCrash-tool/.dis_startup']and 0 or 1
  end
  if component=='application'and model=='K2P'then
   for _,name in ipairs({'backup.info','start.sh','menu.sh','menus/bot_tg_service.sh','starts/panel_boot.sh','configs/ShellCrash.cfg','configs/core-installed.info','jsons/config.json'})do assert(seen[name]=='file','missing '..name)end
@@ -124,11 +132,18 @@ stream:close()
 assert(ok,err)
 assert(os.execute('gzip -t '..quote(path)..' 2>/dev/null')==0,'gzip CRC check failed')
 metadata.component=component;metadata.members=entries;metadata.unpacked_size=unpacked;metadata.model=model
+metadata.resource_size=resource_bytes;metadata.resource_members=resource_members
 -- Optional fixed destination supplied by the trusted preflight supervisor.
 -- Only the already validated configuration is written; no archive paths are used.
 if arg[5]then
- assert(component=='application'and model=='K2P','configuration export is K2P only')
+ assert(component=='application','configuration export requires application archive')
  assert(arg[5]:match('^/tmp/sc%-preflight%-%x%x%x%x%x%x%x%x/config%.original%.json$'),'invalid configuration destination')
- local f=assert(io.open(arg[5],'wb'));assert(f:write(captured['jsons/config.json']));assert(f:close())
+ local base=arg[5]:match('^(.*)/config%.original%.json$')
+ for name in pairs(resource_files)do
+  local target=base..'/app/'..name
+  assert(os.execute('mkdir -p '..quote(target:match('^(.*)/[^/]+$')))==0,'cannot create resource directory')
+  local out=assert(io.open(target,'wb'));assert(out:write(captured[name]));assert(out:close())
+ end
+ local f=assert(io.open(arg[5],'wb'));assert(f:write(captured[model=='K2P'and'jsons/config.json'or'configs/config.json']));assert(f:close())
 end
 print(require('cjson').encode(metadata))

@@ -20,16 +20,16 @@
     "removed": true
   },
   "payload/padavan/manager.js": {
-    "sha256": "09adb0dbeaf68089133cbc5da8b786e221af8cb1b69562dae166ff585d16820a",
-    "reason": "Authenticated baseline-create and read-only recovery-check actions pass frontend whitelist and stock command-length budget; regression verifies actual request encoding and rejects restore execution."
+    "sha256": "93c231c6cc882569f0240f860ce714acd34fa14786afddd394c172e38000a7b3",
+    "reason": "Whitelist restorego without increasing the stock 58-character authenticated command limit."
   },
   "payload/starts/backup-app.sh": {
-    "sha256": "da9675de2f31059b82596b688393db35fb876d7d4d609aabc11019453ca0a2f6",
-    "reason": "Real restoration exposed missing native menus/task directories; include complete native program roots, provider/task root lists and explicit startup/traffic metadata. Export layout now explicitly names menus/task and native lists."
+    "sha256": "7bdf8be3b64852e62399c9e8685fb7e817ca8cbe67b2d81656000a0f5017c7f6",
+    "reason": "Exclude the device-local recovery capability from portable backups and release RAM archives after verified remote publication; preserve existing local-export and failure behavior."
   },
   "tests/test_backup_export.py": {
-    "sha256": "7bb18cf1488ec15fad6e04071cfd26336bc9af020ccb17f4b2a9484a9c600a62",
-    "reason": "Regression against missing native menus/task files that made a restored running core impossible to stop; also require root lists and explicit state metadata."
+    "sha256": "8c441e90e2dda6ed67cd16f305301ae72c7740bd3fa60a96a3bd44d70feb642f",
+    "reason": "Exercise the real local exporter and require the local recovery execution capability to be excluded alongside credentials."
   },
   "payload/starts/panel_bfstart.sh": {
     "sha256": "f92ed90fe2ae30a4ee6da7f32acbfe5d46832156c7a21cddb3a6353bfe3d0559",
@@ -84,8 +84,8 @@
     "reason": "Regression coverage for manual path rollback/pin readback, partial and stale measurements, UA choice/state isolation and truthful filtered counts."
   },
   "payload/starts/manage.sh": {
-    "sha256": "7efdc2ba04b1193b7115eb4ba27b74e5ceeec9b0ead27c495ad4cb8e1b63d6d0",
-    "reason": "Read-only recovery checks under existing operation lock; nonce-bound bounded metadata request; report actual failure without changing settings or stopping core."
+    "sha256": "049ac25e55d79187e852d4cb3aff2078ae15311f52b58f1f4980b841d71324d2",
+    "reason": "Authenticated restorego transfers its operation lock and PID to the independent dispatcher. Every new operation invalidates earlier confirmation tickets through a monotonic operation revision."
   },
   "tests/test_proxy_mode.js": {
     "sha256": "0d476681fd7c939c813fea8283fbb786eab2d3a1432fd0b4cedf240ef4489183",
@@ -96,8 +96,8 @@
     "reason": " Website checks distinguish transport/TLS failures, API errors and HTTP 4xx/5xx responses; access errors use amber rather than success green. Regression includes all AX endpoint IDs/URLs. Reviewed 2026-10-14: website cards now test network reachability and HTTPS request time only; HTTP 403/429/5xx count as reachable rather than access errors, TLS/malformed delay/API failures remain failed. Global/direct mode applies to domestic targets too. No service-unlock or CF diagnosis, no new timers or processes. Includes DOM regression for green 403 reachability, diagnostic-only HTTP code, and TLS failure rendering."
   },
   "payload/starts/padavan_ui.sh": {
-    "sha256": "9eea6657a3c9b621e9d4c68e3a391519f6909ce4792f814dec8e4c45856d9358",
-    "reason": "Authenticated recovery-check/read wrappers and lazy recovery asset through stock web server; no new listening service."
+    "sha256": "d8ea3bec9d8cadb9414e6f5715d94cca57924b00c31cd08fd8dda19656498f43",
+    "reason": "Generate a CSRF-checked two-argument restorego wrapper using the existing stock command buffer."
   },
   "payload/starts/panel_afstart.sh": {
     "sha256": "810aa59a84ed47cc5acf0f03ad1e089a3ae0fab4a6a3e1f5d1ac7860fdad31cc",

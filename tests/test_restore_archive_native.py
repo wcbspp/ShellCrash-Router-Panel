@@ -200,7 +200,7 @@ class NativeConfig(unittest.TestCase):
         import shutil
         shutil.rmtree(self.root)
 
-    def run_config(self,config):
+    def run_config(self,config,profile="k2p"):
         (self.root/'config.original.json').write_text(json.dumps(config))
         lua=LuaRuntime()
         def convert(v):
@@ -210,10 +210,12 @@ class NativeConfig(unittest.TestCase):
                 return {k:convert(x) for k,x in items.items()}
             return v
         lua.globals()._decode=lambda raw:lua.table_from(json.loads(raw),recursive=True)
-        lua.globals()._encode=lambda value:json.dumps(convert(value))
+        lua.globals()._encode=lambda value:json.dumps(convert(value)).replace("/", "\\/")
         lua.execute('package.preload.cjson=function()return {decode=_decode,encode=_encode}end')
         lua.globals().arg=lua.table_from([str(self.root)])
-        lua.execute((ROOT/'profiles/k2p/payload/starts/restore-config.lua').read_text())
+        (self.root/'live.json').write_text(json.dumps(dict(core_kind='singbox')))
+        path='profiles/ax5/ax5' if profile=='ax5' else 'profiles/k2p/payload/starts'
+        lua.execute((ROOT/path/'restore-config.lua').read_text())
         return json.loads((self.root/'config.check.json').read_text())
 
     def test_rule_paths_and_writable_files_are_isolated_websocket_path_preserved(self):
@@ -228,6 +230,11 @@ class NativeConfig(unittest.TestCase):
         self.assertFalse(result['experimental']['cache_file']['enabled'])
         self.assertTrue(result['log']['output'].startswith(str(self.root)))
         self.assertEqual(json.loads((self.root/'config.original.json').read_text()),original)
+
+    def test_ax5_json_is_accepted_by_yaml_reader_without_escaped_slashes(self):
+        config=dict(outbounds=[dict(type='vmess',transport=dict(type='ws',path='/proxy'))])
+        self.assertEqual(self.run_config(config,'ax5'),config)
+        self.assertNotIn('\\/',(self.root/'config.check.json').read_text())
 
     def test_remote_rules_missing_files_traversal_and_external_keys_rejected(self):
         for value in [dict(type='remote',url='https://example.invalid/rules.srs'),

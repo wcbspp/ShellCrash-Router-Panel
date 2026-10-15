@@ -1,4 +1,5 @@
 local M=dofile('/data/ShellCrash/ax5/common.lua')
+M.write(M.R..'/operation.lock/owner',tostring(require('nixio').getpid()))
 local req=M.load(M.R..'/request.json');local args=req.args or {};local id=args[1]or''
 os.remove(M.R..'/last-job-error')
 local function phase(p,msg,active,extra)
@@ -83,7 +84,9 @@ local function record_subscription(parser)
 end
 local function execute()
  local a=req.action
- if a=='advanced'then os.remove(M.R..'/dashboard-error');local advanced_kind=M.read(M.C..'/cache/core.env'):match('KIND=([^%s]+)')or'singbox';if not M.run('sh '..M.C..'/ax5/dashboard-install.sh '..M.C..' '..advanced_kind..' >> '..M.R..'/worker.log 2>&1')then local reason=M.read(M.R..'/dashboard-error'):gsub('%s+$','');fail(reason~=''and reason or'高级面板下载或校验失败，请查看运行日志')end;phase('done','高级面板已准备',false)
+ if a=='restorego'then
+  require('nixio').exec('/bin/sh',M.C..'/ax5/recovery-dispatch.sh','ax5',id,args[2]);fail('恢复执行器未能调度')
+ elseif a=='advanced'then os.remove(M.R..'/dashboard-error');local advanced_kind=M.read(M.C..'/cache/core.env'):match('KIND=([^%s]+)')or'singbox';if not M.run('sh '..M.C..'/ax5/dashboard-install.sh '..M.C..' '..advanced_kind..' >> '..M.R..'/worker.log 2>&1')then local reason=M.read(M.R..'/dashboard-error'):gsub('%s+$','');fail(reason~=''and reason or'高级面板下载或校验失败，请查看运行日志')end;phase('done','高级面板已准备',false)
  elseif a=='cnbypass'then
   if args[2]=='1'then guard()end;dofile(M.C..'/ax5/cn-bypass.lua').apply(M,args[2]);phase('done','国内 IP 绕过设置已保存；只影响新连接',false)
  elseif a=='transport'then
@@ -211,8 +214,7 @@ local function execute()
  elseif a=='restorecheck'then
   local raw=upload('restore');if #raw>200 then fail('恢复检查请求过长')end
   phase('working','正在核对备份组件，当前代理保持运行',true)
-  if not M.run(M.C..'/ax5/recovery-check.sh ax5 '..id..' > '..M.R..'/recovery-result.log 2>&1')then fail(M.read(M.R..'/recovery-result.log',512):gsub('%s+$',''))end
-  phase('done','组件大小与 SHA256 校验通过；当前设备未改动',false)
+  require('nixio').exec('/bin/sh',M.C..'/ax5/recovery-inspect-job.sh','ax5',id);fail('恢复预检调度失败')
  elseif a=='baselinecreate'then
   local mode=args[2];if mode~='create'and mode~='replace'then fail('需要明确选择创建或替换基础版本')end
   phase('working','正在生成并校验独立基础版本，当前代理保持运行',true)
@@ -242,5 +244,6 @@ if req.action=='apply'or req.action=='dns'or req.action=='policy'or req.action==
  for _,kind in ipairs({'source','bounds','profile','filter','policy','group','mirror'})do os.remove(M.R..'/upload-'..kind);os.remove(M.R..'/upload-id-'..kind)end
  os.remove(M.R..'/subscription.raw');os.remove(M.R..'/subscription.nodes.raw')
 end
+os.remove(M.R..'/operation.lock/owner')
 os.remove(M.R..'/operation.lock')
 if ok and(req.action=='apply'or req.action=='start'or req.action=='restart')then M.run('sh '..M.C..'/ax5/subscription-quota.sh ax5 auto >/dev/null 2>&1')end

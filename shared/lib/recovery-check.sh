@@ -89,6 +89,12 @@ while IFS="$tab" read -r name component size hash;do
  remote_transfer_ready || reject '校验中 WebDAV 连接断开，检查未完成'
  verify_stream "$base/$prefix$component" "$size" "$hash" || reject '备份组件缺失、损坏、大小不符或连接中断；当前设备未改动'
 done < "$work/records.tsv"
+if [ "${SC_RECOVERY_FIXTURE:-}" != 1 ];then
+ SC_RECOVERY_META="$work" SC_RECOVERY_PATH="$path" SC_RECOVERY_PREFIX="$prefix" SC_RECOVERY_SOURCE="$source" SC_RECOVERY_MANIFEST_SHA="$(remote_hash < "$work/manifest.json")" lua -e 'local j=require("cjson");local f=assert(io.open(os.getenv("SC_RECOVERY_META").."/selection.json","wb"));f:write(j.encode({source=os.getenv("SC_RECOVERY_SOURCE"),manifest_path=os.getenv("SC_RECOVERY_PATH"),prefix=os.getenv("SC_RECOVERY_PREFIX"),manifest_sha256=os.getenv("SC_RECOVERY_MANIFEST_SHA")}));f:close()'
+ sh "$helper/recovery-prepare.sh" "$1" "$id" "$work"
+ echo '原生归档与兼容性预检通过；确认凭据短期有效，尚未执行恢复'
+ exit 0
+fi
 # This inspection is transport verification, NOT archive/ELF/config validation.
 # Never claim executable readiness before the independent restore transaction exists.
 printf '{"id":"%s","source":"%s","checked":%s,"verified":true,"executor_ready":false,"archive_checked":false,"manifest_sha256":"%s","backup":' "$id" "$source" "$(date +%s)" "$(remote_hash < "$work/manifest.json")" > "$result.new"

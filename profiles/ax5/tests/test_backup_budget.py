@@ -54,7 +54,7 @@ class BackupBudget(unittest.TestCase):
    (c/'ax5/backup-guide.sh').write_bytes((ROOT/'ax5/backup-guide.sh').read_bytes())
    (c/'cache/core.env').write_text('HASH='+pinned+'\n')
    original=b'fixture-config'*20000;(c/'configs/config.json').write_bytes(original)
-   (c/'configs/webdav.auth').write_text('excluded-fixture')
+   (c/'configs/webdav.auth').write_text('excluded-fixture');(c/'configs/recovery-enabled').touch()
    (tool/'configs/command.env').write_text('runtime-only')
    mem=p/'meminfo';mem.write_text('MemAvailable: 17000 kB\n')
    text=self.fixture_source().replace('C=/data/ShellCrash','C='+str(c)).replace('D=/tmp/ShellCrash','D='+str(d)).replace('/proc/meminfo',str(mem)).replace('/data/ShellCrash-tool',str(tool))
@@ -66,7 +66,7 @@ class BackupBudget(unittest.TestCase):
    self.assertFalse(list(c.glob('.backup-stage.*')))
    with tarfile.open(d/'application-backup.tar.gz','r:gz') as t:
     names={x.name for x in t.getmembers()}
-    self.assertNotIn('./configs/webdav.auth',names);self.assertNotIn('./ShellCrash-tool/configs/command.env',names)
+    self.assertNotIn('./configs/webdav.auth',names);self.assertNotIn('./configs/recovery-enabled',names);self.assertNotIn('./ShellCrash-tool/configs/command.env',names)
     self.assertEqual(t.extractfile('./configs/config.json').read(),original)
     self.assertIn(b'format=1',t.extractfile('./backup.info').read())
     self.assertEqual(t.extractfile('./cache/core.sha256').read().decode().strip(),pinned)

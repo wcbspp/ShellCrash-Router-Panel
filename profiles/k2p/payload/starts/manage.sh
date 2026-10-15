@@ -39,6 +39,7 @@ lock(){
   mkdir "$D/operation.lock" 2>/dev/null || return 1
  fi
  echo $$ > "$D/operation.lock/owner"
+ if [ "$act" != restorego ];then revision=$(cat "$D/recovery-revision" 2>/dev/null);case "$revision" in ''|*[!0-9]*)revision=0;;esac;printf '%s\n' "$((revision+1))" > "$D/recovery-revision";fi
  trap 'if [ -n "$configuration_core_source" ];then configuration_core_release;fi;if [ "$act" = dns ]; then rm -rf "$D/dns"; fi; if [ "$act" = policy ] || [ "$act" = groupmode ]; then rm -rf "$D/policy"; fi; if [ "$act" = rules ]; then rm -rf "$D/rules"; fi; if [ "$act" = fetch ] || [ "$act" = fetchconvert ]; then rm -f "$D/ca.pem"; fi; if [ "$act" = apply ]; then rm -f "$D/previous.json" "$D/candidate.json" "$D/bounds.gz" "$D/bounds.json" "$D/check.json" "$D/upload.b64" "$D/upload.parts"; fi; if type native_clean_cache >/dev/null 2>&1;then native_clean_cache;fi;rm -rf "$D/native-previous";rm -f "$D/native-policy.input" "$D/native-resources.input";rm -f "$D/operation.lock/owner"; rmdir "$D/operation.lock" 2>/dev/null' EXIT
 }
 valid_id(){ printf '%s' "$1" | grep -Eq '^[a-f0-9]{8}$'; }
@@ -169,6 +170,14 @@ case "$act" in
 esac
 case "$act" in apply|dns|rules|policy|groupmode|grouplayout|transport) . "$C/starts/config_core.sh" || exit 1;;esac
 case "$act" in
+ restorego)
+  valid_id "$id" || exit 1
+  ticket=$3;case "$ticket" in *[!a-f0-9]*)exit 1;;esac
+  [ "${#ticket}" = 16 ] || exit 1
+  lock || exit 1;echo "$id" > "$D/id"
+  phase working '正在复核确认凭据'
+  trap - EXIT
+  exec sh "$C/starts/recovery-dispatch.sh" k2p "$id" "$ticket";;
  cnbypass)
   valid_id "$id" || exit 1;case "$3" in 0|1) :;;*)exit 1;;esac
   lock || exit 1;echo "$id" > "$D/id";phase working '正在应用国内 IP 绕过'

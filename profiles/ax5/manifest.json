@@ -157,5 +157,13 @@
   "ax5/recovery-check.sh": "shared/lib/recovery-check.sh",
   "ax5/restore-worker.sh": "profiles/ax5/ax5/restore-worker.sh",
   "tools/restore_ax5.py": "tools/restore_ax5.py",
-  "ax5/restore-archive.lua": "shared/lib/restore-archive.lua"
+  "ax5/restore-archive.lua": "shared/lib/restore-archive.lua",
+  "ax5/recovery-live.lua": "shared/lib/recovery-live.lua",
+  "ax5/recovery-session.lua": "shared/lib/recovery-session.lua",
+  "ax5/recovery-prepare.sh": "shared/lib/recovery-prepare.sh",
+  "ax5/restore-config.lua": "profiles/ax5/ax5/restore-config.lua",
+  "ax5/recovery-dispatch.sh": "shared/lib/recovery-dispatch.sh",
+  "ax5/recovery-status.html": "shared/ui/recovery-status.html",
+  "tests/test_recovery_ui.js": "shared/tests/test_recovery_ui.js",
+  "ax5/recovery-inspect-job.sh": "shared/lib/recovery-inspect-job.sh"
 }

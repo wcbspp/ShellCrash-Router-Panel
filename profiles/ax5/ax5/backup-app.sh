@@ -32,7 +32,7 @@ rm -rf "$stage";mkdir -p "$stage"
 for folder in configs ui ax5 ruleset;do
  [ ! -d "$C/$folder" ] || cp -al "$C/$folder" "$stage/"
 done
-for name in webdav.auth webdav.user mirror-id mirror_key mirror_known_hosts remote.verified;do rm -f "$stage/configs/$name";done
+for name in recovery-enabled webdav.auth webdav.user mirror-id mirror_key mirror_known_hosts remote.verified;do rm -f "$stage/configs/$name";done
 [ ! -d "$C/cache/targets" ] || { mkdir -p "$stage/cache";cp -al "$C/cache/targets" "$stage/cache/"; }
 cp -al /data/ShellCrash-tool "$stage/ShellCrash-tool"
 rm -f "$stage/ShellCrash-tool/configs/command.env"
@@ -84,7 +84,7 @@ if [ "$mode" = remote ];then
   backup_set_publish "$file"
  else remote_put backup "$file" tar.gz > "$D/backup-sha";fi
  date +%s > "$C/configs/backup-time"
- rm -f "$C/configs/backup-pending"
+ rm -f "$C/configs/backup-pending" "$file"
 fi
 if [ "$mode" = remote ];then echo '完整备份已保存：应用、内核及已安装运行资源；当前设置保持不变'
 else echo '应用与配置已导出；内核和临时运行资源需另行保存';fi

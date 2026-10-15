@@ -1,4 +1,4 @@
-// Loaded on demand. A read-only inspection cannot authorize an overwrite.
+// Loaded on demand. Execution requires native preflight and a one-use server ticket.
 let recoveryWindow=null;
 function openRecoveryWindow(initial='latest'){
  if(recoveryWindow){recoveryWindow.dialog.focus();return}
@@ -10,14 +10,14 @@ function openRecoveryWindow(initial='latest'){
  <div id="recovery-local" hidden><label for="recovery-file">选择组件文件</label><input id="recovery-file" type="file" accept=".txt,.srs,.mrs,.tar.gz"><p class="small-note">可先查看规则库、国内 IP 表或备份组件的格式与大小。文件保留在浏览器，不会自动上传。内核等大文件建议放到 WebDAV，避免占满路由器内存。</p></div>
  <p id="recovery-status" class="backup-feedback" role="status" aria-live="polite"></p><div id="recovery-files"></div>
  <div class="recovery-scope"><strong>完整恢复会覆盖</strong><br>应用、ShellCrash、内核、面板及规则资源、订阅、DNS、分流、节点选择和启动设置。<br><strong>保持当前</strong><br>LAN、Wi-Fi、固件、SSH/WebDAV 凭据和 ZeroTier 身份。</div>
- <div class="backup-actions"><button id="recovery-check" type="button" class="primary">检查备份文件</button><button id="recovery-execute" type="button" class="refresh" disabled aria-describedby="recovery-execution-help" title="页面恢复执行尚未接通；文件检查通过后也不能在此恢复">确认恢复（暂未开放）</button><button id="recovery-cancel" type="button" class="refresh">关闭</button></div>
- <p id="recovery-execution-help" class="small-note">本窗口可检查文件大小与 SHA256。实际恢复目前使用电脑维护工具；页面的确认、执行和结果查询流程尚未接通，因此这里暂不能恢复。</p>`;
+ <div class="backup-actions"><button id="recovery-check" type="button" class="primary">检查备份文件</button><button id="recovery-execute" type="button" class="refresh" disabled aria-describedby="recovery-execution-help" title="原生预检通过后可确认恢复">确认恢复</button><button id="recovery-cancel" type="button" class="refresh">关闭</button></div>
+ <p id="recovery-execution-help" class="small-note">先完成原生预检，再经两次确认执行。确认凭据短期有效；备份、连接或设备状态变化后须重新检查。恢复在路由器独立执行，可刷新进度页查询。</p>`;
  document.body.append(dialog);const find=id=>dialog.querySelector('#'+id),state={dialog,busy:false,revision:0};recoveryWindow=state;
  const source=find('recovery-source'),check=find('recovery-check'),status=find('recovery-status'),files=find('recovery-files');
  function feedback(text,kind='info'){status.textContent=text;status.className='backup-feedback '+kind;status.setAttribute('role',kind==='error'?'alert':'status')}
  function ready(){return nativeState?.remote_transport==='webdav'&&nativeState.remote_enabled&&nativeState.remote_verified&&!mirrorDirty}
  function pathValue(){const raw=find('recovery-path').value.trim().replace(/\/$/,'');return /\/manifest\.json$/.test(raw)?raw:raw+'/manifest.json'}
- function reset(){state.revision++;files.replaceChildren();find('recovery-execute').disabled=true;find('recovery-import').hidden=source.value!=='imports';find('recovery-local').hidden=source.value!=='local';check.textContent=source.value==='local'?'查看本地文件':'检查备份文件';check.disabled=state.busy||source.value!=='local'&&!ready();find('recovery-model').textContent=backupModel()+' · '+(nativeState?.core_version||'当前设备');const base=decode(nativeState?.mirror_base_b64||'').trim().replace(/\/+$/,'');find('recovery-location').textContent=(base?base+'/shellcrash-panel/'+backupModel()+'/':'')+pathValue();feedback(source.value==='local'?'选择文件后可在浏览器查看，不会写入路由器。':mirrorDirty?'WebDAV 参数尚未保存，请关闭窗口，测试连接并保存。':!ready()?'请先开启 WebDAV，测试连接并保存。':'检查时从已保存的 WebDAV 地址读取，不使用未保存的草稿。')}
+ function reset(){state.revision++;state.plan=null;clearTimeout(state.expiryTimer);files.replaceChildren();find('recovery-execute').disabled=true;find('recovery-import').hidden=source.value!=='imports';find('recovery-local').hidden=source.value!=='local';check.textContent=source.value==='local'?'查看本地文件':'检查备份文件';check.disabled=state.busy||source.value!=='local'&&!ready();find('recovery-model').textContent=backupModel()+' · '+(nativeState?.core_version||'当前设备');const base=decode(nativeState?.mirror_base_b64||'').trim().replace(/\/+$/,'');find('recovery-location').textContent=(base?base+'/shellcrash-panel/'+backupModel()+'/':'')+pathValue();feedback(source.value==='local'?'选择文件后可在浏览器查看，不会写入路由器。':mirrorDirty?'WebDAV 参数尚未保存，请关闭窗口，测试连接并保存。':!ready()?'请先开启 WebDAV，测试连接并保存。':'检查时从已保存的 WebDAV 地址读取，不使用未保存的草稿。')}
  function row(title,detail,hash){const block=document.createElement('div');block.className='recovery-file';const h=document.createElement('strong'),p=document.createElement('span');h.textContent=title;p.textContent=detail;block.append(h,p);if(hash){const details=document.createElement('details'),summary=document.createElement('summary'),code=document.createElement('code');summary.textContent='SHA256 '+hash.slice(0,12)+'…';code.textContent=hash;details.append(summary,code);block.append(details)}files.append(block)}
  const mb=bytes=>(bytes/1048576).toFixed(2)+' MB',purposes={'application.tar.gz':'应用与配置：ShellCrash、轻量面板、订阅、DNS 和分流','core.tar.gz':'代理内核：仅用于相同机型架构','runtime-assets.tar.gz':'运行资源：已安装高级面板和临时规则库','source.tar.gz':'项目源码：用于查阅，不作为路由器程序恢复'};
  async function inspectLocal(){
@@ -44,20 +44,45 @@ function openRecoveryWindow(initial='latest'){
   if(!ready()){reset();return}
   let path='';if(choice==='imports'){path=pathValue();if(!/^imports\/[A-Za-z0-9][A-Za-z0-9_-]{0,63}\/manifest\.json$/.test(path)){feedback('使用 imports/备份名/manifest.json，备份名仅含字母、数字、短横线或下划线。','error');return}}
   state.busy=true;manageBusy=true;pauseMeasurements();pauseSites();showService();check.disabled=true;source.disabled=true;find('recovery-path').disabled=true;
-  feedback('正在读取备份清单并逐个校验组件；不解包，不重启代理…','working');const id=[...crypto.getRandomValues(new Uint8Array(4))].map(x=>x.toString(16).padStart(2,'0')).join('');
+  feedback('正在校验备份清单、归档和兼容性；隔离检查不会覆盖配置或重启代理…','working');const id=[...crypto.getRandomValues(new Uint8Array(4))].map(x=>x.toString(16).padStart(2,'0')).join('');
   try{
    await upload(id,'restore',new TextEncoder().encode('source='+choice+'\npath='+path+'\n'),'mirror-message');await control('sc-restorecheck.sh',[id]);await waitJob(id,'done',360000,'mirror-message');const plan=await nativeRead('recoveryplan');
    if(recoveryWindow!==state||revision!==state.revision)return;
    if(plan.id!==id||plan.source!==choice||!plan.verified||plan.backup?.model!==backupModel()||!Array.isArray(plan.backup.files))throw Error('检查记录已过期或不完整，请重新检查');
    const b=plan.backup;row((choice==='baseline'?'独立基础备份':choice==='imports'?'手动备份':'最新备份')+' · '+b.model,(b.created?'备份时间 '+new Date(b.created*1000).toLocaleString('zh-CN',{hour12:false}):'旧基础备份 · 时间未记录')+' · '+mb(b.size));row('版本','内核 '+b.core_version+' · ShellCrash '+(b.tool_version||'未记录')+' · 面板 '+(b.panel_version||'未记录'));
    for(const f of b.files)row(f.name,mb(f.size)+' · '+(purposes[f.name]||'未知组件')+(f.name==='source.tar.gz'?' · 本次未校验':' · 大小和 SHA256 一致'),f.sha256);
-   feedback('文件大小与 SHA256 一致，当前设备未改动。此检查未验证包内程序与配置；页面恢复暂未开放。','success');
+   if(plan.executor_ready&&plan.archive_checked&&plan.config_checked&&/^[a-f0-9]{16}$/.test(plan.token||'')&&plan.expires_in>0&&plan.expires_in<=180){
+    state.plan=plan;state.expires=Date.now()+plan.expires_in*1000;find('recovery-execute').disabled=false;
+    state.expiryTimer=setTimeout(()=>{state.plan=null;if(recoveryWindow===state){find('recovery-execute').disabled=true;feedback('确认凭据已过期，请重新检查备份。','info')}},plan.expires_in*1000);
+    feedback('原生预检通过，尚未执行恢复。确认凭据有效期 '+plan.expires_in+' 秒；恢复前还需两次确认覆盖范围。','success');
+   }else feedback('备份检查通过；当前条件尚未开放页面执行，请使用维护工具或重新检查。','info');
   }catch(e){if(recoveryWindow===state&&revision===state.revision)feedback('检查未完成：'+e.message+'。当前设备未改动。','error')}
   finally{state.busy=false;manageBusy=false;await syncNative().catch(()=>{});showService();paintMirror();if(recoveryWindow===state){check.disabled=!ready();source.disabled=false;find('recovery-path').disabled=false}else mirrorFeedback('备份检查已结束，当前配置未改动；可重新打开恢复窗口检查。','info')}
  };
+ const execute=find('recovery-execute');
+ function progressURL(id){
+@@if ax5@@
+  const page='/sc-recovery-status.html',read=backendBase+'/read?kind=recoveryplan';
+@@else@@
+  const page='/custom/sc-recovery-status.asp',read='/custom/sc-recoveryplan.asp';
+@@end@@
+  return page+'#'+new URLSearchParams({id,read,back:location.pathname+location.search});
+ }
+ execute.onclick=async()=>{
+  const plan=state.plan;if(state.busy||manageBusy||nativeState?.active||!ready()||!plan||Date.now()>=state.expires){execute.disabled=true;feedback('确认凭据已失效，请重新检查备份。','error');return}
+  if(!confirm('完整恢复将覆盖当前应用、订阅、DNS、分流、节点选择及启动设置，恢复为所选备份状态。LAN、Wi-Fi 和 SSH/WebDAV 凭据保持当前。确定继续？'))return;
+  if(!confirm('最后确认：将恢复 '+plan.backup.model+' · 内核 '+plan.backup.core_version+'。清单 SHA256：'+plan.manifest_sha256+'。执行期间请勿重启。现在开始恢复？'))return;
+  if(!ready()||Date.now()>=state.expires){reset();return}
+  state.busy=true;manageBusy=true;execute.disabled=true;check.disabled=true;source.disabled=true;find('recovery-path').disabled=true;clearTimeout(state.expiryTimer);pauseMeasurements();pauseSites();showService();
+  const progress=progressURL(plan.id);try{localStorage.setItem('sc-recovery-pending',progress)}catch(_){}
+  feedback('正在提交恢复确认。任务一旦接收，将在路由器独立执行…','working');
+  try{await control('sc-restorego.sh',[plan.id,plan.token])}catch(e){feedback('提交响应暂不可用，将查询设备上的实际结果；不会重复提交。','working')}
+  location.assign(progress);
+ };
+ function pendingLink(){try{const pending=localStorage.getItem('sc-recovery-pending');if(pending&&pending.startsWith('/')){const link=document.createElement('a');link.href=pending;link.textContent='查看上次恢复任务进度';files.append(link)}}catch(_){}}
  function close(){dialog.close()}
  dialog.querySelector('.recovery-close').onclick=close;find('recovery-cancel').onclick=close;
- dialog.addEventListener('close',()=>{state.revision++;if(recoveryWindow===state)recoveryWindow=null;dialog.remove();if(opener?.isConnected)opener.focus();if(state.busy)mirrorFeedback('检查仍在后台进行；只读检查不会恢复设备，完成后可重新打开检查。','working')},{once:true});
+ dialog.addEventListener('close',()=>{clearTimeout(state.expiryTimer);state.revision++;if(recoveryWindow===state)recoveryWindow=null;dialog.remove();if(opener?.isConnected)opener.focus();if(state.busy)mirrorFeedback('检查仍在后台进行；只读检查不会恢复设备，完成后可重新打开检查。','working')},{once:true});
  source.onchange=reset;find('recovery-path').oninput=reset;find('recovery-file').onchange=reset;
- source.value=['latest','baseline','imports','local'].includes(initial)?initial:'latest';reset();dialog.showModal();source.focus();
+ source.value=['latest','baseline','imports','local'].includes(initial)?initial:'latest';reset();pendingLink();dialog.showModal();source.focus();
 }

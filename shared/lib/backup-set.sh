@@ -1,7 +1,32 @@
 #!/bin/sh
 # Sourced after the small application snapshot is prepared. Kernel archives
 # stay in their existing immutable object; never duplicate them in router RAM.
+backup_resources_require()(
+ # A cold RAM cache is not an empty but complete runtime snapshot. Reuse the
+ # trusted installers and their memory limits, or keep the previous full set.
+ case "$(dav_model)" in
+  AX5)helper=$C/ax5;kind=$KIND;;
+  K2P)helper=$C/starts;kind=singbox;;
+  *)return 1;;
+ esac
+ sh "$helper/dashboard-install.sh" "$C" "$kind" || return 1
+ [ -s /tmp/ShellCrash-dashboard/.ready ] && [ -s /tmp/ShellCrash-dashboard/index.html ] &&
+  [ -s /tmp/ShellCrash-dashboard/dashboard-bridge.js ] || return 1
+ if [ "$(dav_model)" = K2P ];then
+  . "$C/starts/domain_asset.sh"
+  mkdir -p "$D/backup-resource-check" || return 1
+  trap 'rm -rf "$D/backup-resource-check"' EXIT
+  domain_asset_ensure 3b83cff9903602f27c3a6737c775f742253a24a60165ff4d9b9ef28ac22bc140 /tmp/ShellCrash/ruleset/cn.srs "$D/backup-resource-check" || return 1
+  if [ -f "$C/configs/native-profile" ];then
+   [ -s "$C/configs/native-resources.tsv" ] || return 1
+   rh_protect_mb=$((protect_kb/1024))
+   . "$C/starts/native_profile.sh"
+   native_resources_prepare "$C/configs/native-resources.tsv" '' "$D/backup-resource-check/native.tsv" || return 1
+  fi
+ fi
+)
 backup_resources_pack(){
+ backup_resources_require || { echo '完整运行资源尚未备齐，远端最新完整备份未替换';return 1; }
  resources="$D/runtime-assets-backup.tar.gz"
  available=$(awk '/MemAvailable:/{print $2;exit}' /proc/meminfo)
  limit=$(((available-protect_kb-512)*1024));[ "$limit" -le 2000000 ] || limit=2000000
@@ -43,7 +68,7 @@ backup_set_publish(){
  dav_store_file "$resources" "$resource_url" || return 1
  # This identity describes the exact set, rather than only its application tar.
  set_hash=$(printf '%s\n%s\n%s\n' "$app_hash" "$hash" "$resource_hash" | remote_hash)
- printf '{"format":2,"scope":"full-application","model":"%s","created":%s,"size":%s,"sha256":"%s","core_kind":"%s","core_version":"%s","core_sha256":"%s","tool_version":"%s","panel_version":"%s","files":[{"name":"application.tar.gz","path":"backups/backup-%s.tar.gz","size":%s,"sha256":"%s"},{"name":"core.tar.gz","path":"objects/core-%s.tar.gz","size":%s,"sha256":"%s"},{"name":"runtime-assets.tar.gz","path":"objects/runtime-%s.tar.gz","size":%s,"sha256":"%s"}],"source":"installed-files","credentials":"excluded","default_restore":"programs-preserve-settings"}\n' \
+ printf '{"format":2,"scope":"full-application","model":"%s","created":%s,"size":%s,"sha256":"%s","core_kind":"%s","core_version":"%s","core_sha256":"%s","tool_version":"%s","panel_version":"%s","files":[{"name":"application.tar.gz","path":"backups/backup-%s.tar.gz","size":%s,"sha256":"%s"},{"name":"core.tar.gz","path":"objects/core-%s.tar.gz","size":%s,"sha256":"%s"},{"name":"runtime-assets.tar.gz","path":"objects/runtime-%s.tar.gz","size":%s,"sha256":"%s"}],"source":"installed-files","credentials":"excluded","default_restore":"full-confirmed"}\n' \
   "$(dav_model)" "$(date +%s)" "$((app_size+core_size+resource_size))" "$set_hash" "$core_kind" "$version" "$hash" "$tool_version" "$panel_version" \
   "$app_hash" "$app_size" "$app_hash" "$hash" "$core_size" "$hash" "$resource_hash" "$resource_size" "$resource_hash" > "$index"
  [ "$(wc -c < "$index")" -le 2048 ] || return 1

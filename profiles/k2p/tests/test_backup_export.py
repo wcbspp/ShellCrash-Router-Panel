@@ -11,7 +11,7 @@ class BackupExport(unittest.TestCase):
   (self.c/'starts/resource_health.sh').write_bytes((SOURCE.parent/'resource_health.sh').read_bytes())
   (self.c/'starts/remote.sh').write_text('remote_ready(){ :; }\n')
   (self.c/'configs/core-installed.info').write_text('version=1.12.13\nsha256='+('1'*64)+'\n')
-  (self.c/'configs/webdav.auth').write_text('private fixture');(self.c/'configs/webdav.user').write_text('user')
+  (self.c/'configs/recovery-enabled').touch();(self.c/'configs/webdav.auth').write_text('private fixture');(self.c/'configs/webdav.user').write_text('user')
   (self.c/'configs/config-fixture.json').write_text('{"fixture":"keep"}')
   (self.c/'ui/fixture').write_bytes(b'A'*300000)
   (self.c/'servers.list').write_text('fixture server list');(self.c/'task.list').write_text('fixture task list')
@@ -30,7 +30,7 @@ class BackupExport(unittest.TestCase):
   self.clean();self.assertEqual((self.c/'configs/webdav.auth').read_bytes(),before);self.assertEqual((self.c/'configs/config-fixture.json').stat().st_nlink,1)
   b=(self.d/'application-backup.tar.gz').read_bytes();gzip.decompress(b)
   with tarfile.open(self.d/'application-backup.tar.gz')as t:
-   names=t.getnames();self.assertIn('./RESTORE.txt',names);self.assertIn('./backup.info',names);self.assertNotIn('./configs/webdav.auth',names)
+   names=t.getnames();self.assertIn('./RESTORE.txt',names);self.assertIn('./backup.info',names);self.assertNotIn('./configs/webdav.auth',names);self.assertNotIn('./configs/recovery-enabled',names)
    info=t.extractfile('./backup.info').read().decode();self.assertIn('autostart=1\n',info);self.assertIn('enabled=1\n',info);self.assertIn('traffic_mode=rule\n',info);self.assertIn('./servers.list',names);self.assertIn('./task.list',names);self.assertIn('./menus/bot_tg_service.sh',names);self.assertIn('./task/afstart',names)
   header,encoded=(self.d/'backup-download.txt').read_text().split('\n',1);self.assertEqual(header,'SCBACKUP1 '+str(len(b))+' '+hashlib.sha256(b).hexdigest());self.assertEqual(base64.b64decode(encoded),b)
  def test_protection_and_failed_bounded_archive_keep_previous_backup(self):

@@ -88,12 +88,14 @@ function A.upload()
 end
 function A.control()
  if H.getenv('REQUEST_METHOD')~='POST'or not csrf()then reply({error='forbidden'},403);return end
- local d=body();local allowed={start=true,stop=true,restart=true,clear=true,cleanup=true,memcfg=true,fetch=true,apply=true,dns=true,policy=true,groupmode=true,grouplayout=true,rules=true,domainupdate=true,corecheck=true,coreupdate=true,toolcheck=true,toolupdate=true,guard=true,transport=true,cnbypass=true,proxymode=true,advanced=true,mirrortest=true,mirrorsave=true,mirrorsync=true,mirrorverify=true,backuplocal=true,backupremote=true,baselinecreate=true,restorecheck=true}
+ local d=body();local allowed={start=true,stop=true,restart=true,clear=true,cleanup=true,memcfg=true,fetch=true,apply=true,dns=true,policy=true,groupmode=true,grouplayout=true,rules=true,domainupdate=true,corecheck=true,coreupdate=true,toolcheck=true,toolupdate=true,guard=true,transport=true,cnbypass=true,proxymode=true,advanced=true,mirrortest=true,mirrorsave=true,mirrorsync=true,mirrorverify=true,backuplocal=true,backupremote=true,baselinecreate=true,restorecheck=true,restorego=true}
  if not d or type(d.script)~='string'then reply({error='invalid_action'},400);return end
  local action=d.script:match('^sc%-(%w+)%.sh$');if not allowed[action]then reply({error='unsupported_action'},400);return end
  local args=d.args or {};if type(args)~='table'or #args>3 then reply({error='invalid_arguments'},400);return end;for _,v in ipairs(args)do if type(v)~='string'or #v>100 or not v:match('^[%w+/=]+$')then reply({error='invalid_arguments'},400);return end end
+ if action=='restorego'and(#args~=2 or #args[1]~=8 or args[1]:find('[^a-f0-9]')or #args[2]~=16 or args[2]:find('[^a-f0-9]'))then reply({error='invalid_confirmation'},400);return end
  if not M.lock('operation.lock',900)then reply({error='busy'},409);return end
  local id=args[1]or'';if id~=''and not id:match('^%x%x%x%x%x%x%x%x$')then os.remove(M.R..'/operation.lock');reply({error='invalid_id'},400);return end
+ if action~='restorego'then M.write(M.R..'/recovery-revision',tostring((tonumber(M.read(M.R..'/recovery-revision'))or 0)+1))end
  M.save(M.R..'/request.json',{action=action,args=args})
  M.save(M.R..'/job.json',{active=true,phase='working',id=id,message_b64=M.b64('service_operation')})
  -- Let the control HTTP worker exit before allocating a configuration job.

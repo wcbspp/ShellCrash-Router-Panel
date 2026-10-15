@@ -38,8 +38,10 @@ function M.api(path,method,body) local raw=M.request(path,method,body);return ra
 function M.lock(name,ttl)
  local p=M.R..'/'..name;local stamp=p..'.time'
  if M.run('mkdir '..M.quote(p)..' 2>/dev/null')then M.write(stamp,tostring(os.time()));return true end
+ local owner=M.read(p..'/owner'):match('^(%d+)%s*$');if owner and M.run('kill -0 '..owner..' 2>/dev/null')then return false end
  local t=tonumber(M.read(stamp));if not t then local a=require('nixio.fs').stat(p);t=a and a.mtime end
  if t and os.time()-t>ttl then
+  if owner then os.remove(p..'/owner')end
   if M.run('rmdir '..M.quote(p)..' 2>/dev/null')then os.remove(stamp);return M.lock(name,ttl)end
  end
  return false
@@ -68,7 +70,7 @@ end
 function M.state()
  local mem=M.memory();local pid=M.pid();local stat=M.read('/proc/'..pid..'/status');local limits=M.limits();local avail=mem.MemAvailable or mem.MemFree or 0
  local job=M.load(M.R..'/job.json',{phase='done',active=false,message_b64=M.b64('service_operation_complete')})
- if job.active then local t=tonumber(M.read(M.R..'/operation.lock.time'));if t and os.time()-t>900 then job.active=false;job.phase='error';job.message_b64=M.b64('operation_timed_out');M.save(M.R..'/job.json',job)end end
+ if job.active then local t=tonumber(M.read(M.R..'/operation.lock.time'));local owner=M.read(M.R..'/operation.lock/owner'):match('^(%d+)%s*$');if t and os.time()-t>900 and not(owner and M.run('kill -0 '..owner..' 2>/dev/null'))then job.active=false;job.phase='error';job.message_b64=M.b64('operation_timed_out');M.save(M.R..'/job.json',job)end end
  local fs=require('nixio.fs');local statcfg=fs.stat(M.C..'/configs/config.json')or{};local index=M.load(M.R..'/config-index.json')
  local cn_policy=M.read(M.C..'/configs/policy.tsv');local cn_dns=M.read(M.C..'/configs/dns-mode'):gsub('%s+$','')
  if index.mtime~=statcfg.mtime or index.bytes~=statcfg.size or index.native_mihomo==nil or not index.cn_warning or not index.cn_eligible or index.cn_policy~=cn_policy or index.cn_dns~=cn_dns then

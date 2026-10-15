@@ -1,6 +1,6 @@
 #!/bin/sh
-# AX5 transaction, armed by the computer validator. Always run the copied worker
-# outside the application being restored. The browser cannot invoke this yet.
+# AX5 transaction, armed by a validated native or computer plan. Always run the
+# copied worker outside the application being restored.
 set -eu
 umask 077
 C=/data/ShellCrash
@@ -33,14 +33,14 @@ clear_app(){
  # fails. Other configuration is replaced, never merged with stale files.
  for entry in "$C/configs"/* "$C/configs"/.[!.]*;do
   [ -e "$entry" ] || [ -L "$entry" ] || continue
-  case "${entry##*/}" in mirror.conf|webdav.auth|webdav.user|mirror-id|mirror_key|mirror_known_hosts|remote.verified|remote.checked)continue;;esac
+  case "${entry##*/}" in recovery-enabled|mirror.conf|webdav.auth|webdav.user|mirror-id|mirror_key|mirror_known_hosts|remote.verified|remote.checked)continue;;esac
   rm -rf "$entry" || return 1
  done
  rm -f "$C/cache/core.env" "$C/cache/core.sha256" || return 1
  mkdir -p "$C/configs" "$C/cache"
 }
 credentials(){
- for name in mirror.conf webdav.auth webdav.user mirror-id mirror_key mirror_known_hosts remote.verified remote.checked;do
+ for name in recovery-enabled mirror.conf webdav.auth webdav.user mirror-id mirror_key mirror_known_hosts remote.verified remote.checked;do
   if [ -f "$X/credentials/$name" ];then cp "$X/credentials/$name" "$C/configs/$name" || return 1
   else rm -f "$C/configs/$name" || return 1;fi
  done
@@ -99,14 +99,20 @@ finish(){
  fi
  # Rollback evidence is deliberately kept. Never delete this transaction on error.
  printf '{"id":"%s","state":"%s","manifest_sha256":"%s","core_sha256":"%s","time":%s}\n' "$ID" "$STATE" "$(field manifest_sha256)" "${NEW_CORE:-unknown}" "$(date +%s)" > "$X/result.json"
+ if [ -f "$X/recovery-session.lua" ];then
+  lua "$X/recovery-session.lua" result "/tmp/sc-preflight-$ID" && cp "/tmp/sc-preflight-$ID/public.json" "$R/recovery-plan.json.new" && mv "$R/recovery-plan.json.new" "$R/recovery-plan.json" || :
+ fi
  case "$STATE" in done)message='备份恢复完成';;rolledback)message='恢复未完成，已还原操作前状态';;rollback_failed)message='自动回退失败，请保留恢复目录并通过 SSH 检查';;*)message='恢复检查未通过，未覆盖应用';;esac
  printf '{"id":"%s","phase":"%s","active":false,"message_b64":"%s"}\n' "$ID" "$([ "$STATE" = done ] && echo done || echo error)" "$(printf '%s' "$message" | base64 | tr -d '\n')" > "$R/job.json.new"
  mv "$R/job.json.new" "$R/job.json"
+ rm -f "$R/operation.lock/owner"
  rmdir "$R/operation.lock" 2>/dev/null || :
  rm -f "$R/operation.lock.time"
  exit "$code"
 }
-if ! mkdir "$R/operation.lock";then printf '{"id":"%s","state":"busy"}\n' "$ID" > "$X/result.json";exit 3;fi
+if [ "${SC_RESTORE_HANDOFF:-}" = "$ID" ] && [ "$(cat "$R/operation.lock/owner" 2>/dev/null)" = "$$" ];then :
+elif ! mkdir "$R/operation.lock";then printf '{"id":"%s","state":"busy"}\n' "$ID" > "$X/result.json";exit 3;fi
+echo $$ > "$R/operation.lock/owner"
 trap finish EXIT
 trap 'exit 1' INT TERM
 phase preparing '正在保存操作前恢复点'
@@ -120,7 +126,7 @@ ORIGINAL_ENABLED=$(cat "$C/configs/enabled");case "$ORIGINAL_ENABLED" in 0|1) :;
 protect=$(field protect_kb);case "$protect" in ''|*[!0-9]*)exit 1;;esac
 [ "$protect" -ge 12288 ] && [ "$(available)" -ge "$((protect+2048))" ] || exit 1
 mkdir "$X/credentials"
-for name in mirror.conf webdav.auth webdav.user mirror-id mirror_key mirror_known_hosts remote.verified remote.checked;do
+for name in recovery-enabled mirror.conf webdav.auth webdav.user mirror-id mirror_key mirror_known_hosts remote.verified remote.checked;do
  [ ! -f "$C/configs/$name" ] || cp "$C/configs/$name" "$X/credentials/$name"
 done
 cp /etc/init.d/shellcrash "$X/init.previous"
@@ -175,8 +181,28 @@ tar -xzf "$X/application.tar.gz" -C "$X/target"
 [ "$(cat "$X/target/cache/core.sha256" | tr -d ' \n')" = "$NEW_CORE" ]
 TARGET_ENABLED=$(cat "$X/target/configs/enabled");case "$TARGET_ENABLED" in 0|1) :;;*)exit 1;;esac
 # Credentials always belong to the current server. Extracted backups cannot change them.
-for name in mirror.conf webdav.auth webdav.user mirror-id mirror_key mirror_known_hosts remote.verified remote.checked;do rm -f "$X/target/configs/$name";done
+for name in recovery-enabled mirror.conf webdav.auth webdav.user mirror-id mirror_key mirror_known_hosts remote.verified remote.checked;do rm -f "$X/target/configs/$name";done
 [ -f "$X/target/backup.info" ] && [ -x "$X/target/ax5/prepare.sh" ]
+# Page-origin transactions check the candidate with the actual trusted core
+# before the first application write, after freeing the running core's memory.
+if [ -f "$X/restore-config.lua" ];then
+ phase validating '正在隔离校验候选配置，尚未覆盖应用'
+ cp "$X/target/configs/config.json" "$X/config.original.json"
+ ln -s "$X/target" "$X/app";mkdir "$X/runtime"
+ tar -xzf "$X/runtime-assets.tar.gz" -C "$X/runtime"
+ lua "$X/restore-config.lua" "$X"
+ tar -xzf "$C/cache/core-armv7.tar.gz" -C "$R" CrashCore
+ chmod 700 "$R/CrashCore"
+ [ "$(hash "$R/CrashCore")" = "$(field binary_sha256)" ]
+ if [ "$(field previous_core_kind)" = meta ];then
+  sed "s|SAFE_PATHS=/data/ShellCrash|SAFE_PATHS=$X|" "$C/ax5/check-binary.sh" > "$X/check-binary.sh"
+  sh "$X/check-binary.sh" meta "$R/CrashCore" -t -d "$X/runtime" -f "$X/config.check.json" >> "$X/check.log" 2>&1
+ else GOMEMLIMIT=12MiB GOGC=25 "$R/CrashCore" check -D "$X/runtime" -c "$X/config.check.json" >> "$X/check.log" 2>&1;fi
+ # Startup owns materializing its executable. Release this check-only copy so
+ # the existing boot budget does not count the same 32 MB file twice.
+ rm -f "$R/CrashCore"
+ rm -rf "$X/runtime";rm -f "$X/app" "$X/config.original.json" "$X/config.check.json"
+fi
 phase applying '目标文件已校验，正在恢复应用和配置'
 MUTATED=1
 clear_app
@@ -199,7 +225,8 @@ sync
 if [ "$(field rehearsal_failure)" = after-write ];then echo 'Controlled rehearsal failure after write' >&2;exit 1;fi
 rm -rf "$X/target";rm -f "$X/application.tar.gz" "$X/runtime-assets.tar.gz" "$X/core.tar.gz"
 boot_core=$(field boot_core_bytes);boot_private=$(field boot_private_kb)
-[ "$(available)" -ge "$((protect+boot_private+(boot_core+1023)/1024))" ]
+required=$((protect+boot_private+(boot_core+1023)/1024));actual=$(available)
+[ "$actual" -ge "$required" ] || { echo "启动预算拒绝：可用 ${actual} KB，需要 ${required} KB" >&2;exit 1; }
 phase starting '正在校验配置并启动恢复后的内核'
 start_and_check "$TARGET_ENABLED" "$(field target_core_version)"
 phase checking '正在核对恢复状态'

@@ -1,5 +1,5 @@
 #!/bin/sh
-# Computer-validated K2P same-core recovery prototype. No browser dispatch.
+# K2P same-core recovery; native authenticated dispatch or validated PC plan.
 PATH=/usr/sbin:/usr/bin:/sbin:/bin
 export PATH GOMEMLIMIT=12MiB GOGC=25
 set -eu
@@ -52,14 +52,14 @@ clear_app(){
  for folder in ui padavan starts libs tools menus task jsons yamls ruleset;do rm -rf "$C/$folder" || return 1;done
  for entry in "$C/configs"/* "$C/configs"/.[!.]*;do
   [ -e "$entry" ] || [ -L "$entry" ] || continue
-  case "${entry##*/}" in mirror.conf|webdav.auth|webdav.user|mirror-id|mirror_key|mirror_known_hosts|remote.verified|remote.checked)continue;;esac
+  case "${entry##*/}" in recovery-enabled|mirror.conf|webdav.auth|webdav.user|mirror-id|mirror_key|mirror_known_hosts|remote.verified|remote.checked)continue;;esac
   rm -rf "$entry" || return 1
  done
  for name in start.sh menu.sh init.sh version task_en.list task.list singbox_providers.list servers.list clash_providers.list fallback_filter.list fake_ip_filter.list cn_ipv6.txt .dis_startup;do rm -f "$C/$name" || return 1;done
  mkdir -p "$C/configs"
 }
 credentials(){
- for name in mirror.conf webdav.auth webdav.user mirror-id mirror_key mirror_known_hosts remote.verified remote.checked;do
+ for name in recovery-enabled mirror.conf webdav.auth webdav.user mirror-id mirror_key mirror_known_hosts remote.verified remote.checked;do
   if [ -f "$X/credentials/$name" ];then cp "$X/credentials/$name" "$C/configs/$name" || return 1
   else rm -f "$C/configs/$name" || return 1;fi
  done
@@ -104,12 +104,16 @@ finish(){
   else STATE=rejected;fi
  fi
  printf '{"id":"%s","state":"%s","manifest_sha256":"%s","time":%s}\n' "$ID" "$STATE" "$(field manifest_sha256)" "$(date +%s)" > "$X/result.json"
+ if [ -f "$X/recovery-session.lua" ];then
+  lua "$X/recovery-session.lua" result "/tmp/sc-preflight-$ID" && cp "/tmp/sc-preflight-$ID/public.json" "$D/recovery-plan.json.new" && mv "$D/recovery-plan.json.new" "$D/recovery-plan.json" || :
+ fi
  case "$STATE" in done)msg='备份恢复完成';;rolledback)msg='恢复未完成，已还原操作前状态';;rollback_failed)msg='回退失败，请保留事务目录并通过 SSH 检查';;*)msg='恢复预检未通过，未覆盖应用';;esac
  phase "$([ "$STATE" = done ] && echo done || echo error)" "$msg"
  rm -f "$D/operation.lock/owner";rmdir "$D/operation.lock" 2>/dev/null || :
  exit "$code"
 }
-mkdir "$D/operation.lock" || exit 3
+if [ "${SC_RESTORE_HANDOFF:-}" = "$ID" ] && [ "$(cat "$D/operation.lock/owner" 2>/dev/null)" = "$$" ];then :
+else mkdir "$D/operation.lock" || exit 3;fi
 echo $$ > "$D/operation.lock/owner"
 trap finish EXIT
 trap 'exit 1' INT TERM
@@ -122,7 +126,7 @@ remote_transfer_ready && [ "$(remote_transport)" = webdav ] || exit 1
 protect=$(field protect_kb)
 [ "$(available)" -ge "$((protect+3072))" ] || exit 1
 mkdir "$X/credentials"
-for name in mirror.conf webdav.auth webdav.user mirror-id mirror_key mirror_known_hosts remote.verified remote.checked;do [ ! -f "$C/configs/$name" ] || cp "$C/configs/$name" "$X/credentials/$name";done
+for name in recovery-enabled mirror.conf webdav.auth webdav.user mirror-id mirror_key mirror_known_hosts remote.verified remote.checked;do [ ! -f "$C/configs/$name" ] || cp "$C/configs/$name" "$X/credentials/$name";done
 cp "$C/starts/save_storage.sh" "$X/save_storage.sh"
 CRASHDIR=$C;export CRASHDIR
 . "$C/starts/panel_env.sh"
@@ -169,7 +173,7 @@ done
 stream_core "$(dav_base)/$(field core_path)" "$R/CrashCore"
 mkdir "$X/target"
 tar -xzf "$X/application.tar.gz" -C "$X/target"
-for name in mirror.conf webdav.auth webdav.user mirror-id mirror_key mirror_known_hosts remote.verified remote.checked;do rm -f "$X/target/configs/$name";done
+for name in recovery-enabled mirror.conf webdav.auth webdav.user mirror-id mirror_key mirror_known_hosts remote.verified remote.checked;do rm -f "$X/target/configs/$name";done
 phase applying '目标文件已校验，正在恢复应用和配置'
 MUTATED=1;clear_app
 for name in configs ui padavan starts libs tools menus task jsons yamls ruleset;do

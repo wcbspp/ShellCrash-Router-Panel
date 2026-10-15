@@ -803,3 +803,19 @@ K2P-RESTORE-NATIVE-coldboot,K2P,桌面,通过,一次真实整机重启，新boot
 K2P-RESTORE-NATIVE-coldboot,K2P,手机窄屏,未执行,命令行及原生验证不代表手机页面执行,LIVE_TEST_2026-10-16_K2P_RESTORE.md,2026-10-16,rc.2 本地恢复原型 / sing-box mini 1.12.13
 K2P-RESTORE-NATIVE-client,K2P,桌面,未执行,真实Wi-Fi客户端确认列在手机端，不代表桌面页面恢复操作,LIVE_TEST_2026-10-16_K2P_RESTORE.md,2026-10-16,rc.2 本地恢复原型 / sing-box mini 1.12.13
 K2P-RESTORE-NATIVE-client,K2P,手机窄屏,通过,用户在重启后确认全部正常,LIVE_TEST_2026-10-16_K2P_RESTORE.md,2026-10-16,rc.2 本地恢复原型 / sing-box mini 1.12.13
+AX5-RESTORE-PAGE-ticket-expiry,AX5,桌面,通过,后端拒绝；核心PID不变，结果页刷新保留拒绝结果,LIVE_TEST_2026-10-16_PAGE_RESTORE.md；私有page-execution原始记录,2026-10-16,本地工作树；未发布
+AX5-RESTORE-PAGE-ticket-expiry,AX5,手机窄屏,未执行,布局/取消已测；未在手机再次提交恢复,LIVE_TEST_2026-10-16_PAGE_RESTORE.md,2026-10-16,不冒充手机完整恢复
+AX5-RESTORE-PAGE-normal,AX5,桌面,通过,done；程序SHA与目标一致；选择和模式保持,LIVE_TEST_2026-10-16_PAGE_RESTORE.md；私有page-execution原始记录,2026-10-16,本地工作树；未发布
+AX5-RESTORE-PAGE-normal,AX5,手机窄屏,未执行,布局/取消已测；未在手机再次提交恢复,LIVE_TEST_2026-10-16_PAGE_RESTORE.md,2026-10-16,不冒充手机完整恢复
+AX5-RESTORE-PAGE-rollback,AX5,桌面,通过,rolledback；配置逐文件与操作前一致，服务恢复,LIVE_TEST_2026-10-16_PAGE_RESTORE.md；私有page-execution原始记录,2026-10-16,本地工作树；未发布
+AX5-RESTORE-PAGE-rollback,AX5,手机窄屏,未执行,布局/取消已测；未在手机再次提交恢复,LIVE_TEST_2026-10-16_PAGE_RESTORE.md,2026-10-16,不冒充手机完整恢复
+AX5-RESTORE-PAGE-reconnect,AX5,桌面,通过,不重复提交，查询原任务完成或回退结果,LIVE_TEST_2026-10-16_PAGE_RESTORE.md；私有page-execution原始记录,2026-10-16,本地工作树；未发布
+AX5-RESTORE-PAGE-reconnect,AX5,手机窄屏,未执行,布局/取消已测；未在手机再次提交恢复,LIVE_TEST_2026-10-16_PAGE_RESTORE.md,2026-10-16,不冒充手机完整恢复
+K2P-RESTORE-PAGE-ticket-expiry,K2P,桌面,通过,后端拒绝；核心PID不变，结果页刷新保留拒绝结果,LIVE_TEST_2026-10-16_PAGE_RESTORE.md；私有page-execution原始记录,2026-10-16,本地工作树；未发布
+K2P-RESTORE-PAGE-ticket-expiry,K2P,手机窄屏,未执行,布局/取消已测；未在手机再次提交恢复,LIVE_TEST_2026-10-16_PAGE_RESTORE.md,2026-10-16,不冒充手机完整恢复
+K2P-RESTORE-PAGE-normal,K2P,桌面,通过,done；程序SHA与目标一致；选择和模式保持,LIVE_TEST_2026-10-16_PAGE_RESTORE.md；私有page-execution原始记录,2026-10-16,本地工作树；未发布
+K2P-RESTORE-PAGE-normal,K2P,手机窄屏,未执行,布局/取消已测；未在手机再次提交恢复,LIVE_TEST_2026-10-16_PAGE_RESTORE.md,2026-10-16,不冒充手机完整恢复
+K2P-RESTORE-PAGE-rollback,K2P,桌面,通过,rolledback；配置逐文件与操作前一致，服务恢复,LIVE_TEST_2026-10-16_PAGE_RESTORE.md；私有page-execution原始记录,2026-10-16,本地工作树；未发布
+K2P-RESTORE-PAGE-rollback,K2P,手机窄屏,未执行,布局/取消已测；未在手机再次提交恢复,LIVE_TEST_2026-10-16_PAGE_RESTORE.md,2026-10-16,不冒充手机完整恢复
+K2P-RESTORE-PAGE-reconnect,K2P,桌面,通过,不重复提交，查询原任务完成或回退结果,LIVE_TEST_2026-10-16_PAGE_RESTORE.md；私有page-execution原始记录,2026-10-16,本地工作树；未发布
+K2P-RESTORE-PAGE-reconnect,K2P,手机窄屏,未执行,布局/取消已测；未在手机再次提交恢复,LIVE_TEST_2026-10-16_PAGE_RESTORE.md,2026-10-16,不冒充手机完整恢复
