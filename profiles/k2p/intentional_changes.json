@@ -132,8 +132,8 @@
     "reason": " Reviewed domestic-IP fallback: derive from validated local ShellCrash CN table inside the kernel after explicit user/provider rules and before default proxy; preserve DNS, nodes, private/mode guards and source subscription; no resident service or country bypass that defeats overrides."
   },
   "payload/starts/rules_update.sh": {
-    "sha256": "2e19485c424ceeb26a35c01a6f472ff418fa21db1bb844c2e0fa3da45dbaf547",
-    "reason": " Reviewed: explicitly label kernel totals as including DIRECT; domestic-table maintenance updates the core fallback, distinct from subscription geodata. Native Mihomo reload is atomic with count readback/rollback and no restart. K delayed startup clears only the previous stop marker before dispatch; later user cancellation still respected and fake readiness regression covered."
+    "sha256": "8c8da30d08b82c6197af48729faf380588ef2799e6feb7720c86220fa8417621",
+    "reason": "Validate bounded HTTPS custom native sources before any table changes; retain the fixed web default and existing rollback."
   },
   "payload/starts/afstart.sh": {
     "sha256": "59a5246f877eae679f30ca0c88a2c49a0e659b71a883f0b6b3c9cdea5e30ea91",
@@ -144,8 +144,8 @@
     "reason": "Reviewed backup transaction: authenticated live DAV gate, complete component manifest and independent baseline catalog, exact installed-version recovery, CLI update persistence/feedback; failure preserves previous backup and user settings"
   },
   "payload/menus/9_upgrade.sh": {
-    "sha256": "11aa5d499a6db8ef6f1e1c8485666f2de8b14d632f633fb0e1c1322caa17edd4",
-    "reason": "Reviewed backup transaction: authenticated live DAV gate, complete component manifest and independent baseline catalog, exact installed-version recovery, CLI update persistence/feedback; failure preserves previous backup and user settings"
+    "sha256": "89af2111a0c639009ec8cb7c928556e822f1e35eb3e0aba988018437e5d250d5",
+    "reason": "Native CN-IP entries share manage rules validation, operation lock, persisted table and rollback; domain update wrapper remains unchanged. Native status shows the same saved table date and hash instead of an unrelated upstream release label."
   },
   "payload/starts/remote.sh": {
     "sha256": "76aa47eef04be659a056c12679d768bf0b2f8ce4c93c2ea5319025fe8183fc37",

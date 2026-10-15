@@ -1,5 +1,7 @@
 #!/bin/sh
 # Sourced by manage.sh: shares its operation lock and service/save functions.
+rules_source=${SC_RULES_SOURCE_URL:-https://ispip.clang.cn/all_cn.txt}
+[ "${#rules_source}" -le 2048 ] && printf '%s' "$rules_source" | grep -Eq '^https://[^/@#[:space:]]+(/[^[:space:]#]*)?$' || { fail rules_invalid_source;return 1; }
 . "$C/starts/rules_path.sh"
 rules_ensure || { fail rules_invalid_previous_kept; return 1; }
 R="$D/rules"
@@ -8,7 +10,7 @@ phase fetching downloading_rules
 : > "$D/worker.log"
 cat /etc/ssl/certs/*.crt "$C/configs/subscription-ca.pem" > "$R/ca.pem"
 # Keep the existing domestic IPv4 source; verify HTTPS and limit the feed size.
-if ! curl -4 --cacert "$R/ca.pem" --noproxy '*' -fsS --connect-timeout 10 --max-time 40 --max-filesize 262144 https://ispip.clang.cn/all_cn.txt -o "$R/raw" 2>> "$D/worker.log"; then
+if ! curl -4 --cacert "$R/ca.pem" --noproxy '*' -fsS --connect-timeout 10 --max-time 40 --max-filesize 262144 "$rules_source" -o "$R/raw" 2>> "$D/worker.log"; then
  fail rules_download_failed; return 1
 fi
 [ "$(stat -c %s "$R/raw")" -le 262144 ] && awk -f "$C/starts/rules_validate.awk" "$R/raw" > "$R/new.txt" || { fail rules_invalid_previous_kept; return 1; }

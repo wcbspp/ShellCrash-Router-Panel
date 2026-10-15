@@ -103,3 +103,47 @@
  	;;
  	esac
  }
+@@ -488,7 +445,21 @@
+ }
+ 
+ #数据库
+-getgeo(){ #下载Geo文件
++getgeo(){
++ if [ "$geoname" = cn_ip.txt ];then panel_ip_update;else getgeo_native;fi
++}
++getcustgeo(){
++ if [ "$geoname" = cn_ip.txt ];then panel_ip_update "$custgeolink";else getcustgeo_native;fi
++}
++panel_ip_update(){
++ # Share the web transaction and persist the exact table used at startup.
++ if lua /data/ShellCrash/ax5/rules-cli.lua "${1:-https://ispip.clang.cn/all_cn.txt}" &&
++  lua -e 'local M=dofile("/data/ShellCrash/ax5/common.lua");os.exit(M.load(M.R.."/job.json").phase=="done"and 0 or 1)';then
++  echo '国内 IP 已通过共用事务确认，重启使用持久表与版本记录。'
++ else echo '国内 IP 更新未完成，原配置保留，请查看面板操作结果。';return 1;fi
++}
++
++getgeo_native(){ #下载Geo文件
+ 	#生成链接
+ 	echo "-----------------------------------------------"
+ 	echo "正在从服务器获取数据库文件…………"
+@@ -517,7 +488,7 @@
+ 	sleep 1
+ }
+ 
+-getcustgeo(){
++getcustgeo_native(){
+ 	echo "-----------------------------------------------"
+ 	echo "正在获取数据库文件…………"
+ 	webget "$TMPDIR"/$geoname $custgeolink
+@@ -650,6 +621,11 @@
+ setgeo() {
+ 	while true; do
+ 		. $CFG_PATH > /dev/null
++        if [ -s /data/ShellCrash/configs/cn_ip.txt ];then
++         ip_date=$(cat /data/ShellCrash/configs/rules-date 2>/dev/null)
++         ip_sha=$(openssl dgst -sha256 /data/ShellCrash/configs/cn_ip.txt | awk '{print $NF}' | cut -c1-12)
++         china_ip_list_v="$ip_date / $ip_sha"
++        fi
+ 		[ -n "$cn_mini_v" ] && geo_type_des=精简版 || geo_type_des=全球版
+ 		echo "-----------------------------------------------"
+ 		echo -e "\033[36m请选择需要更新的Geo数据库文件：\033[0m"

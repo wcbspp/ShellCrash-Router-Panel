@@ -171,7 +171,11 @@ local function execute()
  elseif a=='domainupdate'then
   guard();phase('working','database_updating',true);local result=dofile(M.C..'/ax5/database.lua').update(M,service);phase('done',result,false)
  elseif a=='rules'then
-  guard();phase('fetching','downloading_rules',true);fetched('https://ispip.clang.cn/all_cn.txt',M.R..'/rules.raw')
+  guard();phase('fetching','downloading_rules',true)
+  local rules_url=req.rules_url or'https://ispip.clang.cn/all_cn.txt'
+  local authority=type(rules_url)=='string'and rules_url:match('^https://([^/]+)')
+  if not authority or authority:find('@',1,true)or rules_url:find('[%s%c#]')or #rules_url>2048 then fail('rules_invalid_source')end
+  fetched(rules_url,M.R..'/rules.raw')
   if not M.run('awk -f '..M.C..'/ax5/rules_validate.awk '..M.R..'/rules.raw > '..M.R..'/rules.new')then fail('rules_invalid_previous_kept')end
   local ips={};for line in M.read(M.R..'/rules.new'):gmatch('[^\n]+')do ips[#ips+1]=line end
   if #ips<1000 or #ips>10000 then fail('rules_invalid_previous_kept')end

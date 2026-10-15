@@ -72,8 +72,8 @@
     "reason": "Regression coverage for manual path rollback/pin readback, partial and stale measurements, UA choice/state isolation and truthful filtered counts."
   },
   "ax5/job.lua": {
-    "sha256": "b47ea912c446eb457ad205c2dd85dff072c26cefb36459337d06633eccba97ac",
-    "reason": "Detached jobs own their operation lock; inspection/recovery exec release the waiting Lua interpreter and retain PID/lock ownership."
+    "sha256": "9baa5400b3d21ae6ff2d106fe080de9b6f0e59df2b4326bb98b875f41cfc06b9",
+    "reason": "Route local native CN-IP requests through the existing rules transaction with a bounded HTTPS source; authenticated web requests retain the fixed default."
   },
   "tests/test_proxy_mode.js": {
     "sha256": "0d476681fd7c939c813fea8283fbb786eab2d3a1432fd0b4cedf240ef4489183",
@@ -152,8 +152,8 @@
     "reason": "Reviewed backup transaction: authenticated live DAV gate, complete component manifest and independent baseline catalog, exact installed-version recovery, CLI update persistence/feedback; failure preserves previous backup and user settings"
   },
   "tool-patches/menus-9_upgrade.sh.patch": {
-    "sha256": "d36b92cc812e35460ad41616460d6ba85795df9db8eada5f1869029e8264a3dd",
-    "reason": "Reviewed backup transaction: authenticated live DAV gate, complete component manifest and independent baseline catalog, exact installed-version recovery, CLI update persistence/feedback; failure preserves previous backup and user settings"
+    "sha256": "e083468dd00f967d4c7b7275d1edfae0c618cd4906232303981f89f6286263f8",
+    "reason": "Native default/custom CN-IP entries use the same operation lock, validation and persistence transaction as the panel. Native status shows the same saved table date and hash instead of an unrelated upstream release label."
   },
   "tests/test_control_inventory.py": {
     "sha256": "0daa2d77ed133aa97d0b870a17958d0bb3f0a63361be2f82db3ff9aae06d68ab",

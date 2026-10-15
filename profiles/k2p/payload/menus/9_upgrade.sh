@@ -374,8 +374,23 @@ setcore() {
 
 #数据库
 # Persist the exact DNS library version after either native download entry.
-getgeo(){ domain_update_wrap getgeo_native; }
-getcustgeo(){ domain_update_wrap getcustgeo_native; }
+getgeo(){
+ if [ "$geoname" = cn_ip.txt ];then panel_ip_update;else domain_update_wrap getgeo_native;fi
+}
+getcustgeo(){
+ if [ "$geoname" = cn_ip.txt ];then panel_ip_update "$custgeolink";else domain_update_wrap getcustgeo_native;fi
+}
+panel_ip_update(){
+ # The native and web entries must update the same persistent table, metadata,
+ # validation, operation lock and rollback transaction.
+ local_id=$(head -c 8 /dev/urandom | md5sum | cut -c1-8)
+ code=0
+ SC_RULES_SOURCE_URL="${1:-https://ispip.clang.cn/all_cn.txt}" /etc/storage/ShellCrash/starts/manage.sh rules "$local_id" || code=$?
+ if [ "$code" != 0 ] || [ "$(cat /tmp/sc-admin/phase 2>/dev/null)" != done ];then
+  echo '国内 IP 更新未完成，当前表保留：';cat /tmp/sc-admin/message 2>/dev/null;return 1
+ fi
+ echo '国内 IP 已通过共用事务确认，重启使用持久表与版本记录。'
+}
 domain_update_wrap(){
  C=/etc/storage/ShellCrash;D=/tmp/sc-admin;mkdir -p "$D"
  previous="$D/domain-cli.before.srs";current=/tmp/ShellCrash/ruleset/cn.srs
@@ -557,6 +572,10 @@ setcustgeo() {
 setgeo() {
 	while true; do
 		. $CFG_PATH > /dev/null
+        # The panel's persisted table and hash, not the upstream release label.
+        if [ -s "$CRASHDIR/configs/rules.meta" ];then
+         china_ip_list_v="$(sed -n '2p' "$CRASHDIR/configs/rules.meta") / $(sed -n '3p' "$CRASHDIR/configs/rules.meta" | cut -c1-12)"
+        fi
 		[ -n "$cn_mini_v" ] && geo_type_des=精简版 || geo_type_des=全球版
 		echo "-----------------------------------------------"
 		echo -e "\033[36m请选择需要更新的Geo数据库文件：\033[0m"
