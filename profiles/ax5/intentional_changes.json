@@ -52,8 +52,8 @@
     "reason": "Regression tests for converter recovery while proxy fails and direct provider mode never contacting conversion endpoints."
   },
   "ui/index.html": {
-    "sha256": "a4822ff9bbaee750de09d5e2e06b35bba904eca14ba5ff78657574ac73b8cd17",
-    "reason": "Read-only recovery dialog controls included in detailed menu/button inventory; compact responsive backup entry, independent baseline actions and saved/draft path status."
+    "sha256": "b7693af974158a4d913c3c138ab81d48ea40cbb5603681e3895462a840ad1ba0",
+    "reason": "Read-only recovery dialog controls included in detailed menu/button inventory; compact responsive backup entry, independent baseline actions and saved/draft path status. Wrap ZeroTier diagnostic text on narrow screens without hiding content."
   },
   "ui/sites.js": {
     "sha256": "59f344a411b9ce54279f7f5bb7dcf7ec76c7abedaeea2416724911c9d9dd0775",

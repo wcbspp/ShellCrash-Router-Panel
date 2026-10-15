@@ -21,8 +21,8 @@ AX5-OPT-proxy-mode-1,AX5,桌面,部分通过,实机操作读回通过；本用�
 AX5-OPT-proxy-mode-1,AX5,手机窄屏,部分通过,实机操作读回通过；本用例全部边界仍待完成,私有 ax5-final-runtime；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
 AX5-OPT-proxy-mode-2,AX5,桌面,部分通过,实机操作读回通过；本用例全部边界仍待完成,私有 ax5-final-runtime；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
 AX5-OPT-proxy-mode-2,AX5,手机窄屏,部分通过,实机操作读回通过；本用例全部边界仍待完成,私有 ax5-final-runtime；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
-AX5-CTRL-summary-home-1,AX5,桌面,未执行,,,,
-AX5-CTRL-summary-home-1,AX5,手机窄屏,未执行,,,,
+AX5-CTRL-summary-home-1,AX5,桌面,实机页面通过,实际点击展开/收起并恢复原状态，内容存在且无横向溢出；嵌套说明先展开父层再复原；管理写请求0，配置/PID/boot/cron前后一致；窄屏为390px浏览器布局,LIVE_TEST_2026-10-16_READONLY_CONTROLS.md；私有control-readonly-20261016.private结果与前后指纹,2026-10-16,UI SHA256 b7693af974158a4d；恢复按钮开放；未发布
+AX5-CTRL-summary-home-1,AX5,手机窄屏,实机页面通过,实际点击展开/收起并恢复原状态，内容存在且无横向溢出；嵌套说明先展开父层再复原；管理写请求0，配置/PID/boot/cron前后一致；窄屏为390px浏览器布局,LIVE_TEST_2026-10-16_READONLY_CONTROLS.md；私有control-readonly-20261016.private结果与前后指纹,2026-10-16,UI SHA256 b7693af974158a4d；恢复按钮开放；未发布
 AX5-CTRL-advanced-open,AX5,桌面,部分通过,两种布局正常规则/策略组/连接查询、DNS草稿撤销、高级子面板真实策略组可见及返回已实测；本控件完整边界待补。,私有 ax5-streamed-acceptance-final；LIVE_TEST_2026-10-14_ACCEPTANCE_CONTINUATION.md,2026-10-14,本地验收补丁；未发布
 AX5-CTRL-advanced-open,AX5,手机窄屏,部分通过,两种布局正常规则/策略组/连接查询、DNS草稿撤销、高级子面板真实策略组可见及返回已实测；本控件完整边界待补。,私有 ax5-streamed-acceptance-final；LIVE_TEST_2026-10-14_ACCEPTANCE_CONTINUATION.md,2026-10-14,本地验收补丁；未发布
 AX5-CTRL-dashboard-scale,AX5,桌面,部分通过,实际加载高级面板，四档比例与返回均正常；全部写操作和失败边界仍待完成,LIVE_TEST_2026-10-14_REBOOT_REMOTE.md,2026-10-14,本地统一候选，未发布
@@ -119,16 +119,16 @@ AX5-CTRL-converter-template,AX5,桌面,未执行,,,,
 AX5-CTRL-converter-template,AX5,手机窄屏,未执行,,,,
 AX5-CTRL-converter-auto,AX5,桌面,未执行,,,,
 AX5-CTRL-converter-auto,AX5,手机窄屏,未执行,,,,
-AX5-CTRL-summary-subscription-2,AX5,桌面,未执行,,,,
-AX5-CTRL-summary-subscription-2,AX5,手机窄屏,未执行,,,,
+AX5-CTRL-summary-subscription-2,AX5,桌面,实机页面通过,实际点击展开/收起并恢复原状态，内容存在且无横向溢出；嵌套说明先展开父层再复原；管理写请求0，配置/PID/boot/cron前后一致；窄屏为390px浏览器布局,LIVE_TEST_2026-10-16_READONLY_CONTROLS.md；私有control-readonly-20261016.private结果与前后指纹,2026-10-16,UI SHA256 b7693af974158a4d；恢复按钮开放；未发布
+AX5-CTRL-summary-subscription-2,AX5,手机窄屏,实机页面通过,实际点击展开/收起并恢复原状态，内容存在且无横向溢出；嵌套说明先展开父层再复原；管理写请求0，配置/PID/boot/cron前后一致；窄屏为390px浏览器布局,LIVE_TEST_2026-10-16_READONLY_CONTROLS.md；私有control-readonly-20261016.private结果与前后指纹,2026-10-16,UI SHA256 b7693af974158a4d；恢复按钮开放；未发布
 AX5-CTRL-subscription-exclude,AX5,桌面,部分通过,本轮实际页面交互已执行；该用例全部边界与恢复场景未齐，不算全量通过,私有实机记录 ax5-full-forms；公开范围见 LIVE_TEST_2026-10-14_TRAFFIC_AND_K2P.md,2026-10-14,本地 rc.2 候选，未发布
 AX5-CTRL-subscription-exclude,AX5,手机窄屏,部分通过,本轮实际页面交互已执行；该用例全部边界与恢复场景未齐，不算全量通过,私有实机记录 ax5-full-forms；公开范围见 LIVE_TEST_2026-10-14_TRAFFIC_AND_K2P.md,2026-10-14,本地 rc.2 候选，未发布
 AX5-CTRL-subscription-defaults-refresh,AX5,桌面,部分通过,真实菜单操作及状态读回通过；版本检查未重启内核；其他异常/边界待测。,私有 ax5-normal-menu-checks,2026-10-14,本地验收补丁，未发布
 AX5-CTRL-subscription-defaults-refresh,AX5,手机窄屏,部分通过,真实菜单操作及状态读回通过；版本检查未重启内核；其他异常/边界待测。,私有 ax5-normal-menu-checks,2026-10-14,本地验收补丁，未发布
-AX5-CTRL-summary-subscription-3,AX5,桌面,未执行,,,,
-AX5-CTRL-summary-subscription-3,AX5,手机窄屏,未执行,,,,
-AX5-CTRL-summary-subscription-4,AX5,桌面,未执行,,,,
-AX5-CTRL-summary-subscription-4,AX5,手机窄屏,未执行,,,,
+AX5-CTRL-summary-subscription-3,AX5,桌面,实机页面通过,实际点击展开/收起并恢复原状态，内容存在且无横向溢出；嵌套说明先展开父层再复原；管理写请求0，配置/PID/boot/cron前后一致；窄屏为390px浏览器布局,LIVE_TEST_2026-10-16_READONLY_CONTROLS.md；私有control-readonly-20261016.private结果与前后指纹,2026-10-16,UI SHA256 b7693af974158a4d；恢复按钮开放；未发布
+AX5-CTRL-summary-subscription-3,AX5,手机窄屏,实机页面通过,实际点击展开/收起并恢复原状态，内容存在且无横向溢出；嵌套说明先展开父层再复原；管理写请求0，配置/PID/boot/cron前后一致；窄屏为390px浏览器布局,LIVE_TEST_2026-10-16_READONLY_CONTROLS.md；私有control-readonly-20261016.private结果与前后指纹,2026-10-16,UI SHA256 b7693af974158a4d；恢复按钮开放；未发布
+AX5-CTRL-summary-subscription-4,AX5,桌面,实机页面通过,实际点击展开/收起并恢复原状态，内容存在且无横向溢出；嵌套说明先展开父层再复原；管理写请求0，配置/PID/boot/cron前后一致；窄屏为390px浏览器布局,LIVE_TEST_2026-10-16_READONLY_CONTROLS.md；私有control-readonly-20261016.private结果与前后指纹,2026-10-16,UI SHA256 b7693af974158a4d；恢复按钮开放；未发布
+AX5-CTRL-summary-subscription-4,AX5,手机窄屏,实机页面通过,实际点击展开/收起并恢复原状态，内容存在且无横向溢出；嵌套说明先展开父层再复原；管理写请求0，配置/PID/boot/cron前后一致；窄屏为390px浏览器布局,LIVE_TEST_2026-10-16_READONLY_CONTROLS.md；私有control-readonly-20261016.private结果与前后指纹,2026-10-16,UI SHA256 b7693af974158a4d；恢复按钮开放；未发布
 AX5-CTRL-subscription-update,AX5,桌面,部分通过,本轮实际页面交互已执行；该用例全部边界与恢复场景未齐，不算全量通过,私有实机记录 ax5-full-forms；公开范围见 LIVE_TEST_2026-10-14_TRAFFIC_AND_K2P.md,2026-10-14,本地 rc.2 候选，未发布
 AX5-CTRL-subscription-update,AX5,手机窄屏,部分通过,本轮实际页面交互已执行；该用例全部边界与恢复场景未齐，不算全量通过,私有实机记录 ax5-full-forms；公开范围见 LIVE_TEST_2026-10-14_TRAFFIC_AND_K2P.md,2026-10-14,本地 rc.2 候选，未发布
 AX5-CTRL-guard-mode,AX5,桌面,未执行,,,,
@@ -139,8 +139,8 @@ AX5-OPT-guard-mode-1,AX5,桌面,未执行,,,,
 AX5-OPT-guard-mode-1,AX5,手机窄屏,未执行,,,,
 AX5-CTRL-guard-save,AX5,桌面,未执行,,,,
 AX5-CTRL-guard-save,AX5,手机窄屏,未执行,,,,
-AX5-CTRL-summary-subscription-5,AX5,桌面,未执行,,,,
-AX5-CTRL-summary-subscription-5,AX5,手机窄屏,未执行,,,,
+AX5-CTRL-summary-subscription-5,AX5,桌面,实机页面通过,实际点击展开/收起并恢复原状态，内容存在且无横向溢出；嵌套说明先展开父层再复原；管理写请求0，配置/PID/boot/cron前后一致；窄屏为390px浏览器布局,LIVE_TEST_2026-10-16_READONLY_CONTROLS.md；私有control-readonly-20261016.private结果与前后指纹,2026-10-16,UI SHA256 b7693af974158a4d；恢复按钮开放；未发布
+AX5-CTRL-summary-subscription-5,AX5,手机窄屏,实机页面通过,实际点击展开/收起并恢复原状态，内容存在且无横向溢出；嵌套说明先展开父层再复原；管理写请求0，配置/PID/boot/cron前后一致；窄屏为390px浏览器布局,LIVE_TEST_2026-10-16_READONLY_CONTROLS.md；私有control-readonly-20261016.private结果与前后指纹,2026-10-16,UI SHA256 b7693af974158a4d；恢复按钮开放；未发布
 AX5-CTRL-tool-check,AX5,桌面,部分通过,真实菜单操作及状态读回通过；版本检查未重启内核；其他异常/边界待测。,私有 ax5-normal-menu-checks,2026-10-14,本地验收补丁，未发布
 AX5-CTRL-tool-check,AX5,手机窄屏,部分通过,真实菜单操作及状态读回通过；版本检查未重启内核；其他异常/边界待测。,私有 ax5-normal-menu-checks,2026-10-14,本地验收补丁，未发布
 AX5-CTRL-tool-update,AX5,桌面,未执行,,,,
@@ -173,8 +173,8 @@ AX5-CTRL-backup-local,AX5,桌面,部分通过,实际按钮正常路径已执行�
 AX5-CTRL-backup-local,AX5,手机窄屏,部分通过,实际按钮正常路径已执行；其他异常与恢复边界仍待完成,LIVE_TEST_2026-10-14_REBOOT_REMOTE.md；私有 ax5-export.json,2026-10-14,本地统一候选；保留用户配置，未发布
 AX5-CTRL-backup-core,AX5,桌面,未执行,,,,
 AX5-CTRL-backup-core,AX5,手机窄屏,未执行,,,,
-AX5-CTRL-summary-backup-6,AX5,桌面,未执行,,,,
-AX5-CTRL-summary-backup-6,AX5,手机窄屏,未执行,,,,
+AX5-CTRL-summary-backup-6,AX5,桌面,实机页面通过,实际点击展开/收起并恢复原状态，内容存在且无横向溢出；嵌套说明先展开父层再复原；管理写请求0，配置/PID/boot/cron前后一致；窄屏为390px浏览器布局,LIVE_TEST_2026-10-16_READONLY_CONTROLS.md；私有control-readonly-20261016.private结果与前后指纹,2026-10-16,UI SHA256 b7693af974158a4d；恢复按钮开放；未发布
+AX5-CTRL-summary-backup-6,AX5,手机窄屏,实机页面通过,实际点击展开/收起并恢复原状态，内容存在且无横向溢出；嵌套说明先展开父层再复原；管理写请求0，配置/PID/boot/cron前后一致；窄屏为390px浏览器布局,LIVE_TEST_2026-10-16_READONLY_CONTROLS.md；私有control-readonly-20261016.private结果与前后指纹,2026-10-16,UI SHA256 b7693af974158a4d；恢复按钮开放；未发布
 AX5-CTRL-policy-domain,AX5,桌面,部分通过,本轮实际页面交互已执行；该用例全部边界与恢复场景未齐，不算全量通过,私有实机记录 ax5-full-forms；公开范围见 LIVE_TEST_2026-10-14_TRAFFIC_AND_K2P.md,2026-10-14,本地 rc.2 候选，未发布
 AX5-CTRL-policy-domain,AX5,手机窄屏,部分通过,本轮实际页面交互已执行；该用例全部边界与恢复场景未齐，不算全量通过,私有实机记录 ax5-full-forms；公开范围见 LIVE_TEST_2026-10-14_TRAFFIC_AND_K2P.md,2026-10-14,本地 rc.2 候选，未发布
 AX5-CTRL-policy-match,AX5,桌面,未执行,,,,
@@ -189,8 +189,8 @@ AX5-CTRL-policy-add-submit,AX5,桌面,部分通过,本轮实际页面交互已�
 AX5-CTRL-policy-add-submit,AX5,手机窄屏,部分通过,本轮实际页面交互已执行；该用例全部边界与恢复场景未齐，不算全量通过,私有实机记录 ax5-full-forms；公开范围见 LIVE_TEST_2026-10-14_TRAFFIC_AND_K2P.md,2026-10-14,本地 rc.2 候选，未发布
 AX5-CTRL-policy-save,AX5,桌面,部分通过,实际保存测试后缀直连，新CONNECT连接命中并走DIRECT；原规则已恢复。其余多条/异常边界待补。,私有 ax5-policy-live；LIVE_TEST_2026-10-14_ACCEPTANCE_CONTINUATION.md,2026-10-14,本地验收补丁；未发布
 AX5-CTRL-policy-save,AX5,手机窄屏,部分通过,实际保存测试后缀直连，新CONNECT连接命中并走DIRECT；原规则已恢复。其余多条/异常边界待补。,私有 ax5-policy-live；LIVE_TEST_2026-10-14_ACCEPTANCE_CONTINUATION.md,2026-10-14,本地验收补丁；未发布
-AX5-CTRL-summary-rules-7,AX5,桌面,未执行,,,,
-AX5-CTRL-summary-rules-7,AX5,手机窄屏,未执行,,,,
+AX5-CTRL-summary-rules-7,AX5,桌面,实机页面通过,实际点击展开/收起并恢复原状态，内容存在且无横向溢出；嵌套说明先展开父层再复原；管理写请求0，配置/PID/boot/cron前后一致；窄屏为390px浏览器布局,LIVE_TEST_2026-10-16_READONLY_CONTROLS.md；私有control-readonly-20261016.private结果与前后指纹,2026-10-16,UI SHA256 b7693af974158a4d；恢复按钮开放；未发布
+AX5-CTRL-summary-rules-7,AX5,手机窄屏,实机页面通过,实际点击展开/收起并恢复原状态，内容存在且无横向溢出；嵌套说明先展开父层再复原；管理写请求0，配置/PID/boot/cron前后一致；窄屏为390px浏览器布局,LIVE_TEST_2026-10-16_READONLY_CONTROLS.md；私有control-readonly-20261016.private结果与前后指纹,2026-10-16,UI SHA256 b7693af974158a4d；恢复按钮开放；未发布
 AX5-CTRL-inspect-refresh,AX5,桌面,部分通过,real native query and local filter,LIVE_TEST_2026-10-14_REBOOT_REMOTE.md；私有 ax5-business.json,2026-10-14,本地统一候选；保留用户配置，未发布
 AX5-CTRL-inspect-refresh,AX5,手机窄屏,部分通过,real native query and local filter,LIVE_TEST_2026-10-14_REBOOT_REMOTE.md；私有 ax5-business.json,2026-10-14,本地统一候选；保留用户配置，未发布
 AX5-CTRL-inspect-kind,AX5,桌面,部分通过,两种布局正常规则/策略组/连接查询、DNS草稿撤销、高级子面板真实策略组可见及返回已实测；本控件完整边界待补。,私有 ax5-streamed-acceptance-final；LIVE_TEST_2026-10-14_ACCEPTANCE_CONTINUATION.md,2026-10-14,本地验收补丁；未发布
@@ -209,14 +209,14 @@ AX5-CTRL-inspect-previous,AX5,桌面,未执行,,,,
 AX5-CTRL-inspect-previous,AX5,手机窄屏,未执行,,,,
 AX5-CTRL-inspect-next,AX5,桌面,未执行,,,,
 AX5-CTRL-inspect-next,AX5,手机窄屏,未执行,,,,
-AX5-CTRL-summary-rules-8,AX5,桌面,未执行,,,,
-AX5-CTRL-summary-rules-8,AX5,手机窄屏,未执行,,,,
+AX5-CTRL-summary-rules-8,AX5,桌面,实机页面通过,实际点击展开/收起并恢复原状态，内容存在且无横向溢出；嵌套说明先展开父层再复原；管理写请求0，配置/PID/boot/cron前后一致；窄屏为390px浏览器布局,LIVE_TEST_2026-10-16_READONLY_CONTROLS.md；私有control-readonly-20261016.private结果与前后指纹,2026-10-16,UI SHA256 b7693af974158a4d；恢复按钮开放；未发布
+AX5-CTRL-summary-rules-8,AX5,手机窄屏,实机页面通过,实际点击展开/收起并恢复原状态，内容存在且无横向溢出；嵌套说明先展开父层再复原；管理写请求0，配置/PID/boot/cron前后一致；窄屏为390px浏览器布局,LIVE_TEST_2026-10-16_READONLY_CONTROLS.md；私有control-readonly-20261016.private结果与前后指纹,2026-10-16,UI SHA256 b7693af974158a4d；恢复按钮开放；未发布
 AX5-CTRL-rules-update,AX5,桌面,部分通过,桌面更新国内表并确认加载；手机同值更新不重启。AX5 原生 provider 无感刷新；K2P 复用内核重启。网络失败及所有边界仍未齐。,私有 ax5-domestic-rules-update.private.json；见 LIVE_TEST_2026-10-14_DOMESTIC_FALLBACK.md,2026-10-14,本地候选；未发布
 AX5-CTRL-rules-update,AX5,手机窄屏,部分通过,桌面更新国内表并确认加载；手机同值更新不重启。AX5 原生 provider 无感刷新；K2P 复用内核重启。网络失败及所有边界仍未齐。,私有 ax5-domestic-rules-update.private.json；见 LIVE_TEST_2026-10-14_DOMESTIC_FALLBACK.md,2026-10-14,本地候选；未发布
 AX5-CTRL-domain-update,AX5,桌面,未执行,,,,
 AX5-CTRL-domain-update,AX5,手机窄屏,未执行,,,,
-AX5-CTRL-summary-rules-9,AX5,桌面,未执行,,,,
-AX5-CTRL-summary-rules-9,AX5,手机窄屏,未执行,,,,
+AX5-CTRL-summary-rules-9,AX5,桌面,实机页面通过,实际点击展开/收起并恢复原状态，内容存在且无横向溢出；嵌套说明先展开父层再复原；管理写请求0，配置/PID/boot/cron前后一致；窄屏为390px浏览器布局,LIVE_TEST_2026-10-16_READONLY_CONTROLS.md；私有control-readonly-20261016.private结果与前后指纹,2026-10-16,UI SHA256 b7693af974158a4d；恢复按钮开放；未发布
+AX5-CTRL-summary-rules-9,AX5,手机窄屏,实机页面通过,实际点击展开/收起并恢复原状态，内容存在且无横向溢出；嵌套说明先展开父层再复原；管理写请求0，配置/PID/boot/cron前后一致；窄屏为390px浏览器布局,LIVE_TEST_2026-10-16_READONLY_CONTROLS.md；私有control-readonly-20261016.private结果与前后指纹,2026-10-16,UI SHA256 b7693af974158a4d；恢复按钮开放；未发布
 AX5-CTRL-dns-mode,AX5,桌面,部分通过,两种布局正常规则/策略组/连接查询、DNS草稿撤销、高级子面板真实策略组可见及返回已实测；本控件完整边界待补。,私有 ax5-streamed-acceptance-final；LIVE_TEST_2026-10-14_ACCEPTANCE_CONTINUATION.md,2026-10-14,本地验收补丁；未发布
 AX5-CTRL-dns-mode,AX5,手机窄屏,部分通过,两种布局正常规则/策略组/连接查询、DNS草稿撤销、高级子面板真实策略组可见及返回已实测；本控件完整边界待补。,私有 ax5-streamed-acceptance-final；LIVE_TEST_2026-10-14_ACCEPTANCE_CONTINUATION.md,2026-10-14,本地验收补丁；未发布
 AX5-OPT-dns-mode-0,AX5,桌面,部分通过,本轮实际页面交互已执行；该用例全部边界与恢复场景未齐，不算全量通过,私有实机记录 ax5-full-forms；公开范围见 LIVE_TEST_2026-10-14_TRAFFIC_AND_K2P.md,2026-10-14,本地 rc.2 候选，未发布
@@ -231,14 +231,14 @@ AX5-CTRL-dns-filter,AX5,桌面,部分通过,实际新增DNS例外后返回真实
 AX5-CTRL-dns-filter,AX5,手机窄屏,部分通过,实际新增DNS例外后返回真实A记录；手机布局恢复原过滤表后回到Fake-IP。同值保存无需重启。非法输入/重启恢复边界待补。,私有 ax5-dns-live / ax5-dns-save-noop；LIVE_TEST_2026-10-14_ACCEPTANCE_CONTINUATION.md,2026-10-14,本地验收补丁；未发布
 AX5-CTRL-zt-refresh,AX5,桌面,部分通过,实机操作读回通过；本用例全部边界仍待完成,私有 ax5-final-runtime；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
 AX5-CTRL-zt-refresh,AX5,手机窄屏,部分通过,实机操作读回通过；本用例全部边界仍待完成,私有 ax5-final-runtime；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
-AX5-CTRL-summary-monitor-10,AX5,桌面,未执行,,,,
-AX5-CTRL-summary-monitor-10,AX5,手机窄屏,未执行,,,,
+AX5-CTRL-summary-monitor-10,AX5,桌面,实机页面通过,实际点击展开/收起并恢复原状态，内容存在且无横向溢出；嵌套说明先展开父层再复原；管理写请求0，配置/PID/boot/cron前后一致；窄屏为390px浏览器布局,LIVE_TEST_2026-10-16_READONLY_CONTROLS.md；私有control-readonly-20261016.private结果与前后指纹,2026-10-16,UI SHA256 b7693af974158a4d；恢复按钮开放；未发布
+AX5-CTRL-summary-monitor-10,AX5,手机窄屏,实机页面通过,实际点击展开/收起并恢复原状态，内容存在且无横向溢出；嵌套说明先展开父层再复原；管理写请求0，配置/PID/boot/cron前后一致；窄屏为390px浏览器布局,LIVE_TEST_2026-10-16_READONLY_CONTROLS.md；私有control-readonly-20261016.private结果与前后指纹,2026-10-16,UI SHA256 b7693af974158a4d；恢复按钮开放；未发布
 AX5-CTRL-monitor-refresh,AX5,桌面,部分通过,实机操作读回通过；本用例全部边界仍待完成,私有 ax5-final-runtime；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
 AX5-CTRL-monitor-refresh,AX5,手机窄屏,部分通过,实机操作读回通过；本用例全部边界仍待完成,私有 ax5-final-runtime；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
 AX5-CTRL-memory-cleanup,AX5,桌面,未执行,,,,
 AX5-CTRL-memory-cleanup,AX5,手机窄屏,未执行,,,,
-AX5-CTRL-summary-monitor-11,AX5,桌面,未执行,,,,
-AX5-CTRL-summary-monitor-11,AX5,手机窄屏,未执行,,,,
+AX5-CTRL-summary-monitor-11,AX5,桌面,实机页面通过,实际点击展开/收起并恢复原状态，内容存在且无横向溢出；嵌套说明先展开父层再复原；管理写请求0，配置/PID/boot/cron前后一致；窄屏为390px浏览器布局,LIVE_TEST_2026-10-16_READONLY_CONTROLS.md；私有control-readonly-20261016.private结果与前后指纹,2026-10-16,UI SHA256 b7693af974158a4d；恢复按钮开放；未发布
+AX5-CTRL-summary-monitor-11,AX5,手机窄屏,实机页面通过,实际点击展开/收起并恢复原状态，内容存在且无横向溢出；嵌套说明先展开父层再复原；管理写请求0，配置/PID/boot/cron前后一致；窄屏为390px浏览器布局,LIVE_TEST_2026-10-16_READONLY_CONTROLS.md；私有control-readonly-20261016.private结果与前后指纹,2026-10-16,UI SHA256 b7693af974158a4d；恢复按钮开放；未发布
 AX5-CTRL-memory-warning,AX5,桌面,部分通过,本轮实际页面交互已执行；该用例全部边界与恢复场景未齐，不算全量通过,私有实机记录 ax5-full-forms；公开范围见 LIVE_TEST_2026-10-14_TRAFFIC_AND_K2P.md,2026-10-14,本地 rc.2 候选，未发布
 AX5-CTRL-memory-warning,AX5,手机窄屏,部分通过,本轮实际页面交互已执行；该用例全部边界与恢复场景未齐，不算全量通过,私有实机记录 ax5-full-forms；公开范围见 LIVE_TEST_2026-10-14_TRAFFIC_AND_K2P.md,2026-10-14,本地 rc.2 候选，未发布
 AX5-CTRL-memory-protect,AX5,桌面,部分通过,本轮实际页面交互已执行；该用例全部边界与恢复场景未齐，不算全量通过,私有实机记录 ax5-full-forms；公开范围见 LIVE_TEST_2026-10-14_TRAFFIC_AND_K2P.md,2026-10-14,本地 rc.2 候选，未发布
@@ -247,12 +247,12 @@ AX5-CTRL-memory-trigger,AX5,桌面,部分通过,本轮实际页面交互已执�
 AX5-CTRL-memory-trigger,AX5,手机窄屏,部分通过,本轮实际页面交互已执行；该用例全部边界与恢复场景未齐，不算全量通过,私有实机记录 ax5-full-forms；公开范围见 LIVE_TEST_2026-10-14_TRAFFIC_AND_K2P.md,2026-10-14,本地 rc.2 候选，未发布
 AX5-CTRL-memory-limits-save,AX5,桌面,部分通过,本轮实际页面交互已执行；该用例全部边界与恢复场景未齐，不算全量通过,私有实机记录 ax5-full-forms；公开范围见 LIVE_TEST_2026-10-14_TRAFFIC_AND_K2P.md,2026-10-14,本地 rc.2 候选，未发布
 AX5-CTRL-memory-limits-save,AX5,手机窄屏,部分通过,本轮实际页面交互已执行；该用例全部边界与恢复场景未齐，不算全量通过,私有实机记录 ax5-full-forms；公开范围见 LIVE_TEST_2026-10-14_TRAFFIC_AND_K2P.md,2026-10-14,本地 rc.2 候选，未发布
-AX5-CTRL-summary-monitor-12,AX5,桌面,未执行,,,,
-AX5-CTRL-summary-monitor-12,AX5,手机窄屏,未执行,,,,
+AX5-CTRL-summary-monitor-12,AX5,桌面,实机页面通过,实际点击展开/收起并恢复原状态，内容存在且无横向溢出；嵌套说明先展开父层再复原；管理写请求0，配置/PID/boot/cron前后一致；窄屏为390px浏览器布局,LIVE_TEST_2026-10-16_READONLY_CONTROLS.md；私有control-readonly-20261016.private结果与前后指纹,2026-10-16,UI SHA256 b7693af974158a4d；恢复按钮开放；未发布
+AX5-CTRL-summary-monitor-12,AX5,手机窄屏,实机页面通过,实际点击展开/收起并恢复原状态，内容存在且无横向溢出；嵌套说明先展开父层再复原；管理写请求0，配置/PID/boot/cron前后一致；窄屏为390px浏览器布局,LIVE_TEST_2026-10-16_READONLY_CONTROLS.md；私有control-readonly-20261016.private结果与前后指纹,2026-10-16,UI SHA256 b7693af974158a4d；恢复按钮开放；未发布
 AX5-CTRL-incident-refresh,AX5,桌面,部分通过,实机操作读回通过；本用例全部边界仍待完成,私有 ax5-final-runtime；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
 AX5-CTRL-incident-refresh,AX5,手机窄屏,部分通过,实机操作读回通过；本用例全部边界仍待完成,私有 ax5-final-runtime；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
-AX5-CTRL-summary-monitor-13,AX5,桌面,未执行,,,,
-AX5-CTRL-summary-monitor-13,AX5,手机窄屏,未执行,,,,
+AX5-CTRL-summary-monitor-13,AX5,桌面,实机页面通过,实际点击展开/收起并恢复原状态，内容存在且无横向溢出；嵌套说明先展开父层再复原；管理写请求0，配置/PID/boot/cron前后一致；窄屏为390px浏览器布局,LIVE_TEST_2026-10-16_READONLY_CONTROLS.md；私有control-readonly-20261016.private结果与前后指纹,2026-10-16,UI SHA256 b7693af974158a4d；恢复按钮开放；未发布
+AX5-CTRL-summary-monitor-13,AX5,手机窄屏,实机页面通过,实际点击展开/收起并恢复原状态，内容存在且无横向溢出；嵌套说明先展开父层再复原；管理写请求0，配置/PID/boot/cron前后一致；窄屏为390px浏览器布局,LIVE_TEST_2026-10-16_READONLY_CONTROLS.md；私有control-readonly-20261016.private结果与前后指纹,2026-10-16,UI SHA256 b7693af974158a4d；恢复按钮开放；未发布
 AX5-CTRL-memory-refresh,AX5,桌面,部分通过,existing bounded memory history,LIVE_TEST_2026-10-14_REBOOT_REMOTE.md；私有 ax5-business.json,2026-10-14,本地统一候选；保留用户配置，未发布
 AX5-CTRL-memory-refresh,AX5,手机窄屏,部分通过,existing bounded memory history,LIVE_TEST_2026-10-14_REBOOT_REMOTE.md；私有 ax5-business.json,2026-10-14,本地统一候选；保留用户配置，未发布
 AX5-CTRL-logs-view,AX5,桌面,部分通过,实机操作读回通过；本用例全部边界仍待完成,私有 ax5-final-runtime；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
@@ -271,8 +271,8 @@ AX5-CTRL-logs-refresh,AX5,桌面,部分通过,actual refresh; logs retained,LIVE
 AX5-CTRL-logs-refresh,AX5,手机窄屏,部分通过,actual refresh; logs retained,LIVE_TEST_2026-10-14_REBOOT_REMOTE.md；私有 ax5-business.json,2026-10-14,本地统一候选；保留用户配置，未发布
 AX5-CTRL-logs-clear,AX5,桌面,未执行,,,,
 AX5-CTRL-logs-clear,AX5,手机窄屏,未执行,,,,
-AX5-CTRL-summary-home-14,AX5,桌面,未执行,,,,
-AX5-CTRL-summary-home-14,AX5,手机窄屏,未执行,,,,
+AX5-CTRL-summary-home-14,AX5,桌面,实机页面通过,实际点击展开/收起并恢复原状态，内容存在且无横向溢出；嵌套说明先展开父层再复原；管理写请求0，配置/PID/boot/cron前后一致；窄屏为390px浏览器布局,LIVE_TEST_2026-10-16_READONLY_CONTROLS.md；私有control-readonly-20261016.private结果与前后指纹,2026-10-16,UI SHA256 b7693af974158a4d；恢复按钮开放；未发布
+AX5-CTRL-summary-home-14,AX5,手机窄屏,实机页面通过,实际点击展开/收起并恢复原状态，内容存在且无横向溢出；嵌套说明先展开父层再复原；管理写请求0，配置/PID/boot/cron前后一致；窄屏为390px浏览器布局,LIVE_TEST_2026-10-16_READONLY_CONTROLS.md；私有control-readonly-20261016.private结果与前后指纹,2026-10-16,UI SHA256 b7693af974158a4d；恢复按钮开放；未发布
 AX5-DYN-node-select,AX5,桌面,未执行,,,,
 AX5-DYN-node-select,AX5,手机窄屏,未执行,,,,
 AX5-DYN-node-delay,AX5,桌面,未执行,,,,
@@ -349,8 +349,8 @@ K2P-OPT-proxy-mode-1,K2P,桌面,部分通过,实机操作读回通过；本用�
 K2P-OPT-proxy-mode-1,K2P,手机窄屏,部分通过,实机操作读回通过；本用例全部边界仍待完成,私有 k2p-final-runtime；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
 K2P-OPT-proxy-mode-2,K2P,桌面,部分通过,实机操作读回通过；本用例全部边界仍待完成,私有 k2p-final-runtime；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
 K2P-OPT-proxy-mode-2,K2P,手机窄屏,部分通过,实机操作读回通过；本用例全部边界仍待完成,私有 k2p-final-runtime；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
-K2P-CTRL-summary-home-1,K2P,桌面,未执行,,,,
-K2P-CTRL-summary-home-1,K2P,手机窄屏,未执行,,,,
+K2P-CTRL-summary-home-1,K2P,桌面,实机页面通过,实际点击展开/收起并恢复原状态，内容存在且无横向溢出；嵌套说明先展开父层再复原；管理写请求0，配置/PID/boot/cron前后一致；窄屏为390px浏览器布局,LIVE_TEST_2026-10-16_READONLY_CONTROLS.md；私有control-readonly-20261016.private结果与前后指纹,2026-10-16,UI SHA256 acb33db22decf1ef；恢复按钮开放；未发布
+K2P-CTRL-summary-home-1,K2P,手机窄屏,实机页面通过,实际点击展开/收起并恢复原状态，内容存在且无横向溢出；嵌套说明先展开父层再复原；管理写请求0，配置/PID/boot/cron前后一致；窄屏为390px浏览器布局,LIVE_TEST_2026-10-16_READONLY_CONTROLS.md；私有control-readonly-20261016.private结果与前后指纹,2026-10-16,UI SHA256 acb33db22decf1ef；恢复按钮开放；未发布
 K2P-CTRL-advanced-open,K2P,桌面,部分通过,两种布局正常规则/策略组/连接查询、DNS草稿撤销、高级子面板真实策略组可见及返回已实测；本控件完整边界待补。,私有 k2p-streamed-acceptance-content；LIVE_TEST_2026-10-14_ACCEPTANCE_CONTINUATION.md,2026-10-14,本地验收补丁；未发布
 K2P-CTRL-advanced-open,K2P,手机窄屏,部分通过,两种布局正常规则/策略组/连接查询、DNS草稿撤销、高级子面板真实策略组可见及返回已实测；本控件完整边界待补。,私有 k2p-streamed-acceptance-content；LIVE_TEST_2026-10-14_ACCEPTANCE_CONTINUATION.md,2026-10-14,本地验收补丁；未发布
 K2P-CTRL-dashboard-scale,K2P,桌面,部分通过,实际加载高级面板，四档比例与返回均正常；全部写操作和失败边界仍待完成,LIVE_TEST_2026-10-14_REBOOT_REMOTE.md,2026-10-14,本地统一候选，未发布
@@ -433,24 +433,24 @@ K2P-CTRL-converter-template,K2P,桌面,迁移前记录，待统一包重测,K2P 
 K2P-CTRL-converter-template,K2P,手机窄屏,迁移前记录，待统一包重测,K2P 面板取消第三方转换；该控件不可达。ShellCrash 终端自身功能保持。,旧工作区私有测试记录，未随新仓库发布,2026-10-12,
 K2P-CTRL-converter-auto,K2P,桌面,迁移前记录，待统一包重测,K2P 面板取消第三方转换；该控件不可达。ShellCrash 终端自身功能保持。,旧工作区私有测试记录，未随新仓库发布,2026-10-12,
 K2P-CTRL-converter-auto,K2P,手机窄屏,迁移前记录，待统一包重测,K2P 面板取消第三方转换；该控件不可达。ShellCrash 终端自身功能保持。,旧工作区私有测试记录，未随新仓库发布,2026-10-12,
-K2P-CTRL-summary-subscription-2,K2P,桌面,未执行,,,,
-K2P-CTRL-summary-subscription-2,K2P,手机窄屏,未执行,,,,
+K2P-CTRL-summary-subscription-2,K2P,桌面,实机页面通过,实际点击展开/收起并恢复原状态，内容存在且无横向溢出；嵌套说明先展开父层再复原；管理写请求0，配置/PID/boot/cron前后一致；窄屏为390px浏览器布局,LIVE_TEST_2026-10-16_READONLY_CONTROLS.md；私有control-readonly-20261016.private结果与前后指纹,2026-10-16,UI SHA256 acb33db22decf1ef；恢复按钮开放；未发布
+K2P-CTRL-summary-subscription-2,K2P,手机窄屏,实机页面通过,实际点击展开/收起并恢复原状态，内容存在且无横向溢出；嵌套说明先展开父层再复原；管理写请求0，配置/PID/boot/cron前后一致；窄屏为390px浏览器布局,LIVE_TEST_2026-10-16_READONLY_CONTROLS.md；私有control-readonly-20261016.private结果与前后指纹,2026-10-16,UI SHA256 acb33db22decf1ef；恢复按钮开放；未发布
 K2P-CTRL-subscription-exclude,K2P,桌面,部分通过,本轮实际页面交互已执行；该用例全部边界与恢复场景未齐，不算全量通过,私有实机记录 k2p-full-forms；公开范围见 LIVE_TEST_2026-10-14_TRAFFIC_AND_K2P.md,2026-10-14,本地 rc.2 候选，未发布
 K2P-CTRL-subscription-exclude,K2P,手机窄屏,部分通过,本轮实际页面交互已执行；该用例全部边界与恢复场景未齐，不算全量通过,私有实机记录 k2p-full-forms；公开范围见 LIVE_TEST_2026-10-14_TRAFFIC_AND_K2P.md,2026-10-14,本地 rc.2 候选，未发布
 K2P-CTRL-subscription-defaults-refresh,K2P,桌面,部分通过,真实菜单操作及状态读回通过；版本检查未重启内核；其他异常/边界待测。,私有 k2p-normal-menu-checks,2026-10-14,本地验收补丁，未发布
 K2P-CTRL-subscription-defaults-refresh,K2P,手机窄屏,部分通过,真实菜单操作及状态读回通过；版本检查未重启内核；其他异常/边界待测。,私有 k2p-normal-menu-checks,2026-10-14,本地验收补丁，未发布
-K2P-CTRL-summary-subscription-3,K2P,桌面,未执行,,,,
-K2P-CTRL-summary-subscription-3,K2P,手机窄屏,未执行,,,,
-K2P-CTRL-summary-subscription-4,K2P,桌面,未执行,,,,
-K2P-CTRL-summary-subscription-4,K2P,手机窄屏,未执行,,,,
+K2P-CTRL-summary-subscription-3,K2P,桌面,实机页面通过,K2P转换参数按能力隐藏，方式列表无convert选项；未强制显示或测试不支持的转换；管理写请求0，配置/PID/boot/cron前后一致；窄屏为390px浏览器布局,LIVE_TEST_2026-10-16_READONLY_CONTROLS.md；私有control-readonly-20261016.private结果与前后指纹,2026-10-16,UI SHA256 acb33db22decf1ef；恢复按钮开放；未发布
+K2P-CTRL-summary-subscription-3,K2P,手机窄屏,实机页面通过,K2P转换参数按能力隐藏，方式列表无convert选项；未强制显示或测试不支持的转换；管理写请求0，配置/PID/boot/cron前后一致；窄屏为390px浏览器布局,LIVE_TEST_2026-10-16_READONLY_CONTROLS.md；私有control-readonly-20261016.private结果与前后指纹,2026-10-16,UI SHA256 acb33db22decf1ef；恢复按钮开放；未发布
+K2P-CTRL-summary-subscription-4,K2P,桌面,实机页面通过,实际点击展开/收起并恢复原状态，内容存在且无横向溢出；嵌套说明先展开父层再复原；管理写请求0，配置/PID/boot/cron前后一致；窄屏为390px浏览器布局,LIVE_TEST_2026-10-16_READONLY_CONTROLS.md；私有control-readonly-20261016.private结果与前后指纹,2026-10-16,UI SHA256 acb33db22decf1ef；恢复按钮开放；未发布
+K2P-CTRL-summary-subscription-4,K2P,手机窄屏,实机页面通过,实际点击展开/收起并恢复原状态，内容存在且无横向溢出；嵌套说明先展开父层再复原；管理写请求0，配置/PID/boot/cron前后一致；窄屏为390px浏览器布局,LIVE_TEST_2026-10-16_READONLY_CONTROLS.md；私有control-readonly-20261016.private结果与前后指纹,2026-10-16,UI SHA256 acb33db22decf1ef；恢复按钮开放；未发布
 K2P-CTRL-subscription-update,K2P,桌面,部分通过,本轮实际页面交互已执行；该用例全部边界与恢复场景未齐，不算全量通过,私有实机记录 k2p-full-forms；公开范围见 LIVE_TEST_2026-10-14_TRAFFIC_AND_K2P.md,2026-10-14,本地 rc.2 候选，未发布
 K2P-CTRL-subscription-update,K2P,手机窄屏,部分通过,本轮实际页面交互已执行；该用例全部边界与恢复场景未齐，不算全量通过,私有实机记录 k2p-full-forms；公开范围见 LIVE_TEST_2026-10-14_TRAFFIC_AND_K2P.md,2026-10-14,本地 rc.2 候选，未发布
 K2P-CTRL-guard-mode,K2P,桌面,未执行,,,,
 K2P-CTRL-guard-mode,K2P,手机窄屏,未执行,,,,
 K2P-OPT-guard-mode-0,K2P,桌面,未执行,,,,
 K2P-OPT-guard-mode-0,K2P,手机窄屏,未执行,,,,
-K2P-CTRL-summary-subscription-5,K2P,桌面,未执行,,,,
-K2P-CTRL-summary-subscription-5,K2P,手机窄屏,未执行,,,,
+K2P-CTRL-summary-subscription-5,K2P,桌面,实机页面通过,实际点击展开/收起并恢复原状态，内容存在且无横向溢出；嵌套说明先展开父层再复原；管理写请求0，配置/PID/boot/cron前后一致；窄屏为390px浏览器布局,LIVE_TEST_2026-10-16_READONLY_CONTROLS.md；私有control-readonly-20261016.private结果与前后指纹,2026-10-16,UI SHA256 acb33db22decf1ef；恢复按钮开放；未发布
+K2P-CTRL-summary-subscription-5,K2P,手机窄屏,实机页面通过,实际点击展开/收起并恢复原状态，内容存在且无横向溢出；嵌套说明先展开父层再复原；管理写请求0，配置/PID/boot/cron前后一致；窄屏为390px浏览器布局,LIVE_TEST_2026-10-16_READONLY_CONTROLS.md；私有control-readonly-20261016.private结果与前后指纹,2026-10-16,UI SHA256 acb33db22decf1ef；恢复按钮开放；未发布
 K2P-CTRL-tool-check,K2P,桌面,部分通过,真实菜单操作及状态读回通过；版本检查未重启内核；其他异常/边界待测。,私有 k2p-normal-menu-checks,2026-10-14,本地验收补丁，未发布
 K2P-CTRL-tool-check,K2P,手机窄屏,部分通过,真实菜单操作及状态读回通过；版本检查未重启内核；其他异常/边界待测。,私有 k2p-normal-menu-checks,2026-10-14,本地验收补丁，未发布
 K2P-CTRL-tool-update,K2P,桌面,未执行,,,,
@@ -459,8 +459,8 @@ K2P-CTRL-core-check,K2P,桌面,部分通过,真实菜单操作及状态读回通
 K2P-CTRL-core-check,K2P,手机窄屏,部分通过,真实菜单操作及状态读回通过；版本检查未重启内核；其他异常/边界待测。,私有 k2p-normal-menu-checks,2026-10-14,本地验收补丁，未发布
 K2P-CTRL-core-update,K2P,桌面,未执行,,,,
 K2P-CTRL-core-update,K2P,手机窄屏,未执行,,,,
-K2P-CTRL-summary-subscription-6,K2P,桌面,未执行,,,,
-K2P-CTRL-summary-subscription-6,K2P,手机窄屏,未执行,,,,
+K2P-CTRL-summary-subscription-6,K2P,桌面,实机页面通过,实际点击展开/收起并恢复原状态，内容存在且无横向溢出；嵌套说明先展开父层再复原；管理写请求0，配置/PID/boot/cron前后一致；窄屏为390px浏览器布局,LIVE_TEST_2026-10-16_READONLY_CONTROLS.md；私有control-readonly-20261016.private结果与前后指纹,2026-10-16,UI SHA256 acb33db22decf1ef；恢复按钮开放；未发布
+K2P-CTRL-summary-subscription-6,K2P,手机窄屏,实机页面通过,实际点击展开/收起并恢复原状态，内容存在且无横向溢出；嵌套说明先展开父层再复原；管理写请求0，配置/PID/boot/cron前后一致；窄屏为390px浏览器布局,LIVE_TEST_2026-10-16_READONLY_CONTROLS.md；私有control-readonly-20261016.private结果与前后指纹,2026-10-16,UI SHA256 acb33db22decf1ef；恢复按钮开放；未发布
 K2P-CTRL-remote-enabled,K2P,桌面,部分通过,本轮实际页面交互已执行；该用例全部边界与恢复场景未齐，不算全量通过,私有实机记录 k2p-full-forms；公开范围见 LIVE_TEST_2026-10-14_TRAFFIC_AND_K2P.md,2026-10-14,本地 rc.2 候选，未发布
 K2P-CTRL-remote-enabled,K2P,手机窄屏,部分通过,本轮实际页面交互已执行；该用例全部边界与恢复场景未齐，不算全量通过,私有实机记录 k2p-full-forms；公开范围见 LIVE_TEST_2026-10-14_TRAFFIC_AND_K2P.md,2026-10-14,本地 rc.2 候选，未发布
 K2P-CTRL-mirror-base,K2P,桌面,迁移前记录，待统一包重测,关闭→测试→保存→再关闭/开启主流程完成；错误密码 HTTP401、失败重试和保存拦截已验证。独立边界项详见回归报告，未全部实机注入。,旧工作区私有测试记录，未随新仓库发布,2026-10-12,工作区候选；AX5 Mihomo 1.19.28 / K2P sing-box 1.12.13
@@ -477,8 +477,8 @@ K2P-CTRL-mirror-sync,K2P,桌面,部分通过,实际按钮正常路径已执行�
 K2P-CTRL-mirror-sync,K2P,手机窄屏,未执行,,,,
 K2P-CTRL-backup-local,K2P,桌面,部分通过,实际按钮正常路径已执行；其他异常与恢复边界仍待完成,LIVE_TEST_2026-10-14_REBOOT_REMOTE.md；私有 k2p-export.json,2026-10-14,本地统一候选；保留用户配置，未发布
 K2P-CTRL-backup-local,K2P,手机窄屏,部分通过,实际按钮正常路径已执行；其他异常与恢复边界仍待完成,LIVE_TEST_2026-10-14_REBOOT_REMOTE.md；私有 k2p-export.json,2026-10-14,本地统一候选；保留用户配置，未发布
-K2P-CTRL-summary-backup-7,K2P,桌面,未执行,,,,
-K2P-CTRL-summary-backup-7,K2P,手机窄屏,未执行,,,,
+K2P-CTRL-summary-backup-7,K2P,桌面,实机页面通过,实际点击展开/收起并恢复原状态，内容存在且无横向溢出；嵌套说明先展开父层再复原；管理写请求0，配置/PID/boot/cron前后一致；窄屏为390px浏览器布局,LIVE_TEST_2026-10-16_READONLY_CONTROLS.md；私有control-readonly-20261016.private结果与前后指纹,2026-10-16,UI SHA256 acb33db22decf1ef；恢复按钮开放；未发布
+K2P-CTRL-summary-backup-7,K2P,手机窄屏,实机页面通过,实际点击展开/收起并恢复原状态，内容存在且无横向溢出；嵌套说明先展开父层再复原；管理写请求0，配置/PID/boot/cron前后一致；窄屏为390px浏览器布局,LIVE_TEST_2026-10-16_READONLY_CONTROLS.md；私有control-readonly-20261016.private结果与前后指纹,2026-10-16,UI SHA256 acb33db22decf1ef；恢复按钮开放；未发布
 K2P-CTRL-policy-domain,K2P,桌面,部分通过,本轮实际页面交互已执行；该用例全部边界与恢复场景未齐，不算全量通过,私有实机记录 k2p-full-forms；公开范围见 LIVE_TEST_2026-10-14_TRAFFIC_AND_K2P.md,2026-10-14,本地 rc.2 候选，未发布
 K2P-CTRL-policy-domain,K2P,手机窄屏,部分通过,本轮实际页面交互已执行；该用例全部边界与恢复场景未齐，不算全量通过,私有实机记录 k2p-full-forms；公开范围见 LIVE_TEST_2026-10-14_TRAFFIC_AND_K2P.md,2026-10-14,本地 rc.2 候选，未发布
 K2P-CTRL-policy-match,K2P,桌面,未执行,,,,
@@ -493,8 +493,8 @@ K2P-CTRL-policy-add-submit,K2P,桌面,部分通过,本轮实际页面交互已�
 K2P-CTRL-policy-add-submit,K2P,手机窄屏,部分通过,本轮实际页面交互已执行；该用例全部边界与恢复场景未齐，不算全量通过,私有实机记录 k2p-full-forms；公开范围见 LIVE_TEST_2026-10-14_TRAFFIC_AND_K2P.md,2026-10-14,本地 rc.2 候选，未发布
 K2P-CTRL-policy-save,K2P,桌面,部分通过,实际保存测试后缀直连，新CONNECT连接命中并走DIRECT；原规则已恢复。其余多条/异常边界待补。 sing-box API条件/动作合并返回；旧脚本断言不匹配，按实测字段补验。,私有 k2p-policy-live / k2p-policy-flow / k2p-policy-restore-explicit；LIVE_TEST_2026-10-14_ACCEPTANCE_CONTINUATION.md,2026-10-14,本地验收补丁；未发布
 K2P-CTRL-policy-save,K2P,手机窄屏,部分通过,实际保存测试后缀直连，新CONNECT连接命中并走DIRECT；原规则已恢复。其余多条/异常边界待补。 sing-box API条件/动作合并返回；旧脚本断言不匹配，按实测字段补验。,私有 k2p-policy-live / k2p-policy-flow / k2p-policy-restore-explicit；LIVE_TEST_2026-10-14_ACCEPTANCE_CONTINUATION.md,2026-10-14,本地验收补丁；未发布
-K2P-CTRL-summary-rules-8,K2P,桌面,未执行,,,,
-K2P-CTRL-summary-rules-8,K2P,手机窄屏,未执行,,,,
+K2P-CTRL-summary-rules-8,K2P,桌面,实机页面通过,实际点击展开/收起并恢复原状态，内容存在且无横向溢出；嵌套说明先展开父层再复原；管理写请求0，配置/PID/boot/cron前后一致；窄屏为390px浏览器布局,LIVE_TEST_2026-10-16_READONLY_CONTROLS.md；私有control-readonly-20261016.private结果与前后指纹,2026-10-16,UI SHA256 acb33db22decf1ef；恢复按钮开放；未发布
+K2P-CTRL-summary-rules-8,K2P,手机窄屏,实机页面通过,实际点击展开/收起并恢复原状态，内容存在且无横向溢出；嵌套说明先展开父层再复原；管理写请求0，配置/PID/boot/cron前后一致；窄屏为390px浏览器布局,LIVE_TEST_2026-10-16_READONLY_CONTROLS.md；私有control-readonly-20261016.private结果与前后指纹,2026-10-16,UI SHA256 acb33db22decf1ef；恢复按钮开放；未发布
 K2P-CTRL-inspect-refresh,K2P,桌面,部分通过,real native query and local filter,LIVE_TEST_2026-10-14_REBOOT_REMOTE.md；私有 k2p-business.json,2026-10-14,本地统一候选；保留用户配置，未发布
 K2P-CTRL-inspect-refresh,K2P,手机窄屏,部分通过,real native query and local filter,LIVE_TEST_2026-10-14_REBOOT_REMOTE.md；私有 k2p-business.json,2026-10-14,本地统一候选；保留用户配置，未发布
 K2P-CTRL-inspect-kind,K2P,桌面,部分通过,两种布局正常规则/策略组/连接查询、DNS草稿撤销、高级子面板真实策略组可见及返回已实测；本控件完整边界待补。,私有 k2p-streamed-acceptance-content；LIVE_TEST_2026-10-14_ACCEPTANCE_CONTINUATION.md,2026-10-14,本地验收补丁；未发布
@@ -513,8 +513,8 @@ K2P-CTRL-inspect-previous,K2P,桌面,未执行,,,,
 K2P-CTRL-inspect-previous,K2P,手机窄屏,未执行,,,,
 K2P-CTRL-inspect-next,K2P,桌面,未执行,,,,
 K2P-CTRL-inspect-next,K2P,手机窄屏,未执行,,,,
-K2P-CTRL-summary-rules-9,K2P,桌面,未执行,,,,
-K2P-CTRL-summary-rules-9,K2P,手机窄屏,未执行,,,,
+K2P-CTRL-summary-rules-9,K2P,桌面,实机页面通过,实际点击展开/收起并恢复原状态，内容存在且无横向溢出；嵌套说明先展开父层再复原；管理写请求0，配置/PID/boot/cron前后一致；窄屏为390px浏览器布局,LIVE_TEST_2026-10-16_READONLY_CONTROLS.md；私有control-readonly-20261016.private结果与前后指纹,2026-10-16,UI SHA256 acb33db22decf1ef；恢复按钮开放；未发布
+K2P-CTRL-summary-rules-9,K2P,手机窄屏,实机页面通过,实际点击展开/收起并恢复原状态，内容存在且无横向溢出；嵌套说明先展开父层再复原；管理写请求0，配置/PID/boot/cron前后一致；窄屏为390px浏览器布局,LIVE_TEST_2026-10-16_READONLY_CONTROLS.md；私有control-readonly-20261016.private结果与前后指纹,2026-10-16,UI SHA256 acb33db22decf1ef；恢复按钮开放；未发布
 K2P-CTRL-rules-update,K2P,桌面,部分通过,桌面更新国内表并确认加载；手机同值更新不重启。AX5 原生 provider 无感刷新；K2P 复用内核重启。网络失败及所有边界仍未齐。,私有 k2p-domestic-rules-update.private.json；见 LIVE_TEST_2026-10-14_DOMESTIC_FALLBACK.md,2026-10-14,本地候选；未发布
 K2P-CTRL-rules-update,K2P,手机窄屏,部分通过,桌面更新国内表并确认加载；手机同值更新不重启。AX5 原生 provider 无感刷新；K2P 复用内核重启。网络失败及所有边界仍未齐。,私有 k2p-domestic-rules-update.private.json；见 LIVE_TEST_2026-10-14_DOMESTIC_FALLBACK.md,2026-10-14,本地候选；未发布
 K2P-CTRL-dns-mode,K2P,桌面,部分通过,两种布局正常规则/策略组/连接查询、DNS草稿撤销、高级子面板真实策略组可见及返回已实测；本控件完整边界待补。,私有 k2p-streamed-acceptance-content；LIVE_TEST_2026-10-14_ACCEPTANCE_CONTINUATION.md,2026-10-14,本地验收补丁；未发布
@@ -533,8 +533,8 @@ K2P-CTRL-monitor-refresh,K2P,桌面,部分通过,实机操作读回通过；本�
 K2P-CTRL-monitor-refresh,K2P,手机窄屏,部分通过,实机操作读回通过；本用例全部边界仍待完成,私有 k2p-final-runtime；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
 K2P-CTRL-memory-cleanup,K2P,桌面,未执行,,,,
 K2P-CTRL-memory-cleanup,K2P,手机窄屏,未执行,,,,
-K2P-CTRL-summary-monitor-10,K2P,桌面,未执行,,,,
-K2P-CTRL-summary-monitor-10,K2P,手机窄屏,未执行,,,,
+K2P-CTRL-summary-monitor-10,K2P,桌面,实机页面通过,实际点击展开/收起并恢复原状态，内容存在且无横向溢出；嵌套说明先展开父层再复原；管理写请求0，配置/PID/boot/cron前后一致；窄屏为390px浏览器布局,LIVE_TEST_2026-10-16_READONLY_CONTROLS.md；私有control-readonly-20261016.private结果与前后指纹,2026-10-16,UI SHA256 acb33db22decf1ef；恢复按钮开放；未发布
+K2P-CTRL-summary-monitor-10,K2P,手机窄屏,实机页面通过,实际点击展开/收起并恢复原状态，内容存在且无横向溢出；嵌套说明先展开父层再复原；管理写请求0，配置/PID/boot/cron前后一致；窄屏为390px浏览器布局,LIVE_TEST_2026-10-16_READONLY_CONTROLS.md；私有control-readonly-20261016.private结果与前后指纹,2026-10-16,UI SHA256 acb33db22decf1ef；恢复按钮开放；未发布
 K2P-CTRL-memory-warning,K2P,桌面,部分通过,本轮实际页面交互已执行；该用例全部边界与恢复场景未齐，不算全量通过,私有实机记录 k2p-full-forms；公开范围见 LIVE_TEST_2026-10-14_TRAFFIC_AND_K2P.md,2026-10-14,本地 rc.2 候选，未发布
 K2P-CTRL-memory-warning,K2P,手机窄屏,部分通过,本轮实际页面交互已执行；该用例全部边界与恢复场景未齐，不算全量通过,私有实机记录 k2p-full-forms；公开范围见 LIVE_TEST_2026-10-14_TRAFFIC_AND_K2P.md,2026-10-14,本地 rc.2 候选，未发布
 K2P-CTRL-memory-protect,K2P,桌面,部分通过,本轮实际页面交互已执行；该用例全部边界与恢复场景未齐，不算全量通过,私有实机记录 k2p-full-forms；公开范围见 LIVE_TEST_2026-10-14_TRAFFIC_AND_K2P.md,2026-10-14,本地 rc.2 候选，未发布
@@ -543,12 +543,12 @@ K2P-CTRL-memory-trigger,K2P,桌面,部分通过,本轮实际页面交互已执�
 K2P-CTRL-memory-trigger,K2P,手机窄屏,部分通过,本轮实际页面交互已执行；该用例全部边界与恢复场景未齐，不算全量通过,私有实机记录 k2p-full-forms；公开范围见 LIVE_TEST_2026-10-14_TRAFFIC_AND_K2P.md,2026-10-14,本地 rc.2 候选，未发布
 K2P-CTRL-memory-limits-save,K2P,桌面,部分通过,本轮实际页面交互已执行；该用例全部边界与恢复场景未齐，不算全量通过,私有实机记录 k2p-full-forms；公开范围见 LIVE_TEST_2026-10-14_TRAFFIC_AND_K2P.md,2026-10-14,本地 rc.2 候选，未发布
 K2P-CTRL-memory-limits-save,K2P,手机窄屏,部分通过,本轮实际页面交互已执行；该用例全部边界与恢复场景未齐，不算全量通过,私有实机记录 k2p-full-forms；公开范围见 LIVE_TEST_2026-10-14_TRAFFIC_AND_K2P.md,2026-10-14,本地 rc.2 候选，未发布
-K2P-CTRL-summary-monitor-11,K2P,桌面,未执行,,,,
-K2P-CTRL-summary-monitor-11,K2P,手机窄屏,未执行,,,,
+K2P-CTRL-summary-monitor-11,K2P,桌面,实机页面通过,实际点击展开/收起并恢复原状态，内容存在且无横向溢出；嵌套说明先展开父层再复原；管理写请求0，配置/PID/boot/cron前后一致；窄屏为390px浏览器布局,LIVE_TEST_2026-10-16_READONLY_CONTROLS.md；私有control-readonly-20261016.private结果与前后指纹,2026-10-16,UI SHA256 acb33db22decf1ef；恢复按钮开放；未发布
+K2P-CTRL-summary-monitor-11,K2P,手机窄屏,实机页面通过,实际点击展开/收起并恢复原状态，内容存在且无横向溢出；嵌套说明先展开父层再复原；管理写请求0，配置/PID/boot/cron前后一致；窄屏为390px浏览器布局,LIVE_TEST_2026-10-16_READONLY_CONTROLS.md；私有control-readonly-20261016.private结果与前后指纹,2026-10-16,UI SHA256 acb33db22decf1ef；恢复按钮开放；未发布
 K2P-CTRL-incident-refresh,K2P,桌面,部分通过,实机操作读回通过；本用例全部边界仍待完成,私有 k2p-final-runtime；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
 K2P-CTRL-incident-refresh,K2P,手机窄屏,部分通过,实机操作读回通过；本用例全部边界仍待完成,私有 k2p-final-runtime；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
-K2P-CTRL-summary-monitor-12,K2P,桌面,未执行,,,,
-K2P-CTRL-summary-monitor-12,K2P,手机窄屏,未执行,,,,
+K2P-CTRL-summary-monitor-12,K2P,桌面,实机页面通过,实际点击展开/收起并恢复原状态，内容存在且无横向溢出；嵌套说明先展开父层再复原；管理写请求0，配置/PID/boot/cron前后一致；窄屏为390px浏览器布局,LIVE_TEST_2026-10-16_READONLY_CONTROLS.md；私有control-readonly-20261016.private结果与前后指纹,2026-10-16,UI SHA256 acb33db22decf1ef；恢复按钮开放；未发布
+K2P-CTRL-summary-monitor-12,K2P,手机窄屏,实机页面通过,实际点击展开/收起并恢复原状态，内容存在且无横向溢出；嵌套说明先展开父层再复原；管理写请求0，配置/PID/boot/cron前后一致；窄屏为390px浏览器布局,LIVE_TEST_2026-10-16_READONLY_CONTROLS.md；私有control-readonly-20261016.private结果与前后指纹,2026-10-16,UI SHA256 acb33db22decf1ef；恢复按钮开放；未发布
 K2P-CTRL-memory-refresh,K2P,桌面,部分通过,existing bounded memory history,LIVE_TEST_2026-10-14_REBOOT_REMOTE.md；私有 k2p-business.json,2026-10-14,本地统一候选；保留用户配置，未发布
 K2P-CTRL-memory-refresh,K2P,手机窄屏,部分通过,existing bounded memory history,LIVE_TEST_2026-10-14_REBOOT_REMOTE.md；私有 k2p-business.json,2026-10-14,本地统一候选；保留用户配置，未发布
 K2P-CTRL-logs-view,K2P,桌面,部分通过,实机操作读回通过；本用例全部边界仍待完成,私有 k2p-final-runtime；详见增量验收记录,2026-10-14,本地 rc.2 候选；未发布
@@ -567,8 +567,8 @@ K2P-CTRL-logs-refresh,K2P,桌面,部分通过,actual refresh; logs retained,LIVE
 K2P-CTRL-logs-refresh,K2P,手机窄屏,部分通过,actual refresh; logs retained,LIVE_TEST_2026-10-14_REBOOT_REMOTE.md；私有 k2p-business.json,2026-10-14,本地统一候选；保留用户配置，未发布
 K2P-CTRL-logs-clear,K2P,桌面,未执行,,,,
 K2P-CTRL-logs-clear,K2P,手机窄屏,未执行,,,,
-K2P-CTRL-summary-home-13,K2P,桌面,未执行,,,,
-K2P-CTRL-summary-home-13,K2P,手机窄屏,未执行,,,,
+K2P-CTRL-summary-home-13,K2P,桌面,实机页面通过,实际点击展开/收起并恢复原状态，内容存在且无横向溢出；嵌套说明先展开父层再复原；管理写请求0，配置/PID/boot/cron前后一致；窄屏为390px浏览器布局,LIVE_TEST_2026-10-16_READONLY_CONTROLS.md；私有control-readonly-20261016.private结果与前后指纹,2026-10-16,UI SHA256 acb33db22decf1ef；恢复按钮开放；未发布
+K2P-CTRL-summary-home-13,K2P,手机窄屏,实机页面通过,实际点击展开/收起并恢复原状态，内容存在且无横向溢出；嵌套说明先展开父层再复原；管理写请求0，配置/PID/boot/cron前后一致；窄屏为390px浏览器布局,LIVE_TEST_2026-10-16_READONLY_CONTROLS.md；私有control-readonly-20261016.private结果与前后指纹,2026-10-16,UI SHA256 acb33db22decf1ef；恢复按钮开放；未发布
 K2P-DYN-node-select,K2P,桌面,未执行,,,,
 K2P-DYN-node-select,K2P,手机窄屏,未执行,,,,
 K2P-DYN-node-delay,K2P,桌面,未执行,,,,
@@ -697,10 +697,10 @@ K2P-CTRL-remote-versions-refresh,K2P,桌面,部分通过,fresh RAM cache reads r
 K2P-CTRL-remote-versions-refresh,K2P,手机窄屏,部分通过,fresh RAM cache reads real latest index and manual refresh displays version,LIVE_TEST_2026-10-14_REBOOT_REMOTE.md；私有 k2p-catalog.json,2026-10-14,本地统一候选；保留用户配置，未发布
 AX5-CTRL-baseline-create,,桌面,部分通过,桌面1200/手机390均已验证按钮、两次取消均零提交；真实创建/替换尚未覆盖已有基础版本。服务器独立COPY/回读已在隔离目录验证。,LIVE_TEST_2026-10-15_BACKUP_FOUNDATION.md；ax5-browser.json,,
 AX5-CTRL-baseline-create,,手机窄屏,部分通过,桌面1200/手机390均已验证按钮、两次取消均零提交；真实创建/替换尚未覆盖已有基础版本。服务器独立COPY/回读已在隔离目录验证。,LIVE_TEST_2026-10-15_BACKUP_FOUNDATION.md；ax5-browser.json,,
-AX5-CTRL-summary-backup-locations,,桌面,实机页面通过,默认折叠；当前机型目录、真实基础记录显示正确；1200/390无溢出，无JS错误，无恢复提交。,LIVE_TEST_2026-10-15_BACKUP_FOUNDATION.md；ax5-browser.json,,
-AX5-CTRL-summary-backup-locations,,手机窄屏,实机页面通过,默认折叠；当前机型目录、真实基础记录显示正确；1200/390无溢出，无JS错误，无恢复提交。,LIVE_TEST_2026-10-15_BACKUP_FOUNDATION.md；ax5-browser.json,,
-AX5-CTRL-summary-backup-baseline,,桌面,实机页面通过,默认折叠；当前机型目录、真实基础记录显示正确；1200/390无溢出，无JS错误，无恢复提交。,LIVE_TEST_2026-10-15_BACKUP_FOUNDATION.md；ax5-browser.json,,
-AX5-CTRL-summary-backup-baseline,,手机窄屏,实机页面通过,默认折叠；当前机型目录、真实基础记录显示正确；1200/390无溢出，无JS错误，无恢复提交。,LIVE_TEST_2026-10-15_BACKUP_FOUNDATION.md；ax5-browser.json,,
+AX5-CTRL-summary-backup-locations,,桌面,实机页面通过,实际点击展开/收起并恢复原状态，内容存在且无横向溢出；嵌套说明先展开父层再复原；管理写请求0，配置/PID/boot/cron前后一致；窄屏为390px浏览器布局,LIVE_TEST_2026-10-16_READONLY_CONTROLS.md；私有control-readonly-20261016.private结果与前后指纹,2026-10-16,UI SHA256 b7693af974158a4d；恢复按钮开放；未发布
+AX5-CTRL-summary-backup-locations,,手机窄屏,实机页面通过,实际点击展开/收起并恢复原状态，内容存在且无横向溢出；嵌套说明先展开父层再复原；管理写请求0，配置/PID/boot/cron前后一致；窄屏为390px浏览器布局,LIVE_TEST_2026-10-16_READONLY_CONTROLS.md；私有control-readonly-20261016.private结果与前后指纹,2026-10-16,UI SHA256 b7693af974158a4d；恢复按钮开放；未发布
+AX5-CTRL-summary-backup-baseline,,桌面,实机页面通过,实际点击展开/收起并恢复原状态，内容存在且无横向溢出；嵌套说明先展开父层再复原；管理写请求0，配置/PID/boot/cron前后一致；窄屏为390px浏览器布局,LIVE_TEST_2026-10-16_READONLY_CONTROLS.md；私有control-readonly-20261016.private结果与前后指纹,2026-10-16,UI SHA256 b7693af974158a4d；恢复按钮开放；未发布
+AX5-CTRL-summary-backup-baseline,,手机窄屏,实机页面通过,实际点击展开/收起并恢复原状态，内容存在且无横向溢出；嵌套说明先展开父层再复原；管理写请求0，配置/PID/boot/cron前后一致；窄屏为390px浏览器布局,LIVE_TEST_2026-10-16_READONLY_CONTROLS.md；私有control-readonly-20261016.private结果与前后指纹,2026-10-16,UI SHA256 b7693af974158a4d；恢复按钮开放；未发布
 AX5-BACKUP-V2-baseline-copy-failure,,桌面,未执行,新增需求；离线用例不能替代该端实机验收,,,
 AX5-BACKUP-V2-baseline-copy-failure,,手机窄屏,未执行,新增需求；离线用例不能替代该端实机验收,,,
 AX5-BACKUP-V2-restore-import,,桌面,未执行,新增需求；离线用例不能替代该端实机验收,,,
@@ -711,10 +711,10 @@ AX5-BACKUP-V2-update-reboot-new-version,,桌面,未执行,新增需求；离线�
 AX5-BACKUP-V2-update-reboot-new-version,,手机窄屏,未执行,新增需求；离线用例不能替代该端实机验收,,,
 K2P-CTRL-baseline-create,,桌面,部分通过,桌面1200/手机390均已验证按钮、两次取消均零提交；真实创建/替换尚未覆盖已有基础版本。服务器独立COPY/回读已在隔离目录验证。,LIVE_TEST_2026-10-15_BACKUP_FOUNDATION.md；k2p-browser.json,,
 K2P-CTRL-baseline-create,,手机窄屏,部分通过,桌面1200/手机390均已验证按钮、两次取消均零提交；真实创建/替换尚未覆盖已有基础版本。服务器独立COPY/回读已在隔离目录验证。,LIVE_TEST_2026-10-15_BACKUP_FOUNDATION.md；k2p-browser.json,,
-K2P-CTRL-summary-backup-locations,,桌面,实机页面通过,默认折叠；当前机型目录、真实基础记录显示正确；1200/390无溢出，无JS错误，无恢复提交。,LIVE_TEST_2026-10-15_BACKUP_FOUNDATION.md；k2p-browser.json,,
-K2P-CTRL-summary-backup-locations,,手机窄屏,实机页面通过,默认折叠；当前机型目录、真实基础记录显示正确；1200/390无溢出，无JS错误，无恢复提交。,LIVE_TEST_2026-10-15_BACKUP_FOUNDATION.md；k2p-browser.json,,
-K2P-CTRL-summary-backup-baseline,,桌面,实机页面通过,默认折叠；当前机型目录、真实基础记录显示正确；1200/390无溢出，无JS错误，无恢复提交。,LIVE_TEST_2026-10-15_BACKUP_FOUNDATION.md；k2p-browser.json,,
-K2P-CTRL-summary-backup-baseline,,手机窄屏,实机页面通过,默认折叠；当前机型目录、真实基础记录显示正确；1200/390无溢出，无JS错误，无恢复提交。,LIVE_TEST_2026-10-15_BACKUP_FOUNDATION.md；k2p-browser.json,,
+K2P-CTRL-summary-backup-locations,,桌面,实机页面通过,实际点击展开/收起并恢复原状态，内容存在且无横向溢出；嵌套说明先展开父层再复原；管理写请求0，配置/PID/boot/cron前后一致；窄屏为390px浏览器布局,LIVE_TEST_2026-10-16_READONLY_CONTROLS.md；私有control-readonly-20261016.private结果与前后指纹,2026-10-16,UI SHA256 acb33db22decf1ef；恢复按钮开放；未发布
+K2P-CTRL-summary-backup-locations,,手机窄屏,实机页面通过,实际点击展开/收起并恢复原状态，内容存在且无横向溢出；嵌套说明先展开父层再复原；管理写请求0，配置/PID/boot/cron前后一致；窄屏为390px浏览器布局,LIVE_TEST_2026-10-16_READONLY_CONTROLS.md；私有control-readonly-20261016.private结果与前后指纹,2026-10-16,UI SHA256 acb33db22decf1ef；恢复按钮开放；未发布
+K2P-CTRL-summary-backup-baseline,,桌面,实机页面通过,实际点击展开/收起并恢复原状态，内容存在且无横向溢出；嵌套说明先展开父层再复原；管理写请求0，配置/PID/boot/cron前后一致；窄屏为390px浏览器布局,LIVE_TEST_2026-10-16_READONLY_CONTROLS.md；私有control-readonly-20261016.private结果与前后指纹,2026-10-16,UI SHA256 acb33db22decf1ef；恢复按钮开放；未发布
+K2P-CTRL-summary-backup-baseline,,手机窄屏,实机页面通过,实际点击展开/收起并恢复原状态，内容存在且无横向溢出；嵌套说明先展开父层再复原；管理写请求0，配置/PID/boot/cron前后一致；窄屏为390px浏览器布局,LIVE_TEST_2026-10-16_READONLY_CONTROLS.md；私有control-readonly-20261016.private结果与前后指纹,2026-10-16,UI SHA256 acb33db22decf1ef；恢复按钮开放；未发布
 K2P-BACKUP-V2-baseline-copy-failure,,桌面,未执行,新增需求；离线用例不能替代该端实机验收,,,
 K2P-BACKUP-V2-baseline-copy-failure,,手机窄屏,未执行,新增需求；离线用例不能替代该端实机验收,,,
 K2P-BACKUP-V2-restore-import,,桌面,未执行,新增需求；离线用例不能替代该端实机验收,,,
