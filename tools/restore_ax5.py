@@ -142,7 +142,9 @@ def restore(device,bundle,receipt_dir,prefix,confirm,failure='none',limit=420):
     x='/tmp/sc-restore-'+nonce
     device.run('umask 077;mkdir '+x)
     device.run('cat > '+x+'/worker.sh;chmod 700 '+x+'/worker.sh;sh -n '+x+'/worker.sh',worker.read_bytes())
-    device.run('cat > '+x+'/archive-validator.lua',(worker.parent/'restore-archive.lua').read_bytes())
+    validator=worker.parent/'restore-archive.lua'
+    if not validator.exists(): validator=Path(__file__).resolve().parents[1]/'shared/lib/restore-archive.lua'
+    device.run('cat > '+x+'/archive-validator.lua',validator.read_bytes())
     device.run('cat > '+x+'/plan', ''.join(str(k)+'='+str(v)+'\n' for k,v in plan.items()).encode())
     (receipt_dir/'plan.json').write_text(json.dumps(plan,indent=2))
     # Stock AX5 lacks nohup. Ignore HUP before exec and detach all descriptors;

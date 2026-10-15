@@ -157,5 +157,5 @@
   "ax5/recovery-check.sh": "shared/lib/recovery-check.sh",
   "ax5/restore-worker.sh": "profiles/ax5/ax5/restore-worker.sh",
   "tools/restore_ax5.py": "tools/restore_ax5.py",
-  "ax5/restore-archive.lua": "profiles/ax5/ax5/restore-archive.lua"
+  "ax5/restore-archive.lua": "shared/lib/restore-archive.lua"
 }

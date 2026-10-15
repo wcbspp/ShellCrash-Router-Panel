@@ -250,5 +250,8 @@
   "payload/starts/recovery-check.sh": "shared/lib/recovery-check.sh",
   "payload/starts/restore-worker.sh": "profiles/k2p/payload/starts/restore-worker.sh",
   "tools/restore_k2p.py": "tools/restore_k2p.py",
-  "tools/restore_ax5.py": "tools/restore_ax5.py"
+  "tools/restore_ax5.py": "tools/restore_ax5.py",
+  "payload/starts/restore-archive.lua": "shared/lib/restore-archive.lua",
+  "payload/starts/restore-config.lua": "profiles/k2p/payload/starts/restore-config.lua",
+  "payload/starts/restore-preflight.sh": "profiles/k2p/payload/starts/restore-preflight.sh"
 }
