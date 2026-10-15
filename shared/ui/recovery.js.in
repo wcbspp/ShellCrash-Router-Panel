@@ -10,8 +10,8 @@ function openRecoveryWindow(initial='latest'){
  <div id="recovery-local" hidden><label for="recovery-file">选择组件文件</label><input id="recovery-file" type="file" accept=".txt,.srs,.mrs,.tar.gz"><p class="small-note">可先查看规则库、国内 IP 表或备份组件的格式与大小。文件保留在浏览器，不会自动上传。内核等大文件建议放到 WebDAV，避免占满路由器内存。</p></div>
  <p id="recovery-status" class="backup-feedback" role="status" aria-live="polite"></p><div id="recovery-files"></div>
  <div class="recovery-scope"><strong>完整恢复会覆盖</strong><br>应用、ShellCrash、内核、面板及规则资源、订阅、DNS、分流、节点选择和启动设置。<br><strong>保持当前</strong><br>LAN、Wi-Fi、固件、SSH/WebDAV 凭据和 ZeroTier 身份。</div>
- <div class="backup-actions"><button id="recovery-check" type="button" class="primary">检查备份文件</button><button id="recovery-execute" type="button" class="refresh" disabled>确认恢复</button><button id="recovery-cancel" type="button" class="refresh">关闭</button></div>
- <p class="small-note">当前开放文件检查。解包兼容性校验、恢复前快照与失败回退尚未完成验收，因此恢复执行暂未开放。</p>`;
+ <div class="backup-actions"><button id="recovery-check" type="button" class="primary">检查备份文件</button><button id="recovery-execute" type="button" class="refresh" disabled aria-describedby="recovery-execution-help" title="页面恢复执行尚未接通；文件检查通过后也不能在此恢复">确认恢复（暂未开放）</button><button id="recovery-cancel" type="button" class="refresh">关闭</button></div>
+ <p id="recovery-execution-help" class="small-note">本窗口可检查文件大小与 SHA256。实际恢复目前使用电脑维护工具；页面的确认、执行和结果查询流程尚未接通，因此这里暂不能恢复。</p>`;
  document.body.append(dialog);const find=id=>dialog.querySelector('#'+id),state={dialog,busy:false,revision:0};recoveryWindow=state;
  const source=find('recovery-source'),check=find('recovery-check'),status=find('recovery-status'),files=find('recovery-files');
  function feedback(text,kind='info'){status.textContent=text;status.className='backup-feedback '+kind;status.setAttribute('role',kind==='error'?'alert':'status')}
@@ -51,7 +51,7 @@ function openRecoveryWindow(initial='latest'){
    if(plan.id!==id||plan.source!==choice||!plan.verified||plan.backup?.model!==backupModel()||!Array.isArray(plan.backup.files))throw Error('检查记录已过期或不完整，请重新检查');
    const b=plan.backup;row((choice==='baseline'?'独立基础备份':choice==='imports'?'手动备份':'最新备份')+' · '+b.model,(b.created?'备份时间 '+new Date(b.created*1000).toLocaleString('zh-CN',{hour12:false}):'旧基础备份 · 时间未记录')+' · '+mb(b.size));row('版本','内核 '+b.core_version+' · ShellCrash '+(b.tool_version||'未记录')+' · 面板 '+(b.panel_version||'未记录'));
    for(const f of b.files)row(f.name,mb(f.size)+' · '+(purposes[f.name]||'未知组件')+(f.name==='source.tar.gz'?' · 本次未校验':' · 大小和 SHA256 一致'),f.sha256);
-   feedback('组件完整性校验通过。尚未解包检查兼容性，当前设备未改动。恢复执行仍未开放。','success');
+   feedback('文件大小与 SHA256 一致，当前设备未改动。此检查未验证包内程序与配置；页面恢复暂未开放。','success');
   }catch(e){if(recoveryWindow===state&&revision===state.revision)feedback('检查未完成：'+e.message+'。当前设备未改动。','error')}
   finally{state.busy=false;manageBusy=false;await syncNative().catch(()=>{});showService();paintMirror();if(recoveryWindow===state){check.disabled=!ready();source.disabled=false;find('recovery-path').disabled=false}else mirrorFeedback('备份检查已结束，当前配置未改动；可重新打开恢复窗口检查。','info')}
  };

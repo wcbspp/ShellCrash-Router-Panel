@@ -100,8 +100,10 @@ def inspect_tar(path, component, model):
             if raw_size > 160_000_000:
                 raise ValueError('组件解压体积超出限制')
     roots = {'configs', 'ui', 'ruleset', 'cache', 'ax5', 'ShellCrash-tool'} if model == 'AX5' else {
-        'configs', 'ui', 'padavan', 'starts', 'libs', 'tools', 'menus', 'jsons', 'yamls', 'ruleset',
-        'start.sh', 'menu.sh', 'init.sh', 'version'}
+        'configs', 'ui', 'padavan', 'starts', 'libs', 'tools', 'menus', 'task', 'jsons', 'yamls', 'ruleset',
+        'start.sh', 'menu.sh', 'init.sh', 'version', 'task_en.list', 'task.list',
+        'singbox_providers.list', 'servers.list', 'clash_providers.list',
+        'fallback_filter.list', 'fake_ip_filter.list', 'cn_ipv6.txt'}
     roots |= {'backup.info', 'RESTORE.txt', '使用说明.txt'}
     names, sizes, members = set(), {}, 0
     with tarfile.open(path, 'r:gz') as archive:
@@ -148,9 +150,9 @@ def inspect_tar(path, component, model):
         raise ValueError('内核包缺少 CrashCore')
     if component == 'application.tar.gz':
         required = {'backup.info'}
-        required |= {'ax5/api.lua', 'configs/config.json', 'ShellCrash-tool/configs/ShellCrash.cfg'} if model == 'AX5' else {'starts/panel_boot.sh', 'jsons/config.json', 'configs/ShellCrash.cfg'}
+        required |= {'ax5/api.lua', 'configs/config.json', 'ShellCrash-tool/configs/ShellCrash.cfg'} if model == 'AX5' else {'starts/panel_boot.sh', 'jsons/config.json', 'configs/ShellCrash.cfg', 'start.sh', 'menu.sh', 'menus/bot_tg_service.sh'}
         if not required <= names:
-            raise ValueError('应用包缺少必要的配置或机型适配文件')
+            raise ValueError('应用包缺少必要程序或配置：'+', '.join(sorted(required-names)))
     return {'members': members, 'unpacked_size': sum(sizes.values()), 'files': sizes}
 
 

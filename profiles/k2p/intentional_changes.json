@@ -24,12 +24,12 @@
     "reason": "Authenticated baseline-create and read-only recovery-check actions pass frontend whitelist and stock command-length budget; regression verifies actual request encoding and rejects restore execution."
   },
   "payload/starts/backup-app.sh": {
-    "sha256": "aa6a4e671a9a6110ded5d430effaae86290877a750b4749acc782717ac598114",
-    "reason": "Include generated Chinese component/recovery guide in budgeted snapshot; transport gating and cleanup preserved."
+    "sha256": "da9675de2f31059b82596b688393db35fb876d7d4d609aabc11019453ca0a2f6",
+    "reason": "Real restoration exposed missing native menus/task directories; include complete native program roots, provider/task root lists and explicit startup/traffic metadata. Export layout now explicitly names menus/task and native lists."
   },
   "tests/test_backup_export.py": {
-    "sha256": "d4ab20f1bbb8c2eb2abd809e5708bc4d98bc1842dca2c247b3f967b8f6dd88dd",
-    "reason": "Include the shipped Chinese recovery guide helper in the export fixture so real bounded export, CRC and secret/link exclusion checks exercise the actual packer."
+    "sha256": "7bb18cf1488ec15fad6e04071cfd26336bc9af020ccb17f4b2a9484a9c600a62",
+    "reason": "Regression against missing native menus/task files that made a restored running core impossible to stop; also require root lists and explicit state metadata."
   },
   "payload/starts/panel_bfstart.sh": {
     "sha256": "f92ed90fe2ae30a4ee6da7f32acbfe5d46832156c7a21cddb3a6353bfe3d0559",

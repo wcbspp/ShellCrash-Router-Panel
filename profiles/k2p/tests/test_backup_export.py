@@ -14,6 +14,8 @@ class BackupExport(unittest.TestCase):
   (self.c/'configs/webdav.auth').write_text('private fixture');(self.c/'configs/webdav.user').write_text('user')
   (self.c/'configs/config-fixture.json').write_text('{"fixture":"keep"}')
   (self.c/'ui/fixture').write_bytes(b'A'*300000)
+  (self.c/'servers.list').write_text('fixture server list');(self.c/'task.list').write_text('fixture task list')
+  (self.c/'menus').mkdir();(self.c/'menus/bot_tg_service.sh').write_text('fixture menu');(self.c/'task').mkdir();(self.c/'task/afstart').write_text('fixture task')
   self.mem=self.root/'meminfo';self.mem.write_text('MemAvailable: 13500 kB\n')
   self.lock=self.root/'save.lock';source=SOURCE.read_text().replace('C=/etc/storage/ShellCrash','C='+str(self.c)).replace('D=/tmp/sc-admin','D='+str(self.d)).replace('/proc/meminfo',str(self.mem)).replace('/tmp/shellcrash-storage-save.lock',str(self.lock)).replace('/etc/storage/.sc-backup-stage.',str(self.root/' .sc-backup-stage.').replace('/ .','/.'))
   self.script=self.root/'backup.sh';self.script.write_text(source)
@@ -29,6 +31,7 @@ class BackupExport(unittest.TestCase):
   b=(self.d/'application-backup.tar.gz').read_bytes();gzip.decompress(b)
   with tarfile.open(self.d/'application-backup.tar.gz')as t:
    names=t.getnames();self.assertIn('./RESTORE.txt',names);self.assertIn('./backup.info',names);self.assertNotIn('./configs/webdav.auth',names)
+   info=t.extractfile('./backup.info').read().decode();self.assertIn('autostart=1\n',info);self.assertIn('enabled=1\n',info);self.assertIn('traffic_mode=rule\n',info);self.assertIn('./servers.list',names);self.assertIn('./task.list',names);self.assertIn('./menus/bot_tg_service.sh',names);self.assertIn('./task/afstart',names)
   header,encoded=(self.d/'backup-download.txt').read_text().split('\n',1);self.assertEqual(header,'SCBACKUP1 '+str(len(b))+' '+hashlib.sha256(b).hexdigest());self.assertEqual(base64.b64decode(encoded),b)
  def test_protection_and_failed_bounded_archive_keep_previous_backup(self):
   old=b'previous backup';(self.d/'application-backup.tar.gz').write_bytes(old)

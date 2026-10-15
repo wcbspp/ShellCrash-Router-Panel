@@ -18,8 +18,8 @@ class BackupBundle(unittest.TestCase):
         self.manifest = {'format': 2, 'scope': 'full-application-baseline', 'model': 'K2P',
                          'core_kind': 'singbox', 'core_version': '1.12.13', 'files': []}
         elf = bytearray(128); elf[:6] = b'\x7fELF\x01\x01'; elf[18:20] = struct.pack('<H', 8)
-        self.tar('application.tar.gz', {'backup.info': b'format=1', 'configs/ShellCrash.cfg': b'test=1',
-                                      'starts/panel_boot.sh': b'#!/bin/sh', 'jsons/config.json': b'{}'})
+        self.application={'backup.info': b'format=1', 'configs/ShellCrash.cfg': b'test=1', 'starts/panel_boot.sh': b'#!/bin/sh', 'jsons/config.json': b'{}', 'start.sh': b'#!/bin/sh', 'menu.sh': b'#!/bin/sh', 'menus/bot_tg_service.sh': b'# fixture native menu', 'task/afstart': b'# fixture task'}
+        self.tar('application.tar.gz', self.application)
         self.tar('core.tar.gz', {'CrashCore': bytes(elf)})
         self.tar('runtime-assets.tar.gz', {'ShellCrash/ruleset/cn.srs': b'fixture'})
         self.write_manifest()
@@ -62,6 +62,12 @@ class BackupBundle(unittest.TestCase):
         value = dict(self.manifest, files=self.manifest['files'][:-1])
         with self.assertRaises(ValueError): manifest_load(json.dumps(value))
         with self.assertRaises(ValueError): manifest_load('{"format":1,"format":2}')
+
+    def test_missing_native_menu_cannot_claim_complete_even_when_hashes_match(self):
+        incomplete={k:v for k,v in self.application.items()if k!='menus/bot_tg_service.sh'}
+        self.tar('application.tar.gz',incomplete);self.write_manifest()
+        with self.assertRaisesRegex(ValueError,'menus/bot_tg_service.sh'):
+            with Bundle(self.root,'K2P'): pass
 
     def test_component_sha_corruption_is_not_a_complete_backup(self):
         with (self.root/'core.tar.gz').open('ab') as stream: stream.write(b'bad')

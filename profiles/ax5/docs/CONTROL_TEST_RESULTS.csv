@@ -631,3 +631,17 @@ AX5-CTRL-ip-check,AX5,桌面,部分通过,两机1200/390自动IP/刷新/首次�
 AX5-CTRL-ip-check,AX5,手机窄屏,部分通过,两机1200/390自动IP/刷新/首次进入不重复/手动刷新/国内外归属地实际通过；真实重复生命周期派发合并成一次服务商HEAD，缓存自动显示；本轮未主动重启/重订阅，完整生命周期实机门禁仍待完成,docs/LIVE_TEST_2026-10-14_AUTOMATIC_QUOTA_GEO.md,2026-10-14,本地 main 新源已同步两机；未发布
 AX5-CTRL-quota-refresh,AX5,桌面,部分通过,两机1200/390自动IP/刷新/首次进入不重复/手动刷新/国内外归属地实际通过；真实重复生命周期派发合并成一次服务商HEAD，缓存自动显示；本轮未主动重启/重订阅，完整生命周期实机门禁仍待完成,docs/LIVE_TEST_2026-10-14_AUTOMATIC_QUOTA_GEO.md,2026-10-14,本地 main 新源已同步两机；未发布
 AX5-CTRL-quota-refresh,AX5,手机窄屏,部分通过,两机1200/390自动IP/刷新/首次进入不重复/手动刷新/国内外归属地实际通过；真实重复生命周期派发合并成一次服务商HEAD，缓存自动显示；本轮未主动重启/重订阅，完整生命周期实机门禁仍待完成,docs/LIVE_TEST_2026-10-14_AUTOMATIC_QUOTA_GEO.md,2026-10-14,本地 main 新源已同步两机；未发布
+K2P-RESTORE-NATIVE-plan,K2P,桌面,部分通过,电脑回归拒绝边界通过，真实缺菜单旧包拒绝；未逐一实机制造所有前置异常,LIVE_TEST_2026-10-16_K2P_RESTORE.md,2026-10-16,rc.2 本地恢复原型 / sing-box mini 1.12.13
+K2P-RESTORE-NATIVE-plan,K2P,手机窄屏,未执行,命令行及原生验证不代表手机页面执行,LIVE_TEST_2026-10-16_K2P_RESTORE.md,2026-10-16,rc.2 本地恢复原型 / sing-box mini 1.12.13
+K2P-RESTORE-NATIVE-complete,K2P,桌面,通过,真实恢复done；163程序SHA、3策略组、配置/cron一致，backup-time按目标恢复,LIVE_TEST_2026-10-16_K2P_RESTORE.md,2026-10-16,rc.2 本地恢复原型 / sing-box mini 1.12.13
+K2P-RESTORE-NATIVE-complete,K2P,手机窄屏,未执行,命令行及原生验证不代表手机页面执行,LIVE_TEST_2026-10-16_K2P_RESTORE.md,2026-10-16,rc.2 本地恢复原型 / sing-box mini 1.12.13
+K2P-RESTORE-NATIVE-fault,K2P,桌面,通过,初轮缺菜单失败保留；修正后真实故障rolledback，163程序SHA与配置正确,LIVE_TEST_2026-10-16_K2P_RESTORE.md,2026-10-16,rc.2 本地恢复原型 / sing-box mini 1.12.13
+K2P-RESTORE-NATIVE-fault,K2P,手机窄屏,未执行,命令行及原生验证不代表手机页面执行,LIVE_TEST_2026-10-16_K2P_RESTORE.md,2026-10-16,rc.2 本地恢复原型 / sing-box mini 1.12.13
+K2P-RESTORE-NATIVE-program,K2P,桌面,通过,真实19菜单/3任务，163程序核对；缺菜单旧包电脑检查拒绝,LIVE_TEST_2026-10-16_K2P_RESTORE.md,2026-10-16,rc.2 本地恢复原型 / sing-box mini 1.12.13
+K2P-RESTORE-NATIVE-program,K2P,手机窄屏,未执行,命令行及原生验证不代表手机页面执行,LIVE_TEST_2026-10-16_K2P_RESTORE.md,2026-10-16,rc.2 本地恢复原型 / sing-box mini 1.12.13
+K2P-RESTORE-NATIVE-stopguard,K2P,桌面,部分通过,主机及原生隔离模拟通过；没有再次损坏真机停止入口,LIVE_TEST_2026-10-16_K2P_RESTORE.md,2026-10-16,rc.2 本地恢复原型 / sing-box mini 1.12.13
+K2P-RESTORE-NATIVE-stopguard,K2P,手机窄屏,未执行,命令行及原生验证不代表手机页面执行,LIVE_TEST_2026-10-16_K2P_RESTORE.md,2026-10-16,rc.2 本地恢复原型 / sing-box mini 1.12.13
+K2P-RESTORE-NATIVE-coldboot,K2P,桌面,通过,一次真实整机重启，新boot ID、同内核归档及运行程序SHA、163程序、全部配置/选择/模式保持；start_delay=10,LIVE_TEST_2026-10-16_K2P_RESTORE.md,2026-10-16,rc.2 本地恢复原型 / sing-box mini 1.12.13
+K2P-RESTORE-NATIVE-coldboot,K2P,手机窄屏,未执行,命令行及原生验证不代表手机页面执行,LIVE_TEST_2026-10-16_K2P_RESTORE.md,2026-10-16,rc.2 本地恢复原型 / sing-box mini 1.12.13
+K2P-RESTORE-NATIVE-client,K2P,桌面,未执行,真实Wi-Fi客户端确认列在手机端，不代表桌面页面恢复操作,LIVE_TEST_2026-10-16_K2P_RESTORE.md,2026-10-16,rc.2 本地恢复原型 / sing-box mini 1.12.13
+K2P-RESTORE-NATIVE-client,K2P,手机窄屏,通过,用户在重启后确认全部正常,LIVE_TEST_2026-10-16_K2P_RESTORE.md,2026-10-16,rc.2 本地恢复原型 / sing-box mini 1.12.13

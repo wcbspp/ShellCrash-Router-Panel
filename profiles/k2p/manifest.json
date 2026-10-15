@@ -247,5 +247,8 @@
   "payload/starts/backup-manifest.awk": "shared/lib/backup-manifest.awk",
   "tests/test_backup_manifest.py": "shared/tests/test_backup_manifest.py",
   "payload/padavan/recovery.js": "shared/ui/recovery.js.in",
-  "payload/starts/recovery-check.sh": "shared/lib/recovery-check.sh"
+  "payload/starts/recovery-check.sh": "shared/lib/recovery-check.sh",
+  "payload/starts/restore-worker.sh": "profiles/k2p/payload/starts/restore-worker.sh",
+  "tools/restore_k2p.py": "tools/restore_k2p.py",
+  "tools/restore_ax5.py": "tools/restore_ax5.py"
 }
