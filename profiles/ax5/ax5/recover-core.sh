@@ -2,6 +2,14 @@
 set -eu
 . /data/ShellCrash/ax5/core-env.sh
 mkdir -p "$R"
+# Old firmware curl may enforce --max-filesize only for announced lengths.
+# Bound the actual body too, and preserve the producer's status through the pipe.
+download(){
+ (status=0;curl -4 --noproxy '*' -fsSL --connect-timeout 8 --max-time 60 --max-filesize 18000000 "$1" || status=$?;printf '%s\n' "$status" > "$R/recovered.status") |
+  head -c 18000001 > "$R/recovered.tar.gz"
+ [ "$(cat "$R/recovered.status")" = 0 ] && [ "$(wc -c < "$R/recovered.tar.gz")" -le 18000000 ]
+}
+trap 'rm -f "$R/recovered.tar.gz" "$R/recovered.status"' EXIT
 # A partially committed switch keeps the previous manifest. Hash checks determine recovery.
 # The installed manifest stays authoritative: never fetch an implicit newer core at boot.
 public_urls="$SOURCE"
@@ -12,7 +20,7 @@ if remote_fetch core "$HASH" tar.gz "$R/recovered.tar.gz" 18000000;then
  rm -f "$R/recovered.tar.gz"
 fi
 for url in $mirror_url $public_urls; do
- if curl -4 --noproxy '*' -fsSL --connect-timeout 8 --max-time 60 --max-filesize 18000000 "$url" -o "$R/recovered.tar.gz"; then
+ if download "$url"; then
   actual=$(openssl dgst -sha256 "$R/recovered.tar.gz" | awk '{print $NF}')
   if [ "$actual" = "$HASH" ]; then
    tar -tzf "$R/recovered.tar.gz" | grep -qx CrashCore || continue

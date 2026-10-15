@@ -14,11 +14,11 @@ class RecoveryTests(unittest.TestCase):
   curl=shim/'curl';curl.write_text('''#!/usr/bin/env python3
 import sys,os,shutil
 from pathlib import Path
-a=sys.argv[1:];url=next(x for x in a if x.startswith('https://'));dest=a[a.index('-o')+1]
+a=sys.argv[1:];url=next(x for x in a if x.startswith('https://'))
 root=Path(os.environ['TEST_ROOT'])
 with (root/'calls').open('a') as f:f.write(url+'\\n')
 if os.environ.get('ALL_FAIL'):sys.exit(1)
-shutil.copyfile(root/('bad' if 'mirror.example' in url else 'good.tar.gz'),dest)
+sys.stdout.buffer.write((root/('bad' if 'mirror.example' in url else 'good.tar.gz')).read_bytes())
 ''');curl.chmod(0o700)
   return d,c,r,file,dict(os.environ,PATH=str(shim)+os.pathsep+os.environ['PATH'],TEST_ROOT=str(d))
  def test_bad_mirror_hash_falls_back_to_native_source(self):

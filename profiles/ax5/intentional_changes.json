@@ -158,5 +158,13 @@
   "tests/test_control_inventory.py": {
     "sha256": "0daa2d77ed133aa97d0b870a17958d0bb3f0a63361be2f82db3ff9aae06d68ab",
     "reason": "Read-only recovery dialog controls included in detailed menu/button inventory; compact responsive backup entry, independent baseline actions and saved/draft path status."
+  },
+  "ax5/recover-core.sh": {
+    "sha256": "320379802fb213d6843f3f663195e039406507c028af02f124be3779029213d7",
+    "reason": "Bound actual public boot recovery bytes when old curl ignores unannounced lengths; require producer success and installed SHA, retain authoritative installed metadata and clean scratch."
+  },
+  "tests/test_recovery.py": {
+    "sha256": "0af9019e7af62cbaed0a1d97869059ba02efe54fe2761547f3db31c535d76d7c",
+    "reason": "Update the fake curl to emit its response on stdout, matching the production bounded pipeline; preserve stale-mirror rejection and original configuration-preservation assertions."
   }
 }
