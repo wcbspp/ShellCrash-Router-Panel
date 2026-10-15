@@ -162,5 +162,13 @@
   "tests/test_control_ack.js": {
     "sha256": "e3b0ebd86759e1c096202d46bcf84c14138eea19eb105f43198146a6ce1ec3f3",
     "reason": "Authenticated baseline-create and read-only recovery-check actions pass frontend whitelist and stock command-length budget; regression verifies actual request encoding and rejects restore execution."
+  },
+  "payload/starts/core_release.sh": {
+    "sha256": "bf5529f70ed0b60caf8be82d2c9bc2c7bb70fd3e2515ab0a9285901196757cae",
+    "reason": "Bound actual archive and metadata bodies, check producer status and clean partial files; preserve certificate/proxy fallback, installed SHA and Git blob authority."
+  },
+  "payload/starts/download_core.sh": {
+    "sha256": "e7b363494a85dfe9e520968b488d3c3802bdd8b3645e8665b18e7995762cd7ff",
+    "reason": "Use the sourced bounded core download helper for configured mirror bodies before installed SHA verification; retain local/remote/public priority and installed metadata."
   }
 }

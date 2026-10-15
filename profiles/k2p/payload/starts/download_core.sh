@@ -26,7 +26,7 @@ if [ ! -s /tmp/ShellCrash/CrashCore.tar.gz ]; then
   installed=$(release_get version "$release")
   u=$(printf '%s' "$u" | sed "s/singbox-mini-[0-9][0-9.]*-mipsle/singbox-mini-$installed-mipsle/")
   # Preserve the user-configured mirror priority; never accept a different program.
-  if curl -4 --noproxy '*' -fsSL --connect-timeout 8 --max-time 90 --max-filesize "$(release_get archive_size "$release")" "$u" -o /tmp/ShellCrash/core-download.tgz && printf '%s  %s\n' "$expected" /tmp/ShellCrash/core-download.tgz | sha256sum -c - >/dev/null 2>&1; then downloaded=1; break; fi
+  if release_curl_bounded /tmp/ShellCrash/core-download.tgz "$(release_get archive_size "$release")" -4 --noproxy '*' -fsSL --connect-timeout 8 --max-time 90 --max-filesize "$(release_get archive_size "$release")" "$u" && printf '%s  %s\n' "$expected" /tmp/ShellCrash/core-download.tgz | sha256sum -c - >/dev/null 2>&1; then downloaded=1; break; fi
   rm -f /tmp/ShellCrash/core-download.tgz
  done
  SC_REMOTE_TRIED=1

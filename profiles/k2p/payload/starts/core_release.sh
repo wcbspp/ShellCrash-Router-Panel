@@ -34,11 +34,24 @@ native_source(){
  [ "$path" = bin/singbox/singbox-linux-mipsle-softfloat.tar.gz ] || return 1
 }
 core_cacerts(){ cat /etc/ssl/certs/*.crt "$C/configs/subscription-ca.pem" > "$D/core-check/ca.pem" 2>/dev/null; }
+# Firmware curl may only enforce --max-filesize for announced lengths. Keep
+# metadata and archive bodies bounded even for lengthless/chunked responses.
+release_curl_bounded()(
+ destination=$1;limit=$2;shift 2
+ case "$limit" in ''|*[!0-9]*)return 2;;esac
+ [ "${#limit}" -le 8 ] && [ "$limit" -gt 0 ] && [ "$limit" -le 40000000 ] || return 2
+ umask 077
+ trap 'rm -f "$destination.curl-status"' EXIT
+ (status=0;curl "$@" || status=$?;printf '%s\n' "$status" > "$destination.curl-status") |
+  head -c "$((limit+1))" > "$destination"
+ if [ "$(cat "$destination.curl-status")" = 0 ] && [ "$(wc -c < "$destination")" -le "$limit" ];then return 0;fi
+ rm -f "$destination";return 1
+)
 core_fetch_metadata(){
  # Metadata may use the running proxy when direct access fails, like ShellCrash.
- curl -4 --cacert "$D/core-check/ca.pem" --noproxy '*' -fsSL --connect-timeout 4 --max-time 12 --max-filesize 8192 "$1" -o "$2" && return 0
+ release_curl_bounded "$2" 8192 -4 --cacert "$D/core-check/ca.pem" --noproxy '*' -fsSL --connect-timeout 4 --max-time 12 --max-filesize 8192 "$1" && return 0
  [ -n "$(pidof CrashCore)" ] || return 1
- curl -4 --cacert "$D/core-check/ca.pem" --noproxy '' --proxy http://${PANEL_LAN_IP}:7890 -fsSL --connect-timeout 4 --max-time 15 --max-filesize 8192 "$1" -o "$2"
+ release_curl_bounded "$2" 8192 -4 --cacert "$D/core-check/ca.pem" --noproxy '' --proxy http://${PANEL_LAN_IP}:7890 -fsSL --connect-timeout 4 --max-time 15 --max-filesize 8192 "$1"
 }
 release_probe(){
  mkdir -p "$D/core-check"
@@ -86,7 +99,7 @@ release_download(){
  for field in mirror url fallback1 fallback2; do
   if [ "$field" = mirror ]; then u=$mirror_url; else u=$(release_get "$field" "$f"); fi
   case "$u" in http://*|https://*) :;; *) continue;; esac
-  if curl -4 --cacert "$D/core-check/ca.pem" --noproxy '*' -fsSL --connect-timeout 8 --max-time 120 --max-filesize "$size" "$u" -o "$dest" && [ "$(stat -c %s "$dest")" -eq "$size" ]; then
+  if release_curl_bounded "$dest" "$size" -4 --cacert "$D/core-check/ca.pem" --noproxy '*' -fsSL --connect-timeout 8 --max-time 120 --max-filesize "$size" "$u" && [ "$(stat -c %s "$dest")" -eq "$size" ]; then
    actual_blob=$({ printf 'blob %s\000' "$size"; cat "$dest"; } | openssl dgst -sha1 | awk '{print $NF}')
    actual_sha=$(sha256sum "$dest" | awk '{print $1}')
    if { [ -z "$expected_blob" ] || [ "$actual_blob" = "$expected_blob" ]; } && { [ -z "$expected_sha" ] || [ "$actual_sha" = "$expected_sha" ]; }; then rm -f "$D/core-check/ca.pem"; return 0; fi
