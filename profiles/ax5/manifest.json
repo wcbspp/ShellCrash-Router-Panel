@@ -39,7 +39,7 @@
   "ax5/prepare.sh": "profiles/ax5/ax5/prepare.sh",
   "ax5/recover-core.sh": "profiles/ax5/ax5/recover-core.sh",
   "ax5/remote-settings.sh": "shared/lib/remote-settings.sh",
-  "ax5/remote.sh": "profiles/ax5/ax5/remote.sh",
+  "ax5/remote.sh": "shared/lib/remote.sh",
   "ax5/rules_validate.awk": "shared/lib/rules_validate.awk",
   "ax5/run.sh": "profiles/ax5/ax5/run.sh",
   "ax5/shellcrash.init": "profiles/ax5/ax5/shellcrash.init",
@@ -108,7 +108,7 @@
   "tests/test_subscription_state.js": "profiles/ax5/tests/test_subscription_state.js",
   "tests/test_subscription_tool.py": "profiles/ax5/tests/test_subscription_tool.py",
   "tests/test_upload.js": "profiles/ax5/tests/test_upload.js",
-  "tests/test_webdav.py": "profiles/ax5/tests/test_webdav.py",
+  "tests/test_webdav.py": "shared/tests/test_webdav.py",
   "tests/test_webdav_ui.js": "profiles/ax5/tests/test_webdav_ui.js",
   "tests/traffic_mode.lua": "profiles/ax5/tests/traffic_mode.lua",
   "tests/upload.lua": "profiles/ax5/tests/upload.lua",
@@ -145,5 +145,12 @@
   "tests/test_cn_bypass_ui.js": "shared/tests/test_cn_bypass_ui.js",
   "tests/cn_bypass.lua": "profiles/ax5/tests/cn_bypass.lua",
   "ax5/subscription-quota.sh": "shared/lib/subscription-quota.sh",
-  "tests/test_account_network.js": "shared/tests/test_account_network.js"
+  "tests/test_account_network.js": "shared/tests/test_account_network.js",
+  "ax5/backup-set.sh": "shared/lib/backup-set.sh",
+  "ax5/backup-baseline.sh": "shared/lib/backup-baseline.sh",
+  "ax5/backup-guide.sh": "shared/lib/backup-guide.sh",
+  "ax5/backup-baseline-run.sh": "shared/lib/backup-baseline-run.sh",
+  "tests/test_backup_ui.js": "shared/tests/test_backup_ui.js",
+  "ax5/backup-manifest.awk": "shared/lib/backup-manifest.awk",
+  "tests/test_backup_manifest.py": "shared/tests/test_backup_manifest.py"
 }

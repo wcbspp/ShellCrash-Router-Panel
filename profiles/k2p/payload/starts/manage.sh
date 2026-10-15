@@ -104,7 +104,7 @@ status(){
  webdav_password_set=false;[ ! -s "$C/configs/webdav.auth" ] || webdav_password_set=true
  printf '"remote_transport":"%s","webdav_user_b64":"%s","webdav_password_set":%s,' "$(remote_transport)" "$(cat "$C/configs/webdav.user" 2>/dev/null | base64 | tr -d '\n')" "$webdav_password_set"
  remote_checked=$(cat "$C/configs/remote.checked" 2>/dev/null);case "$remote_checked" in ''|*[!0-9]*)remote_checked=0;;esac
- printf '"remote_checked":%s,"remote_application_b64":"%s","remote_config_b64":"%s",' "$remote_checked" "$(head -c 2048 "$D/remote-application.json" 2>/dev/null | base64 | tr -d '\n')" "$(head -c 2048 "$D/remote-config.json" 2>/dev/null | base64 | tr -d '\n')"
+ printf '"remote_checked":%s,"remote_application_b64":"%s","remote_config_b64":"%s","remote_baseline_b64":"%s",' "$remote_checked" "$(head -c 2048 "$D/remote-application.json" 2>/dev/null | base64 | tr -d '\n')" "$(head -c 2048 "$D/remote-config.json" 2>/dev/null | base64 | tr -d '\n')" "$(head -c 2048 "$D/remote-baseline.json" 2>/dev/null | base64 | tr -d '\n')"
  printf '"core_uptime_seconds":%s,' "$core_uptime"
  core_check='{}'; [ ! -s "$D/core-check.json" ] || core_check=$(cat "$D/core-check.json")
  rules_count=$(head -1 "$C/configs/rules.meta" 2>/dev/null); case "$rules_count" in ''|*[!0-9]*) rules_count=4305;; esac
@@ -224,6 +224,18 @@ case "$act" in
   lock || exit 1
   echo "$id" > "$D/id"
   . "$C/starts/mirror_update.sh";;
+ baselinecreate)
+  valid_id "$id" || exit 1
+  case "$3" in create|replace) :;;*)exit 1;;esac
+  lock || exit 1
+  echo "$id" > "$D/id"
+  phase working '正在生成并校验独立基础版本，当前代理保持运行'
+  if "$C/starts/backup-baseline-run.sh" k2p "$3" > "$D/baseline-result.log" 2>&1;then
+   # The baseline lives on DAV; local time bookkeeping is not its authority.
+   # A Storage failure must not falsely report that remote publication failed.
+   if save_safe;then phase done '基础版本已独立保存并校验'
+   else phase done '基础版本已保存；本机备份时间记录未持久化，请稍后重试保存';fi
+  else fail '基础版本未更新，请查看日志；原基础版本保留';fi;;
  backuplocal|backupremote)
   valid_id "$id" || exit 1
   lock || exit 1

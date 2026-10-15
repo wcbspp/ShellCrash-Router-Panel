@@ -1,2 +1,1 @@
-*.csv text eol=lf
-vendor/** -text
+*.patch whitespace=-space-before-tab,-blank-at-eol

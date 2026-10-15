@@ -3,18 +3,38 @@
 dav_model(){ case "${REMOTE_MODEL:-}" in AX5|K2P)echo "$REMOTE_MODEL";return;;esac;if [ "$C" = /data/ShellCrash ];then echo AX5;else echo K2P;fi; }
 dav_base(){ b=$(remote_get_setting base);case "$b" in http://*|https://*)printf '%s/shellcrash-panel/%s\n' "${b%/}" "$(dav_model)";;*)return 2;;esac; }
 dav_curl(){ curl -q -4 --config "$C/configs/webdav.auth" --noproxy '*' --globoff --connect-timeout 4 --max-time 60 --silent --show-error "$@"; }
+dav_live_ready(){
+ remote_ready || return 2
+ live_key=$(remote_fingerprint)
+ now=$(cut -d. -f1 /proc/uptime 2>/dev/null);case "$now" in ''|*[!0-9]*)now=$(date +%s);;esac
+ # Only coalesce checks inside this process/transaction. This is not a
+ # persisted online flag and cannot authorize a later boot or another job.
+ if [ "${dav_live_key:-}" = "$live_key" ] && [ "$((now-${dav_live_at:-0}))" -ge 0 ] && [ "$((now-${dav_live_at:-0}))" -lt 10 ];then return 0;fi
+ code=$(dav_curl -X PROPFIND -H 'Depth: 0' --max-time 3 -o /dev/null -w '%{http_code}' "$(dav_base)/" 2>/dev/null) || code=000
+ case "$code" in 200|207) dav_live_key=$live_key;dav_live_at=$now;return 0;;*)
+  dav_live_key='';printf '{"state":"unreachable","checked":%s,"http":%s}\n' "$(date +%s)" "${code#00}" > "$D/remote-transfer-error.json"
+  echo 'WebDAV 当前无法连接或认证失败，未开始远程传输' >&2;return 1;;
+ esac
+}
 dav_mkdir(){ code=$(dav_curl -X MKCOL -o /dev/null -w '%{http_code}' "$1/") || return 1;case "$code" in 201|405) return 0;;*)echo "WebDAV 创建目录失败 HTTP=$code" >&2;return 1;;esac; }
 dav_object(){
- case "$1:$3" in core:tar.gz|dashboard:tar.gz|backup:tar.gz|info:txt|cn:mrs|cn:srs|rules:txt|rules:srs|rules:json|probe:txt) :;;*)return 2;;esac
+ case "$1:$3" in core:tar.gz|dashboard:tar.gz|backup:tar.gz|runtime:tar.gz|info:txt|cn:mrs|cn:srs|rules:txt|rules:srs|rules:json|probe:txt) :;;*)return 2;;esac
  printf '%s' "$2" | grep -Eq '^[a-f0-9]{64}$' || return 2
  dir=objects;[ "$1" != backup ] || dir=backups
  printf '%s/%s/%s-%s.%s\n' "$(dav_base)" "$dir" "$1" "$2" "$3"
 }
 dav_read_hash(){ dav_curl --fail "$1" | remote_hash; }
+dav_store_file(){
+ remote_transfer_ready || return 2
+ stored_hash=$(remote_hash < "$1")
+ dav_curl --fail -T "$1" "$2" -o /dev/null || return 1
+ [ "$(dav_read_hash "$2")" = "$stored_hash" ]
+}
 dav_latest(){ remote_ready || return 2;case "$1" in application|config) :;;*)return 2;;esac;dav_curl --fail --max-filesize 2048 "$(dav_base)/backups/$1-latest.json" 2>/dev/null | head -c 2049; }
 dav_publish_index()(
  pointer=$1;file=$2;hash=$(remote_hash < "$file")
  dav_curl --fail -T "$file" "$pointer.new" -o /dev/null || return 1
+ [ "$(dav_read_hash "$pointer.new")" = "$hash" ] || { dav_curl --fail -X DELETE "$pointer.new" -o /dev/null || :;return 1; }
  code=$(dav_curl -X MOVE -H "Destination: $pointer" -H 'Overwrite: T' -o /dev/null -w '%{http_code}' "$pointer.new") || return 1
  case "$code" in 201|204) :;;405|501) dav_curl --fail -T "$file" "$pointer" -o /dev/null || return 1;dav_curl --fail -X DELETE "$pointer.new" -o /dev/null || :;;*)echo "WebDAV 索引保存失败 HTTP=$code" >&2;return 1;;esac
  [ "$(dav_read_hash "$pointer")" = "$hash" ]
@@ -49,10 +69,12 @@ dav_refresh_catalog(){
  remote_ready || return 2
  catalog_error=0;catalog_found=0
  catalog_key=$(remote_fingerprint)
- if [ "$catalog_key" != "$(cat "$D/remote-catalog.key" 2>/dev/null)" ];then rm -f "$D/remote-application.json" "$D/remote-config.json";fi
- for scope in application config;do
-  catalog_code=$(dav_curl --max-time 3 --max-filesize 2048 -o "$D/remote-$scope.new" -w '%{http_code}' "$(dav_base)/backups/$scope-latest.json" 2>/dev/null) || catalog_code=000
-  if [ "$catalog_code" = 200 ] && [ "$(wc -c < "$D/remote-$scope.new")" -le 2048 ] && grep -q '"format":1' "$D/remote-$scope.new";then
+ if [ "$catalog_key" != "$(cat "$D/remote-catalog.key" 2>/dev/null)" ];then rm -f "$D/remote-application.json" "$D/remote-config.json" "$D/remote-baseline.json";fi
+ remote_transfer_ready || { echo error > "$D/remote-catalog.state";return 1; }
+ for scope in application config baseline;do
+  catalog_path="backups/$scope-latest.json";[ "$scope" != baseline ] || catalog_path=baselines/baseline-latest.json
+  catalog_code=$(dav_curl --max-time 3 --max-filesize 2048 -o "$D/remote-$scope.new" -w '%{http_code}' "$(dav_base)/$catalog_path" 2>/dev/null) || catalog_code=000
+  if [ "$catalog_code" = 200 ] && [ "$(wc -c < "$D/remote-$scope.new")" -le 2048 ] && grep -Eq '"format": *[12]([, }]|$)' "$D/remote-$scope.new";then
    mv "$D/remote-$scope.new" "$D/remote-$scope.json";catalog_found=$((catalog_found+1))
   elif [ "$catalog_code" = 404 ];then rm -f "$D/remote-$scope.json"
   else catalog_error=1;fi
@@ -67,13 +89,31 @@ dav_catalog(){
  if ! mkdir "$D/remote-catalog.lock" 2>/dev/null;then printf '{"state":"busy"}\n';return;fi
  dav_refresh_catalog || :
  rmdir "$D/remote-catalog.lock" 2>/dev/null
- printf '{"state":"%s","application_b64":"%s","config_b64":"%s"}\n' "$(cat "$D/remote-catalog.state")" "$(head -c 2048 "$D/remote-application.json" 2>/dev/null|base64|tr -d '\n')" "$(head -c 2048 "$D/remote-config.json" 2>/dev/null|base64|tr -d '\n')"
+ printf '{"state":"%s","application_b64":"%s","config_b64":"%s","baseline_b64":"%s"}\n' "$(cat "$D/remote-catalog.state")" "$(head -c 2048 "$D/remote-application.json" 2>/dev/null|base64|tr -d '\n')" "$(head -c 2048 "$D/remote-config.json" 2>/dev/null|base64|tr -d '\n')" "$(head -c 2048 "$D/remote-baseline.json" 2>/dev/null|base64|tr -d '\n')"
 }
+dav_baseline_core_url()(
+ remote_transfer_ready || return 2
+ pointer="$D/baseline-core-pointer.$$"
+ trap 'rm -f "$pointer"' EXIT
+ dav_curl --fail --max-time 3 --max-filesize 2048 "$(dav_base)/baselines/baseline-latest.json" | head -c 2049 > "$pointer"
+ [ "$(wc -c < "$pointer")" -le 2048 ] || return 1
+ [ "$(sed -n 's/.*"core_sha256":"\([a-f0-9]*\)".*/\1/p' "$pointer")" = "$1" ] || return 1
+ path=$(sed -n 's/.*"path":"\(baselines\/[A-Za-z0-9_-]*\/manifest.json\)".*/\1/p' "$pointer" | head -1)
+ # The pointer selects a component of the SAME expected version. It never
+ # supplies a version to the installed manifest or authorizes a downgrade.
+ printf '%s' "$path" | grep -Eq '^baselines/[A-Za-z0-9_-]{1,80}/manifest.json$' || return 1
+ printf '%s/%s/core.tar.gz\n' "$(dav_base)" "${path%/manifest.json}"
+)
 dav_fetch()(
  remote_ready || return 2
  url=$(dav_object "$1" "$2" "$3") || return 2
  dav_curl --fail --max-filesize "$5" "$url" | head -c "$(($5+1))" > "$4"
  [ "$(wc -c < "$4")" -le "$5" ] && [ "$(remote_hash < "$4")" = "$2" ] && return 0
+ rm -f "$4"
+ if [ "$1:$3" = core:tar.gz ] && url=$(dav_baseline_core_url "$2");then
+  dav_curl --fail "$url" | head -c "$(($5+1))" > "$4"
+  [ "$(wc -c < "$4")" -le "$5" ] && [ "$(remote_hash < "$4")" = "$2" ] && return 0
+ fi
  rm -f "$4";return 1
 )
 dav_has()(
@@ -128,9 +168,9 @@ dav_status()(
   checked=$(sed -n 's/.*"checked":\([0-9]*\).*/\1/p' "$D/remote-status.json" 2>/dev/null)
   if [ -n "$checked" ] && [ "$((now-checked))" -ge 0 ] && [ "$((now-checked))" -lt 60 ];then cat "$D/remote-status.json";return;fi
  fi
- exitcode=0;code=$(dav_curl -X OPTIONS --max-time 4 -o /dev/null -w '%{http_code}' "$(dav_base)/" 2>/dev/null) || exitcode=$?
+ exitcode=0;code=$(dav_curl -X PROPFIND -H 'Depth: 0' --max-time 4 -o /dev/null -w '%{http_code}' "$(dav_base)/" 2>/dev/null) || exitcode=$?
  state=unreachable
- if [ "$exitcode" = 0 ];then case "$code" in 2??|3??|405) state=connected;;401|403)state=unauthorized;;*)state=error;;esac;fi
+ if [ "$exitcode" = 0 ];then case "$code" in 200|207) state=connected;;401|403)state=unauthorized;;*)state=error;;esac;fi
  printf '{"state":"%s","checked":%s,"http":%s}\n' "$state" "$now" "${code:-0}" | sed 's/"http":000/"http":0/' > "$D/remote-status.json"
  printf '%s\n' "$fingerprint" > "$D/remote-status.fingerprint"
  cat "$D/remote-status.json"

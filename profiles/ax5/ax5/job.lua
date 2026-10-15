@@ -208,6 +208,11 @@ local function execute()
   phase('working','正在验证 WebDAV 读写',true)
   if not M.run('C='..M.C..' D='..M.R..' sh -c \'. "$C/ax5/remote.sh"; remote_verify\' >> '..M.R..'/service.log 2>&1')then fail('WebDAV 验证失败，请检查地址、账号密码与读写权限')end
   phase('done','远程仓库验证通过',false)
+ elseif a=='baselinecreate'then
+  local mode=args[2];if mode~='create'and mode~='replace'then fail('需要明确选择创建或替换基础版本')end
+  phase('working','正在生成并校验独立基础版本，当前代理保持运行',true)
+  if not M.run(M.C..'/ax5/backup-baseline-run.sh ax5 '..mode..' > '..M.R..'/baseline-result.log 2>&1')then fail('基础版本未更新，请查看日志；原基础版本保留')end
+  phase('done','基础版本已独立保存并校验',false)
  elseif a=='backuplocal'or a=='backupremote'then
   phase('working','正在备份应用',true)
   os.remove(M.R..'/backup-error')

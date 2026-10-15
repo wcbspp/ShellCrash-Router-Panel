@@ -27,6 +27,48 @@ mirror_base(){ :; }
  def test_corrupt_public_response_never_publishes(self):
   rc,calls,data=self.asset(remote=False,bad=True);self.assertNotEqual(rc,0);self.assertNotIn('put',calls);self.assertIsNone(data)
 
+ def test_new_installed_digest_wins_over_old_remote_and_old_local(self):
+  with tempfile.TemporaryDirectory() as tmp:
+   p=Path(tmp);(p/'configs').mkdir();(p/'starts').mkdir();(p/'work').mkdir()
+   old=b'previous domain';new=b'new successful domain';oldh=hashlib.sha256(old).hexdigest();newh=hashlib.sha256(new).hexdigest()
+   (p/'rules').write_bytes(old)
+   (p/'configs/domain-installed.info').write_text('sha256='+newh+'\nurl=https://fixture.invalid/new.srs\ntype=direct\n')
+   (p/'configs/subscription-ca.pem').write_text('')
+   (p/'starts/mirror_lib.sh').write_text('remote_fetch(){ echo "$2" > "$C/requested";printf "previous domain" > "$4"; };mirror_base(){ :; };remote_ready(){ return 2; }\n')
+   script='C="$1"; . "$2";logger(){ :; };curl(){ printf "new successful domain" > "$C/work/cn.new"; };domain_asset_ensure "$3" "$C/rules" "$C/work"'
+   r=subprocess.run(['sh','-c',script,'fixture',str(p),str(ROOT/'payload/starts/domain_asset.sh'),oldh],capture_output=True,text=True)
+   self.assertEqual(r.returncode,0,r.stderr);self.assertEqual((p/'rules').read_bytes(),new)
+   self.assertEqual((p/'requested').read_text().strip(),newh)
+   self.assertIn(newh,(p/'configs/domain-installed.info').read_text())
+
+ def test_malformed_installed_domain_record_cannot_fall_back_to_old_version(self):
+  with tempfile.TemporaryDirectory() as tmp:
+   p=Path(tmp);(p/'configs').mkdir();(p/'work').mkdir();(p/'rules').write_bytes(b'old valid file')
+   (p/'configs/domain-installed.info').write_text('sha256=invalid\nurl=https://fixture.invalid/new.srs\ntype=direct\n')
+   h=hashlib.sha256(b'old valid file').hexdigest()
+   script='C="$1";. "$2";logger(){ :; };domain_asset_ensure "$3" "$C/rules" "$C/work"'
+   r=subprocess.run(['sh','-c',script,'fixture',str(p),str(ROOT/'payload/starts/domain_asset.sh'),h],capture_output=True,text=True)
+   self.assertNotEqual(r.returncode,0);self.assertEqual((p/'rules').read_bytes(),b'old valid file')
+
+ def test_domain_record_commit_validation_and_storage_failure_preserve_old_record(self):
+  for binary_ok,save_ok in [(False,True),(True,False),(True,True)]:
+   with tempfile.TemporaryDirectory() as tmp:
+    p=Path(tmp);(p/'configs').mkdir();(p/'starts').mkdir()
+    old='sha256='+('a'*64)+'\nurl=https://fixture.invalid/old.srs\ntype=direct\n'
+    (p/'configs/domain-installed.info').write_text(old);(p/'current.srs').write_bytes(b'new' * 1024)
+    binary=p/'core';binary.write_text('#!/bin/sh\nexit '+('0' if binary_ok else '1')+'\n');binary.chmod(0o700)
+    (p/'starts/resource_health.sh').write_text('resource_read(){ rh_available=30000;rh_protect_mb=12; }\n')
+    saver=p/'starts/save_storage.sh';saver.write_text('#!/bin/sh\nexit '+('0' if save_ok else '1')+'\n');saver.chmod(0o700)
+    (p/'starts/mirror_lib.sh').write_text('remote_ready(){ return 2; }\n')
+    source=(ROOT/'payload/starts/domain_asset.sh').read_text().replace('/tmp/ShellCrash/CrashCore',str(binary))
+    (p/'asset.sh').write_text(source)
+    script='C="$1";D="$1";pidof(){ :; };. "$C/asset.sh";domain_asset_commit "$C/current.srs" https://fixture.invalid/new.srs direct'
+    r=subprocess.run(['sh','-c',script,'fixture',str(p)],capture_output=True,text=True)
+    if binary_ok and save_ok:
+     self.assertEqual(r.returncode,0,r.stderr);self.assertIn(hashlib.sha256(b'new'*1024).hexdigest(),(p/'configs/domain-installed.info').read_text())
+    else:
+     self.assertNotEqual(r.returncode,0);self.assertEqual((p/'configs/domain-installed.info').read_text(),old)
+
  def test_boot_delay_precedes_download_and_is_consumed_once(self):
   with tempfile.TemporaryDirectory() as tmp:
    p=Path(tmp);(p/'configs').mkdir();(p/'configs/ShellCrash.cfg').write_text('start_delay=10\n')

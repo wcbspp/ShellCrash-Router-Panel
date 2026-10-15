@@ -7,6 +7,7 @@ class BackupExport(unittest.TestCase):
   link_source=SOURCE.parent/'backup-links.sh'
   if not link_source.exists():link_source=Path(__file__).resolve().parents[3]/'shared/lib/backup-links.sh'
   (self.c/'starts/backup-links.sh').write_bytes(link_source.read_bytes())
+  (self.c/'starts/backup-guide.sh').write_bytes((SOURCE.parent/'backup-guide.sh').read_bytes())
   (self.c/'starts/resource_health.sh').write_bytes((SOURCE.parent/'resource_health.sh').read_bytes())
   (self.c/'starts/remote.sh').write_text('remote_ready(){ :; }\n')
   (self.c/'configs/core-installed.info').write_text('version=1.12.13\nsha256='+('1'*64)+'\n')

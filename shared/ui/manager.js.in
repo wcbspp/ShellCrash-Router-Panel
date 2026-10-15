@@ -213,18 +213,58 @@ async function refreshRemoteCatalog(force=false){
  try{const result=await nativeRead('remotecatalog');
   if(key!==[nativeState.mirror_base_b64,nativeState.webdav_user_b64,nativeState.remote_checked].join(':'))return;
   remoteCatalogKey=key;remoteCatalogState=result.state;
-  if(result.state!=='busy'&&result.state!=='disabled'){nativeState.remote_application_b64=result.application_b64||'';nativeState.remote_config_b64=result.config_b64||'';}
+  if(result.state!=='busy'&&result.state!=='disabled'){nativeState.remote_application_b64=result.application_b64||'';nativeState.remote_config_b64=result.config_b64||'';nativeState.remote_baseline_b64=result.baseline_b64||'';}
  }catch(e){remoteCatalogState='error';}finally{remoteCatalogBusy=false;paintMirror();}
+}
+function backupModel(){
+@@if ax5@@
+ return 'AX5';
+@@else@@
+ return 'K2P';
+@@end@@
+}
+function backupBaseline(){try{const b=JSON.parse(decode(nativeState?.remote_baseline_b64||''));return b&&[1,2].includes(b.format)&&/^[a-f0-9]{64}$/.test(b.sha256||'')?b:null}catch{return null}}
+async function createBaseline(){
+ if(manageBusy||nativeState?.active||mirrorDirty)return;
+ if(!(nativeState?.remote_transport==='webdav'&&nativeState.remote_enabled&&nativeState.remote_verified)){mirrorFeedback('请先开启 WebDAV，测试通过并保存','error');return}
+ const previous=backupBaseline(),mode=previous?'replace':'create';
+ if(!confirm(previous?'替换基础版本？日常备份不会覆盖此版本，替换后完整回退将使用新版本。':'将当前设备的程序、内核、资源和配置保存为独立基础版本？请先确认当前使用正常。'))return;
+ if(!confirm('确认'+(previous?'替换':'创建')+'：将生成当前完整备份并校验，当前代理不重启；这里只保存备份，不执行恢复。'))return;
+ pauseMeasurements();pauseSites();manageBusy=true;showService();mirrorFeedback('正在保存独立基础版本并回读校验…','working');
+ const id=[...crypto.getRandomValues(new Uint8Array(4))].map(b=>b.toString(16).padStart(2,'0')).join('');
+ try{await control('sc-baselinecreate.sh',[id,mode]);const result=await waitJob(id,'done',300000,'mirror-message');await syncNative();await refreshRemoteCatalog(true);const message=decode(result?.message_b64||'');mirrorFeedback(message.includes('未持久化')?message:'基础版本已独立保存并校验；日常备份不会覆盖',message.includes('未持久化')?'info':'success')}
+ catch(e){mirrorFeedback('基础版本未更新：'+e.message+'；原基础版本保留','error')}
+ finally{manageBusy=false;showService();paintMirror()}
 }
 function paintMirror(){
  if(!nativeState)return;const s=nativeState;
  if(mirrorTestKey&&Date.now()-mirrorTestedAt>=900000){mirrorTestKey='';mirrorFeedback('测试结果已过期，请重新测试连接后保存','info');}
  if(!mirrorDirty){el('mirror-base').value=s.remote_transport==='webdav'?decode(s.mirror_base_b64||'').trim():'';el('remote-user').value=decode(s.webdav_user_b64||'').trim();el('remote-enabled').checked=s.remote_transport==='webdav'&&!!s.remote_enabled;el('remote-password').value=''}
  const ready=s.remote_transport==='webdav'&&s.remote_enabled&&s.remote_verified,busy=manageBusy||s.active||advancedActive;
+ const pathBase=el('mirror-base').value.trim().replace(/\/+$/,'');
+ for(const [id,dir] of [['backup-path-latest','backups/'],['backup-path-baseline','baselines/'],['backup-path-imports','imports/']])el(id).textContent=/^https?:\/\//i.test(pathBase)?pathBase+'/shellcrash-panel/'+backupModel()+'/'+dir:'填写 WebDAV 根地址后显示';
+ const baseline=backupBaseline();el('baseline-create').textContent=baseline?'替换基础版本':'创建基础版本';el('baseline-create').disabled=busy||!ready||mirrorDirty||s.pressure==='protect';
+
  const home=el('remote-home');if(home){home.hidden=s.remote_transport!=='webdav'||!s.remote_enabled;home.textContent=!ready?'WebDAV 待验证':!remoteConnection?'WebDAV 检查中':({connected:'WebDAV 连接正常',unreachable:'WebDAV 无法连接',unauthorized:'WebDAV 认证失败',error:'WebDAV 地址异常'}[remoteConnection.state]||'WebDAV 待验证');home.title=remoteConnection?.checked?'最近连接检查：'+new Date(remoteConnection.checked*1000).toLocaleString('zh-CN',{hour12:false})+'；打开页面检查，非持续在线监测':s.remote_checked?'最近验证：'+new Date(s.remote_checked*1000).toLocaleString('zh-CN',{hour12:false}):'尚未验证'}
  const connectionKey=ready?[s.mirror_base_b64,s.webdav_user_b64,s.remote_checked].join(':'):'';if(connectionKey!==remoteConnectionKey){remoteConnectionKey=connectionKey;remoteConnection=null;if(ready)nativeRead('remoteconnection').then(result=>{if(remoteConnectionKey===connectionKey){remoteConnection=result;paintMirror()}}).catch(()=>{if(remoteConnectionKey===connectionKey){remoteConnection={state:'unreachable',checked:Math.floor(Date.now()/1000)};paintMirror()}})}
  el('remote-versions-refresh').disabled=busy||!ready||remoteCatalogBusy;
- const versions=[];for(const [scope,title] of [['application','应用包'],['config','自动配置']]){let b;try{b=JSON.parse(decode(s['remote_'+scope+'_b64']||''))}catch{}if(b?.format===1&&b.created&&/^[a-f0-9]{64}$/.test(b.sha256||''))versions.push(title+' · '+new Date(b.created*1000).toLocaleString('zh-CN',{hour12:false})+' · '+(Number(b.size)/1024).toFixed(0)+' KB\n内核 '+(b.core_kind==='meta'?'Mihomo':'sing-box')+' '+b.core_version+' · ShellCrash '+b.tool_version+' · 面板 '+(b.panel_version&&b.panel_version!=='unknown'?b.panel_version:'版本未记录')+' · 包编号 '+b.sha256.slice(0,12))}el('remote-versions').textContent=!ready?'开启并验证后读取远端版本':(remoteCatalogState==='loading'?'正在读取远端最新备份…':remoteCatalogState==='error'?'远端记录读取失败，请重试；已有记录保留。':remoteCatalogState==='busy'?'远端记录正在读取，请稍后刷新。':'')+(versions.length?'\n'+versions.join('\n\n'):remoteCatalogState==='empty'?'远端没有最新备份记录，请点“备份到 WebDAV”创建':remoteCatalogState==='ready'?'远端记录格式不完整，请检查备份':'');
+ const versions=[];let baselineText='尚未发现基础版本';
+ for(const [scope,title] of [['application','最新应用备份'],['config','自动配置备份'],['baseline','基础恢复点']]){
+  let b;try{b=JSON.parse(decode(s['remote_'+scope+'_b64']||''))}catch{}
+  if(!b||![1,2].includes(b.format)||!/^[a-f0-9]{64}$/.test(b.sha256||''))continue;
+  const when=b.created?new Date(b.created*1000).toLocaleString('zh-CN',{hour12:false}):(b.label||'时间未记录');
+  const size=Number(b.size);const capacity=Number.isFinite(size)&&size>0?(size/1048576).toFixed(1)+' MB':'大小未记录';
+  let text=title+' · '+when+' · '+capacity;
+  text+='\n内核 '+(b.core_kind==='meta'?'Mihomo':b.core_kind==='singbox'?'sing-box':'')+' '+(b.core_version||'版本未记录');
+  if(b.tool_version)text+=' · ShellCrash '+b.tool_version;
+  if(b.panel_version)text+=' · 面板 '+b.panel_version;
+  text+='\n'+(scope==='baseline'?'独立保留，更新最新备份不会删除。':b.format===2?'完整应用备份：安装源码与配置、内核、已安装高级面板和运行规则。':'旧格式：应用与配置或自动配置；内核需匹配记录另取。');
+  if(b.files?.length)for(const f of b.files.slice(0,6)){if(typeof f.name==='string'&&Number(f.size)>0)text+='\n'+f.name+' · '+(Number(f.size)/1048576).toFixed(2)+' MB · '+String(f.sha256||'').slice(0,12);}
+  if(scope==='baseline'&&b.source_commit)text+='\n源码版本 '+String(b.source_commit).slice(0,12)+' · 含完整项目源码快照';
+  text+='\n备份编号 '+b.sha256.slice(0,12);if(scope==='baseline')baselineText=text;else versions.push(text);
+ }
+ el('remote-versions').textContent=!ready?'开启并验证后读取远端版本':(remoteCatalogState==='loading'?'正在读取远端备份…':remoteCatalogState==='error'?'远端记录读取失败，请重试；已有记录保留。':remoteCatalogState==='busy'?'正在查询，请稍后刷新。':'')+(versions.length?'\n'+versions.join('\n\n'):remoteCatalogState==='empty'?'远端没有备份记录，请创建完整备份。':remoteCatalogState==='ready'?'远端记录格式不完整，请检查备份。':'');
+ el('baseline-version').textContent=!ready?'开启并验证后读取基础版本':remoteCatalogState==='loading'?'正在读取基础版本…':remoteCatalogState==='error'?'基础版本查询失败；上次记录：\n'+baselineText:baselineText;
  el('mirror-save').classList.toggle('dirty',mirrorDirty);
  el('backup-badge').textContent=mirrorDirty?(mirrorDraftVerified()?'测试通过 · 待保存':el('remote-enabled').checked?'待测试':s.remote_enabled?'待关闭':'未启用'):s.remote_transport!=='webdav'||!s.remote_enabled?'已关闭':ready?'已验证':'待验证';el('backup-badge').classList.toggle('ready',mirrorDirty?mirrorDraftVerified():ready);
  const samePeer=el('mirror-base').value.trim()===decode(s.mirror_base_b64||'').trim()&&el('remote-user').value.trim()===decode(s.webdav_user_b64||'').trim();el('backup-password-state').textContent=s.webdav_password_set&&samePeer?'密码已保存，留空沿用':s.webdav_password_set?'账号或地址已变更，请重新填写密码':'请填写此账号的 WebDAV 密码';
@@ -251,6 +291,7 @@ async function mirrorAction(action){
  finally{manageBusy=false;await syncNative().catch(()=>{});showService();if(running)render();}
 }
 for(const id of ['mirror-base','remote-user','remote-password'])el(id).oninput=()=>{mirrorDirty=true;mirrorTestKey='';mirrorFeedback('参数已修改，请点击测试连接','info');paintMirror();};el('remote-enabled').onchange=()=>{mirrorDirty=true;paintMirror();};
+el('baseline-create').onclick=createBaseline;
 el('mirror-form').onsubmit=e=>{e.preventDefault();mirrorAction('mirrorsave');};el('mirror-sync').onclick=()=>mirrorAction('backupremote');el('mirror-verify').onclick=()=>mirrorAction('mirrortest');
 @@if ax5@@
 async function downloadBackup(url,name){const old=el('backup-download');if(old)old.remove();const a=document.createElement('a');a.id='backup-download';a.className='refresh backup-download';a.href=url;a.download=name;a.target='_top';a.textContent='下载文件';el('backup-local').parentNode.append(a);a.click();el('mirror-message').textContent='文件已准备好（tar.gz）；若未自动下载，请点“下载文件”';setTimeout(()=>a.remove(),600000)}

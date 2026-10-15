@@ -50,6 +50,7 @@ class BackupBudget(unittest.TestCase):
    links=ROOT/'ax5/backup-links.sh'
    if not links.exists():links=ROOT.parents[1]/'shared/lib/backup-links.sh'
    (c/'ax5/backup-links.sh').write_bytes(links.read_bytes())
+   (c/'ax5/backup-guide.sh').write_bytes((ROOT/'ax5/backup-guide.sh').read_bytes())
    (c/'cache/core.env').write_text('HASH=fixture\n')
    original=b'fixture-config'*20000;(c/'configs/config.json').write_bytes(original)
    (c/'configs/webdav.auth').write_text('excluded-fixture')

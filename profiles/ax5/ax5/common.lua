@@ -101,7 +101,7 @@ function M.state()
  s.remote_transport=M.read(M.C..'/configs/mirror.conf'):match('transport=([^\n]*)')or'ssh'
  s.webdav_user_b64=M.b64(M.read(M.C..'/configs/webdav.user',1024));s.webdav_password_set=M.read(M.C..'/configs/webdav.auth',4)~=''
  s.remote_checked=tonumber(M.read(M.C..'/configs/remote.checked'))or 0
- s.remote_application_b64=M.b64(M.read(M.R..'/remote-application.json',2048));s.remote_config_b64=M.b64(M.read(M.R..'/remote-config.json',2048))
+ s.remote_application_b64=M.b64(M.read(M.R..'/remote-application.json',2048));s.remote_config_b64=M.b64(M.read(M.R..'/remote-config.json',2048));s.remote_baseline_b64=M.b64(M.read(M.R..'/remote-baseline.json',2048))
  s.remote_verified=M.run('C='..M.C..' D='..M.R..' sh -c \'. "$C/ax5/remote.sh"; remote_ready\' 2>/dev/null')
  s.mirror_ready=M.read(M.C..'/configs/mirror-id',4)~='';s.core_sha=s.core_blob;s.mirror_pending=M.read(M.C..'/configs/mirror-pending',256):gsub('%s+$','')
  for k,v in pairs(job)do s[k]=v end

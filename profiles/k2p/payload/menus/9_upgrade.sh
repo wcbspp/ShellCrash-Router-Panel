@@ -124,23 +124,24 @@ checkupdate(){
 
 #更新脚本
 getscripts(){
- /etc/storage/ShellCrash/starts/tool_update.sh k2p update
+ SC_TOOL_CLI_PARENT=$$ /etc/storage/ShellCrash/starts/tool_update.sh k2p update
 }
 setscripts(){
 	echo "-----------------------------------------------"
 	echo -e "当前脚本版本为：\033[33m $versionsh_l \033[0m"
 	echo -e "最新脚本版本为：\033[32m $version_new \033[0m"
-	echo -e "注意更新时会停止服务！"
+		echo '更新前检查适配与持久化；不兼容时保留当前版本。'
 	echo "-----------------------------------------------"
 	read -p "是否更新脚本？[1/0] > " res
 	if [ "$res" = '1' ]; then
 		#下载更新
-		getscripts
-		#提示
-		echo "-----------------------------------------------"
-		echo -e "\033[32m管理脚本更新成功!\033[0m"
-		echo "-----------------------------------------------"
-		exit;
+		if getscripts;then
+		 echo '管理脚本检查/更新完成，当前配置已保留。'
+		 exit
+		else
+		 echo '更新未完成，当前版本保留；请查看上方错误。'
+		 return 1
+		fi
 	fi
 }
 
@@ -208,34 +209,23 @@ switch_core(){ #clash与singbox内核切换
 		}
 	}
 }
-getcore(){ #下载内核文件
-	. "$CRASHDIR"/libs/core_tools.sh #调用下载工具
-	[ -z "$crashcore" ] && crashcore=meta
-	[ -z "$cpucore" ] && check_cpucore
-	[ "$crashcore" = unknow ] && setcoretype
-	echo "$crashcore" | grep -q 'singbox' && core_new=singbox || core_new=clash
-	#获取在线内核文件
-	echo "-----------------------------------------------"
-	echo "正在在线获取$crashcore核心文件……"
-	core_webget 
-	case "$?" in
-	0)
-		echo -e "\033[32m$crashcore核心下载成功！\033[0m"
-		sleep 1
-		switch_core
-	;;
-	1)
-		echo -e "\033[31m核心文件下载失败！\033[0m"
-		[ -z "$custcorelink" ] && error_down
-	;;
-	*)
-		echo -e "\033[31m核心文件下载成功但校验失败！请尝试手动指定CPU版本\033[0m"
-		rm -rf ${TMPDIR}/core_new
-		rm -rf ${TMPDIR}/core_new.tar.gz
-		setcpucore
-	;;
-	esac
+getcore(){
+ # Use the same verified, persistent transaction as the lightweight panel.
+ action=${1:-coreupdate}
+ case "$action" in corecheck|coreupdate) :;;*)return 1;;esac
+ id=$(head -c 8 /dev/urandom | md5sum | cut -c1-8)
+ result=0
+ /etc/storage/ShellCrash/starts/manage.sh "$action" "$id" || result=$?
+ if [ "$result" != 0 ] || [ "$(cat /tmp/sc-admin/phase 2>/dev/null)" != done ];then
+  echo '操作未完成，当前版本保留：'
+  cat /tmp/sc-admin/message 2>/dev/null
+  return 1
+ fi
+ echo '版本已确认；成功安装的版本与 SHA 已作为后续启动依据。'
+ [ ! -f /etc/storage/ShellCrash/configs/mirror.pending ] || echo '新版本尚未同步远端；不会因此在重启时降级。'
+ . "$CRASHDIR/configs/ShellCrash.cfg"
 }
+
 setcustcore(){ #自定义内核
 	checkcustcore(){
 		[ "$api_tag" = "latest" ] && api_url=latest || api_url="tags/$api_tag"
@@ -372,102 +362,40 @@ setziptype(){
 
 # 内核选择菜单
 setcore() {
-    while true; do
-        # 获取核心及版本信息
-        [ -z "$crashcore" ] && crashcore="unknow"
-        [ -z "$zip_type" ] && zip_type="tar.gz"
-        echo "$crashcore" | grep -q 'singbox' && core_old=singbox || core_old=clash
-        [ -n "$custcorelink" ] && custcore="$(echo $custcorelink | sed 's#.*github.com##; s#/releases/download/#@#')"
-        ###
-        echo "-----------------------------------------------"
-        [ -z "$cpucore" ] && check_cpucore
-        echo -e "当前内核：\033[42;30m $crashcore \033[47;30m$core_v\033[0m"
-        echo -e "当前系统处理器架构：\033[32m $cpucore \033[0m"
-        echo -e "\033[33m请选择需要使用的核心版本！\033[0m"
-        echo -e "\033[36m如需本地上传，请将.upx .gz .tar.gz文件上传至 /tmp 目录后重新运行crash命令\033[0m"
-        echo "-----------------------------------------------"
-        echo -e "1 \033[43;30m Mihomo  \033[0m：	\033[32m(原meta内核)支持全面\033[0m"
-        echo -e " >>\033[32m$meta_v   		\033[33m占用略高\033[0m"
-        echo -e "  说明文档：	\033[36;4mhttps://wiki.metacubex.one\033[0m"
-        echo -e "2 \033[43;30m SingBoxR \033[0m：	\033[32m支持全面\033[0m"
-        echo -e " >>\033[32m$singboxr_v  	\033[33m使用reF1nd增强分支\033[0m"
-        echo -e "  说明文档：	\033[36;4mhttps://sing-boxr.dustinwin.us.kg\033[0m"
-        [ "$zip_type" = 'upx' ] && {
-            echo -e "3 \033[43;30m SingBox \033[0m：	\033[32m占用较低\033[0m"
-            echo -e " >>\033[32m$singbox_v  		\033[33m不支持providers\033[0m"
-            echo -e "  说明文档：	\033[36;4mhttps://sing-box.sagernet.org\033[0m"
-        }
-        [ "$zip_type" = 'upx' ] && {
-            echo -e "4 \033[43;30m Clash \033[0m：	\033[32m占用低\033[0m"
-            echo -e " >>\033[32m$clash_v  		\033[33m不安全,已停止维护\033[0m"
-            echo -e "  说明文档：	\033[36;4mhttps://lancellc.gitbook.io\033[0m"
-        }
-        echo "-----------------------------------------------"
-        echo -e "5 切换版本分支及压缩方式:	\033[32m$zip_type\033[0m"
-        echo -e "6 \033[36m使用自定义内核\033[0m	$custcore"
-        echo -e "7 \033[32m更新当前内核\033[0m"
-        echo "-----------------------------------------------"
-        echo "9 手动指定处理器架构"
-        echo "-----------------------------------------------"
-        echo "0 返回上级菜单"
-        read -p "请输入对应数字 > " num
-        case "$num" in
-        "" | 0)
-            break
-            ;;
-        1)
-            [ -d "/jffs" ] && {
-                echo -e "\033[31mMeta内核使用的GeoSite.dat数据库在华硕设备存在被系统误删的问题，可能无法使用!\033[0m"
-                sleep 3
-            }
-            crashcore=meta
-            custcorelink=''
-            getcore
-            break
-            ;;
-        2)
-            crashcore=singboxr
-            custcorelink=''
-            getcore
-            break
-            ;;
-        3)
-            crashcore=singbox
-            custcorelink=''
-            getcore
-            break
-            ;;
-        4)
-            crashcore=clash
-            custcorelink=''
-            getcore
-            break
-            ;;
-        5)
-            setziptype
-            ;;
-        6)
-            setcustcore
-            ;;
-        7)
-            getcore
-            break
-            ;;
-        9)
-            setcpucore
-            break
-            ;;
-        *)
-            errornum
-            sleep 1
-            break
-            ;;
-        esac
-    done
+ while true;do
+  echo 'K2P 兼容 sing-box 内核；与网页共用校验、安装及版本记录。'
+  echo '1 检查当前 ShellCrash 源的兼容版本'
+  echo '2 更新当前兼容内核'
+  echo '0 返回'
+  read -r num
+  case "$num" in 1)getcore corecheck;;2)getcore coreupdate;;0|'')return;;*)echo '请选择 0、1 或 2';;esac
+ done
 }
 
 #数据库
-getgeo(){ #下载Geo文件
+# Persist the exact DNS library version after either native download entry.
+getgeo(){ domain_update_wrap getgeo_native; }
+getcustgeo(){ domain_update_wrap getcustgeo_native; }
+domain_update_wrap(){
+ C=/etc/storage/ShellCrash;D=/tmp/sc-admin;mkdir -p "$D"
+ previous="$D/domain-cli.before.srs";current=/tmp/ShellCrash/ruleset/cn.srs
+ before='';[ ! -s "$current" ] || { cp "$current" "$previous" || return 1;before=$(sha256sum "$current" | awk '{print $1}'); }
+ "$1";result=$?
+ after='';[ ! -s "$current" ] || after=$(sha256sum "$current" | awk '{print $1}')
+ if [ "$result" = 0 ] && [ -n "$after" ] && [ "$after" != "$before" ];then
+  . "$C/starts/domain_asset.sh"
+  case "$1" in getcustgeo_native)source=$custgeolink;;*)source=$bin_url;;esac
+  source_type=direct
+  case "$geoname" in *.tar.gz)source_type=archive;;esac
+  if ! domain_asset_commit "$current" "$source" "$source_type";then
+   if [ -n "$before" ];then cp "$previous" "$current";else rm -f "$current";fi
+   echo '更新失败：已保留原域名库与版本记录';result=1
+  fi
+ fi
+ rm -f "$previous";return "$result"
+}
+
+getgeo_native(){ #下载Geo文件
 	#生成链接
 	echo "-----------------------------------------------"
 	echo "正在从服务器获取数据库文件…………"
@@ -496,7 +424,7 @@ getgeo(){ #下载Geo文件
 	sleep 1
 }
 
-getcustgeo(){
+getcustgeo_native(){
 	echo "-----------------------------------------------"
 	echo "正在获取数据库文件…………"
 	webget "$TMPDIR"/$geoname $custgeolink

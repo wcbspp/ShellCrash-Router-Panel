@@ -135,7 +135,7 @@
   "payload/starts/policy_update.sh": "profiles/k2p/payload/starts/policy_update.sh",
   "payload/starts/reapply.sh": "profiles/k2p/payload/starts/reapply.sh",
   "payload/starts/remote-settings.sh": "shared/lib/remote-settings.sh",
-  "payload/starts/remote.sh": "profiles/k2p/payload/starts/remote.sh",
+  "payload/starts/remote.sh": "shared/lib/remote.sh",
   "payload/starts/resource_health.sh": "profiles/k2p/payload/starts/resource_health.sh",
   "payload/starts/route_normalize.awk": "profiles/k2p/payload/starts/route_normalize.awk",
   "payload/starts/rules_path.sh": "profiles/k2p/payload/starts/rules_path.sh",
@@ -199,7 +199,7 @@
   "tests/test_traffic_mode.py": "profiles/k2p/tests/test_traffic_mode.py",
   "tests/test_transfer_integrity.js": "profiles/k2p/tests/test_transfer_integrity.js",
   "tests/test_upload_hotpath.py": "profiles/k2p/tests/test_upload_hotpath.py",
-  "tests/test_webdav.py": "profiles/k2p/tests/test_webdav.py",
+  "tests/test_webdav.py": "shared/tests/test_webdav.py",
   "tests/test_webdav_ui.js": "profiles/k2p/tests/test_webdav_ui.js",
   "tools/deploy.py": "profiles/k2p/tools/deploy.py",
   "tools/mirror_receive.py": "profiles/k2p/tools/mirror_receive.py",
@@ -238,5 +238,12 @@
   "tests/test_boot_routing_hook.py": "profiles/k2p/tests/test_boot_routing_hook.py",
   "tests/test_service_restart.py": "profiles/k2p/tests/test_service_restart.py",
   "payload/starts/domain_asset.sh": "profiles/k2p/payload/starts/domain_asset.sh",
-  "tests/test_boot_remote_assets.py": "profiles/k2p/tests/test_boot_remote_assets.py"
+  "tests/test_boot_remote_assets.py": "profiles/k2p/tests/test_boot_remote_assets.py",
+  "payload/starts/backup-set.sh": "shared/lib/backup-set.sh",
+  "payload/starts/backup-baseline.sh": "shared/lib/backup-baseline.sh",
+  "payload/starts/backup-guide.sh": "shared/lib/backup-guide.sh",
+  "payload/starts/backup-baseline-run.sh": "shared/lib/backup-baseline-run.sh",
+  "tests/test_backup_ui.js": "shared/tests/test_backup_ui.js",
+  "payload/starts/backup-manifest.awk": "shared/lib/backup-manifest.awk",
+  "tests/test_backup_manifest.py": "shared/tests/test_backup_manifest.py"
 }

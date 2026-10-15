@@ -20,28 +20,28 @@
     "removed": true
   },
   "payload/padavan/manager.js": {
-    "sha256": "1527240d7976c3d94d86d1c631ffeb1da40dc8ae9a0475186c6f6c61c20c8e0a",
-    "reason": "Backup catalog read and explicit refresh, with distinct error and empty states; shared UI changes"
+    "sha256": "306319e339015d9ffdc8284a6a94b94f8afba09dcf67f2518613513872a96fe7",
+    "reason": "Shared baseline two-confirmation transaction, gate-aware controls and isolated baseline status/path display."
   },
   "payload/starts/backup-app.sh": {
-    "sha256": "f62bdc0888128fc389b5b7b89f29b23e9d96ded267d0eb3962a4900c1f37a485",
-    "reason": "Make backup archives portable without runtime aliases, support minimal K2P utilities, record the actual panel release in local/remote metadata, and identify core files by SHA256. Acceptance continuation: application packing and download encoding honor the validated configured protection threshold; invalid settings fail closed; custom-floor regression tests keep old exports and avoid snapshot/Storage lock creation."
+    "sha256": "aa6a4e671a9a6110ded5d430effaae86290877a750b4749acc782717ac598114",
+    "reason": "Include generated Chinese component/recovery guide in budgeted snapshot; transport gating and cleanup preserved."
   },
   "tests/test_backup_export.py": {
-    "sha256": "5e866cdba3a80edc6c2c73cf6bac3aeb14e2eb1dc6387c15c6ed478a6edf0028",
-    "reason": "Make backup archives portable without runtime aliases, support minimal K2P utilities, record the actual panel release in local/remote metadata, and identify core files by SHA256. Acceptance continuation: application packing and download encoding honor the validated configured protection threshold; invalid settings fail closed; custom-floor regression tests keep old exports and avoid snapshot/Storage lock creation."
+    "sha256": "d4ab20f1bbb8c2eb2abd809e5708bc4d98bc1842dca2c247b3f967b8f6dd88dd",
+    "reason": "Include the shipped Chinese recovery guide helper in the export fixture so real bounded export, CRC and secret/link exclusion checks exercise the actual packer."
   },
   "payload/starts/panel_bfstart.sh": {
     "sha256": "f92ed90fe2ae30a4ee6da7f32acbfe5d46832156c7a21cddb3a6353bfe3d0559",
     "reason": "Reboot acceptance fixes: initialized routing hooks, safe executable reuse, remote domain cache, pre-download startup delay and explicit remote backup catalog query"
   },
   "payload/starts/webdav.sh": {
-    "sha256": "790433eb9216cf074053b96955d3640263806f4f5992ca3bf3025757306feb82",
-    "reason": "Read the latest remote backup catalog on entering backup tab and explicit refresh; distinguish unavailable query from genuinely empty catalog; preserve disabled gating and bounded responses"
+    "sha256": "3b38f9a18ab8a94a0b8b8384c14cc8c1d7f7154f7419ec360a065cf81cace170",
+    "reason": "Verify staged index before MOVE and preserve previous pointer until confirmed publication; live DAV gate retained."
   },
   "tests/test_webdav.py": {
-    "sha256": "37e8289d5edb29d0864a2a5e4ea29673c9b0c1f4739bd2ca774425950113d87a",
-    "reason": "Add remote latest-catalog RAM reset, error vs 404, last-good record and disabled-no-request regression test"
+    "sha256": "137cb9567f5deff2169742bde1076e547288d102107376b44d42b03bb921508e",
+    "reason": "Shared authenticated DAV tests cover guarded complete manifests, strict baseline metadata validation, server COPY isolation and staged/final pointer uncertainty preserving previous components."
   },
   "payload/starts/panel_boot.sh": {
     "sha256": "34b11e593bbc6f246ad1dcc3916d0c80fdee3a1ddbb621b8f571d81f9aebb03e",
@@ -68,8 +68,8 @@
     "reason": "Reviewed quota lifecycle hooks, bounded/coalesced event worker, automatic cache display; once-per-load domestic/international IP and location probes with cancellation and bounded JSON."
   },
   "payload/ui/index.html": {
-    "sha256": "e3c271d6bf5614f71d183a3d7c1f8378839d1ba1238ffa995384b62a8e0934b0",
-    "reason": "Shared backup tab adds explicit bounded remote catalog refresh and accurate read status"
+    "sha256": "a423a742c448ba15fa7ea29b824d53bbe989ceb73d6cdaef8d3690b10fe5047b",
+    "reason": "Collapsed baseline section and K2P-specific imports path; disclose restore execution still unavailable."
   },
   "tests/test_search.js": {
     "sha256": "0e745c08a710f917f9436ee927dadf120edb6055b6fbbf5ee1db75694324e6c1",
@@ -84,8 +84,8 @@
     "reason": "Regression coverage for manual path rollback/pin readback, partial and stale measurements, UA choice/state isolation and truthful filtered counts."
   },
   "payload/starts/manage.sh": {
-    "sha256": "32676c1dc554eb3f99127c283842dc393a6d1ad0fedc57fece1d794d4f902dc9",
-    "reason": "Reboot acceptance fixes: initialized routing hooks, safe executable reuse, remote domain cache, pre-download startup delay and explicit remote backup catalog query"
+    "sha256": "1d52729a9c9bcee9365250a18c1223d9edf23dd5bf5b64b5dcfebb62ee3c2330",
+    "reason": "Dispatch explicit create/replace baseline transaction through existing operation lock and persist only after success."
   },
   "tests/test_proxy_mode.js": {
     "sha256": "0d476681fd7c939c813fea8283fbb786eab2d3a1432fd0b4cedf240ef4489183",
@@ -96,8 +96,8 @@
     "reason": " Website checks distinguish transport/TLS failures, API errors and HTTP 4xx/5xx responses; access errors use amber rather than success green. Regression includes all AX endpoint IDs/URLs. Reviewed 2026-10-14: website cards now test network reachability and HTTPS request time only; HTTP 403/429/5xx count as reachable rather than access errors, TLS/malformed delay/API failures remain failed. Global/direct mode applies to domestic targets too. No service-unlock or CF diagnosis, no new timers or processes. Includes DOM regression for green 403 reachability, diagnostic-only HTTP code, and TLS failure rendering."
   },
   "payload/starts/padavan_ui.sh": {
-    "sha256": "5deb2cc6c19296280d14dcbfde2cef953ca816c56610536aa35b3b315d3b0c08",
-    "reason": "Reboot acceptance fixes: initialized routing hooks, safe executable reuse, remote domain cache, pre-download startup delay and explicit remote backup catalog query"
+    "sha256": "99452b5d3d0d7bb87eddfe57d1011c6810f4142ad5182a45c845269fec938eec",
+    "reason": "Authenticated baseline-create wrapper accepts exactly nonce, explicit operation, and control token."
   },
   "payload/starts/panel_afstart.sh": {
     "sha256": "810aa59a84ed47cc5acf0f03ad1e089a3ae0fab4a6a3e1f5d1ac7860fdad31cc",
@@ -140,7 +140,19 @@
     "reason": "Reboot acceptance fixes: initialized routing hooks, safe executable reuse, remote domain cache, pre-download startup delay and explicit remote backup catalog query"
   },
   "payload/starts/mirror_update.sh": {
-    "sha256": "60f05136e646380afa9894c410d19ac09ba25ef7431aa142c465e55c63e8e2f1",
-    "reason": "Reboot acceptance fixes: initialized routing hooks, safe executable reuse, remote domain cache, pre-download startup delay and explicit remote backup catalog query"
+    "sha256": "f0c336773d983892176b3a35079924b1bed6fbf0943c3cdd67cbb0a6d38fe896",
+    "reason": "Reviewed backup transaction: authenticated live DAV gate, complete component manifest and independent baseline catalog, exact installed-version recovery, CLI update persistence/feedback; failure preserves previous backup and user settings"
+  },
+  "payload/menus/9_upgrade.sh": {
+    "sha256": "11aa5d499a6db8ef6f1e1c8485666f2de8b14d632f633fb0e1c1322caa17edd4",
+    "reason": "Reviewed backup transaction: authenticated live DAV gate, complete component manifest and independent baseline catalog, exact installed-version recovery, CLI update persistence/feedback; failure preserves previous backup and user settings"
+  },
+  "payload/starts/remote.sh": {
+    "sha256": "76aa47eef04be659a056c12679d768bf0b2f8ce4c93c2ea5319025fe8183fc37",
+    "reason": "Reviewed backup transaction: authenticated live DAV gate, complete component manifest and independent baseline catalog, exact installed-version recovery, CLI update persistence/feedback; failure preserves previous backup and user settings"
+  },
+  "payload/starts/tool_update.sh": {
+    "sha256": "b2bdf3a654942ec9385eaaf6d34a908e10eb94385726097145f708623e06d432",
+    "reason": "Reviewed backup transaction: authenticated live DAV gate, complete component manifest and independent baseline catalog, exact installed-version recovery, CLI update persistence/feedback; failure preserves previous backup and user settings"
   }
 }

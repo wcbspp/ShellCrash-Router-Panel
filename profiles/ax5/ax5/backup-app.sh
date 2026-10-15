@@ -6,7 +6,7 @@ D=/tmp/ShellCrash
 rm -f "$D/backup-error"
 mode=${1:-local}
 case "$mode" in local|remote) :;;*)exit 2;;esac
-[ "$mode" != remote ] || remote_ready || { echo '请先开启并验证远程仓库';exit 2; }
+[ "$mode" != remote ] || remote_transfer_ready || { echo '请先开启、验证并连接远程仓库';exit 2; }
 # Hard-link snapshot on the same flash filesystem; only metadata is staged.
 # The archive is streamed into a bounded RAM output, preserving the old file on failure.
 available=$(awk '/MemAvailable:/{print $2;exit}' /proc/meminfo)
@@ -26,7 +26,7 @@ umask 077
 mkdir -p "$D"
 stage="$C/.backup-stage.$$"
 file="$D/application-backup.tar.gz"
-trap 'rm -rf "$stage";rm -f "$file.new"' EXIT
+trap 'rm -rf "$stage";rm -f "$file.new" "$D/runtime-assets-backup.tar.gz" "$D/runtime-assets-backup.tar.gz.new" "$D/runtime-backup.info" "$D/runtime-tar.error"' EXIT
 rm -rf "$stage";mkdir -p "$stage"
 # Only project files, never firmware, Entware, ZeroTier identity, SSH keys or runtime logs.
 for folder in configs ui ax5 ruleset;do
@@ -60,6 +60,7 @@ RAM/small-flash operation is unchanged. Configure and verify WebDAV credentials 
 Verify LAN, nodes, rules, DNS, one watchdog, autostart, and ZeroTier after restoration.
 No automatic browser import is available in this version.
 RESTORE
+sh "$C/ax5/backup-guide.sh" "$stage" AX5 application
 available=$(awk '/MemAvailable:/{print $2;exit}' /proc/meminfo)
 limit=$(( (available-protect_kb-256)*1024 ));[ "$limit" -le 4000000 ] || limit=4000000
 [ "$limit" -ge 32768 ] || { echo '打包期间可用内存不足，当前服务保持运行';exit 1; }
@@ -76,8 +77,12 @@ if [ "$mode" = remote ];then
   remote_put core "$archive" tar.gz >/dev/null
  fi
  remote_put info "$C/cache/core.env" txt >/dev/null
- remote_put backup "$file" tar.gz > "$D/backup-sha"
+ if [ "$(remote_transport)" = webdav ];then
+  . "$C/ax5/backup-set.sh"
+  backup_set_publish "$file"
+ else remote_put backup "$file" tar.gz > "$D/backup-sha";fi
  date +%s > "$C/configs/backup-time"
  rm -f "$C/configs/backup-pending"
 fi
-echo '应用备份完成；内核按校验值单独存储'
+if [ "$mode" = remote ];then echo '完整备份已保存：应用、内核及已安装运行资源；当前设置保持不变'
+else echo '应用与配置已导出；内核和临时运行资源需另行保存';fi

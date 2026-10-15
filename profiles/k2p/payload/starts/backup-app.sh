@@ -5,7 +5,7 @@ D=/tmp/sc-admin
 . "$C/starts/remote.sh"
 mode=${1:-local}
 case "$mode" in local|remote) :;;*)exit 2;;esac
-[ "$mode" != remote ] || remote_ready || { echo '请先开启并验证远程仓库';exit 2; }
+[ "$mode" != remote ] || remote_transfer_ready || { echo '请先开启、验证并连接远程仓库';exit 2; }
 # Metadata-only snapshot on the same Storage filesystem: hard links do not
 # duplicate the project files in RAM. The hidden root is excluded by the
 # installed Storage saver; its lock prevents a concurrent commit while built.
@@ -21,7 +21,7 @@ umask 077
 mkdir -p "$D"
 stage="/etc/storage/.sc-backup-stage.$$"
 file="$D/application-backup.tar.gz"
-trap 'rm -rf "$stage";rm -f "$file.new" "$D/backup-download.txt.new";[ "$lockheld" != 1 ] || rmdir /tmp/shellcrash-storage-save.lock 2>/dev/null' EXIT
+trap 'rm -rf "$stage";rm -f "$file.new" "$D/backup-download.txt.new" "$D/runtime-assets-backup.tar.gz" "$D/runtime-assets-backup.tar.gz.new" "$D/runtime-backup.info" "$D/runtime-tar.error";[ "$lockheld" != 1 ] || rmdir /tmp/shellcrash-storage-save.lock 2>/dev/null' EXIT
 rm -rf "$stage";mkdir -p "$stage"
 # Only project files, never firmware, Entware, ZeroTier identity, SSH keys or runtime logs.
 for folder in configs ui padavan starts libs tools jsons yamls ruleset;do
@@ -51,6 +51,7 @@ RAM/small-flash operation is unchanged. Configure and verify WebDAV credentials 
 Verify LAN, nodes, rules, DNS, one watchdog, autostart, and ZeroTier after restoration.
 No automatic browser import is available in this version.
 RESTORE
+sh "$C/starts/backup-guide.sh" "$stage" K2P application
 # Reserve real remaining RAM instead of assuming the compressed archive is
 # as large as the uncompressed project. Bound the output while it is written.
 available=$(awk '/MemAvailable:/{print $2;exit}' /proc/meminfo)
@@ -80,8 +81,12 @@ if [ "$mode" = remote ];then
   remote_put core "$archive" tar.gz >/dev/null
  fi
  remote_put info "$C/configs/core-installed.info" txt >/dev/null
- remote_put backup "$file" tar.gz > "$D/backup-sha"
+ if [ "$(remote_transport)" = webdav ];then
+  . "$C/starts/backup-set.sh"
+  backup_set_publish "$file"
+ else remote_put backup "$file" tar.gz > "$D/backup-sha";fi
  date +%s > "$C/configs/backup-time"
  rm -f "$C/configs/backup-pending"
 fi
-echo '应用备份完成；内核按校验值单独存储'
+if [ "$mode" = remote ];then echo '完整备份已保存：应用、内核及已安装运行资源；当前设置保持不变'
+else echo '应用与配置已导出；内核和临时运行资源需另行保存';fi

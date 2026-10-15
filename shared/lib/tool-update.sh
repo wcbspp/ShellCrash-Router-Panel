@@ -63,7 +63,10 @@ order(){ printf '%s' "$1" | sed 's/release$//' | awk -F. '{print $1*1000000+$2*1
 printf '%s' "$current" | grep -Eq '^1\.[0-9]{1,2}\.[0-9]{1,3}(release|beta[0-9]+)$' || exit 1
 [ "$(order "$latest")" -ge "$(order "$(printf '%s' "$current" | sed 's/beta[0-9]*$//')")" ] || { echo 'Refusing tool downgrade.' >&2;exit 1; }
 # Native terminal sessions read multiple files; do not replace underneath an open menu.
-if ps | grep '[s]h .*menu.sh' >/dev/null;then echo 'Close the ShellCrash terminal menu before updating.' >&2;exit 1;fi
+cli_parent=${SC_TOOL_CLI_PARENT:-0}
+case "$cli_parent" in ''|*[!0-9]*)cli_parent=0;;esac
+if [ "$cli_parent" != 0 ] && ! grep -q "$T/menu.sh" "/proc/$cli_parent/cmdline" 2>/dev/null;then cli_parent=0;fi
+if ps | awk -v own="$cli_parent" '$1!=own && /[s]h .*menu.sh/{found=1}END{exit !found}';then echo 'Close other ShellCrash terminal menus before updating.' >&2;exit 1;fi
 get_bin "$work/package.tar.gz" ShellCrash.tar.gz
 # No links, special files, nested traversal, absolute paths, or unexpectedly large payloads.
 tar -ztf "$work/package.tar.gz" > "$work/list"

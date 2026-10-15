@@ -26,7 +26,7 @@ def build(profile,output=None):
  target=Path(output) if output else ROOT/'build'/profile
  target.mkdir(parents=True,exist_ok=True)
  manifest=json.loads((ROOT/'profiles'/profile/'manifest.json').read_text())
- expected=set(manifest)|{'README.md','LICENSE','NOTICE.md','VERSION','deploy.py','update.py','setup.sh','DEVICE','CORE.json','MANIFEST.sha256','tools/verify_package.py','tools/__init__.py'}
+ expected=set(manifest)|{'README.md','LICENSE','NOTICE.md','VERSION','deploy.py','update.py','setup.sh','DEVICE','CORE.json','MANIFEST.sha256','tools/verify_package.py','tools/backup_bundle.py','tools/__init__.py'}
  expected.update('docs/'+str(p.relative_to(ROOT/'docs')) for p in (ROOT/'docs').rglob('*') if p.is_file())
  previous=set()
  if (target/'MANIFEST.sha256').exists():
@@ -52,6 +52,7 @@ def build(profile,output=None):
  shutil.copy2(ROOT/'install.sh',target/'setup.sh')
  shutil.copy2(ROOT/'tools/verify_package.py',target/'tools/verify_package.py')
  shutil.copy2(ROOT/'tools/__init__.py',target/'tools/__init__.py')
+ shutil.copy2(ROOT/'tools/backup_bundle.py',target/'tools/backup_bundle.py')
  shutil.copytree(ROOT/'docs',target/'docs',dirs_exist_ok=True)
  (target/'DEVICE').write_text(profile+'\n')
  shutil.copy2(ROOT/'profiles'/profile/'core.json',target/'CORE.json')
