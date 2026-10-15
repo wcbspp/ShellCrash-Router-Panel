@@ -8,8 +8,8 @@
     "removed": true
   },
   "ui/manager.js": {
-    "sha256": "c57cfaf71fb46d62f14f98bc786ff3fd8dfae59b166c6e6a3c626f1c7f7c1de7",
-    "reason": "Two confirmation baseline create/replace, shared enable/verify gate, independent baseline display and safe textContent path rendering."
+    "sha256": "cb8438d7562cf2f586219ebf4ace0f48cc699f4fec622d73e1c758f783bd7882",
+    "reason": "Read-only recovery inspection entry and draft/saved path distinction; explicit create/update baseline labels; no restoration action enabled."
   },
   "tests/test_upload.js": {
     "sha256": "0dce5a8da15fe6746c8244fe11aa86d7acbc23b1d5b3e20ed9e5f4769133f018",
@@ -20,8 +20,8 @@
     "reason": "Include generated Chinese file-purpose/recovery guide in the bounded application snapshot; existing backup-set and live gate preserved."
   },
   "ax5/api.lua": {
-    "sha256": "bdc6f240b0788fd625a9cf0ad4d613e6bf004ae3169f508a5a3ff9dbb82f7208",
-    "reason": "Expose authenticated baseline-create action with explicit create/replace argument; no restore action enabled."
+    "sha256": "3daf2f7c03f1ce56005044a42508ede6b47daa3cd234c31bcc515580085af0b4",
+    "reason": "Authenticated recovery-plan read and small restorecheck request only; no restore execution endpoint."
   },
   "ax5/webdav.sh": {
     "sha256": "3b38f9a18ab8a94a0b8b8384c14cc8c1d7f7154f7419ec360a065cf81cace170",
@@ -52,8 +52,8 @@
     "reason": "Regression tests for converter recovery while proxy fails and direct provider mode never contacting conversion endpoints."
   },
   "ui/index.html": {
-    "sha256": "5bbac0816bc16123f44824d6a7d9319b58d9c31fd1363ab2a08770114e91d354",
-    "reason": "Collapsed baseline area and per-model DAV path guidance; clear incomplete restore status; do not auto-execute restoration."
+    "sha256": "a4822ff9bbaee750de09d5e2e06b35bba904eca14ba5ff78657574ac73b8cd17",
+    "reason": "Read-only recovery dialog controls included in detailed menu/button inventory; compact responsive backup entry, independent baseline actions and saved/draft path status."
   },
   "ui/sites.js": {
     "sha256": "59f344a411b9ce54279f7f5bb7dcf7ec76c7abedaeea2416724911c9d9dd0775",
@@ -72,8 +72,8 @@
     "reason": "Regression coverage for manual path rollback/pin readback, partial and stale measurements, UA choice/state isolation and truthful filtered counts."
   },
   "ax5/job.lua": {
-    "sha256": "d1f96a74523594151e7030cb606fe6d4a212df7988314e3e1fa009167ca5f13b",
-    "reason": "Generate a fresh independent full baseline under the existing operation lock; report actual failure without restarting proxy."
+    "sha256": "369e3cf4de471f2f10f7db97de556ec4cc056a3c8fdebefcc8e082c273b72a33",
+    "reason": "Read-only recovery checks under existing operation lock; nonce-bound bounded metadata request; report actual failure without changing settings or stopping core."
   },
   "tests/test_proxy_mode.js": {
     "sha256": "0d476681fd7c939c813fea8283fbb786eab2d3a1432fd0b4cedf240ef4489183",
@@ -154,5 +154,9 @@
   "tool-patches/menus-9_upgrade.sh.patch": {
     "sha256": "d36b92cc812e35460ad41616460d6ba85795df9db8eada5f1869029e8264a3dd",
     "reason": "Reviewed backup transaction: authenticated live DAV gate, complete component manifest and independent baseline catalog, exact installed-version recovery, CLI update persistence/feedback; failure preserves previous backup and user settings"
+  },
+  "tests/test_control_inventory.py": {
+    "sha256": "0daa2d77ed133aa97d0b870a17958d0bb3f0a63361be2f82db3ff9aae06d68ab",
+    "reason": "Read-only recovery dialog controls included in detailed menu/button inventory; compact responsive backup entry, independent baseline actions and saved/draft path status."
   }
 }

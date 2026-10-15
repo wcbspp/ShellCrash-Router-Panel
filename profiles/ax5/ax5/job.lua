@@ -208,6 +208,11 @@ local function execute()
   phase('working','正在验证 WebDAV 读写',true)
   if not M.run('C='..M.C..' D='..M.R..' sh -c \'. "$C/ax5/remote.sh"; remote_verify\' >> '..M.R..'/service.log 2>&1')then fail('WebDAV 验证失败，请检查地址、账号密码与读写权限')end
   phase('done','远程仓库验证通过',false)
+ elseif a=='restorecheck'then
+  local raw=upload('restore');if #raw>200 then fail('恢复检查请求过长')end
+  phase('working','正在核对备份组件，当前代理保持运行',true)
+  if not M.run(M.C..'/ax5/recovery-check.sh ax5 '..id..' > '..M.R..'/recovery-result.log 2>&1')then fail(M.read(M.R..'/recovery-result.log',512):gsub('%s+$',''))end
+  phase('done','组件大小与 SHA256 校验通过；当前设备未改动',false)
  elseif a=='baselinecreate'then
   local mode=args[2];if mode~='create'and mode~='replace'then fail('需要明确选择创建或替换基础版本')end
   phase('working','正在生成并校验独立基础版本，当前代理保持运行',true)

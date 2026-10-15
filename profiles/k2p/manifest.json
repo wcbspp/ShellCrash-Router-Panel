@@ -245,5 +245,7 @@
   "payload/starts/backup-baseline-run.sh": "shared/lib/backup-baseline-run.sh",
   "tests/test_backup_ui.js": "shared/tests/test_backup_ui.js",
   "payload/starts/backup-manifest.awk": "shared/lib/backup-manifest.awk",
-  "tests/test_backup_manifest.py": "shared/tests/test_backup_manifest.py"
+  "tests/test_backup_manifest.py": "shared/tests/test_backup_manifest.py",
+  "payload/padavan/recovery.js": "shared/ui/recovery.js.in",
+  "payload/starts/recovery-check.sh": "shared/lib/recovery-check.sh"
 }

@@ -202,6 +202,7 @@ case "$act" in
   awk -v cfgfile="$C/configs/ShellCrash.cfg" -f "$C/padavan/subscription_defaults.awk" "$f";;
  remoteconnection) . "$C/starts/remote.sh";dav_status;;
  remotecatalog) . "$C/starts/remote.sh";dav_catalog;;
+ recoveryplan) if [ -s "$D/recovery-plan.json" ];then head -c 8192 "$D/recovery-plan.json";else printf '{"verified":false}\n';fi;;
  status) status;;
  incidents) [ ! -f "$D/incidents.log" ] || tail -100 "$D/incidents.log";;
  memory) [ ! -f "$D/resources.csv" ] || awk -F, 'NF==15{print $1 "," $2 "," $3 "," $4 "," $5 ",0"}' "$D/resources.csv";;
@@ -224,6 +225,21 @@ case "$act" in
   lock || exit 1
   echo "$id" > "$D/id"
   . "$C/starts/mirror_update.sh";;
+ restorecheck)
+  valid_id "$id" || exit 1
+  [ "$id" = "$(cat "$D/id" 2>/dev/null)" ] || exit 1
+  [ "$(cat "$D/kind" 2>/dev/null)" = restore ] || exit 1
+  [ "$(wc -c < "$D/upload.parts")" -le 1024 ] || exit 1
+  lock || exit 1
+  echo "$id" > "$D/id"
+  sort "$D/upload.parts" | awk '!seen[$1]++ {printf "%s", $2}' > "$D/restore-request.b64"
+  if ! base64 -d "$D/restore-request.b64" > "$D/upload-restore";then rm -f "$D/restore-request.b64" "$D/upload-restore";fail '恢复检查请求传输不完整';exit 1;fi
+  rm -f "$D/restore-request.b64"
+  printf '%s' "$id" > "$D/upload-id-restore"
+  phase working '正在核对备份组件，当前代理保持运行'
+  if "$C/starts/recovery-check.sh" k2p "$id" > "$D/recovery-result.log" 2>&1;then phase done '组件大小与 SHA256 校验通过；当前设备未改动'
+  else fail "$(head -c 512 "$D/recovery-result.log")";fi
+  rm -f "$D/upload.parts";;
  baselinecreate)
   valid_id "$id" || exit 1
   case "$3" in create|replace) :;;*)exit 1;;esac
@@ -299,7 +315,7 @@ case "$act" in
  new)
   valid_id "$id" || exit 1
   owner_live && exit 1
-  kind=$3; case "$kind" in source|bounds|profile|filter|mirror|policy|group) :;; *) exit 1;; esac
+  kind=$3; case "$kind" in source|bounds|profile|filter|mirror|policy|group|restore) :;; *) exit 1;; esac
   [ "$(cat "$D/phase" 2>/dev/null)" = uploading ] && [ -f "$D/upload.parts" ] && [ "$id" = "$(cat "$D/id" 2>/dev/null)" ] && [ "$kind" = "$(cat "$D/kind" 2>/dev/null)" ] && exit 0
   if [ "$kind" = bounds ] || [ "$kind" = profile ]; then [ "$id" = "$(cat "$D/id" 2>/dev/null)" ] && [ -s "$D/candidate.url.b64" ] || exit 1; else
    rm -f "$D/sub.raw" "$D/candidate.url.b64" "$D/previous.json" "$D/candidate.json" "$D/bounds.gz" "$D/bounds.json" "$D/check.json"

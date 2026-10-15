@@ -75,6 +75,14 @@ END{
  kind=vals["/core_kind"];if(kind!=""&&kind!="meta"&&kind!="singbox")fail()
  if(model=="K2P"&&kind=="meta")fail()
  version=vals["/core_version"];if(version!~/^v?[0-9][A-Za-z0-9._+-]*$/||length(version)>40)fail()
+ if(mode=="pointer"||mode=="pointerhash"||mode=="pointerlayout"){
+  path=vals["/path"]
+  if(!safe(path)||path!~/^baselines\/[A-Za-z0-9_.-]+\/manifest[.]json$/||!sha(vals["/sha256"]))fail()
+  if(mode=="pointer")print path
+  else if(mode=="pointerhash")print vals["/sha256"]
+  else print (vals["/layout"]=="component-directory"?"legacy":"current")
+  exit
+ }
  if(types["/files"]!="array"||counts["/files"]<3||counts["/files"]>4)fail()
  for(i=0;i<counts["/files"];i++){
   prefix="/files/" i;name=vals[prefix "/name"];path=vals[prefix "/path"]
@@ -89,6 +97,24 @@ END{
   if(name=="core.tar.gz"&&hash!=vals["/core_sha256"])fail()
  }
  if(!names["application.tar.gz"]||!names["core.tar.gz"]||!names["runtime-assets.tar.gz"])fail()
+ if(mode=="plan"){
+  created=vals["/created"];identity=vals["/sha256"]
+  if(legacy==1){
+   if(identity!=""||created!="")fail()
+   created=0
+  }else if(!sha(identity)||types["/created"]!="number"||created!~/^[0-9]+$/||length(created)>11)fail()
+  for(i=0;i<counts["/files"];i++){
+   prefix="/files/" i;total+=vals[prefix "/size"]+0
+  }
+  tool=vals["/tool_version"];panel=vals["/panel_version"]
+  if(tool!~/^[A-Za-z0-9._+-]*$/||length(tool)>40||panel!~/^[A-Za-z0-9._+-]*$/||length(panel)>40)fail()
+  printf "{\"model\":\"%s\",\"created\":%s,\"core_kind\":\"%s\",\"core_version\":\"%s\",\"tool_version\":\"%s\",\"panel_version\":\"%s\",\"sha256\":\"%s\",\"size\":%d,\"files\":[",model,created,kind,version,tool,panel,identity,total
+  for(i=0;i<counts["/files"];i++){
+   prefix="/files/" i;name=vals[prefix "/name"];path=vals[prefix "/path"];if(path=="")path=name
+   printf "%s{\"name\":\"%s\",\"path\":\"%s\",\"size\":%s,\"sha256\":\"%s\"}",(i?",":""),name,path,vals[prefix "/size"],vals[prefix "/sha256"]
+  }
+  print "]}";exit
+ }
  # Do not emit partial rows before the entire manifest passes validation.
  print "model\t" model;print "core_kind\t" (kind==""?"unknown":kind);print "core_version\t" version
  print records["application.tar.gz"];print records["core.tar.gz"];print records["runtime-assets.tar.gz"]

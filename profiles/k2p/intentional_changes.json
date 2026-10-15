@@ -20,8 +20,8 @@
     "removed": true
   },
   "payload/padavan/manager.js": {
-    "sha256": "306319e339015d9ffdc8284a6a94b94f8afba09dcf67f2518613513872a96fe7",
-    "reason": "Shared baseline two-confirmation transaction, gate-aware controls and isolated baseline status/path display."
+    "sha256": "09adb0dbeaf68089133cbc5da8b786e221af8cb1b69562dae166ff585d16820a",
+    "reason": "Authenticated baseline-create and read-only recovery-check actions pass frontend whitelist and stock command-length budget; regression verifies actual request encoding and rejects restore execution."
   },
   "payload/starts/backup-app.sh": {
     "sha256": "aa6a4e671a9a6110ded5d430effaae86290877a750b4749acc782717ac598114",
@@ -68,8 +68,8 @@
     "reason": "Reviewed quota lifecycle hooks, bounded/coalesced event worker, automatic cache display; once-per-load domestic/international IP and location probes with cancellation and bounded JSON."
   },
   "payload/ui/index.html": {
-    "sha256": "a423a742c448ba15fa7ea29b824d53bbe989ceb73d6cdaef8d3690b10fe5047b",
-    "reason": "Collapsed baseline section and K2P-specific imports path; disclose restore execution still unavailable."
+    "sha256": "0c59be5fa33ecac901c0d984e61b5799653cdb42fde8efa557d4a6e7e69397bc",
+    "reason": "Read-only recovery dialog controls included in detailed menu/button inventory; compact responsive backup entry, independent baseline actions and saved/draft path status."
   },
   "tests/test_search.js": {
     "sha256": "0e745c08a710f917f9436ee927dadf120edb6055b6fbbf5ee1db75694324e6c1",
@@ -84,8 +84,8 @@
     "reason": "Regression coverage for manual path rollback/pin readback, partial and stale measurements, UA choice/state isolation and truthful filtered counts."
   },
   "payload/starts/manage.sh": {
-    "sha256": "1d52729a9c9bcee9365250a18c1223d9edf23dd5bf5b64b5dcfebb62ee3c2330",
-    "reason": "Dispatch explicit create/replace baseline transaction through existing operation lock and persist only after success."
+    "sha256": "7efdc2ba04b1193b7115eb4ba27b74e5ceeec9b0ead27c495ad4cb8e1b63d6d0",
+    "reason": "Read-only recovery checks under existing operation lock; nonce-bound bounded metadata request; report actual failure without changing settings or stopping core."
   },
   "tests/test_proxy_mode.js": {
     "sha256": "0d476681fd7c939c813fea8283fbb786eab2d3a1432fd0b4cedf240ef4489183",
@@ -96,8 +96,8 @@
     "reason": " Website checks distinguish transport/TLS failures, API errors and HTTP 4xx/5xx responses; access errors use amber rather than success green. Regression includes all AX endpoint IDs/URLs. Reviewed 2026-10-14: website cards now test network reachability and HTTPS request time only; HTTP 403/429/5xx count as reachable rather than access errors, TLS/malformed delay/API failures remain failed. Global/direct mode applies to domestic targets too. No service-unlock or CF diagnosis, no new timers or processes. Includes DOM regression for green 403 reachability, diagnostic-only HTTP code, and TLS failure rendering."
   },
   "payload/starts/padavan_ui.sh": {
-    "sha256": "99452b5d3d0d7bb87eddfe57d1011c6810f4142ad5182a45c845269fec938eec",
-    "reason": "Authenticated baseline-create wrapper accepts exactly nonce, explicit operation, and control token."
+    "sha256": "9eea6657a3c9b621e9d4c68e3a391519f6909ce4792f814dec8e4c45856d9358",
+    "reason": "Authenticated recovery-check/read wrappers and lazy recovery asset through stock web server; no new listening service."
   },
   "payload/starts/panel_afstart.sh": {
     "sha256": "810aa59a84ed47cc5acf0f03ad1e089a3ae0fab4a6a3e1f5d1ac7860fdad31cc",
@@ -154,5 +154,13 @@
   "payload/starts/tool_update.sh": {
     "sha256": "b2bdf3a654942ec9385eaaf6d34a908e10eb94385726097145f708623e06d432",
     "reason": "Reviewed backup transaction: authenticated live DAV gate, complete component manifest and independent baseline catalog, exact installed-version recovery, CLI update persistence/feedback; failure preserves previous backup and user settings"
+  },
+  "tests/test_control_inventory.py": {
+    "sha256": "0daa2d77ed133aa97d0b870a17958d0bb3f0a63361be2f82db3ff9aae06d68ab",
+    "reason": "Read-only recovery dialog controls included in detailed menu/button inventory; compact responsive backup entry, independent baseline actions and saved/draft path status."
+  },
+  "tests/test_control_ack.js": {
+    "sha256": "e3b0ebd86759e1c096202d46bcf84c14138eea19eb105f43198146a6ce1ec3f3",
+    "reason": "Authenticated baseline-create and read-only recovery-check actions pass frontend whitelist and stock command-length budget; regression verifies actual request encoding and rejects restore execution."
   }
 }

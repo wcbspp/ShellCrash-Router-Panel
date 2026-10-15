@@ -1,0 +1,63 @@
+// Loaded on demand. A read-only inspection cannot authorize an overwrite.
+let recoveryWindow=null;
+function openRecoveryWindow(initial='latest'){
+ if(recoveryWindow){recoveryWindow.dialog.focus();return}
+ const opener=document.activeElement,dialog=document.createElement('dialog');dialog.className='recovery-dialog';dialog.setAttribute('aria-labelledby','recovery-title');
+ dialog.innerHTML=`<div class="log-tools"><h2 id="recovery-title">恢复备份</h2><button type="button" id="recovery-close" class="refresh recovery-close" aria-label="关闭恢复窗口">×</button></div>
+ <p class="small-note">先检查备份，检查过程不会重启代理或覆盖设置。</p>
+ <div class="recovery-grid"><div><label for="recovery-source">备份来源</label><select id="recovery-source"><option value="latest">最新 WebDAV 备份</option><option value="baseline">独立基础备份</option><option value="imports">手动放入 WebDAV 的备份</option><option value="local">电脑／手机上的单个文件</option></select></div><div><label>目标设备</label><p id="recovery-model" class="small-note"></p></div></div>
+ <div id="recovery-import" hidden><label for="recovery-path">手动目录</label><input id="recovery-path" value="imports/my-backup/manifest.json" maxlength="100" spellcheck="false"><p id="recovery-location" class="small-note"></p></div>
+ <div id="recovery-local" hidden><label for="recovery-file">选择组件文件</label><input id="recovery-file" type="file" accept=".txt,.srs,.mrs,.tar.gz"><p class="small-note">可先查看规则库、国内 IP 表或备份组件的格式与大小。文件保留在浏览器，不会自动上传。内核等大文件建议放到 WebDAV，避免占满路由器内存。</p></div>
+ <p id="recovery-status" class="backup-feedback" role="status" aria-live="polite"></p><div id="recovery-files"></div>
+ <div class="recovery-scope"><strong>完整恢复会覆盖</strong><br>应用、ShellCrash、内核、面板及规则资源、订阅、DNS、分流、节点选择和启动设置。<br><strong>保持当前</strong><br>LAN、Wi-Fi、固件、SSH/WebDAV 凭据和 ZeroTier 身份。</div>
+ <div class="backup-actions"><button id="recovery-check" type="button" class="primary">检查备份文件</button><button id="recovery-execute" type="button" class="refresh" disabled>确认恢复</button><button id="recovery-cancel" type="button" class="refresh">关闭</button></div>
+ <p class="small-note">当前开放文件检查。解包兼容性校验、恢复前快照与失败回退尚未完成验收，因此恢复执行暂未开放。</p>`;
+ document.body.append(dialog);const find=id=>dialog.querySelector('#'+id),state={dialog,busy:false,revision:0};recoveryWindow=state;
+ const source=find('recovery-source'),check=find('recovery-check'),status=find('recovery-status'),files=find('recovery-files');
+ function feedback(text,kind='info'){status.textContent=text;status.className='backup-feedback '+kind;status.setAttribute('role',kind==='error'?'alert':'status')}
+ function ready(){return nativeState?.remote_transport==='webdav'&&nativeState.remote_enabled&&nativeState.remote_verified&&!mirrorDirty}
+ function pathValue(){const raw=find('recovery-path').value.trim().replace(/\/$/,'');return /\/manifest\.json$/.test(raw)?raw:raw+'/manifest.json'}
+ function reset(){state.revision++;files.replaceChildren();find('recovery-execute').disabled=true;find('recovery-import').hidden=source.value!=='imports';find('recovery-local').hidden=source.value!=='local';check.textContent=source.value==='local'?'查看本地文件':'检查备份文件';check.disabled=state.busy||source.value!=='local'&&!ready();find('recovery-model').textContent=backupModel()+' · '+(nativeState?.core_version||'当前设备');const base=decode(nativeState?.mirror_base_b64||'').trim().replace(/\/+$/,'');find('recovery-location').textContent=(base?base+'/shellcrash-panel/'+backupModel()+'/':'')+pathValue();feedback(source.value==='local'?'选择文件后可在浏览器查看，不会写入路由器。':mirrorDirty?'WebDAV 参数尚未保存，请关闭窗口，测试连接并保存。':!ready()?'请先开启 WebDAV，测试连接并保存。':'检查时从已保存的 WebDAV 地址读取，不使用未保存的草稿。')}
+ function row(title,detail,hash){const block=document.createElement('div');block.className='recovery-file';const h=document.createElement('strong'),p=document.createElement('span');h.textContent=title;p.textContent=detail;block.append(h,p);if(hash){const details=document.createElement('details'),summary=document.createElement('summary'),code=document.createElement('code');summary.textContent='SHA256 '+hash.slice(0,12)+'…';code.textContent=hash;details.append(summary,code);block.append(details)}files.append(block)}
+ const mb=bytes=>(bytes/1048576).toFixed(2)+' MB',purposes={'application.tar.gz':'应用与配置：ShellCrash、轻量面板、订阅、DNS 和分流','core.tar.gz':'代理内核：仅用于相同机型架构','runtime-assets.tar.gz':'运行资源：已安装高级面板和临时规则库','source.tar.gz':'项目源码：用于查阅，不作为路由器程序恢复'};
+ async function inspectLocal(){
+  const file=find('recovery-file').files?.[0];if(!file)throw Error('请先选择一个文件');
+  if(!file.size)throw Error('所选文件为空');if(file.size>40000000)throw Error('文件超过 40 MB，请放到 WebDAV 后按组件检查');
+  const head=new Uint8Array(await file.slice(0,16).arrayBuffer());let kind='';
+  if(/\.tar\.gz$/i.test(file.name)){if(head[0]!==31||head[1]!==139||head[2]!==8)throw Error('文件不是有效的 gzip 头，扩展名可能不正确');kind='gzip 备份组件；未解包或校验内部文件'}
+  else if(/\.srs$/i.test(file.name)){if(String.fromCharCode(...head.slice(0,3))!=='SRS')throw Error('不是 SRS 规则库');if(backupModel()==='AX5'&&nativeState?.core_kind==='meta')throw Error('当前 Mihomo 使用 MRS，不能加载 sing-box 的 SRS');kind='sing-box 规则库；尚未由目标内核校验'}
+  else if(/\.mrs$/i.test(file.name)){if(head[0]!==77||head[1]!==82||head[2]!==83)throw Error('不是 MRS 规则库');if(backupModel()==='K2P'||nativeState?.core_kind==='singbox')throw Error('当前 sing-box 不能加载 Mihomo 的 MRS');kind='Mihomo 规则库；尚未由目标内核校验'}
+  else if(/\.txt$/i.test(file.name)){
+   if(file.size>250000)throw Error('国内 IP 表超过 250 KB，请核对文件');const text=await file.text(),lines=text.split(/\r?\n/).filter(x=>x.trim()&&!x.trim().startsWith('#'));if(!lines.length||lines.length>10000)throw Error('国内 IP 表条目数量不正确');
+   for(const line of lines){const m=/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})\/(\d{1,2})$/.exec(line.trim());if(!m||m.slice(1,5).some(x=>+x>255)||+m[5]>32)throw Error('文本不是 IPv4 CIDR 列表，请选择正确的国内 IP 表')}
+   kind='国内 IPv4 表 · '+lines.length+' 条；仅检查语法，不确认归属地'
+  }else throw Error('支持国内 IP 表 .txt、规则库 .srs / .mrs，或备份组件 .tar.gz');
+  return {name:file.name,size:file.size,kind};
+ }
+ check.onclick=async()=>{
+  if(state.busy||manageBusy||nativeState?.active||advancedActive)return;
+  files.replaceChildren();find('recovery-execute').disabled=true;
+  const revision=state.revision,choice=source.value;
+  if(choice==='local'){
+   state.busy=true;check.disabled=true;try{const local=await inspectLocal();if(recoveryWindow!==state||revision!==state.revision)return;row(local.name,mb(local.size)+' · '+local.kind);feedback('文件基本信息已读取。尚未上传、完整校验或执行恢复。','info')}catch(e){if(recoveryWindow===state&&revision===state.revision)feedback(e.message,'error')}finally{state.busy=false;if(recoveryWindow===state)check.disabled=false}return;
+  }
+  if(!ready()){reset();return}
+  let path='';if(choice==='imports'){path=pathValue();if(!/^imports\/[A-Za-z0-9][A-Za-z0-9_-]{0,63}\/manifest\.json$/.test(path)){feedback('使用 imports/备份名/manifest.json，备份名仅含字母、数字、短横线或下划线。','error');return}}
+  state.busy=true;manageBusy=true;pauseMeasurements();pauseSites();showService();check.disabled=true;source.disabled=true;find('recovery-path').disabled=true;
+  feedback('正在读取备份清单并逐个校验组件；不解包，不重启代理…','working');const id=[...crypto.getRandomValues(new Uint8Array(4))].map(x=>x.toString(16).padStart(2,'0')).join('');
+  try{
+   await upload(id,'restore',new TextEncoder().encode('source='+choice+'\npath='+path+'\n'),'mirror-message');await control('sc-restorecheck.sh',[id]);await waitJob(id,'done',360000,'mirror-message');const plan=await nativeRead('recoveryplan');
+   if(recoveryWindow!==state||revision!==state.revision)return;
+   if(plan.id!==id||plan.source!==choice||!plan.verified||plan.backup?.model!==backupModel()||!Array.isArray(plan.backup.files))throw Error('检查记录已过期或不完整，请重新检查');
+   const b=plan.backup;row((choice==='baseline'?'独立基础备份':choice==='imports'?'手动备份':'最新备份')+' · '+b.model,(b.created?'备份时间 '+new Date(b.created*1000).toLocaleString('zh-CN',{hour12:false}):'旧基础备份 · 时间未记录')+' · '+mb(b.size));row('版本','内核 '+b.core_version+' · ShellCrash '+(b.tool_version||'未记录')+' · 面板 '+(b.panel_version||'未记录'));
+   for(const f of b.files)row(f.name,mb(f.size)+' · '+(purposes[f.name]||'未知组件')+(f.name==='source.tar.gz'?' · 本次未校验':' · 大小和 SHA256 一致'),f.sha256);
+   feedback('组件完整性校验通过。尚未解包检查兼容性，当前设备未改动。恢复执行仍未开放。','success');
+  }catch(e){if(recoveryWindow===state&&revision===state.revision)feedback('检查未完成：'+e.message+'。当前设备未改动。','error')}
+  finally{state.busy=false;manageBusy=false;await syncNative().catch(()=>{});showService();paintMirror();if(recoveryWindow===state){check.disabled=!ready();source.disabled=false;find('recovery-path').disabled=false}else mirrorFeedback('备份检查已结束，当前配置未改动；可重新打开恢复窗口检查。','info')}
+ };
+ function close(){dialog.close()}
+ dialog.querySelector('.recovery-close').onclick=close;find('recovery-cancel').onclick=close;
+ dialog.addEventListener('close',()=>{state.revision++;if(recoveryWindow===state)recoveryWindow=null;dialog.remove();if(opener?.isConnected)opener.focus();if(state.busy)mirrorFeedback('检查仍在后台进行；只读检查不会恢复设备，完成后可重新打开检查。','working')},{once:true});
+ source.onchange=reset;find('recovery-path').oninput=reset;find('recovery-file').onchange=reset;
+ source.value=['latest','baseline','imports','local'].includes(initial)?initial:'latest';reset();dialog.showModal();source.focus();
+}

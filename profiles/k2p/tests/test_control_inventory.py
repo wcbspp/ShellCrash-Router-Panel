@@ -26,6 +26,9 @@ class ControlCoverage(unittest.TestCase):
         with (ROOT/'docs/CONTROL_TEST_CASES.csv').open(encoding='utf-8-sig',newline='')as f:
             rows=[r for r in csv.DictReader(f)if r['机型']==MODEL]
         keys={r['控件定位']for r in rows};parser=Controls();parser.feed(HTML.read_text())
+        recovery=ROOT/('ui/recovery.js' if MODEL=='AX5' else 'payload/padavan/recovery.js')
+        template=recovery.read_text().split('dialog.innerHTML=`',1)[1].split('`;',1)[0]
+        parser.feed(template)
         count=0;options=0;summaries=0
         for (tag,attrs),parents in parser.controls:
             if tag=='summary':summaries+=1;continue

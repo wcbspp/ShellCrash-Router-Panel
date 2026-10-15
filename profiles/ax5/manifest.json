@@ -152,5 +152,7 @@
   "ax5/backup-baseline-run.sh": "shared/lib/backup-baseline-run.sh",
   "tests/test_backup_ui.js": "shared/tests/test_backup_ui.js",
   "ax5/backup-manifest.awk": "shared/lib/backup-manifest.awk",
-  "tests/test_backup_manifest.py": "shared/tests/test_backup_manifest.py"
+  "tests/test_backup_manifest.py": "shared/tests/test_backup_manifest.py",
+  "ui/recovery.js": "shared/ui/recovery.js.in",
+  "ax5/recovery-check.sh": "shared/lib/recovery-check.sh"
 }

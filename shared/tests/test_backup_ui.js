@@ -14,13 +14,13 @@ function setup(){
  vm.runInContext(section,c);c.paintMirror();return {c,el,calls,questions,answers,state};
 }
 (async()=>{
- let s=setup();assert.equal(s.el('baseline-create').textContent,'创建基础版本');
+ let s=setup();assert.equal(s.el('baseline-create').textContent,'创建基础备份');
  assert.equal(s.el('backup-path-imports').textContent,'https://backup.example/dav/shellcrash-panel/'+(ax?'AX5':'K2P')+'/imports/');
  await s.c.createBaseline();assert.equal(s.calls.length,0);assert.equal(s.questions.length,1);
  s=setup();s.answers.push(true,false);await s.c.createBaseline();assert.equal(s.calls.length,0);assert.equal(s.questions.length,2);
  s=setup();s.answers.push(true,true);await s.c.createBaseline();assert.equal(s.calls.length,1);assert.equal(s.calls[0][0],'sc-baselinecreate.sh');assert.equal(s.calls[0][1][1],'create');assert(s.el('mirror-message').className.includes('success'));
- s=setup();s.state.remote_baseline_b64=b64(JSON.stringify({format:2,sha256:'a'.repeat(64),created:1234,size:4567}));s.c.paintMirror();assert.equal(s.el('baseline-create').textContent,'替换基础版本');assert(s.el('baseline-version').textContent.includes('独立保留'));
- s.answers.push(true,true);await s.c.createBaseline();assert.equal(s.calls[0][1][1],'replace');assert(s.questions[0].includes('替换'));
+ s=setup();s.state.remote_baseline_b64=b64(JSON.stringify({format:2,sha256:'a'.repeat(64),created:1234,size:4567}));s.c.paintMirror();assert.equal(s.el('baseline-create').textContent,'更新基础备份');assert(s.el('baseline-version').textContent.includes('独立保留'));
+ s.answers.push(true,true);await s.c.createBaseline();assert.equal(s.calls[0][1][1],'replace');assert(s.questions[0].includes('更新基础备份'));
  s=setup();s.state.remote_enabled=false;s.c.paintMirror();s.answers.push(true,true);await s.c.createBaseline();assert.equal(s.calls.length,0);assert(s.el('baseline-create').disabled);
  s=setup();s.c.waitJob=async()=>{throw Error('校验失败')};s.answers.push(true,true);await s.c.createBaseline();assert(s.el('mirror-message').className.includes('error'));assert(s.el('mirror-message').textContent.includes('原基础版本保留'));assert(!s.c.manageBusy);
  const html=fs.readFileSync(path.join(root,ax?'ui/index.html':'payload/ui/index.html'),'utf8');
