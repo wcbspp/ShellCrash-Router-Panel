@@ -46,12 +46,13 @@ class BackupBudget(unittest.TestCase):
    p=Path(tmp);c=p/'C';d=p/'D';tool=c/'tool'
    for folder in ['ax5','configs','ui','ruleset','cache','tool/configs']: (c/folder).mkdir(parents=True,exist_ok=True)
    d.mkdir();(c/'ax5/remote.sh').write_text('')
-   (c/'ax5/core-env.sh').write_text('HASH=fixture\nVERSION=1\n')
+   pinned=hashlib.sha256(b'fixture-core').hexdigest()
+   (c/'ax5/core-env.sh').write_text('HASH='+pinned+'\nVERSION=1\n')
    links=ROOT/'ax5/backup-links.sh'
    if not links.exists():links=ROOT.parents[1]/'shared/lib/backup-links.sh'
    (c/'ax5/backup-links.sh').write_bytes(links.read_bytes())
    (c/'ax5/backup-guide.sh').write_bytes((ROOT/'ax5/backup-guide.sh').read_bytes())
-   (c/'cache/core.env').write_text('HASH=fixture\n')
+   (c/'cache/core.env').write_text('HASH='+pinned+'\n')
    original=b'fixture-config'*20000;(c/'configs/config.json').write_bytes(original)
    (c/'configs/webdav.auth').write_text('excluded-fixture')
    (tool/'configs/command.env').write_text('runtime-only')
@@ -68,4 +69,5 @@ class BackupBudget(unittest.TestCase):
     self.assertNotIn('./configs/webdav.auth',names);self.assertNotIn('./ShellCrash-tool/configs/command.env',names)
     self.assertEqual(t.extractfile('./configs/config.json').read(),original)
     self.assertIn(b'format=1',t.extractfile('./backup.info').read())
+    self.assertEqual(t.extractfile('./cache/core.sha256').read().decode().strip(),pinned)
     self.assertFalse(any(x.issym() for x in t.getmembers()))

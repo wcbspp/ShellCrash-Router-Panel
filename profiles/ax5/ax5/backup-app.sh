@@ -40,6 +40,8 @@ sh "$C/ax5/backup-links.sh" "$stage" ax5
 . "$C/ax5/core-env.sh"
 hash=$HASH;version=$VERSION
 mkdir -p "$stage/cache";cp "$C/cache/core.env" "$stage/cache/core.env"
+printf '%s' "$hash" | grep -Eq '^[a-f0-9]{64}$' || exit 1
+printf '%s\n' "$hash" > "$stage/cache/core.sha256"
 panel_version=$(cat "$C/ax5/panel-version" 2>/dev/null || printf unknown)
 printf 'format=1\nmodel=AX5\npanel_version=%s\ncore_sha256=%s\ncore_version=%s\ncore_archive=core-%s.tar.gz\ncreated=%s\n' "$panel_version" "$hash" "$version" "$hash" "$(date +%s)" > "$stage/backup.info"
 cat > "$stage/RESTORE.txt" <<'RESTORE'

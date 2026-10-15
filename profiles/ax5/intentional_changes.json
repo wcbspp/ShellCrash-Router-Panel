@@ -16,8 +16,8 @@
     "reason": "Require explicit AX5 JSON upload/control acknowledgements; detect expired sessions and retain drafts. Regression coverage includes HTTP 200 login/invalid/unconfirmed responses."
   },
   "ax5/backup-app.sh": {
-    "sha256": "49d0cf5f888f25b0570037033fd0224c6b109dd0aff917447f55babc852e4e38",
-    "reason": "Include generated Chinese file-purpose/recovery guide in the bounded application snapshot; existing backup-set and live gate preserved."
+    "sha256": "c4025b9e85f6e68a0f8d461a3053f2d66ae9daf49b4b46dd9a6205e5bb120238",
+    "reason": "Include the pinned core SHA256 alongside core.env in portable application backups so full restoration can reconstruct and cross-check installed core metadata."
   },
   "ax5/api.lua": {
     "sha256": "3daf2f7c03f1ce56005044a42508ede6b47daa3cd234c31bcc515580085af0b4",
@@ -132,8 +132,8 @@
     "reason": " Reviewed: report measured advanced-panel installation reserve separately from network/download failure; clear stale diagnostic per operation. Preserve 20 MB guard. Regression uses actual script with low-memory fixture and confirms no download. Acceptance continuation: Cold download respects configured memory reserve; bounded archive and compressed asset cache avoid full RAM extraction; pinned SHA/path checks and atomic cache replacement retained."
   },
   "tests/test_backup_budget.py": {
-    "sha256": "8361a7112e0570f562655c36edcbb6c33c6891bd2c91f95e0b783316ab853155",
-    "reason": " Acceptance continuation: application packing and download encoding honor the validated configured protection threshold; invalid settings fail closed; custom-floor regression tests keep old exports and avoid snapshot/Storage lock creation."
+    "sha256": "200aa8583e2287b6669ca5c71af9a01b4d31eb4e35bf4ebec04ff584ac51150a",
+    "reason": "Use a valid pinned core fixture and verify that portable export retains its matching core SHA record for restore."
   },
   "docs/CONTROL_TEST_CASES.csv": {
     "sha256": "be4c8db0b3c458dd4a8b607c99b19a1cd02ec2419639fec76c6a5e593f51ce66",

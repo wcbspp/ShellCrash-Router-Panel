@@ -154,5 +154,8 @@
   "ax5/backup-manifest.awk": "shared/lib/backup-manifest.awk",
   "tests/test_backup_manifest.py": "shared/tests/test_backup_manifest.py",
   "ui/recovery.js": "shared/ui/recovery.js.in",
-  "ax5/recovery-check.sh": "shared/lib/recovery-check.sh"
+  "ax5/recovery-check.sh": "shared/lib/recovery-check.sh",
+  "ax5/restore-worker.sh": "profiles/ax5/ax5/restore-worker.sh",
+  "tools/restore_ax5.py": "tools/restore_ax5.py",
+  "ax5/restore-archive.lua": "profiles/ax5/ax5/restore-archive.lua"
 }

@@ -705,8 +705,8 @@ AX5-BACKUP-V2-baseline-copy-failure,,桌面,未执行,新增需求；离线用�
 AX5-BACKUP-V2-baseline-copy-failure,,手机窄屏,未执行,新增需求；离线用例不能替代该端实机验收,,,
 AX5-BACKUP-V2-restore-import,,桌面,未执行,新增需求；离线用例不能替代该端实机验收,,,
 AX5-BACKUP-V2-restore-import,,手机窄屏,未执行,新增需求；离线用例不能替代该端实机验收,,,
-AX5-BACKUP-V2-restore-full,,桌面,未执行,新增需求；离线用例不能替代该端实机验收,,,
-AX5-BACKUP-V2-restore-full,,手机窄屏,未执行,新增需求；离线用例不能替代该端实机验收,,,
+AX5-BACKUP-V2-restore-full,,桌面,部分通过,AX5 原生同版本恢复/故障回退/冷启动及用户手机访问已验证；页面执行与全部边界未完成,LIVE_TEST_2026-10-15_AX5_RESTORE.md,2026-10-15,rc.2 本地恢复原型 / Mihomo v1.19.28
+AX5-BACKUP-V2-restore-full,,手机窄屏,部分通过,AX5 原生同版本恢复/故障回退/冷启动及用户手机访问已验证；页面执行与全部边界未完成,LIVE_TEST_2026-10-15_AX5_RESTORE.md,2026-10-15,rc.2 本地恢复原型 / Mihomo v1.19.28
 AX5-BACKUP-V2-update-reboot-new-version,,桌面,未执行,新增需求；离线用例不能替代该端实机验收,,,
 AX5-BACKUP-V2-update-reboot-new-version,,手机窄屏,未执行,新增需求；离线用例不能替代该端实机验收,,,
 K2P-CTRL-baseline-create,,桌面,部分通过,桌面1200/手机390均已验证按钮、两次取消均零提交；真实创建/替换尚未覆盖已有基础版本。服务器独立COPY/回读已在隔离目录验证。,LIVE_TEST_2026-10-15_BACKUP_FOUNDATION.md；k2p-browser.json,,
@@ -775,3 +775,17 @@ K2P-OPT-recovery-source=imports,K2P,桌面,部分通过,已验证两机桌面/�
 K2P-OPT-recovery-source=imports,K2P,手机窄屏,部分通过,已验证两机桌面/窄屏入口、基础来源真实组件SHA/大小、未保存地址阻断、浏览器本地IPv4语法预检、关闭后配置/选择/模式/PID不变；最新与imports的完整实机场景、恢复事务及异常覆盖仍待完成。,LIVE_TEST_2026-10-15_RECOVERY_ENTRY.md；对应机型-browser.json、-plan.json、-final.json,2026-10-15,868c54d 后续恢复入口补丁；保护配置/PID指纹私有留存
 K2P-OPT-recovery-source=local,K2P,桌面,部分通过,已验证两机桌面/窄屏入口、基础来源真实组件SHA/大小、未保存地址阻断、浏览器本地IPv4语法预检、关闭后配置/选择/模式/PID不变；最新与imports的完整实机场景、恢复事务及异常覆盖仍待完成。,LIVE_TEST_2026-10-15_RECOVERY_ENTRY.md；对应机型-browser.json、-plan.json、-final.json,2026-10-15,868c54d 后续恢复入口补丁；保护配置/PID指纹私有留存
 K2P-OPT-recovery-source=local,K2P,手机窄屏,部分通过,已验证两机桌面/窄屏入口、基础来源真实组件SHA/大小、未保存地址阻断、浏览器本地IPv4语法预检、关闭后配置/选择/模式/PID不变；最新与imports的完整实机场景、恢复事务及异常覆盖仍待完成。,LIVE_TEST_2026-10-15_RECOVERY_ENTRY.md；对应机型-browser.json、-plan.json、-final.json,2026-10-15,868c54d 后续恢复入口补丁；保护配置/PID指纹私有留存
+AX5-RESTORE-NATIVE-same-version,AX5,桌面,通过,原生 SSH 事务成功；不是页面执行或跨版本恢复,LIVE_TEST_2026-10-15_AX5_RESTORE.md,2026-10-15,rc.2 本地恢复原型 / Mihomo v1.19.28
+AX5-RESTORE-NATIVE-same-version,AX5,手机窄屏,未执行,本轮仅验证上述指定入口；不代表另一端执行,,,
+AX5-RESTORE-NATIVE-after-write,AX5,桌面,通过,最终带鉴权重复故障返回 rolledback；首次误报保留,LIVE_TEST_2026-10-15_AX5_RESTORE.md,2026-10-15,rc.2 本地恢复原型 / Mihomo v1.19.28
+AX5-RESTORE-NATIVE-after-write,AX5,手机窄屏,未执行,本轮仅验证上述指定入口；不代表另一端执行,,,
+AX5-RESTORE-NATIVE-archives,AX5,桌面,通过,AX5 原生 Lua 三组件与 7 类负例真实执行,LIVE_TEST_2026-10-15_AX5_RESTORE.md,2026-10-15,rc.2 本地恢复原型 / Mihomo v1.19.28
+AX5-RESTORE-NATIVE-archives,AX5,手机窄屏,未执行,本轮仅验证上述指定入口；不代表另一端执行,,,
+AX5-RESTORE-NATIVE-coldboot,AX5,桌面,通过,启动 ID 改变；首个 Google 超时后只读复测通过，未补重启,LIVE_TEST_2026-10-15_AX5_RESTORE.md,2026-10-15,rc.2 本地恢复原型 / Mihomo v1.19.28
+AX5-RESTORE-NATIVE-coldboot,AX5,手机窄屏,未执行,本轮仅验证上述指定入口；不代表另一端执行,,,
+AX5-RESTORE-NATIVE-client,AX5,桌面,未执行,本轮仅验证上述指定入口；不代表另一端执行,,,
+AX5-RESTORE-NATIVE-client,AX5,手机窄屏,通过,用户确认两项正常；不是只根据 HTTP 403 判断应用可用,LIVE_TEST_2026-10-15_AX5_RESTORE.md,2026-10-15,rc.2 本地恢复原型 / Mihomo v1.19.28
+AX5-RESTORE-NATIVE-health,AX5,桌面,通过,本机真实 HTTP 回归及最终 AX5 失败回退/成功恢复验证,LIVE_TEST_2026-10-15_AX5_RESTORE.md,2026-10-15,rc.2 本地恢复原型 / Mihomo v1.19.28
+AX5-RESTORE-NATIVE-health,AX5,手机窄屏,未执行,本轮仅验证上述指定入口；不代表另一端执行,,,
+AX5-RESTORE-NATIVE-write-failure,AX5,桌面,部分通过,自动回归通过；未在真机制造闪存写入失败,LIVE_TEST_2026-10-15_AX5_RESTORE.md,2026-10-15,rc.2 本地恢复原型 / Mihomo v1.19.28
+AX5-RESTORE-NATIVE-write-failure,AX5,手机窄屏,未执行,本轮仅验证上述指定入口；不代表另一端执行,,,
