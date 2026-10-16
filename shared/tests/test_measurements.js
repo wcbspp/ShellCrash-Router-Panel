@@ -11,13 +11,13 @@ async function drain(ctx){await vm.runInContext('pumpMeasurements()',ctx);for(le
  const f=fixture(async path=>({delay:path.includes('bad')?0:123}));
  f.ctx.queueMeasurements(['node /中文','bad','node /中文']);await drain(f.ctx);
  assert.equal(f.calls.length,2);assert(f.calls.every(c=>c[1]==='GET'&&c[0].includes('/delay?timeout=3000&url=')));
- assert.equal(new URL('http://test'+f.calls[0][0]).searchParams.get('url'),'http://www.gstatic.com/generate_204');
+ assert.equal(new URL('http://test'+f.calls[0][0]).searchParams.get('url'),'https://www.gstatic.com/generate_204');
  assert(f.calls[0][0].startsWith('/proxies/'+encodeURIComponent('node /中文')+'/delay?'));
  assert.equal(f.delays.get('node /中文').delay,123);assert.equal(f.delays.get('bad').failed,true);assert.equal(f.store.size,0);
  f.ctx.measure('node /中文');await drain(f.ctx);assert.equal(f.calls.length,3);
  const failed=fixture(async()=>{throw Object.assign(Error('timeout'),{status:504})});failed.ctx.queueMeasurements(['node']);await drain(failed.ctx);assert.equal(failed.calls.length,1);assert.equal(failed.delays.get('node').reason,'超时');
  let resolve;const cancelled=fixture(()=>new Promise(r=>{resolve=r}));cancelled.ctx.queueMeasurements(['first','second']);cancelled.ctx.pauseMeasurements();resolve({delay:42});await drain(cancelled.ctx);assert.equal(cancelled.calls.length,1);assert.equal(cancelled.delays.get('first').delay,undefined);assert.equal(cancelled.delays.get('second').queued,false);
  const pressure=fixture(async()=>({delay:42}));pressure.ctx.nativeState.pressure='protect';pressure.ctx.queueMeasurements(['node']);await drain(pressure.ctx);assert.equal(pressure.calls.length,0);
- assert(html.includes('不包含测试站 TLS 握手'));assert(!html.includes('每条测三次'));assert(html.includes('每个节点只测一次'));
+ assert(html.includes('不等同于 Ping 延迟'));assert(!html.includes('每条测三次'));assert(html.includes('每个节点只测一次'));
  console.log('single GET per node, deduplication, manual retest, timeout without retry, cancellation and pressure guard passed');
 })().catch(e=>{console.error(e);process.exitCode=1});

@@ -68,8 +68,8 @@
     "reason": "Reviewed quota lifecycle hooks, bounded/coalesced event worker, automatic cache display; once-per-load domestic/international IP and location probes with cancellation and bounded JSON."
   },
   "payload/ui/index.html": {
-    "sha256": "b436e7ba36ceddfb165e96efa7f074741daf6b2afd7861aa8ee16c6b7599b281",
-    "reason": "Read-only recovery dialog controls included in detailed menu/button inventory; compact responsive backup entry, independent baseline actions and saved/draft path status. Wrap ZeroTier diagnostic text on narrow screens without hiding content.; Node delay now uses one kernel request per node, with matching help and cancellation display.; Use Gstatic HTTP 204 delay target and explain test-site TLS exclusion."
+    "sha256": "27de0ac80fb88633e7044689f555df50b671c329fd9f543e34720431c5065c73",
+    "reason": "Read-only recovery dialog controls included in detailed menu/button inventory; compact responsive backup entry, independent baseline actions and saved/draft path status. Wrap ZeroTier diagnostic text on narrow screens without hiding content.; Node delay now uses one kernel request per node, with matching help and cancellation display.; Use Gstatic HTTP 204 delay target and explain test-site TLS exclusion.; Correct HTTP fallback assumption: explicit HTTPS target and honest request-time help."
   },
   "tests/test_search.js": {
     "sha256": "3ca14402185275cd4c233a9d9dae8eca9ef259890d2a5c786f6c43b08d12d483",

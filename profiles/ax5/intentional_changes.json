@@ -52,8 +52,8 @@
     "reason": "Regression tests for converter recovery while proxy fails and direct provider mode never contacting conversion endpoints."
   },
   "ui/index.html": {
-    "sha256": "b044a6f1c2539632dffa92de711c064fef758121f1b7943a295953925f6d3bd9",
-    "reason": "Read-only recovery dialog controls included in detailed menu/button inventory; compact responsive backup entry, independent baseline actions and saved/draft path status. Wrap ZeroTier diagnostic text on narrow screens without hiding content.; Node delay now uses one kernel request per node, with matching help and cancellation display.; Use Gstatic HTTP 204 delay target and explain test-site TLS exclusion."
+    "sha256": "48ea83c42091b18c2058608f77e4df92b7e588fd631df8d3c2042bdd6b4e9c90",
+    "reason": "Read-only recovery dialog controls included in detailed menu/button inventory; compact responsive backup entry, independent baseline actions and saved/draft path status. Wrap ZeroTier diagnostic text on narrow screens without hiding content.; Node delay now uses one kernel request per node, with matching help and cancellation display.; Use Gstatic HTTP 204 delay target and explain test-site TLS exclusion.; Correct HTTP fallback assumption: explicit HTTPS target and honest request-time help."
   },
   "ui/sites.js": {
     "sha256": "59f344a411b9ce54279f7f5bb7dcf7ec76c7abedaeea2416724911c9d9dd0775",

@@ -1,5 +1,7 @@
 # Node delay target alignment
 
+**Superseded interpretation:** actual K2P evidence later proved HTTP URLs are replaced by default HTTPS in the installed core. The claim below that this change excludes test-site TLS is incorrect for this core. Historical raw numbers remain valid, but they do not compare HTTP versus HTTPS as originally assumed. See [correction and proof](LIVE_TEST_2026-10-16_K2P_DELAY_CAUSE.md).
+
 The lightweight page displays the numeric `delay` returned by the core; browser, HTTP controller and queue wall time are not added. Its target was Google HTTPS. Inspection of the installed advanced assets shows AX5 Yacd-Meta defaults to Gstatic HTTPS and K2P YACD to Gstatic HTTP; advanced settings can override those defaults. The API route is already the same node delay route.
 
 A controlled live comparison of two selected leaf nodes per router measured Google HTTPS, Gstatic HTTPS and Gstatic HTTP once each, with the second node in reverse URL order. AX5 results in that order were 629/430/123 ms and 352/344/278 ms. K2P were 416/568/636 ms and 552/501/770 ms. These are individual observations, not averages, statistical attribution or guaranteed improvements. HTTP did not improve the K2P samples; route and node variability remains. Configuration, PID, boot ID and cron fingerprints were unchanged.

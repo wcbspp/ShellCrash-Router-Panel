@@ -1,5 +1,7 @@
 # 当前验证状态
 
+2026-10-16 K2P测速解释纠正（优先）：实机证实sing-box1.12.13忽略HTTP测试URL并回退HTTPS，上一轮“排除测试站TLS”不成立。现明确Gstatic HTTPS请求耗时，包含握手，不等于Ping/已有连接体验；高值原因进一步分解仍OPEN，未声称解决。见[K2P测速根因调查](LIVE_TEST_2026-10-16_K2P_DELAY_CAUSE.md)。
+
 2026-10-16 测速口径修正：对比已安装高级面板资源与两机真实内核delay结果，确认旧Google HTTPS包含测试站TLS成本而非页面排队计时。轻量节点测速改Gstatic HTTP204，数值仍按内核原样显示；K实测HTTP未降低，不冒称全部虚高已解决。根112/AX87 Python26JS/K198 Python28JS通过，详见[测速地址对比](LIVE_TEST_2026-10-16_DELAY_TARGET.md)。其他最终RC门槛仍OPEN。
 
 2026-10-16 节点测速改单次内核请求，直接显示返回延迟；同步两机“切换与保存”说明。实机AX当前页10节点10请求、K当前页1节点1请求；桌面/390px说明无溢出，无control写入。根112、AX87 Python26JS、K198 Python28JS通过。配置/PID/boot/cron保持，不重启；其余最终RC门槛仍待完成。见[单次测速验证](LIVE_TEST_2026-10-16_SINGLE_DELAY.md)。
