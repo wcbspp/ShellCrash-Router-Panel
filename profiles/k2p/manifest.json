@@ -259,5 +259,6 @@
   "payload/starts/recovery-prepare.sh": "shared/lib/recovery-prepare.sh",
   "payload/starts/recovery-dispatch.sh": "shared/lib/recovery-dispatch.sh",
   "payload/starts/recovery-status.html": "shared/ui/recovery-status.html",
-  "tests/test_recovery_ui.js": "shared/tests/test_recovery_ui.js"
+  "tests/test_recovery_ui.js": "shared/tests/test_recovery_ui.js",
+  "tests/test_measurements.js": "shared/tests/test_measurements.js"
 }

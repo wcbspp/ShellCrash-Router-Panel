@@ -166,5 +166,6 @@
   "ax5/recovery-status.html": "shared/ui/recovery-status.html",
   "tests/test_recovery_ui.js": "shared/tests/test_recovery_ui.js",
   "ax5/recovery-inspect-job.sh": "shared/lib/recovery-inspect-job.sh",
-  "ax5/rules-cli.lua": "profiles/ax5/ax5/rules-cli.lua"
+  "ax5/rules-cli.lua": "profiles/ax5/ax5/rules-cli.lua",
+  "tests/test_measurements.js": "shared/tests/test_measurements.js"
 }

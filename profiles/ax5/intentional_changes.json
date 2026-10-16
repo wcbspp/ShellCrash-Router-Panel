@@ -52,16 +52,16 @@
     "reason": "Regression tests for converter recovery while proxy fails and direct provider mode never contacting conversion endpoints."
   },
   "ui/index.html": {
-    "sha256": "b7693af974158a4d913c3c138ab81d48ea40cbb5603681e3895462a840ad1ba0",
-    "reason": "Read-only recovery dialog controls included in detailed menu/button inventory; compact responsive backup entry, independent baseline actions and saved/draft path status. Wrap ZeroTier diagnostic text on narrow screens without hiding content."
+    "sha256": "d641a7bd436008ab7e47fbb4bc4359922026dcdc61dee07570344ff142fba9c0",
+    "reason": "Read-only recovery dialog controls included in detailed menu/button inventory; compact responsive backup entry, independent baseline actions and saved/draft path status. Wrap ZeroTier diagnostic text on narrow screens without hiding content.; Node delay now uses one kernel request per node, with matching help and cancellation display."
   },
   "ui/sites.js": {
     "sha256": "59f344a411b9ce54279f7f5bb7dcf7ec76c7abedaeea2416724911c9d9dd0775",
     "reason": "Reviewed quota lifecycle hooks, bounded/coalesced event worker, automatic cache display; once-per-load domestic/international IP and location probes with cancellation and bounded JSON."
   },
   "tests/test_search.js": {
-    "sha256": "0e745c08a710f917f9436ee927dadf120edb6055b6fbbf5ee1db75694324e6c1",
-    "reason": "Regression coverage for manual path rollback/pin readback, partial and stale measurements, UA choice/state isolation and truthful filtered counts. Resolve final-node card text with cycle-bounded paths; show safe TW badge while preserving core keys. Nested auto/manual and cyclic graph regressions."
+    "sha256": "3ca14402185275cd4c233a9d9dae8eca9ef259890d2a5c786f6c43b08d12d483",
+    "reason": "Replace three-round rendering assertions with single kernel delay, loading and stale display assertions."
   },
   "tests/test_subscription_exclusion.js": {
     "sha256": "712ae9a9105955459791a10cd516359387391577582d85a0a6ec518381638257",

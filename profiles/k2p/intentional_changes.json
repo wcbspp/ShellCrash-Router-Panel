@@ -68,12 +68,12 @@
     "reason": "Reviewed quota lifecycle hooks, bounded/coalesced event worker, automatic cache display; once-per-load domestic/international IP and location probes with cancellation and bounded JSON."
   },
   "payload/ui/index.html": {
-    "sha256": "acb33db22decf1efa097b4d017ad67f16e5deb44f7a8c1b480df824dcb0d0df6",
-    "reason": "Read-only recovery dialog controls included in detailed menu/button inventory; compact responsive backup entry, independent baseline actions and saved/draft path status. Wrap ZeroTier diagnostic text on narrow screens without hiding content."
+    "sha256": "602b20e58c870b8376032f4aa58505819a5059b32cd99b0da7889dc7e029e655",
+    "reason": "Read-only recovery dialog controls included in detailed menu/button inventory; compact responsive backup entry, independent baseline actions and saved/draft path status. Wrap ZeroTier diagnostic text on narrow screens without hiding content.; Node delay now uses one kernel request per node, with matching help and cancellation display."
   },
   "tests/test_search.js": {
-    "sha256": "0e745c08a710f917f9436ee927dadf120edb6055b6fbbf5ee1db75694324e6c1",
-    "reason": "Regression coverage for manual path rollback/pin readback, partial and stale measurements, UA choice/state isolation and truthful filtered counts. Resolve final-node card text with cycle-bounded paths; show safe TW badge while preserving core keys. Nested auto/manual and cyclic graph regressions."
+    "sha256": "3ca14402185275cd4c233a9d9dae8eca9ef259890d2a5c786f6c43b08d12d483",
+    "reason": "Replace three-round rendering assertions with single kernel delay, loading and stale display assertions."
   },
   "tests/test_subscription_exclusion.js": {
     "sha256": "712ae9a9105955459791a10cd516359387391577582d85a0a6ec518381638257",
