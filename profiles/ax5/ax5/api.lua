@@ -52,6 +52,7 @@ function A.read()
   M.run('C='..M.C..' D='..M.R..' sh -c \'. "$C/ax5/remote.sh"; dav_catalog > "$D/remote-catalog.out"\'');H.prepare_content('application/json');H.write(M.read(M.R..'/remote-catalog.out',6144));return
  elseif kind=='quota'or kind=='quotacheck'then
   local result=M.exec('sh '..M.C..'/ax5/subscription-quota.sh ax5 '..(kind=='quota'and'read'or'check'));local ok,v=pcall(M.json.decode,result);reply(ok and v or{state='request_failed'});return
+ elseif kind=='nodepingresult'then reply(M.load(M.R..'/nodepingresult.json',{state='idle'}));return
  elseif kind=='state'then reply(M.state());return end
  local paths={progress=M.R..'/subscription.progress',subscriptionlog=M.R..'/subscription-tool.log',endpoint=M.R..'/subscription.endpoint',policy=M.C..'/configs/policy.tsv',filter=M.C..'/configs/fake_ip_filter.list',subscriptionnodes=M.R..'/subscription.nodes.raw',subscription=M.R..'/subscription.raw',memory=M.R..'/memory.csv',incidents=M.R..'/incidents',logs=M.R..'/core.log'}
  if not paths[kind]then reply({error='not_found'},404);return end
@@ -88,10 +89,16 @@ function A.upload()
 end
 function A.control()
  if H.getenv('REQUEST_METHOD')~='POST'or not csrf()then reply({error='forbidden'},403);return end
- local d=body();local allowed={start=true,stop=true,restart=true,clear=true,cleanup=true,memcfg=true,fetch=true,apply=true,dns=true,policy=true,groupmode=true,grouplayout=true,rules=true,domainupdate=true,corecheck=true,coreupdate=true,toolcheck=true,toolupdate=true,guard=true,transport=true,cnbypass=true,proxymode=true,advanced=true,mirrortest=true,mirrorsave=true,mirrorsync=true,mirrorverify=true,backuplocal=true,backupremote=true,baselinecreate=true,restorecheck=true,restorego=true}
+ local d=body();local allowed={nodeping=true,start=true,stop=true,restart=true,clear=true,cleanup=true,memcfg=true,fetch=true,apply=true,dns=true,policy=true,groupmode=true,grouplayout=true,rules=true,domainupdate=true,corecheck=true,coreupdate=true,toolcheck=true,toolupdate=true,guard=true,transport=true,cnbypass=true,proxymode=true,advanced=true,mirrortest=true,mirrorsave=true,mirrorsync=true,mirrorverify=true,backuplocal=true,backupremote=true,baselinecreate=true,restorecheck=true,restorego=true}
  if not d or type(d.script)~='string'then reply({error='invalid_action'},400);return end
  local action=d.script:match('^sc%-(%w+)%.sh$');if not allowed[action]then reply({error='unsupported_action'},400);return end
  local args=d.args or {};if type(args)~='table'or #args>3 then reply({error='invalid_arguments'},400);return end;for _,v in ipairs(args)do if type(v)~='string'or #v>100 or not v:match('^[%w+/=]+$')then reply({error='invalid_arguments'},400);return end end
+ if action=='nodeping'then
+  if #args~=2 or #args[1]~=8 or args[1]:find('[^a-f0-9]')or #args[2]>10 or not args[2]:match('^%d+$')then reply({error='invalid_arguments'},400);return end
+  if M.load(M.R..'/job.json').active then reply({error='busy'},409);return end
+  M.run('(umask 077; sh '..M.C..'/ax5/node-ping.sh ax5 '..M.quote(args[1])..' '..M.quote(args[2])..') </dev/null >/dev/null 2>&1 &')
+  reply({ok=true});return
+ end
  if action=='restorego'and(#args~=2 or #args[1]~=8 or args[1]:find('[^a-f0-9]')or #args[2]~=16 or args[2]:find('[^a-f0-9]'))then reply({error='invalid_confirmation'},400);return end
  if not M.lock('operation.lock',900)then reply({error='busy'},409);return end
  local id=args[1]or'';if id~=''and not id:match('^%x%x%x%x%x%x%x%x$')then os.remove(M.R..'/operation.lock');reply({error='invalid_id'},400);return end

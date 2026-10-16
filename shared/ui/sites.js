@@ -30,12 +30,12 @@ function initializeSites(){for(const s of sites){const b=document.createElement(
  b.onclick=()=>checkSites(s.id);el(s.route==='direct'?'sites-cn':'sites-world').append(b)}el('sites-run').onclick=()=>checkSites();paintSites()}
 function pauseSites(){siteGeneration++;siteQueue=[];for(const [id,r] of siteResults)if(r.state==='queued'||r.state==='testing')siteResults.set(id,{});paintSites()}
 async function checkSites(id){
- if(nativeState?.pressure==='protect'){el('sites-summary').textContent='内存保护中，暂缓网站检测';return}if(siteBusy||manageBusy||nativeState?.active||!running)return;
+ if(nativeState?.pressure==='protect'){el('sites-summary').textContent='内存保护中，暂缓网站检测';return}if((typeof diagnosticBusy!=='undefined'&&diagnosticBusy)||siteBusy||manageBusy||nativeState?.active||!running)return;
  pauseMeasurements();siteBusy=true;const generation=++siteGeneration;siteQueue=sites.filter(s=>!id||s.id===id);siteLastNode=siteNode();for(const s of siteQueue)siteResults.set(s.id,{state:'queued'});paintSites();
  try{
   // Finish any in-flight node probe before starting a website probe.
   while(measureWorker&&generation===siteGeneration&&activeTab==='checks')await new Promise(r=>setTimeout(r,150));
-  const remaining=Math.max(0,Math.min(9000,Number(sessionStorage.getItem('k2p-measure-until')||0)-Date.now()));if(remaining)await new Promise(r=>setTimeout(r,remaining));
+  const remaining=Math.max(0,Math.min(18000,Number(sessionStorage.getItem('k2p-measure-until')||0)-Date.now()));if(remaining)await new Promise(r=>setTimeout(r,remaining));
   while(siteQueue.length&&generation===siteGeneration&&activeTab==='checks'&&running&&!manageBusy&&!document.hidden){
    const s=siteQueue.shift(),c=new AbortController(),until=String(Date.now()+8500);let completed=false;
    sessionStorage.setItem('k2p-measure-until',until);const timer=setTimeout(()=>c.abort(),9500);siteResults.set(s.id,{state:'testing'});paintSites();

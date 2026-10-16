@@ -167,5 +167,8 @@
   "tests/test_recovery_ui.js": "shared/tests/test_recovery_ui.js",
   "ax5/recovery-inspect-job.sh": "shared/lib/recovery-inspect-job.sh",
   "ax5/rules-cli.lua": "profiles/ax5/ax5/rules-cli.lua",
-  "tests/test_measurements.js": "shared/tests/test_measurements.js"
+  "tests/test_measurements.js": "shared/tests/test_measurements.js",
+  "ax5/node-ping.sh": "shared/lib/node-ping.sh",
+  "ax5/node-ping-target.lua": "profiles/ax5/ax5/node-ping-target.lua",
+  "tests/test_node_diagnostic.js": "shared/tests/test_node_diagnostic.js"
 }

@@ -98,6 +98,7 @@ status(){
  printf '"template_kind":"%s","traffic_mode":"%s",' "$native_kind" "$traffic_mode"
  printf '"main_group":"%s","tool_version":"%s","tool_check":%s,"local_archive":false,"mirror_pending_b64":"%s",' "$PANEL_MAIN_GROUP" "$tool_version" "$tool_check" "$(cat "$C/configs/mirror.pending" 2>/dev/null | base64 | tr -d '\n')"
  printf '"quota_revision_b64":"%s",' "$(head -c 64 "$D/subscription-quota.revision" 2>/dev/null | base64 | tr -d '\n')"
+ printf '"node_config_revision":"%s",' "$(md5sum "$C/jsons/config.json" | awk '{print $1}')"
  printf '"subscription_info_b64":"%s",' "$(head -c 8192 "$C/configs/subscription-state.json" 2>/dev/null | base64 | tr -d '\n')"
  remote_enabled=false;remote_enabled && remote_enabled=true
  remote_verified=false;remote_ready && remote_verified=true
@@ -148,6 +149,8 @@ save_safe(){
 }
 fail(){ phase error "$1"; event "$1"; }
 case "$act" in
+ nodeping) exec sh "$C/starts/node-ping.sh" k2p "$id" "$3";;
+ nodepingresult) if [ -f "$D/nodepingresult.json" ];then head -c 512 "$D/nodepingresult.json";else printf '{"state":"idle"}\n';fi;;
  quota|quotacheck) mode=read;[ "$act" != quotacheck ] || mode=check;exec sh "$C/starts/subscription-quota.sh" k2p "$mode";;
  fetchconvert)
   owner_live && exit 1

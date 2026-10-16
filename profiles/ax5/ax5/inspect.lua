@@ -8,10 +8,11 @@ local function bytes(value)
 end
 -- Parse one JSON object at a time from the kernel's top-level array response.
 -- Keeping the full rules response as Lua tables costs several MB on AX5.
-function I.each_object(path,key,visit,map)
+function I.each_object(path,key,visit,map,root_only)
  local f=type(path)=='string'and io.open(path,'rb')or path;if not f then return false end
  local consumed=0
  local prefix,started,finished='',false,false
+ local seek_depth,seek_string,seek_escape=0,false,false
  local depth,in_string,escaped=0,false,false
  local pieces,size,n={},0,0
  local key_phase,key_parts,key_escaped,member_key='key',{},false,nil
@@ -24,7 +25,16 @@ function I.each_object(path,key,visit,map)
    local ch=block:sub(pos,pos)
    if not started then
     prefix=prefix..ch
-    if prefix:match('"'..key..'"%s*:%s*'..(map and '%{'or'%[')..'$')then started=true;prefix=''elseif #prefix>8192 then return abort()end
+    local matches=prefix:match('"'..key..'"%s*:%s*'..(map and '%{'or'%[')..'$')
+    if matches and(not root_only or(seek_depth==1 and not seek_string))then started=true;prefix=''
+    elseif root_only then
+     if seek_string then
+      if seek_escape then seek_escape=false elseif ch=='\\'then seek_escape=true elseif ch=='"'then seek_string=false end
+     elseif ch=='"'then seek_string=true
+     elseif ch=='{'or ch=='['then seek_depth=seek_depth+1
+     elseif ch=='}'or ch==']'then seek_depth=seek_depth-1 end
+     if #prefix>128 then prefix=prefix:sub(-128)end
+    elseif #prefix>8192 then return abort()end
    elseif depth==0 then
     if map and key_phase=='string'then
      key_parts[#key_parts+1]=ch;if #key_parts>1024 then return abort()end

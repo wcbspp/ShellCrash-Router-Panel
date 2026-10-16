@@ -20,8 +20,8 @@
     "removed": true
   },
   "payload/padavan/manager.js": {
-    "sha256": "93c231c6cc882569f0240f860ce714acd34fa14786afddd394c172e38000a7b3",
-    "reason": "Whitelist restorego without increasing the stock 58-character authenticated command limit."
+    "sha256": "0f4284de7689ed36cb0d62183d72c76b25a05c4b103391b8650c54387692cf79",
+    "reason": "Whitelist restorego without increasing the stock 58-character authenticated command limit.; Reviewed on-demand node diagnostics, bounded root-array scan, firmware-compatible change token and explicit control coverage; original baseline preserved."
   },
   "payload/starts/backup-app.sh": {
     "sha256": "7bdf8be3b64852e62399c9e8685fb7e817ca8cbe67b2d81656000a0f5017c7f6",
@@ -64,12 +64,12 @@
     "reason": "Separate startup firewall cleanup from manual stop, retry marked incomplete first boots through the existing minute watchdog with backoff, preserve stop/autostart controls and separate crash counts; verify readiness and retain dispatch errors."
   },
   "payload/padavan/sites.js": {
-    "sha256": "59f344a411b9ce54279f7f5bb7dcf7ec76c7abedaeea2416724911c9d9dd0775",
-    "reason": "Reviewed quota lifecycle hooks, bounded/coalesced event worker, automatic cache display; once-per-load domestic/international IP and location probes with cancellation and bounded JSON."
+    "sha256": "0ae47aa43c33e787e4cf1874b999457ae6878bf5b6cf2efaf63ad52fa8bc9e32",
+    "reason": "Reviewed quota lifecycle hooks, bounded/coalesced event worker, automatic cache display; once-per-load domestic/international IP and location probes with cancellation and bounded JSON.; Reviewed on-demand node diagnostics, bounded root-array scan, firmware-compatible change token and explicit control coverage; original baseline preserved."
   },
   "payload/ui/index.html": {
-    "sha256": "27de0ac80fb88633e7044689f555df50b671c329fd9f543e34720431c5065c73",
-    "reason": "Read-only recovery dialog controls included in detailed menu/button inventory; compact responsive backup entry, independent baseline actions and saved/draft path status. Wrap ZeroTier diagnostic text on narrow screens without hiding content.; Node delay now uses one kernel request per node, with matching help and cancellation display.; Use Gstatic HTTP 204 delay target and explain test-site TLS exclusion.; Correct HTTP fallback assumption: explicit HTTPS target and honest request-time help."
+    "sha256": "97b9cade6938ba46f701ee7c5f96657612402830c164690bfa0c78a3295adc8f",
+    "reason": "Read-only recovery dialog controls included in detailed menu/button inventory; compact responsive backup entry, independent baseline actions and saved/draft path status. Wrap ZeroTier diagnostic text on narrow screens without hiding content.; Node delay now uses one kernel request per node, with matching help and cancellation display.; Use Gstatic HTTP 204 delay target and explain test-site TLS exclusion.; Correct HTTP fallback assumption: explicit HTTPS target and honest request-time help.; Reviewed on-demand node diagnostics, bounded root-array scan, firmware-compatible change token and explicit control coverage; original baseline preserved."
   },
   "tests/test_search.js": {
     "sha256": "3ca14402185275cd4c233a9d9dae8eca9ef259890d2a5c786f6c43b08d12d483",
@@ -84,8 +84,8 @@
     "reason": "Regression coverage for manual path rollback/pin readback, partial and stale measurements, UA choice/state isolation and truthful filtered counts."
   },
   "payload/starts/manage.sh": {
-    "sha256": "049ac25e55d79187e852d4cb3aff2078ae15311f52b58f1f4980b841d71324d2",
-    "reason": "Authenticated restorego transfers its operation lock and PID to the independent dispatcher. Every new operation invalidates earlier confirmation tickets through a monotonic operation revision."
+    "sha256": "9f763d8eff429b4829530a12f822079b0ff2882d33b2f54b03ac0601e367570c",
+    "reason": "Authenticated restorego transfers its operation lock and PID to the independent dispatcher. Every new operation invalidates earlier confirmation tickets through a monotonic operation revision.; Reviewed on-demand node diagnostics, bounded root-array scan, firmware-compatible change token and explicit control coverage; original baseline preserved."
   },
   "tests/test_proxy_mode.js": {
     "sha256": "0d476681fd7c939c813fea8283fbb786eab2d3a1432fd0b4cedf240ef4489183",
@@ -96,8 +96,8 @@
     "reason": " Website checks distinguish transport/TLS failures, API errors and HTTP 4xx/5xx responses; access errors use amber rather than success green. Regression includes all AX endpoint IDs/URLs. Reviewed 2026-10-14: website cards now test network reachability and HTTPS request time only; HTTP 403/429/5xx count as reachable rather than access errors, TLS/malformed delay/API failures remain failed. Global/direct mode applies to domestic targets too. No service-unlock or CF diagnosis, no new timers or processes. Includes DOM regression for green 403 reachability, diagnostic-only HTTP code, and TLS failure rendering."
   },
   "payload/starts/padavan_ui.sh": {
-    "sha256": "d8ea3bec9d8cadb9414e6f5715d94cca57924b00c31cd08fd8dda19656498f43",
-    "reason": "Generate a CSRF-checked two-argument restorego wrapper using the existing stock command buffer."
+    "sha256": "e740cf684e87b2984755c25fdb3235547337ad810967a2e29d56f39a4f83c5e0",
+    "reason": "Generate a CSRF-checked two-argument restorego wrapper using the existing stock command buffer.; Reviewed on-demand node diagnostics, bounded root-array scan, firmware-compatible change token and explicit control coverage; original baseline preserved."
   },
   "payload/starts/panel_afstart.sh": {
     "sha256": "810aa59a84ed47cc5acf0f03ad1e089a3ae0fab4a6a3e1f5d1ac7860fdad31cc",
@@ -124,8 +124,8 @@
     "reason": " Acceptance continuation: After filter validation, unchanged enabled local DNS mode/filter returns done without core preparation, restart or Storage write; disabled local override must still apply."
   },
   "docs/CONTROL_TEST_CASES.csv": {
-    "sha256": "be4c8db0b3c458dd4a8b607c99b19a1cd02ec2419639fec76c6a5e593f51ce66",
-    "reason": " Reviewed canonical LF CSV serialization for clone-stable menu/button case coverage; no scenario expectations removed."
+    "sha256": "be208fc99d47b932d289f39189fa99a81cf03468bab2b71ba29ea9319cf249c2",
+    "reason": " Reviewed canonical LF CSV serialization for clone-stable menu/button case coverage; no scenario expectations removed.; On-demand node diagnostic controls and explicit pending test matrix added."
   },
   "payload/starts/singbox_modify.sh": {
     "sha256": "e674b3548417edfacac691474df408ee46fbd3887deb6ecf7d5ddcc420e22d23",
@@ -170,5 +170,9 @@
   "payload/starts/download_core.sh": {
     "sha256": "e7b363494a85dfe9e520968b488d3c3802bdd8b3645e8665b18e7995762cd7ff",
     "reason": "Use the sourced bounded core download helper for configured mirror bodies before installed SHA verification; retain local/remote/public priority and installed metadata."
+  },
+  "docs/CONTROL_TEST_RESULTS.csv": {
+    "sha256": "31b757c1b3545392055ceda35b326df32fc0eae1621ddd9da3d6e12cada06f7b",
+    "reason": "; On-demand node diagnostic controls and explicit pending test matrix added."
   }
 }

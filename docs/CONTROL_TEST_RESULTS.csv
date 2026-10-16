@@ -835,3 +835,15 @@ K2P-CNIP-NATIVE-invalid,K2P,桌面,通过,SSH实测：来源/表校验拒绝；�
 K2P-CNIP-NATIVE-invalid,K2P,手机窄屏,未执行,本批未重复手机SSH操作；不冒充执行通过,,,
 K2P-CNIP-NATIVE-status,K2P,桌面,通过,SSH实测：显示持久表版本，非上游总数据库标签,LIVE_TEST_2026-10-16_NATIVE_CN_IP.md；私有native-ip证据,2026-10-16,本地后续增量，未发布
 K2P-CNIP-NATIVE-status,K2P,手机窄屏,未执行,本批未重复手机SSH操作；不冒充执行通过,,,
+AX5-CTRL-node-diagnostic-close,AX5,桌面,部分通过,真实桌面点击打开/单次Ping/单次HTTPS/收起；实际后台未知节点拒绝；390px只核对布局，不冒称全部边界实机通过。单元覆盖取消/变化/低内存/超时。,work/task-state/node-ping-20261016.private/ax5-results.json,2026-10-16,本轮源码待提交；配置/PID/boot/cron保持
+AX5-CTRL-node-diagnostic-close,AX5,手机窄屏,部分通过,真实桌面点击打开/单次Ping/单次HTTPS/收起；实际后台未知节点拒绝；390px只核对布局，不冒称全部边界实机通过。单元覆盖取消/变化/低内存/超时。,work/task-state/node-ping-20261016.private/ax5-results.json,2026-10-16,本轮源码待提交；配置/PID/boot/cron保持
+AX5-CTRL-node-ping-run,AX5,桌面,部分通过,真实桌面点击打开/单次Ping/单次HTTPS/收起；实际后台未知节点拒绝；390px只核对布局，不冒称全部边界实机通过。单元覆盖取消/变化/低内存/超时。,work/task-state/node-ping-20261016.private/ax5-results.json,2026-10-16,本轮源码待提交；配置/PID/boot/cron保持
+AX5-CTRL-node-ping-run,AX5,手机窄屏,部分通过,真实桌面点击打开/单次Ping/单次HTTPS/收起；实际后台未知节点拒绝；390px只核对布局，不冒称全部边界实机通过。单元覆盖取消/变化/低内存/超时。,work/task-state/node-ping-20261016.private/ax5-results.json,2026-10-16,本轮源码待提交；配置/PID/boot/cron保持
+AX5-CTRL-node-https-run,AX5,桌面,部分通过,真实桌面点击打开/单次Ping/单次HTTPS/收起；实际后台未知节点拒绝；390px只核对布局，不冒称全部边界实机通过。单元覆盖取消/变化/低内存/超时。,work/task-state/node-ping-20261016.private/ax5-results.json,2026-10-16,本轮源码待提交；配置/PID/boot/cron保持
+AX5-CTRL-node-https-run,AX5,手机窄屏,部分通过,真实桌面点击打开/单次Ping/单次HTTPS/收起；实际后台未知节点拒绝；390px只核对布局，不冒称全部边界实机通过。单元覆盖取消/变化/低内存/超时。,work/task-state/node-ping-20261016.private/ax5-results.json,2026-10-16,本轮源码待提交；配置/PID/boot/cron保持
+K2P-CTRL-node-diagnostic-close,K2P,桌面,部分通过,真实桌面点击打开/单次Ping/单次HTTPS/收起；实际后台未知节点拒绝；390px只核对布局，不冒称全部边界实机通过。单元覆盖取消/变化/低内存/超时。,work/task-state/node-ping-20261016.private/k2p-results.json,2026-10-16,本轮源码待提交；配置/PID/boot/cron保持
+K2P-CTRL-node-diagnostic-close,K2P,手机窄屏,部分通过,真实桌面点击打开/单次Ping/单次HTTPS/收起；实际后台未知节点拒绝；390px只核对布局，不冒称全部边界实机通过。单元覆盖取消/变化/低内存/超时。,work/task-state/node-ping-20261016.private/k2p-results.json,2026-10-16,本轮源码待提交；配置/PID/boot/cron保持
+K2P-CTRL-node-ping-run,K2P,桌面,部分通过,真实桌面点击打开/单次Ping/单次HTTPS/收起；实际后台未知节点拒绝；390px只核对布局，不冒称全部边界实机通过。单元覆盖取消/变化/低内存/超时。,work/task-state/node-ping-20261016.private/k2p-results.json,2026-10-16,本轮源码待提交；配置/PID/boot/cron保持
+K2P-CTRL-node-ping-run,K2P,手机窄屏,部分通过,真实桌面点击打开/单次Ping/单次HTTPS/收起；实际后台未知节点拒绝；390px只核对布局，不冒称全部边界实机通过。单元覆盖取消/变化/低内存/超时。,work/task-state/node-ping-20261016.private/k2p-results.json,2026-10-16,本轮源码待提交；配置/PID/boot/cron保持
+K2P-CTRL-node-https-run,K2P,桌面,部分通过,真实桌面点击打开/单次Ping/单次HTTPS/收起；实际后台未知节点拒绝；390px只核对布局，不冒称全部边界实机通过。单元覆盖取消/变化/低内存/超时。,work/task-state/node-ping-20261016.private/k2p-results.json,2026-10-16,本轮源码待提交；配置/PID/boot/cron保持
+K2P-CTRL-node-https-run,K2P,手机窄屏,部分通过,真实桌面点击打开/单次Ping/单次HTTPS/收起；实际后台未知节点拒绝；390px只核对布局，不冒称全部边界实机通过。单元覆盖取消/变化/低内存/超时。,work/task-state/node-ping-20261016.private/k2p-results.json,2026-10-16,本轮源码待提交；配置/PID/boot/cron保持

@@ -1,5 +1,7 @@
 # 当前验证状态
 
+2026-10-16 按需节点诊断已接通：列表保留一次内核HTTPS，点击后分别测原生Ping/HTTPS且串行。AX当前mihomo、K当前sing-box真实页面通过，K示例67.772ms/463ms；AX目标无ICMP响应而HTTPS630ms。采样最低可用AX16540/K17764KiB，配置/PID/boot/cron保持。根122/AX87 Python27JS/K198 Python29JS通过；桌面正常及实际未知key拒绝/390布局通过，新增控件表保留部分通过，不冒称全部边界或AX切核实测。见[节点诊断](LIVE_TEST_2026-10-16_NODE_DIAGNOSTIC.md)。原最终RC门槛仍OPEN。
+
 2026-10-16 K2P测速解释纠正（优先）：实机证实sing-box1.12.13忽略HTTP测试URL并回退HTTPS，上一轮“排除测试站TLS”不成立。现明确Gstatic HTTPS请求耗时，包含握手，不等于Ping/已有连接体验；高值原因进一步分解仍OPEN，未声称解决。见[K2P测速根因调查](LIVE_TEST_2026-10-16_K2P_DELAY_CAUSE.md)。
 
 2026-10-16 测速口径修正：对比已安装高级面板资源与两机真实内核delay结果，确认旧Google HTTPS包含测试站TLS成本而非页面排队计时。轻量节点测速改Gstatic HTTP204，数值仍按内核原样显示；K实测HTTP未降低，不冒称全部虚高已解决。根112/AX87 Python26JS/K198 Python28JS通过，详见[测速地址对比](LIVE_TEST_2026-10-16_DELAY_TARGET.md)。其他最终RC门槛仍OPEN。

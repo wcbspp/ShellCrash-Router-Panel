@@ -8,8 +8,8 @@
     "removed": true
   },
   "ui/manager.js": {
-    "sha256": "cb8438d7562cf2f586219ebf4ace0f48cc699f4fec622d73e1c758f783bd7882",
-    "reason": "Whitelist the authenticated restorego control action with the existing bounded control protocol."
+    "sha256": "ed257c07f009241a90a36672ee045778a6d304ba2ed5cdc48e561b2302234f68",
+    "reason": "Whitelist the authenticated restorego control action with the existing bounded control protocol.; Reviewed on-demand node diagnostics, bounded root-array scan, firmware-compatible change token and explicit control coverage; original baseline preserved."
   },
   "tests/test_upload.js": {
     "sha256": "0dce5a8da15fe6746c8244fe11aa86d7acbc23b1d5b3e20ed9e5f4769133f018",
@@ -20,8 +20,8 @@
     "reason": "Exclude the device-local recovery capability from portable backups and release RAM archives after verified remote publication; preserve existing local-export and failure behavior."
   },
   "ax5/api.lua": {
-    "sha256": "3868111291078438e6771436423c7f976737d7e5b9525ed70b64fbcb7e006b35",
-    "reason": "Authenticated restoration dispatch accepts only a checked session id and one-use token; no browser execution plan. Every new operation invalidates earlier confirmation tickets through a monotonic operation revision."
+    "sha256": "614b31c092f03cf0501a02b9f59dc28c3d08bd9d1756f29cca7b377435f527dc",
+    "reason": "Authenticated restoration dispatch accepts only a checked session id and one-use token; no browser execution plan. Every new operation invalidates earlier confirmation tickets through a monotonic operation revision.; Reviewed on-demand node diagnostics, bounded root-array scan, firmware-compatible change token and explicit control coverage; original baseline preserved."
   },
   "ax5/webdav.sh": {
     "sha256": "3b38f9a18ab8a94a0b8b8384c14cc8c1d7f7154f7419ec360a065cf81cace170",
@@ -52,12 +52,12 @@
     "reason": "Regression tests for converter recovery while proxy fails and direct provider mode never contacting conversion endpoints."
   },
   "ui/index.html": {
-    "sha256": "48ea83c42091b18c2058608f77e4df92b7e588fd631df8d3c2042bdd6b4e9c90",
-    "reason": "Read-only recovery dialog controls included in detailed menu/button inventory; compact responsive backup entry, independent baseline actions and saved/draft path status. Wrap ZeroTier diagnostic text on narrow screens without hiding content.; Node delay now uses one kernel request per node, with matching help and cancellation display.; Use Gstatic HTTP 204 delay target and explain test-site TLS exclusion.; Correct HTTP fallback assumption: explicit HTTPS target and honest request-time help."
+    "sha256": "e3841c61b140416e9b8e83da99191611df960a7ed96cdb78f143f078bb6e9f19",
+    "reason": "Read-only recovery dialog controls included in detailed menu/button inventory; compact responsive backup entry, independent baseline actions and saved/draft path status. Wrap ZeroTier diagnostic text on narrow screens without hiding content.; Node delay now uses one kernel request per node, with matching help and cancellation display.; Use Gstatic HTTP 204 delay target and explain test-site TLS exclusion.; Correct HTTP fallback assumption: explicit HTTPS target and honest request-time help.; Reviewed on-demand node diagnostics, bounded root-array scan, firmware-compatible change token and explicit control coverage; original baseline preserved."
   },
   "ui/sites.js": {
-    "sha256": "59f344a411b9ce54279f7f5bb7dcf7ec76c7abedaeea2416724911c9d9dd0775",
-    "reason": "Reviewed quota lifecycle hooks, bounded/coalesced event worker, automatic cache display; once-per-load domestic/international IP and location probes with cancellation and bounded JSON."
+    "sha256": "0ae47aa43c33e787e4cf1874b999457ae6878bf5b6cf2efaf63ad52fa8bc9e32",
+    "reason": "Reviewed quota lifecycle hooks, bounded/coalesced event worker, automatic cache display; once-per-load domestic/international IP and location probes with cancellation and bounded JSON.; Reviewed on-demand node diagnostics, bounded root-array scan, firmware-compatible change token and explicit control coverage; original baseline preserved."
   },
   "tests/test_search.js": {
     "sha256": "3ca14402185275cd4c233a9d9dae8eca9ef259890d2a5c786f6c43b08d12d483",
@@ -96,8 +96,8 @@
     "reason": "Optional MAC-scoped HTTPS fallback rejects only selected LAN clients UDP443; inactive without config, removed in direct mode; no UDP9993 or other-device change. Idempotent owned-chain cleanup and bounded validated MAC list. Rule/global activation ignores stale former-direct state; isolated https refresh respects actual direct state. Mixed mode adds only owned LAN UDP marking/system-TUN route; private/DNS bypass; exact stop/failure cleanup; retain Redir compatibility fallback. Reviewed 2026-10-14: opt-in domestic IPv4 firewall bypass with conservative rule/DNS eligibility, owned atomic chain application, no core restart, explicit global/direct suspension and conflict rejection; short rule-maintenance explanations; traffic scope follows actual mode without relabelling historical totals as proxy quota. Added scoped control inventory and regression coverage."
   },
   "ax5/common.lua": {
-    "sha256": "f5ed7d3213401187b29f19a01db31d2b04ae8f2905a17e3f0dfec47790811b77",
-    "reason": "Live recovery owner prevents timestamp-only lock theft and false long-operation timeouts."
+    "sha256": "936b92358a52dbd65665cc55584084c6a6465271ae1cecb691e937ab8663572c",
+    "reason": "Live recovery owner prevents timestamp-only lock theft and false long-operation timeouts.; Reviewed on-demand node diagnostics, bounded root-array scan, firmware-compatible change token and explicit control coverage; original baseline preserved."
   },
   "ax5/native-profile.lua": {
     "sha256": "27d9f2daceaaabaa1fe9e74c877bc507853b3cf5883a855e04f1e1cbf992ff9f",
@@ -120,8 +120,8 @@
     "reason": " Verify imported template cannot override managed Redir/mixed TUN; groups and rules preserved. Reviewed domestic-IP fallback: derive from validated local ShellCrash CN table inside the kernel after explicit user/provider rules and before default proxy; preserve DNS, nodes, private/mode guards and source subscription; no resident service or country bypass that defeats overrides."
   },
   "ax5/inspect.lua": {
-    "sha256": "1c574ab088a85f69314b6f108309de009ffea645da03bd3ed9563f56a036ba1e",
-    "reason": " Reviewed 2026-10-14: stream proxy objects and retain only group descriptors, collect per ten objects, use 2 MB inspection reserve instead of full-tree 4 MB; pause traffic relay while querying to avoid concurrent memory peaks. Empty result and protection regressions on firmware Lua. Reviewed: old firmware curl ignores --max-filesize on chunked responses (real rules body 2,923,861 bytes). Enforce fetch byte cap in reader; stream core JSON to browser without Lua full-tree clone; explicit 1 MB inspection guidance. Reviewed: inspection reports actual memory reserve; K native/domain policies must reach core before owned country-IP bypass, preserving private exceptions and basic-config optimization. Tested base/native/custom modes and rollback. Acceptance continuation: streamed 4 MB bounded parsing with 128 group descriptors, one object/page; display per-connection client/target and counters, reject oversized query; firmware20k-object heap <256 KB reserve."
+    "sha256": "c1a8136d51b1eeacda9cc7ceb32b28b22949ecddb3ff33d135f1b58fa50456bd",
+    "reason": " Reviewed 2026-10-14: stream proxy objects and retain only group descriptors, collect per ten objects, use 2 MB inspection reserve instead of full-tree 4 MB; pause traffic relay while querying to avoid concurrent memory peaks. Empty result and protection regressions on firmware Lua. Reviewed: old firmware curl ignores --max-filesize on chunked responses (real rules body 2,923,861 bytes). Enforce fetch byte cap in reader; stream core JSON to browser without Lua full-tree clone; explicit 1 MB inspection guidance. Reviewed: inspection reports actual memory reserve; K native/domain policies must reach core before owned country-IP bypass, preserving private exceptions and basic-config optimization. Tested base/native/custom modes and rollback. Acceptance continuation: streamed 4 MB bounded parsing with 128 group descriptors, one object/page; display per-connection client/target and counters, reject oversized query; firmware20k-object heap <256 KB reserve.; Reviewed on-demand node diagnostics, bounded root-array scan, firmware-compatible change token and explicit control coverage; original baseline preserved."
   },
   "tests/inspect.lua": {
     "sha256": "e5652a983217de092ddea8681001cbbcb5b9fe42f59f1d7d52559479722d84a4",
@@ -136,8 +136,8 @@
     "reason": "Exercise the real local exporter and require the local recovery execution capability to be excluded alongside credentials."
   },
   "docs/CONTROL_TEST_CASES.csv": {
-    "sha256": "be4c8db0b3c458dd4a8b607c99b19a1cd02ec2419639fec76c6a5e593f51ce66",
-    "reason": " Reviewed canonical LF CSV serialization for clone-stable menu/button case coverage; no scenario expectations removed."
+    "sha256": "be208fc99d47b932d289f39189fa99a81cf03468bab2b71ba29ea9319cf249c2",
+    "reason": " Reviewed canonical LF CSV serialization for clone-stable menu/button case coverage; no scenario expectations removed.; On-demand node diagnostic controls and explicit pending test matrix added."
   },
   "ax5/traffic-mode.lua": {
     "sha256": "81cb5ea0dec21187cb32fc251b64a5d6e5a73a042aced4165a222df1ec662a19",
@@ -166,5 +166,9 @@
   "tests/test_recovery.py": {
     "sha256": "0af9019e7af62cbaed0a1d97869059ba02efe54fe2761547f3db31c535d76d7c",
     "reason": "Update the fake curl to emit its response on stdout, matching the production bounded pipeline; preserve stale-mirror rejection and original configuration-preservation assertions."
+  },
+  "docs/CONTROL_TEST_RESULTS.csv": {
+    "sha256": "31b757c1b3545392055ceda35b326df32fc0eae1621ddd9da3d6e12cada06f7b",
+    "reason": "; On-demand node diagnostic controls and explicit pending test matrix added."
   }
 }

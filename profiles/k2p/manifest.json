@@ -260,5 +260,8 @@
   "payload/starts/recovery-dispatch.sh": "shared/lib/recovery-dispatch.sh",
   "payload/starts/recovery-status.html": "shared/ui/recovery-status.html",
   "tests/test_recovery_ui.js": "shared/tests/test_recovery_ui.js",
-  "tests/test_measurements.js": "shared/tests/test_measurements.js"
+  "tests/test_measurements.js": "shared/tests/test_measurements.js",
+  "payload/starts/node-ping.sh": "shared/lib/node-ping.sh",
+  "payload/starts/node-ping-target.awk": "shared/lib/node-ping-target.awk",
+  "tests/test_node_diagnostic.js": "shared/tests/test_node_diagnostic.js"
 }
