@@ -1,7 +1,7 @@
 {
   "install.sh": {
-    "reason": "Validated optional offline core before writes; stage verified archive for normal bootstrap",
-    "sha256": "4776b1f73ab0d940457700b4d531c69cc0521e7391c836a1a54e37cc0a273617"
+    "reason": "Validated optional offline core before writes; stage verified archive for normal bootstrap; use native-supported type for dependency discovery on Padavan shells without command",
+    "sha256": "ee133826d90abe24efa25500224836619b0948c4c3a0d452c2e49b0468ce8bcc"
   },
   "tools/deploy.py": {
     "reason": "Optional local node/core input; same SSH preflight/backup/rollback; client backups default outside the signed package",
@@ -12,8 +12,8 @@
     "sha256": "3a5d79b3bfacbfa525f916e96dcd0161453bc193314f7a24ac917e0b55062fb9"
   },
   "tests/test_project.py": {
-    "reason": "Apply PATH shim after path rewriting; prevent Linux fixture from losing its fake id",
-    "sha256": "08af81867d59a761e4c1e7ba2aeab807b759b80af2442a626a87fc7737ba9bf2"
+    "reason": "Apply PATH shim after path rewriting; prevent Linux fixture from losing its fake id; exercise actual installer guards with command unavailable",
+    "sha256": "f0031af34fe6ac2d3eb1ab27182c816c412ed17caff7c57b89aad32aec6b22c3"
   },
   "tools/build_release.py": {
     "reason": "Removed obsolete per-repository release builder; tools/package.py is the shared release pipeline",

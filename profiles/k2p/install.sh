@@ -14,7 +14,7 @@ while [ "$#" -gt 0 ]; do
 done
 [ "$mode" = --check ] || [ "$mode" = --install ] || { echo '用法: sh install.sh --check | --install --profile FILE --secret-file FILE'; exit 1; }
 [ "$(id -u)" = 0 ] || { echo '需要路由器SSH管理员权限'; exit 1; }
-for cmd in nvram curl iptables ipset bzip2 sha256sum mtd_write mount stat awk tar base64 crontab; do command -v "$cmd" >/dev/null || { echo "缺少依赖: $cmd"; exit 1; }; done
+for cmd in nvram curl iptables ipset bzip2 sha256sum mtd_write mount stat awk tar base64 crontab; do type "$cmd" >/dev/null 2>&1 || { echo "缺少依赖: $cmd"; exit 1; }; done
 [ -f /www/state.js ] && [ -f /sbin/mtd_storage.sh ] || { echo '仅支持已配置的Padavan'; exit 1; }
 [ "$fresh" = 0 ] && framework="$C" || framework="$V"
 [ -f "$framework/version" ] && grep -q '^1\.9\.4' "$framework/version" || { echo '此版本适配ShellCrash 1.9.4，其他版本需单独验证'; exit 1; }

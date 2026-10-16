@@ -84,6 +84,7 @@ class ProjectTests(unittest.TestCase):
    script=(ROOT/'install.sh').read_text()
    script=re.sub(r'/(?:etc/storage(?=/|\b)|www/|sbin/|tmp/|opt)',lambda m:str(d)+m.group(0),script)
    script=script.replace('export PATH=/usr/sbin:/usr/bin:/sbin:/bin:$PATH','export PATH="'+str(shim)+':$PATH"')
+   script=script.replace('set -eu', 'set -eu\ncommand(){ return 127; }',1)
    f=d/'install-check.sh';f.write_text(script)
    hook=c/'task/bfstart';hook.write_text('echo user-hook\n')
    result=run(['sh',str(f),'--check']);self.assertNotEqual(result.returncode,0);self.assertIn('已有自定义钩子',result.stdout,result.stderr);self.assertEqual(hook.read_text(),'echo user-hook\n')
