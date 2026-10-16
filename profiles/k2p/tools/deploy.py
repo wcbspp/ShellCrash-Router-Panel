@@ -6,6 +6,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 MAX_INPUT = 524288
+SNAPSHOT_COMMAND = 'set -- started_script.sh; for f in ShellCrash/configs/cn_ip.txt chinadns/chnroute.txt ShellCrash/cn_ip.txt; do if [ -f /etc/storage/$f ] && [ ! -L /etc/storage/$f ]; then set -- "$@" "$f"; break; fi; done; [ ! -f /etc/storage/ShellCrash/jsons/config.json ] || set -- "$@" ShellCrash/jsons/config.json; tar -czf - -C /etc/storage "$@"'
 
 
 def subscription_nodes(raw):
@@ -135,7 +136,7 @@ def main():
         connected = False
         try:
             print('\n1/4 连接路由器。SSH 密码由 ssh 自己询问。')
-            raw = remote('set -- started_script.sh; for f in ShellCrash/configs/cn_ip.txt ShellCrash/cn_ip.txt; do [ ! -f /etc/storage/$f ] || set -- "$@" "$f"; done; [ ! -f /etc/storage/ShellCrash/jsons/config.json ] || set -- "$@" ShellCrash/jsons/config.json; [ ! -f /etc/storage/chinadns/chnroute.txt ] || set -- "$@" chinadns/chnroute.txt; tar -czf - -C /etc/storage "$@"', capture=True)
+            raw = remote(SNAPSHOT_COMMAND, capture=True)
             connected = True
             snapshot = read_snapshot(raw)
             source = snapshot.get('ShellCrash/jsons/config.json')

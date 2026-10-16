@@ -102,6 +102,16 @@ class DeployTests(unittest.TestCase):
    for name,data in entries.items():
     info=tarfile.TarInfo(name);info.size=len(data);t.addfile(info,io.BytesIO(data))
   return buffer.getvalue()
+ def test_snapshot_uses_current_regular_rules_without_legacy_symlink(self):
+  with tempfile.TemporaryDirectory()as td:
+   d=Path(td);storage=d/'etc/storage';c=storage/'ShellCrash';(c/'configs').mkdir(parents=True);(c/'jsons').mkdir();(storage/'chinadns').mkdir()
+   (storage/'started_script.sh').write_text('echo retained\n');(c/'jsons/config.json').write_text('{"outbounds":[]}')
+   current=c/'configs/cn_ip.txt';current.write_text('1.0.1.0/24\n');fallback=storage/'chinadns/chnroute.txt';fallback.write_text('1.0.2.0/24\n');(c/'cn_ip.txt').symlink_to(fallback)
+   command=self.deploy.SNAPSHOT_COMMAND.replace('/etc/storage',str(storage))
+   read=lambda:self.deploy.read_snapshot(subprocess.check_output(['sh','-c',command]))
+   data=read();self.assertEqual(data['ShellCrash/configs/cn_ip.txt'],b'1.0.1.0/24\n');self.assertNotIn('ShellCrash/cn_ip.txt',data);self.assertNotIn('chinadns/chnroute.txt',data)
+   current.unlink();data=read();self.assertEqual(data['chinadns/chnroute.txt'],b'1.0.2.0/24\n');self.assertNotIn('ShellCrash/cn_ip.txt',data)
+   fallback.unlink();private=d/'private';private.write_text('do-not-export');(c/'cn_ip.txt').unlink();(c/'cn_ip.txt').symlink_to(private);data=read();self.assertNotIn('ShellCrash/cn_ip.txt',data)
  def test_anytls_plain_and_base64(self):
   raw='anytls://pass%40word@proxy.example.com:443?sni=tls.example.com&alpn=h2,http%2F1.1#香港01'.encode()
   plain=self.deploy.subscription_nodes(raw);self.assertEqual(plain,self.deploy.subscription_nodes(base64.urlsafe_b64encode(raw)))

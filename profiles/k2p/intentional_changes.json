@@ -4,16 +4,16 @@
     "sha256": "ee133826d90abe24efa25500224836619b0948c4c3a0d452c2e49b0468ce8bcc"
   },
   "tools/deploy.py": {
-    "reason": "Optional local node/core input; same SSH preflight/backup/rollback; client backups default outside the signed package",
-    "sha256": "b026abe27d8ec83b213100d836deaabeafd01d051ad180103c7e16fede9a384e"
+    "reason": "Optional local node/core input; same SSH preflight/backup/rollback; client backups default outside the signed package; snapshot selects only highest-priority regular rules file, skipping legacy symlinks without weakening archive validation",
+    "sha256": "c3de00a0beda5d18e8f7cb199b891d196bca4e14d14ed992e2139e2669b8b7d9"
   },
   "tests/test_cleanup.py": {
     "reason": "Rewrite fixture paths once; supports Linux /tmp without double prefix",
     "sha256": "3a5d79b3bfacbfa525f916e96dcd0161453bc193314f7a24ac917e0b55062fb9"
   },
   "tests/test_project.py": {
-    "reason": "Apply PATH shim after path rewriting; prevent Linux fixture from losing its fake id; exercise actual installer guards with command unavailable",
-    "sha256": "f0031af34fe6ac2d3eb1ab27182c816c412ed17caff7c57b89aad32aec6b22c3"
+    "reason": "Apply PATH shim after path rewriting; prevent Linux fixture from losing its fake id; exercise actual installer guards with command unavailable; snapshot selects only highest-priority regular rules file, skipping legacy symlinks without weakening archive validation",
+    "sha256": "304f0cd86a86b9550f631b2ceb6c22aa5cadd7e61dcefb78f443b43f620fa2d9"
   },
   "tools/build_release.py": {
     "reason": "Removed obsolete per-repository release builder; tools/package.py is the shared release pipeline",
