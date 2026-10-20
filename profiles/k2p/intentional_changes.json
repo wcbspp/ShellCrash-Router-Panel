@@ -1,7 +1,7 @@
 {
   "install.sh": {
-    "reason": "Validated optional offline core before writes; stage verified archive for normal bootstrap; use native-supported type for dependency discovery on Padavan shells without command",
-    "sha256": "ee133826d90abe24efa25500224836619b0948c4c3a0d452c2e49b0468ce8bcc"
+    "reason": "Live fresh-install fixes: share verified offline archive inode to fit 45MiB tmpfs, preserve staged input/cross-filesystem copy, and initialize fw_wan=OFF so first native stop does not remove Padavan firmware loopback protection",
+    "sha256": "7014e6035ef3e314d9d405d86be6e5e874bb5a21a7d0e6b3854be9b87509da35"
   },
   "tools/deploy.py": {
     "reason": "Optional local node/core input; same SSH preflight/backup/rollback; client backups default outside the signed package; snapshot selects only highest-priority regular rules file, skipping legacy symlinks without weakening archive validation",
@@ -12,8 +12,8 @@
     "sha256": "3a5d79b3bfacbfa525f916e96dcd0161453bc193314f7a24ac917e0b55062fb9"
   },
   "tests/test_project.py": {
-    "reason": "Apply PATH shim after path rewriting; prevent Linux fixture from losing its fake id; exercise actual installer guards with command unavailable; snapshot selects only highest-priority regular rules file, skipping legacy symlinks without weakening archive validation",
-    "sha256": "304f0cd86a86b9550f631b2ceb6c22aa5cadd7e61dcefb78f443b43f620fa2d9"
+    "reason": "Regress offline staging space ownership/copy fallback/same-file input, fresh firmware firewall ownership, and bounded LAN readiness with temporary-rule cleanup",
+    "sha256": "09cbd2b553c9226a3b17fc5eb45bc887c0dc74bb7cd239529328ac6510e4f649"
   },
   "tools/build_release.py": {
     "reason": "Removed obsolete per-repository release builder; tools/package.py is the shared release pipeline",
@@ -174,5 +174,9 @@
   "docs/CONTROL_TEST_RESULTS.csv": {
     "sha256": "31b757c1b3545392055ceda35b326df32fc0eae1621ddd9da3d6e12cada06f7b",
     "reason": "; On-demand node diagnostic controls and explicit pending test matrix added."
+  },
+  "payload/libs/start_wait.sh": {
+    "reason": "Live first-install recovery exposed a deployed LAN readiness call without deadlines blocked by firmware loopback INPUT drop; bound authenticated probe/retries and remove only the temporary rule we inserted",
+    "sha256": "b741245417d9765ac4f35b6d4625c2b3c65b10510f0abb04d45d0bb2b2570168"
   }
 }

@@ -223,11 +223,57 @@ class BootstrapTests(unittest.TestCase):
   if fail:(d/'fail-once').touch()
   command=['sh',str(package/'install.sh'),'--install','--profile',str(profile),'--secret-file',str(secret)]
   return storage,c,package,env,command
+ def test_native_readiness_with_loopback_drop(self):
+  for initial_rule,fail in [(False,False),(True,False),(False,True)]:
+   with self.subTest(initial_rule=initial_rule,fail=fail),tempfile.TemporaryDirectory() as td:
+    d=Path(td);(d/'starts').mkdir();(d/'bin').mkdir()
+    (d/'starts/panel_env.sh').write_text('PANEL_LAN_IP=192.168.123.1\n')
+    rule=d/'allowed';calls=d/'calls'
+    if initial_rule:rule.touch()
+    programs={
+     'iptables':'case "$1" in -C) test -e '+str(rule)+';; -I) touch '+str(rule)+';; -D) rm '+str(rule)+';; *) exit 2;; esac',
+     'curl':'echo request >> '+str(calls)+'\n[ -e '+str(rule)+' ] || exit 7\nfor arg;do last=$arg;done\n[ "$last" = http://192.168.123.1:9999/version ] || exit 8\n'+('exit 7' if fail else 'echo \'{"version":"sing-box 1.12.13"}\''),
+     'sleep':'exit 0'}
+    for name,body in programs.items():
+     path=d/'bin'/name;path.write_text('#!/bin/sh\n'+body+'\n');path.chmod(0o700)
+    env=dict(os.environ,PATH=str(d/'bin')+os.pathsep+os.environ['PATH'],CRASHDIR=str(d))
+    command='db_port=9999;secret=test-only;. '+str(ROOT/'payload/libs/start_wait.sh')+';printf "RESULT=%s\\n" "$test"'
+    result=run(['sh','-c',command],env=env)
+    self.assertEqual(result.returncode,0,result.stderr)
+    self.assertIn('RESULT='+('' if fail else 'ready')+'\n',result.stdout)
+    self.assertEqual(rule.exists(),initial_rule,'Remove only the temporary rule owned by readiness')
+    self.assertEqual(len(calls.read_text().splitlines()),30 if fail else 1)
+ def test_offline_install_shares_tmpfs_archive(self):
+  with tempfile.TemporaryDirectory() as td:
+   d=Path(td);storage,c,package,env,command=self.fixture(d)
+   archive=d/'tmp/offline.tar.gz';archive.write_bytes(b'verified core input')
+   result=run(command+['--core-file',str(archive)],env=env)
+   self.assertEqual(result.returncode,0,result.stdout+result.stderr)
+   staged=d/'tmp/ShellCrash/CrashCore.tar.gz'
+   self.assertTrue(os.path.samefile(archive,staged),'Duplicate archive exhausts K2P tmpfs during extraction')
+   staged.unlink();self.assertEqual(archive.read_bytes(),b'verified core input')
+ def test_offline_install_copies_when_link_unavailable(self):
+  with tempfile.TemporaryDirectory() as td:
+   d=Path(td);storage,c,package,env,command=self.fixture(d)
+   archive=d/'external-core.tar.gz';archive.write_bytes(b'verified external input')
+   shim=d/'bin/ln';shim.write_text('#!/bin/sh\nexit 1\n');shim.chmod(0o700)
+   result=run(command+['--core-file',str(archive)],env=env)
+   self.assertEqual(result.returncode,0,result.stdout+result.stderr)
+   staged=d/'tmp/ShellCrash/CrashCore.tar.gz'
+   self.assertEqual(staged.read_bytes(),archive.read_bytes());self.assertFalse(os.path.samefile(archive,staged))
+ def test_offline_install_accepts_already_staged_archive(self):
+  with tempfile.TemporaryDirectory() as td:
+   d=Path(td);storage,c,package,env,command=self.fixture(d)
+   archive=d/'tmp/ShellCrash/CrashCore.tar.gz';archive.parent.mkdir();archive.write_bytes(b'already staged input')
+   result=run(command+['--core-file',str(archive)],env=env)
+   self.assertEqual(result.returncode,0,result.stdout+result.stderr)
+   self.assertEqual(archive.read_bytes(),b'already staged input')
  def test_fresh_install_and_restore(self):
   with tempfile.TemporaryDirectory() as td:
    d=Path(td);storage,c,package,env,command=self.fixture(d)
    result=run(command,env=env);self.assertEqual(result.returncode,0,result.stdout+result.stderr)
    self.assertEqual((c/'version').read_text().strip(),'1.9.4release');self.assertTrue((c/'configs/cn_ip.default.txt').exists());self.assertFalse((storage/'chinadns').exists());self.assertTrue((d/'saved').exists())
+   self.assertIn('fw_wan=OFF\n',(c/'configs/ShellCrash.cfg').read_text(),'Fresh startup must preserve firmware INPUT/loopback protection')
    backup=d/'tmp/padavan-panel-before-install.tar.gz'
    with tarfile.open(backup) as t:
     self.assertIn('shellcrash=absent',t.extractfile('_panel_backup_state').read().decode())

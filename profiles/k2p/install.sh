@@ -94,7 +94,9 @@ else
  tar -xzf "$BASE/vendor/ShellCrash-1.9.4.tar.gz" -C "$C"
  cp "$V/LICENSE.txt" "$C/LICENSE.txt"
  mkdir -p "$C/configs" "$C/jsons" "$C/task"
- printf 'crashcore=singbox\nversionsh_l=1.9.4release\nsystype=Padavan\n' > "$C/configs/ShellCrash.cfg"
+ # Padavan owns INPUT/WAN protection, including its loopback allow rule.
+ # Native stop would otherwise delete that firmware rule on the first start.
+ printf 'crashcore=singbox\nversionsh_l=1.9.4release\nsystype=Padavan\nfw_wan=OFF\n' > "$C/configs/ShellCrash.cfg"
 fi
 # Keep the router-specific cfg and upstream framework; overlay only published files.
 cp -R "$BASE/payload/starts/." "$C/starts/" || exit 1
@@ -133,7 +135,13 @@ chmod 600 "$C/configs/panel.conf" "$C/configs/core-installed.info" "$C/configs/S
 # Start in RAM first; save only after the core and authenticated API are healthy.
 if [ -n "$core_file" ];then
  mkdir -p /tmp/ShellCrash
- cp "$core_file" /tmp/ShellCrash/CrashCore.tar.gz
+ # The uploaded archive already occupies tmpfs. Sharing its inode leaves room
+ # for extraction on the 45 MiB mount; external filesystems fall back to copy.
+ staged_core=/tmp/ShellCrash/CrashCore.tar.gz
+ if [ ! "$core_file" -ef "$staged_core" ];then
+  rm -f "$staged_core"
+  ln "$core_file" "$staged_core" 2>/dev/null || cp "$core_file" "$staged_core"
+ fi
 fi
 "$C/starts/panel_boot.sh" || exit 1
 ready=0; tries=0
