@@ -21,3 +21,11 @@ The corrected real first-install trial also failed and is not accepted. Automati
 Subsequent isolated device checks passed: public cold-cache domain-rule download with the exact pinned hash, native core validation of the generated first-install profile, domestic-rule import, and startup preparation with only the flash-save call stubbed. The latter does not validate flash writes or a successful installation. The next investigation must retain the failure diagnostics before rollback, especially startup preparation and first-import Storage persistence. The precise second-trial failure is still unresolved; a failed log capture cannot be replaced by an assumed cause.
 
 The coupled long observation stopped itself after read retries during the authorized K2P maintenance. That interruption is attributed to maintenance, not to an AX5 failure. Original samples remain intact. An independent AX5-only observer now continues without being reset by K2P work; no observation gap is concatenated into a continuous 24-hour pass.
+
+## Diagnostic trial
+
+A third real first-install trial, with failure evidence collected before rollback, also failed. Its clean-state and native preflight checks passed. The normalized profile passed the native check, and the actual first normalization save reported 466,313 bytes written successfully to Storage. This narrows this trial away from the earlier suspected first-save failure; it does not validate the final installed flash archive or a clean boot.
+
+The retained boot events identify the failure as no live authenticated core API within 90 seconds after native start dispatch (dispatch status zero). The native background dispatch status alone is therefore insufficient to count startup success. The precise underlying core-start failure remains unresolved. Diagnostics now also retain the bounded native `ShellCrash.log` and `core_test.log` tails, in addition to service, event and normalization logs. The third trial predates those two added tails; do not assume its evidence includes them.
+
+Affected-only recovery again verified byte-identical original configuration, all three selector choices, HTTPS 204 and no NVRAM key changes. K2P observation resumed in a separate window after this intentional maintenance; AX5 observation was not reset. No reboot, final RC release, or clean-install pass is claimed.

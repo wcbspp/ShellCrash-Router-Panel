@@ -62,6 +62,22 @@ grep -Fq "\"external_controller\":\"$(nvram get lan_ipaddr):9999\"" /tmp/padavan
 cp "$BASE/payload/starts/save_storage.sh" /tmp/padavan-panel-save.sh
 chmod 700 /tmp/padavan-panel-save.sh
 committed=0
+install_stage=framework
+capture_failure(){
+ # Keep bounded private evidence before rollback removes fresh runtime logs.
+ # Failure to write diagnostics must never prevent recovery (e.g. full tmpfs).
+ diagnostic=/tmp/padavan-panel-install-failure.log
+ (umask 077
+  printf 'stage=%s\nexit=%s\n' "$install_stage" "$code"
+  for log in /tmp/sc-admin/service.log /tmp/sc-admin/events.log /tmp/ShellCrash/core.log /tmp/ShellCrash/core_test.log /tmp/ShellCrash/ShellCrash.log /tmp/panel-dns/normalize-check.log /tmp/panel-dns/normalize-save.log; do
+   if [ -f "$log" ]; then
+    printf '\n--- %s ---\n' "$log"
+    tail -c 4096 "$log" || :
+   fi
+  done
+ ) > "$diagnostic" 2>/dev/null && chmod 600 "$diagnostic" || :
+ echo "安装诊断: ${diagnostic}（含私有运行日志，请勿公开）"
+}
 rollback(){
  echo '安装失败，恢复安装前Storage；建议维护时重启清除运行挂载'
  CRASHDIR="$C" "$C/start.sh" stop >/dev/null 2>&1 || :
@@ -80,7 +96,10 @@ rollback(){
 finish(){
  code=$?
  trap - EXIT HUP INT TERM
- [ "$committed" = 1 ] || rollback || :
+ if [ "$committed" != 1 ]; then
+  capture_failure || :
+  rollback || :
+ fi
  rm -f /tmp/padavan-panel-profile.json /tmp/padavan-panel-save.sh
  rmdir /tmp/padavan-panel-install.lock 2>/dev/null || :
  exit "$code"
@@ -98,6 +117,7 @@ else
  # Native stop would otherwise delete that firmware rule on the first start.
  printf 'crashcore=singbox\nversionsh_l=1.9.4release\nsystype=Padavan\nfw_wan=OFF\n' > "$C/configs/ShellCrash.cfg"
 fi
+install_stage=payload
 # Keep the router-specific cfg and upstream framework; overlay only published files.
 cp -R "$BASE/payload/starts/." "$C/starts/" || exit 1
 cp -R "$BASE/payload/libs/." "$C/libs/" || exit 1
@@ -133,6 +153,7 @@ printf '\n%s boot & #PadavanShellCrashPanel\n' "$C/starts/panel_boot.sh" >> /etc
 chmod 700 "$C/start.sh" "$C/menu.sh" "$C/starts/"*.sh
 chmod 600 "$C/configs/panel.conf" "$C/configs/core-installed.info" "$C/configs/ShellCrash.cfg" "$C/jsons/config.json"
 # Start in RAM first; save only after the core and authenticated API are healthy.
+install_stage=offline-core
 if [ -n "$core_file" ];then
  mkdir -p /tmp/ShellCrash
  # The uploaded archive already occupies tmpfs. Sharing its inode leaves room
@@ -143,13 +164,16 @@ if [ -n "$core_file" ];then
   ln "$core_file" "$staged_core" 2>/dev/null || cp "$core_file" "$staged_core"
  fi
 fi
+install_stage=bootstrap
 "$C/starts/panel_boot.sh" || exit 1
+install_stage=api
 ready=0; tries=0
 while [ "$tries" -lt 30 ]; do
  if curl --noproxy '*' -fsS --max-time 2 -H "Authorization: Bearer $secret" "http://$(nvram get lan_ipaddr):9999/version" >/dev/null 2>&1; then ready=1; break; fi
  sleep 2; tries=$((tries+1))
 done
 [ "$ready" = 1 ] || { echo '内核启动未通过验证，回滚'; exit 1; }
+install_stage=persist
 "$C/starts/save_storage.sh" || exit 1
 committed=1
 echo '安装完成：登录路由器后台 → 高级设置 → ShellCrash。请下载安装前备份。'

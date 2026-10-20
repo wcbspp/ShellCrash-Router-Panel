@@ -1,7 +1,7 @@
 {
   "install.sh": {
-    "reason": "Live fresh-install fixes: share verified offline archive inode to fit 45MiB tmpfs, preserve staged input/cross-filesystem copy, and initialize fw_wan=OFF so first native stop does not remove Padavan firmware loopback protection",
-    "sha256": "7014e6035ef3e314d9d405d86be6e5e874bb5a21a7d0e6b3854be9b87509da35"
+    "reason": "Live fresh-install fixes: share verified offline archive inode to fit 45MiB tmpfs, preserve staged input/cross-filesystem copy, and initialize fw_wan=OFF so first native stop does not remove Padavan firmware loopback protection; retain bounded mode-0600 failure stage/runtime tails before automatic rollback, with regression coverage",
+    "sha256": "fba19d6698c244a21441ea445d03bec78779660455e63b6dbe17b65639df7caf"
   },
   "tools/deploy.py": {
     "reason": "Optional local node/core input; same SSH preflight/backup/rollback; client backups default outside the signed package; snapshot selects only highest-priority regular rules file, skipping legacy symlinks without weakening archive validation",
@@ -12,8 +12,8 @@
     "sha256": "3a5d79b3bfacbfa525f916e96dcd0161453bc193314f7a24ac917e0b55062fb9"
   },
   "tests/test_project.py": {
-    "reason": "Regress offline staging space ownership/copy fallback/same-file input, fresh firmware firewall ownership, and bounded LAN readiness with temporary-rule cleanup",
-    "sha256": "09cbd2b553c9226a3b17fc5eb45bc887c0dc74bb7cd239529328ac6510e4f649"
+    "reason": "Regress offline staging space ownership/copy fallback/same-file input, fresh firmware firewall ownership, and bounded LAN readiness with temporary-rule cleanup; retain bounded mode-0600 failure stage/runtime tails before automatic rollback, with regression coverage",
+    "sha256": "a1d600e64399d939be17167a8278f137984ee25e8a62b6db95b8baaa687dde1f"
   },
   "tools/build_release.py": {
     "reason": "Removed obsolete per-repository release builder; tools/package.py is the shared release pipeline",

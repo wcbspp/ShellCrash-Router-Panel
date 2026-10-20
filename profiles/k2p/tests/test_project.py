@@ -285,6 +285,19 @@ class BootstrapTests(unittest.TestCase):
    result=run(command,env=env);self.assertNotEqual(result.returncode,0)
    self.assertFalse(c.exists());self.assertFalse((storage/'chinadns').exists());self.assertTrue((d/'saved').exists())
    self.assertEqual((storage/'started_script.sh').read_text(),'#!/bin/sh\necho original-startup\n')
+ def test_failure_retains_bounded_private_logs_before_rollback(self):
+  with tempfile.TemporaryDirectory() as td:
+   d=Path(td);storage,c,package,env,command=self.fixture(d,fail=True)
+   logs=d/'tmp/panel-dns';logs.mkdir()
+   (logs/'normalize-save.log').write_text('discarded-prefix\n'+'x'*8192+'\nretained-tail\n')
+   result=run(command,env=env);self.assertNotEqual(result.returncode,0)
+   diagnostic=d/'tmp/padavan-panel-install-failure.log'
+   evidence=diagnostic.read_text()
+   self.assertIn('stage=persist\nexit=1\n',evidence)
+   self.assertIn('retained-tail',evidence);self.assertNotIn('discarded-prefix',evidence)
+   self.assertLess(diagnostic.stat().st_size,4608)
+   self.assertEqual(diagnostic.stat().st_mode & 0o777,0o600)
+   self.assertFalse(c.exists());self.assertTrue((d/'saved').exists())
  def test_existing_install_restores_original_configuration(self):
   with tempfile.TemporaryDirectory() as td:
    d=Path(td);storage,c,package,env,command=self.fixture(d,existing=True,fail=True)
