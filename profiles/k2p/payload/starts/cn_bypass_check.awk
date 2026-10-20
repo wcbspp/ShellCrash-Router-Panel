@@ -18,7 +18,12 @@ function scan(s,start,    base,chunk,width,j,i,c,str,esc,depth,brace,objstart,n)
   for(j=1;j<=width;j++){
    i=base+j-1;c=substr(chunk,j,1)
    if(str){if(esc)esc=0;else if(c=="\\")esc=1;else if(c=="\"")str=0;continue}
-   if(c=="\""){str=1;continue}
+   # Skip complete quoted tokens using the native regex engine; retain the
+   # character-state fallback when a token crosses a chunk boundary.
+   if(c=="\""){
+    if(match(substr(chunk,j),/^"([^"\\]|\\.)*"/)){j+=RLENGTH-1;continue}
+    str=1;continue
+   }
    if(c=="[")depth++
    if(c=="]"){depth--;if(!depth){arrayend=i;return n}}
    if(c=="{"){if(!brace)objstart=i;brace++}
@@ -49,4 +54,9 @@ function guard(o,    x){
   bad=1
  }
 }
-END{if(found!=1||!valid||parsebad||(bad&&!priority))exit 1}
+END{
+ if(found!=1||!valid||parsebad)exit 1
+ # Report eligibility and the priority warning in one parse for cold status.
+ if(report){print bad?"rules":"ready";exit 0}
+ if(bad&&!priority)exit 1
+}

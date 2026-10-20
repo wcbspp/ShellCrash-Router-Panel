@@ -7,11 +7,13 @@ cb_safe(){
  key=v2$(md5sum "$C/jsons/config.json" "$C/configs/policy.tsv" 2>/dev/null | awk '{printf "%s|",$1}')$(sed -n 's/^dns_mod=/dns:/p' "$C/configs/ShellCrash.cfg")
  if [ "$key" = "$(head -1 "$D/cn-eligible" 2>/dev/null)" ];then sed -n '2p' "$D/cn-eligible";return;fi
  result=ready;warning=ready
+ scan_state=$(awk -v report=1 -f "$C/starts/cn_bypass_check.awk" "$C/jsons/config.json") || scan_state=invalid
+ case "$scan_state" in ready|rules) :;;*)scan_state=invalid;;esac
  if grep -qx 'dns_mod=fake-ip' "$C/configs/ShellCrash.cfg";then result=fakeip
- elif ! awk -v priority=1 -f "$C/starts/cn_bypass_check.awk" "$C/jsons/config.json" >/dev/null;then result=invalid
+ elif [ "$scan_state" = invalid ];then result=invalid
  fi
  if ! awk -F '\t' 'NF&&$3!="direct"{bad=1}END{exit bad}' "$C/configs/policy.tsv";then warning=policy
- elif ! awk -f "$C/starts/cn_bypass_check.awk" "$C/jsons/config.json" >/dev/null;then warning=rules
+ elif [ "$scan_state" != ready ];then warning=rules
  fi
  printf '%s\n%s\n%s\n' "$key" "$result" "$warning" > "$D/cn-eligible.$$";mv "$D/cn-eligible.$$" "$D/cn-eligible";printf '%s\n' "$result"
 }

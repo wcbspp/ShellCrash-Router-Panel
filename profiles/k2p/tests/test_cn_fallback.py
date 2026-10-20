@@ -46,3 +46,10 @@ class CNFallback(unittest.TestCase):
   (self.c/'configs/cn_ip.txt').write_bytes(self.table);(self.c/'configs/memory.conf').write_text('warning_mb=24\nprotect_mb=20\ncleanup_mb=0\n');self.assertNotEqual(self.run_prepare().returncode,0)
   (self.c/'configs/memory.conf').unlink();self.config['route']['rule_set'].append({'type':'inline','tag':'panel-cn-ip','rules':[]});self.assertNotEqual(self.run_prepare().returncode,0)
   self.assertEqual(self.out.read_bytes(),before);self.assertEqual((self.w/'cn-ip.json').read_bytes(),asset)
+
+ def test_quoted_tokens_across_chunk_boundaries_preserve_profile(self):
+  value='节点'+('x'*2049)+'"\\[]{}'
+  self.config['outbounds'][-1]['password']=value
+  self.config['outbounds'][-1]['tag']=value
+  self.assertEqual(self.run_prepare().returncode,0)
+  self.assertEqual(self.result()['outbounds'],self.config['outbounds'])

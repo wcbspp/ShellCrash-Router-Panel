@@ -32,6 +32,7 @@ class BootReadinessTests(unittest.TestCase):
  def test_nonzero_dispatch_with_live_api_is_success(self): self.assertEqual(self.run_case(dispatch=2),(0,''))
  def test_process_without_authenticated_api_is_failure(self): self.assertEqual(self.run_case(api=False)[0],1)
  def test_background_start_waits_until_ready(self): self.assertEqual(self.run_case(ready_after=60),(0,''))
+ def test_cold_cache_preparation_can_exceed_ninety_seconds(self): self.assertEqual(self.run_case(ready_after=150),(0,''))
  def test_manual_stop_during_boot_is_respected(self): self.assertEqual(self.run_case(manual=True,ready_after=1000),(0,''))
  def test_previous_stop_marker_waits_for_delayed_start(self): self.assertEqual(self.run_case(previous_stop=True,ready_after=60),(0,''))
  def test_previous_stop_marker_does_not_hide_start_timeout(self):

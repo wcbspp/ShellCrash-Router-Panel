@@ -1,7 +1,7 @@
 {
   "install.sh": {
-    "reason": "Live fresh-install fixes: share verified offline archive inode to fit 45MiB tmpfs, preserve staged input/cross-filesystem copy, and initialize fw_wan=OFF so first native stop does not remove Padavan firmware loopback protection; retain bounded mode-0600 failure stage/runtime tails before automatic rollback, with regression coverage",
-    "sha256": "fba19d6698c244a21441ea445d03bec78779660455e63b6dbe17b65639df7caf"
+    "reason": "Differentiate Storage lock contention with exit 75; installer retries only busy persistence within 75s while native afstart saves asynchronously, preserving other owners and real flash-failure rollback. Retains prior fresh-install and bounded diagnostic fixes. Fresh installs explicitly retain imported per-node TLS verification instead of native unset skip_cert defaults.",
+    "sha256": "8d98e2721009f17b0df272a9d63fcd15a3854721ae13704c8078006e9ba60e0d"
   },
   "tools/deploy.py": {
     "reason": "Optional local node/core input; same SSH preflight/backup/rollback; client backups default outside the signed package; snapshot selects only highest-priority regular rules file, skipping legacy symlinks without weakening archive validation",
@@ -12,8 +12,8 @@
     "sha256": "3a5d79b3bfacbfa525f916e96dcd0161453bc193314f7a24ac917e0b55062fb9"
   },
   "tests/test_project.py": {
-    "reason": "Regress offline staging space ownership/copy fallback/same-file input, fresh firmware firewall ownership, and bounded LAN readiness with temporary-rule cleanup; retain bounded mode-0600 failure stage/runtime tails before automatic rollback, with regression coverage",
-    "sha256": "a1d600e64399d939be17167a8278f137984ee25e8a62b6db95b8baaa687dde1f"
+    "reason": "Differentiate Storage lock contention with exit 75; installer retries only busy persistence within 75s while native afstart saves asynchronously, preserving other owners and real flash-failure rollback. Retains prior fresh-install and bounded diagnostic fixes. Fresh installs explicitly retain imported per-node TLS verification instead of native unset skip_cert defaults.",
+    "sha256": "d7357a7de1032d88158417bda33231850582befc6e079e96404149520cad5f0b"
   },
   "tools/build_release.py": {
     "reason": "Removed obsolete per-repository release builder; tools/package.py is the shared release pipeline",
@@ -44,12 +44,12 @@
     "reason": "Shared authenticated DAV tests cover guarded complete manifests, strict baseline metadata validation, server COPY isolation and staged/final pointer uncertainty preserving previous components."
   },
   "payload/starts/panel_boot.sh": {
-    "sha256": "34b11e593bbc6f246ad1dcc3916d0c80fdee3a1ddbb621b8f571d81f9aebb03e",
-    "reason": "Reboot acceptance fixes: initialized routing hooks, safe executable reuse, remote domain cache, pre-download startup delay and explicit remote backup catalog query"
+    "reason": "Allow bounded cold-cache legacy preparation plus native configuration checks before judging readiness; real phase trace showed the former 90-second timeout firing before core dispatch. Preserve authenticated API, mode reset, stop cancellation and finite failure checks.",
+    "sha256": "ca051a8d18eb2f11c5b99d4da79ed97dc199a2c970c0f995dae2d8c723ccdc7d"
   },
   "tests/test_boot_readiness.py": {
-    "sha256": "c76891cbdeb7fb6e62425d781b79db57c3f9469ae2e41104a2ea0c4fd2733eda",
-    "reason": "Separate startup firewall cleanup from manual stop, retry marked incomplete first boots through the existing minute watchdog with backoff, preserve stop/autostart controls and separate crash counts; verify readiness and retain dispatch errors. Reviewed: explicitly label kernel totals as including DIRECT; domestic-table maintenance updates the core fallback, distinct from subscription geodata. Native Mihomo reload is atomic with count readback/rollback and no restart. K delayed startup clears only the previous stop marker before dispatch; later user cancellation still respected and fake readiness regression covered."
+    "reason": "Allow bounded cold-cache legacy preparation plus native configuration checks before judging readiness; real phase trace showed the former 90-second timeout firing before core dispatch. Preserve authenticated API, mode reset, stop cancellation and finite failure checks.",
+    "sha256": "f654522932bfc84d1fd5f3363589972af5eef5d74dcfb97802552f481116b664"
   },
   "payload/starts/start_legacy_wd.sh": {
     "sha256": "84cfac45d43b761f093dc12a7592564176f53885292099433877b9331b38101a",
@@ -178,5 +178,29 @@
   "payload/libs/start_wait.sh": {
     "reason": "Live first-install recovery exposed a deployed LAN readiness call without deadlines blocked by firmware loopback INPUT drop; bound authenticated probe/retries and remove only the temporary rule we inserted",
     "sha256": "b741245417d9765ac4f35b6d4625c2b3c65b10510f0abb04d45d0bb2b2570168"
+  },
+  "payload/starts/cn_fallback.awk": {
+    "reason": "Native K2P 119-node scan took about 26s per pass: skip whole quoted tokens with the regex engine, preserving chunk-boundary/escape fallback and conservative route eligibility. Test Unicode, escaped quotes, braces and long strings.",
+    "sha256": "ae516e1265a0af2c898529b6707f4a64f774b7688f18d45230ec14eb20363f1f"
+  },
+  "payload/starts/cn_bypass_check.awk": {
+    "reason": "Preserve conservative eligibility and priority warning with one cold-status parse instead of two; native client deadline is 10s. Quoted-token/chunk-boundary parsing and invalid-config refusal remain unchanged.",
+    "sha256": "db9cf0b6d31adc15323f033595ff442826f19fcabc52b205bc53767d3bb31783"
+  },
+  "tests/test_cn_bypass_check.py": {
+    "reason": "Preserve conservative eligibility and priority warning with one cold-status parse instead of two; native client deadline is 10s. Quoted-token/chunk-boundary parsing and invalid-config refusal remain unchanged.",
+    "sha256": "ae514ccd36bfdc03ee78412372492a471db11de992bed206f2ba768cbaede6df"
+  },
+  "tests/test_cn_fallback.py": {
+    "reason": "Native K2P 119-node scan took about 26s per pass: skip whole quoted tokens with the regex engine, preserving chunk-boundary/escape fallback and conservative route eligibility. Test Unicode, escaped quotes, braces and long strings.",
+    "sha256": "2373cd1f8e653ac340c0ad510e6205e2a20cf9a053a03b007c2a1099dc016404"
+  },
+  "payload/starts/save_storage.sh": {
+    "reason": "Differentiate Storage lock contention with exit 75; installer retries only busy persistence within 75s while native afstart saves asynchronously, preserving other owners and real flash-failure rollback. Retains prior fresh-install and bounded diagnostic fixes.",
+    "sha256": "07bbe90b0560e8a83e9d5a2d1d6cd633dafd14ec21581b485fbf822019366bc2"
+  },
+  "payload/starts/cn_bypass.sh": {
+    "reason": "Preserve conservative eligibility and priority warning with one cold-status parse instead of two; native client deadline is 10s. Quoted-token/chunk-boundary parsing and invalid-config refusal remain unchanged.",
+    "sha256": "690bb7a8c9c692bee47baddf15ad3c6aeccf588f179e58f6b905015bde2d97de"
   }
 }

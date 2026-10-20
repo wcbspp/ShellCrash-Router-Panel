@@ -274,6 +274,7 @@ class BootstrapTests(unittest.TestCase):
    result=run(command,env=env);self.assertEqual(result.returncode,0,result.stdout+result.stderr)
    self.assertEqual((c/'version').read_text().strip(),'1.9.4release');self.assertTrue((c/'configs/cn_ip.default.txt').exists());self.assertFalse((storage/'chinadns').exists());self.assertTrue((d/'saved').exists())
    self.assertIn('fw_wan=OFF\n',(c/'configs/ShellCrash.cfg').read_text(),'Fresh startup must preserve firmware INPUT/loopback protection')
+   self.assertIn('skip_cert=KEEP\n',(c/'configs/ShellCrash.cfg').read_text(),'Native defaults must not change imported per-node certificate verification')
    backup=d/'tmp/padavan-panel-before-install.tar.gz'
    with tarfile.open(backup) as t:
     self.assertIn('shellcrash=absent',t.extractfile('_panel_backup_state').read().decode())
@@ -298,6 +299,21 @@ class BootstrapTests(unittest.TestCase):
    self.assertLess(diagnostic.stat().st_size,4608)
    self.assertEqual(diagnostic.stat().st_mode & 0o777,0o600)
    self.assertFalse(c.exists());self.assertTrue((d/'saved').exists())
+ def test_installer_retries_explicit_busy_persistence_only(self):
+  with tempfile.TemporaryDirectory() as td:
+   d=Path(td);storage,c,package,env,command=self.fixture(d)
+   marker=d/'busy-once';marker.touch()
+   (package/'payload/starts/save_storage.sh').write_text('#!/bin/sh\nif [ -f "'+str(marker)+'" ];then rm "'+str(marker)+'";exit 75;fi\ntouch "'+str(d/'saved')+'"\n')
+   result=run(command,env=env)
+   self.assertEqual(result.returncode,0,result.stdout+result.stderr)
+   self.assertTrue(c.exists());self.assertTrue((d/'saved').exists());self.assertFalse(marker.exists())
+ def test_busy_storage_writer_preserves_other_owners_lock(self):
+  with tempfile.TemporaryDirectory() as td:
+   d=Path(td);lock=d/'save.lock';lock.mkdir();archive=d/'archive';archive.write_text('other-writer')
+   script=(ROOT/'payload/starts/save_storage.sh').read_text().replace('/tmp/shellcrash-storage-save.lock',str(lock)).replace('/tmp/shellcrash-storage-save.tar.bz2',str(archive))
+   path=d/'save.sh';path.write_text(script)
+   result=run(['sh',str(path)])
+   self.assertEqual(result.returncode,75);self.assertTrue(lock.is_dir());self.assertEqual(archive.read_text(),'other-writer')
  def test_existing_install_restores_original_configuration(self):
   with tempfile.TemporaryDirectory() as td:
    d=Path(td);storage,c,package,env,command=self.fixture(d,existing=True,fail=True)

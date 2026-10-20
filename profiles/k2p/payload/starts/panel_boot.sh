@@ -68,7 +68,10 @@ SC_PANEL_STARTING=1 "$CRASHDIR/start.sh" start >> /tmp/sc-admin/service.log 2>&1
 # exit status means dispatched, not ready. Trailing hooks may also return
 # nonzero after success. In either case confirm the live authenticated API.
 secret=$(sed -n 's/^secret=//p' "$CRASHDIR/configs/ShellCrash.cfg" | head -1)
-deadline=$(( $(cut -d. -f1 /proc/uptime) + 90 ))
+# Native legacy start prepares in the background. Two bounded cold-cache
+# domain downloads (up to 80s), profile normalization and native checks share
+# this deadline; 90s can roll back while preparation is still progressing.
+deadline=$(( $(cut -d. -f1 /proc/uptime) + 180 ))
 while [ "$(cut -d. -f1 /proc/uptime)" -lt "$deadline" ]; do
  [ ! -f "$CRASHDIR/configs/panel-disabled" ] && [ ! -f /tmp/ShellCrash/manual-stop ] || exit 0
  if [ -n "$(pidof CrashCore)" ] && curl --noproxy '*' -fsS --connect-timeout 1 --max-time 1 -H "Authorization: Bearer $secret" "http://${PANEL_LAN_IP}:9999/version" >/dev/null 2>&1; then
@@ -81,6 +84,6 @@ while [ "$(cut -d. -f1 /proc/uptime)" -lt "$deadline" ]; do
  sleep 1
 done
 mkdir -p /tmp/sc-admin
-printf '%s Boot start did not reach a live authenticated core API within 90s (dispatch exit %s)\n' "$(date '+%m-%d %H:%M:%S')" "$native_result" >> /tmp/sc-admin/events.log
+printf '%s Boot start did not reach a live authenticated core API within 180s (dispatch exit %s)\n' "$(date '+%m-%d %H:%M:%S')" "$native_result" >> /tmp/sc-admin/events.log
 [ "$native_result" != 0 ] || native_result=1
 exit "$native_result"

@@ -1,6 +1,7 @@
 #!/bin/sh
 # Stream Padavan Storage using a smaller bzip2 block to fit K2P RAM.
-mkdir /tmp/shellcrash-storage-save.lock 2>/dev/null || exit 1
+# EX_TEMPFAIL distinguishes a live persistence owner from a flash failure.
+mkdir /tmp/shellcrash-storage-save.lock 2>/dev/null || exit 75
 archive=/tmp/shellcrash-storage-save.tar.bz2
 trap 'rm -f "$archive"; rmdir /tmp/shellcrash-storage-save.lock 2>/dev/null' EXIT
 set -o pipefail

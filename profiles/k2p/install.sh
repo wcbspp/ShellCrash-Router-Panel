@@ -115,7 +115,7 @@ else
  mkdir -p "$C/configs" "$C/jsons" "$C/task"
  # Padavan owns INPUT/WAN protection, including its loopback allow rule.
  # Native stop would otherwise delete that firmware rule on the first start.
- printf 'crashcore=singbox\nversionsh_l=1.9.4release\nsystype=Padavan\nfw_wan=OFF\n' > "$C/configs/ShellCrash.cfg"
+ printf 'crashcore=singbox\nversionsh_l=1.9.4release\nsystype=Padavan\nfw_wan=OFF\nskip_cert=KEEP\n' > "$C/configs/ShellCrash.cfg"
 fi
 install_stage=payload
 # Keep the router-specific cfg and upstream framework; overlay only published files.
@@ -174,6 +174,16 @@ while [ "$tries" -lt 30 ]; do
 done
 [ "$ready" = 1 ] || { echo '内核启动未通过验证，回滚'; exit 1; }
 install_stage=persist
-"$C/starts/save_storage.sh" || exit 1
+# Native afstart also persists asynchronously after its first API response.
+# Retry only the explicit busy result; never remove another writer's lock or
+# conceal a real tar/compression/flash failure.
+persist_tries=0
+while :;do
+ persist_code=0
+ "$C/starts/save_storage.sh" || persist_code=$?
+ [ "$persist_code" != 0 ] || break
+ [ "$persist_code" = 75 ] && [ "$persist_tries" -lt 75 ] || exit 1
+ sleep 1;persist_tries=$((persist_tries+1))
+done
 committed=1
 echo '安装完成：登录路由器后台 → 高级设置 → ShellCrash。请下载安装前备份。'

@@ -14,3 +14,21 @@ class Check(unittest.TestCase):
    with self.subTest(rule=rule):
     self.assertNotEqual(self.check([rule]),0,'conditional proxy rules require a priority warning');self.assertEqual(self.check([rule],priority=1),0,'explicit domestic-IP priority remains available')
  def test_wrong_direct_tag_cannot_be_bypassed(self):self.assertNotEqual(self.check([],[{'type':'selector','tag':'direct','outbounds':['node']}],priority=1),0)
+
+ def test_escaped_unicode_strings_across_chunk_boundaries(self):
+  for size in [1000,1023,1024,2049]:
+   value='节点'+('x'*size)+'"\\[]{}'
+   out=[{'type':'anytls','tag':value,'server':'fixture.test','password':value},{'type':'direct','tag':'direct'}]
+   with self.subTest(size=size):
+    self.assertEqual(self.check([],out),0)
+    self.assertNotEqual(self.check([{'domain':[value],'outbound':'proxy-main'}],out),0)
+
+ def test_report_retains_eligibility_and_priority_warning(self):
+  for rules,expected in [([], 'ready'),([{'outbound':'proxy-main','domain':['fixture.test']}], 'rules')]:
+   obj={'outbounds':[{'type':'direct','tag':'direct'}],'route':{'rules':rules}}
+   raw='{\n'+',\n'.join(json.dumps(k)+':'+json.dumps(v,separators=(',',':'))for k,v in obj.items())+'\n}'
+   result=subprocess.run(['awk','-v','report=1','-f',str(ROOT/'payload/starts/cn_bypass_check.awk')],input=raw,text=True,capture_output=True)
+   self.assertEqual(result.returncode,0);self.assertEqual(result.stdout.strip(),expected)
+  invalid='"outbounds":[]\n"route":{"rules":[]}\n'
+  result=subprocess.run(['awk','-v','report=1','-f',str(ROOT/'payload/starts/cn_bypass_check.awk')],input=invalid,text=True,capture_output=True)
+  self.assertNotEqual(result.returncode,0)
