@@ -133,7 +133,10 @@ stop_core(){
 }
 start_core(){
  [ -z "$configuration_core_source" ] || configuration_core_materialize || return 1
- SC_REUSE_RUNNING_CORE=${configuration_core_source:+1} SC_CONTROL_SOURCE=panel "$C/starts/panel_boot.sh" >> "$D/worker.log" 2>&1
+ # Keep FD3 through the boot handoff: native ash children cannot resolve the
+ # verified /proc FD link after explicitly closing it. The owning transaction
+ # releases its handle on commit/rollback; boot children are bounded.
+ SC_REUSE_RUNNING_CORE=${configuration_core_source:+1} SC_CORE_UPDATE_TMPFS=${core_update_tmpfs:-0} SC_CONTROL_SOURCE=panel "$C/starts/panel_boot.sh" >> "$D/worker.log" 2>&1
  secret=$(sed -n 's/^secret=//p' "$C/configs/ShellCrash.cfg" | head -1)
  tries=0
  while [ "$tries" -lt 30 ]; do
@@ -171,7 +174,7 @@ case "$act" in
    fail memory_protected; exit 1
   fi;;
 esac
-case "$act" in apply|dns|rules|policy|groupmode|grouplayout|transport) . "$C/starts/config_core.sh" || exit 1;;esac
+case "$act" in apply|dns|rules|policy|groupmode|grouplayout|transport|coreupdate) . "$C/starts/config_core.sh" || exit 1;;esac
 case "$act" in
  restorego)
   valid_id "$id" || exit 1

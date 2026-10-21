@@ -44,8 +44,8 @@
     "reason": "Shared authenticated DAV tests cover guarded complete manifests, strict baseline metadata validation, server COPY isolation and staged/final pointer uncertainty preserving previous components."
   },
   "payload/starts/panel_boot.sh": {
-    "reason": "Allow bounded cold-cache legacy preparation plus native configuration checks before judging readiness; real phase trace showed the former 90-second timeout firing before core dispatch. Preserve authenticated API, mode reset, stop cancellation and finite failure checks.",
-    "sha256": "ca051a8d18eb2f11c5b99d4da79ed97dc199a2c970c0f995dae2d8c723ccdc7d"
+    "reason": "Allow bounded cold-cache legacy preparation plus native configuration checks before judging readiness; real phase trace showed the former 90-second timeout firing before core dispatch. Preserve authenticated API, mode reset, stop cancellation and finite failure checks. Preserve the owned updater existing64M tmpfs quota through boot; clear its environment flag before legacy children and retain normal45M default. Updater restores45M on commit/rollback. No memory threshold reduction. Preserve FD3 in bounded boot child; verified-handoff failure aborts without downloading/decompressing a second candidate. Native v12 exposed an FD link failure followed by excessive tmpfs and ZeroTier OOM; full upgrade remains a separate live gate.",
+    "sha256": "19d320aa1189747b2585e4515cd4a4f3c88c8d86daca9de66f8c4e3d1894137d"
   },
   "tests/test_boot_readiness.py": {
     "reason": "Allow bounded cold-cache legacy preparation plus native configuration checks before judging readiness; real phase trace showed the former 90-second timeout firing before core dispatch. Preserve authenticated API, mode reset, stop cancellation and finite failure checks.",
@@ -84,8 +84,8 @@
     "reason": "Regression coverage for manual path rollback/pin readback, partial and stale measurements, UA choice/state isolation and truthful filtered counts."
   },
   "payload/starts/manage.sh": {
-    "sha256": "9f763d8eff429b4829530a12f822079b0ff2882d33b2f54b03ac0601e367570c",
-    "reason": "Authenticated restorego transfers its operation lock and PID to the independent dispatcher. Every new operation invalidates earlier confirmation tickets through a monotonic operation revision.; Reviewed on-demand node diagnostics, bounded root-array scan, firmware-compatible change token and explicit control coverage; original baseline preserved."
+    "sha256": "df93488d4aabab422d7d5b8c4ac85cd2a6c3daa6388ba4a2200e1845e82068c0",
+    "reason": "Authenticated restorego transfers its operation lock and PID to the independent dispatcher. Every new operation invalidates earlier confirmation tickets through a monotonic operation revision.; Reviewed on-demand node diagnostics, bounded root-array scan, firmware-compatible change token and explicit control coverage; original baseline preserved. Close FD3 only in the boot child; it reaches the parent proc-FD path without pinning the executable in descendants. Pass an enum-only temporary core-update tmpfs budget. Load the executable FD helper for coreupdate as well: native v8 proved both startup and rollback otherwise call undefined helper functions. Preserve FD3 in bounded boot child; verified-handoff failure aborts without downloading/decompressing a second candidate. Native v12 exposed an FD link failure followed by excessive tmpfs and ZeroTier OOM; full upgrade remains a separate live gate."
   },
   "tests/test_proxy_mode.js": {
     "sha256": "0d476681fd7c939c813fea8283fbb786eab2d3a1432fd0b4cedf240ef4489183",
@@ -164,8 +164,8 @@
     "reason": "Authenticated baseline-create and read-only recovery-check actions pass frontend whitelist and stock command-length budget; regression verifies actual request encoding and rejects restore execution."
   },
   "payload/starts/core_release.sh": {
-    "sha256": "bf5529f70ed0b60caf8be82d2c9bc2c7bb70fd3e2515ab0a9285901196757cae",
-    "reason": "Bound actual archive and metadata bodies, check producer status and clean partial files; preserve certificate/proxy fallback, installed SHA and Git blob authority."
+    "reason": "Bounded low-memory upgrade retains local rollback archive and 24MiB extraction reserve. Existing Lua/nixio pipes verify compressed SHA256 and pinned Git blob while parsing one bounded regular member; release checked binary before a second digest-bound archive download for existing mirror/cache/start logic. No threshold reduction or firmware dependency. Live gates recorded separately. Hash-verified binary report is authoritative when a source-wide version index describes a different build; recheck anti-downgrade against actual semver before configuration validation/start/persistence; retain index label as diagnostic metadata. Stream through authenticated configured WebDAV before public TLS sources; cached metadata must match trusted pinned blob and size. For an uncached candidate, bounded compressed-only preseed is hash-verified and read-back verified remotely before releasing that temporary copy; no manifest/pointer published before actual-binary/config validation. Full old archive and24MiB reserve retained locally throughout.",
+    "sha256": "33fd3cb5a60d94cf703653a89aa8f25c5a8c43e49b3dbc5030ed96003ea5fded"
   },
   "payload/starts/download_core.sh": {
     "sha256": "e7b363494a85dfe9e520968b488d3c3802bdd8b3645e8665b18e7995762cd7ff",
@@ -202,5 +202,9 @@
   "payload/starts/cn_bypass.sh": {
     "reason": "Preserve conservative eligibility and priority warning with one cold-status parse instead of two; native client deadline is 10s. Quoted-token/chunk-boundary parsing and invalid-config refusal remain unchanged.",
     "sha256": "690bb7a8c9c692bee47baddf15ad3c6aeccf588f179e58f6b905015bde2d97de"
+  },
+  "payload/starts/core_update.sh": {
+    "reason": "Bounded low-memory upgrade retains local rollback archive and 24MiB extraction reserve. Existing Lua/nixio pipes verify compressed SHA256 and pinned Git blob while parsing one bounded regular member; release checked binary before a second digest-bound archive download for existing mirror/cache/start logic. No threshold reduction or firmware dependency. Live gates recorded separately. Records only job/version/order inputs for precise rejection attribution. Hash-verified binary report is authoritative when a source-wide version index describes a different build; recheck anti-downgrade against actual semver before configuration validation/start/persistence; retain index label as diagnostic metadata. Streamed candidates now start through the existing validated FD reuse path; no second compressed candidate overlaps old rollback archive and executable. Keep full old local archive until readiness and Storage commit; release candidate FD before any rollback. Authenticated cached body can publish verified metadata without another archive copy. Optional local compressed cache remains unchanged and still hash-gated at future boot.",
+    "sha256": "5d42d3ec740ee525de06d6fe2fd82b78ad2bf7142830599f5b818247fc56e00a"
   }
 }

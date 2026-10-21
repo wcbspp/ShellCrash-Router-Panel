@@ -1,7 +1,7 @@
 {
   "install.sh": {
-    "reason": "Verified offline core; update uses RAM staging/rollback and one-file atomic replacement, 16MB RAM reserve and largest-file-plus-256KB disk headroom; fresh installation unchanged",
-    "sha256": "25da6e7ea299f0d8e9025a97dc1f7d7f95397d17770d5bc71da5e8a6963cf1be"
+    "reason": "Verified offline core; update uses RAM staging/rollback and one-file atomic replacement, 16MB RAM reserve and largest-file-plus-256KB disk headroom; fresh installation unchanged Native clean-device trial found only13976KiB flash available after preserved-panel removal. Budget compressed pinned core plus staged tool/application/rules and1MiB reserve instead of fixed16000KiB; never materialize uncompressed executable on flash. RAM-only compatibility check requires actual binary bytes plus24MiB before extraction and cleans its private temporary directory on every exit. Original baseline unchanged; native installation remains a separate gate. Rewrite staged local rule paths through cjson before compatibility check; text sed misses JSON-escaped slashes and points into the not-yet-installed directory.",
+    "sha256": "c8f010f226d811f86e43d496b789dd39c2072488ddc37bee14b7070d67329f10"
   },
   "tools/build_release.py": {
     "reason": "Removed obsolete per-repository release builder; tools/package.py is the shared release pipeline",
@@ -170,5 +170,9 @@
   "docs/CONTROL_TEST_RESULTS.csv": {
     "sha256": "31b757c1b3545392055ceda35b326df32fc0eae1621ddd9da3d6e12cada06f7b",
     "reason": "; On-demand node diagnostic controls and explicit pending test matrix added."
+  },
+  "ax5/core-install.sh": {
+    "reason": "Real failure preflight exposed retained runtime executable and optional rollback archive pressure. Validate actual regular member size; require binary plus24MiB reserve and1MiB helper allowance before replacement with exact candidate reclaim credit, and again after moving compressed bytes to flash. Low-memory failure keeps authoritative previous manifest and uses existing rollback. No firmware protection lowered; live gates separate. Accept immutable official CDN commit URLs containing@, consistent with core-source.sh; reject every unsafe character including embedded newlines across the entire value.",
+    "sha256": "2d531c563244c767c9e1c38865e246d189e19a0dfe0cda38757dcb924a5a3532"
   }
 }

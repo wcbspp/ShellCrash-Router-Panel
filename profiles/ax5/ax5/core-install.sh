@@ -8,7 +8,7 @@ nextsource=${3:-$SOURCE}
 case "$nextkind" in singbox|meta) ;; *) echo 'AX5 currently supports sing-box and mihomo only.' >&2; exit 2;; esac
 case "$candidate" in *.tar.gz) ;; *) echo 'Use tar.gz on AX5; UPX failed the hardware test.' >&2; exit 2;; esac
 case "$nextsource" in https://*) ;; *) exit 2;; esac
-printf '%s' "$nextsource" | grep -q '^[a-zA-Z0-9:/._%+=?-]*$' || exit 2
+case "$nextsource" in *[!a-zA-Z0-9:/._%@+=?-]*) exit 2;;esac
 case "$candidate" in /tmp/ShellCrash/*.tar.gz) ;; *) exit 2;; esac
 ownoperation=0
 if [ "${SC_CORE_JOB:-0}" != 1 ]; then
@@ -25,6 +25,14 @@ oldhash=$HASH
 wasrunning=$(lua -e 'local M=dofile("/data/ShellCrash/ax5/common.lua"); print(M.pid()>0 and 1 or 0)')
 [ "${SC_PREVIOUSLY_RUNNING:-0}" = 0 ] || wasrunning=1
 enabled=$(cat "$C/configs/enabled")
+# Candidate bytes are moved off tmpfs before extraction. Check both the
+# resulting extraction budget and current budget with that exact reclaim credit.
+core_memory_check() {
+ reclaimed=${1:-0}
+ memory=$(awk '/^MemAvailable:/{print $2;found=1} END {if(!found)print 0}' /proc/meminfo)
+ required=$(( (binary_bytes+1023)/1024 + 24576 + 1024 ))
+ [ "$((memory+reclaimed))" -ge "$required" ] || { echo 'Insufficient core extraction memory; previous core retained for rollback.' >&2;return 1; }
+}
 manifest() { printf 'KIND=%s\nVERSION=%s\nHASH=%s\nSOURCE=%s\n' "$1" "$2" "$3" "$4"; }
 finish() {
  code=$?
@@ -53,6 +61,11 @@ trap 'exit 1' INT TERM
 [ "$(tar -tzf "$candidate")" = CrashCore ] || { echo 'Invalid archive layout.' >&2; exit 2; }
 size=$(wc -c < "$candidate")
 [ "$size" -lt 18000000 ] || exit 2
+listing=$(tar -tzvf "$candidate")
+case "$listing" in -*) ;; *) echo 'Core member must be a regular file.' >&2;exit 2;;esac
+binary_bytes=$(printf '%s\n' "$listing" | awk '{print $3}')
+case "$binary_bytes" in ''|*[!0-9]*) exit 2;;esac
+[ "$binary_bytes" -ge 1000000 ] && [ "$binary_bytes" -le 40000000 ] || exit 2
 available=$(df -k "$C" | awk 'END {print $4}')
 oldsize=$(wc -c < "$C/cache/core-armv7.tar.gz")
 [ $((available*1024+oldsize-size)) -ge 524288 ] || { echo 'Insufficient persistent space; existing core kept.' >&2; exit 1; }
@@ -76,11 +89,13 @@ for n in 1 2 3 4 5 6 7 8 9 10 11 12; do
 done
 lua -e 'local M=dofile("/data/ShellCrash/ax5/common.lua");os.exit(M.pid()==0 and 0 or 1)'
 rm -f "$R/CrashCore"
+core_memory_check "$(( (size+1023)/1024 ))" || exit 1
 # Compressed archives in tmpfs consume RAM too. Persist first under the old manifest;
 # if validation fails or power is lost, that manifest restores the previous hash.
 rm "$C/cache/core-armv7.tar.gz"
 mv "$candidate" "$C/cache/core-armv7.tar.gz"
 sync
+core_memory_check 0 || exit 1
 tar -xOzf "$C/cache/core-armv7.tar.gz" CrashCore > "$R/core_new"
 chmod 700 "$R/core_new"
 if [ "$nextkind" = meta ]; then

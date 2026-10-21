@@ -4,6 +4,13 @@ ROOT=Path(__file__).resolve().parents[1];sys.path.insert(0,str(ROOT/'tools'))
 import build,bootstrap,verify_package,prepare_offline
 
 class BuildTests(unittest.TestCase):
+ def test_k2p_stream_upgrade_runtime_is_packaged(self):
+  with tempfile.TemporaryDirectory() as td:
+   target=build.build('k2p',td)
+   for name in ('core_stream.lua','core_stream_extract.lua','core_http.lua'):
+    self.assertEqual((target/'payload/starts'/name).read_bytes(),(ROOT/'profiles/k2p/payload/starts'/name).read_bytes())
+   self.assertTrue((target/'tests/test_upgrade_helper_dispatch.py').is_file())
+   verify_package.verify(target)
  def test_shared_source_roundtrip(self):
   for profile in build.PROFILES:
    with tempfile.TemporaryDirectory() as td:

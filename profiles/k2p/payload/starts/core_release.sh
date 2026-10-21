@@ -12,6 +12,18 @@ release_valid(){
  release_get sha256 "$f" | grep -Eq '^[a-f0-9]{64}$' || return 1
  return 0
 }
+release_core_version()(
+ # The source-wide version index can describe another build (e.g. full vs
+ # mini). Use the hash-verified executable's report and enforce anti-downgrade
+ # again before compatibility checking, persistence or starting the service.
+ actual=${1#sing-box version }
+ case "$actual" in ''|*[!0-9.]*)exit 2;;esac
+ [ "$actual" != "$1" ] && printf '%s\n' "$actual" | grep -Eq '^1\.[0-9]{1,2}\.[0-9]{1,3}$' || exit 2
+ actual_order=$(printf '%s' "$actual" | awk -F. '{print $1*1000000+$2*1000+$3}')
+ previous_order=$(printf '%s' "$2" | awk -F. '{print $1*1000000+$2*1000+$3}')
+ [ "$actual_order" -ge "$previous_order" ] || exit 3
+ printf '%s\n' "$actual"
+)
 native_source(){
  . "$C/configs/ShellCrash.cfg"
  [ "$crashcore" = singbox ] && [ "$cpucore" = mipsle-softfloat ] && [ "${zip_type:-tar.gz}" = tar.gz ] || return 1
@@ -87,6 +99,72 @@ release_probe(){
  rm -f "$r/ca.pem" "$r/file.json" "$r/ref.json" "$r/version" "$r/candidate.info" "$r/source.url"
  printf '{"available":false,"checked":%s}\n' "$(date +%s)" > "$D/core-check.next"; mv "$D/core-check.next" "$D/core-check.json"
  return 1
+}
+release_stream_core(){
+ # Low-memory validation path: retain the old rollback archive, never stage a
+ # new compressed archive alongside the candidate executable. The parser keeps
+ # the same 24 MiB reserve using the bounded tar header's actual size. Compressed
+ # integrity must pass before any candidate executable is run.
+ scs_info=$1;scs_output=$2;scs_receipt=$3
+ mkdir -p "$D/core-check";core_cacerts
+ . "$C/starts/mirror_lib.sh"
+ scs_size=$(release_get archive_size "$scs_info")
+ scs_blob=$(release_get git_blob "$scs_info")
+ scs_sha=$(release_get sha256 "$scs_info")
+ scs_webdav_stream(){
+  scs_dav_url=$1;scs_dav_sha=$2
+  # A configured plain-HTTP repository needs no copied TLS bundle in tmpfs.
+  # Rebuild it before any HTTPS/public fallback; never disable TLS verification.
+  case "$scs_dav_url" in http://*)rm -f "$D/core-check/ca.pem";scs_ca=/dev/null;;*)core_cacerts;scs_ca="$D/core-check/ca.pem";;esac
+  lua "$C/starts/core_stream.lua" "$scs_dav_url" "$scs_size" "$scs_blob" "$scs_dav_sha" "$scs_output" "$scs_receipt" "$scs_ca" "$C/starts/core_stream_extract.lua" "$C/configs/webdav.auth"
+ }
+ # Ordinary downloads already support authenticated WebDAV; the bounded stream
+ # must also use it. Cached metadata never authorizes a different program: both
+ # the source's immutable Git blob and archive length must match, and the stream
+ # still verifies its own SHA256, pinned blob, gzip and tar before execution.
+ if [ "$(remote_transport)" = webdav ] && remote_ready;then
+  scs_cached="$D/core-check/stream-cached.info"
+  scs_remote_sha=$scs_sha
+  if [ -z "$scs_remote_sha" ] && remote_manifest core > "$scs_cached" && release_valid "$scs_cached" &&
+     [ "$(release_get git_blob "$scs_cached")" = "$scs_blob" ] && [ "$(release_get archive_size "$scs_cached")" = "$scs_size" ];then
+   scs_remote_sha=$(release_get sha256 "$scs_cached")
+  fi
+  rm -f "$scs_cached"
+  if [ -n "$scs_remote_sha" ] && scs_remote_url=$(dav_object core "$scs_remote_sha" tar.gz) &&
+     scs_webdav_stream "$scs_remote_url" "$scs_remote_sha";then
+   printf 'stream_transport=webdav-cache\n' >> "$scs_receipt"
+   rm -f "$D/core-check/ca.pem";return 0
+  fi
+  rm -f "$scs_output" "$scs_receipt"
+  # For an uncached source, only materialize its small compressed package while
+  # no candidate executable exists. Keep the old local rollback archive intact.
+  # Publish no manifest/pointer until the actual executable has been validated.
+  scs_available=$(awk '/^MemAvailable:/{print $2}' /proc/meminfo)
+  scs_seed="$D/core-check/stream-preseed.tgz"
+  if [ "${scs_available:-0}" -ge "$(( (scs_size+1023)/1024+24576+8192 ))" ] && release_download "$scs_info" "$scs_seed";then
+   scs_seed_sha=$(sha256sum "$scs_seed" | awk '{print $1}')
+   scs_uploaded=$(remote_put core "$scs_seed" tar.gz) || scs_uploaded=''
+   rm -f "$scs_seed"
+   if [ "$scs_uploaded" = "$scs_seed_sha" ] && scs_remote_url=$(dav_object core "$scs_seed_sha" tar.gz);then
+    if scs_webdav_stream "$scs_remote_url" "$scs_seed_sha";then
+     printf 'stream_transport=webdav-preseed\n' >> "$scs_receipt"
+     rm -f "$D/core-check/ca.pem";return 0
+    fi
+   fi
+  fi
+  rm -f "$scs_seed" "$scs_output" "$scs_receipt"
+  core_cacerts
+ fi
+ scs_mirror=$(mirror_core_url "$scs_info")
+ for scs_field in mirror url fallback1 fallback2;do
+  if [ "$scs_field" = mirror ];then scs_url=$scs_mirror;else scs_url=$(release_get "$scs_field" "$scs_info");fi
+  case "$scs_url" in http://*|https://*) :;;*)continue;;esac
+  if lua "$C/starts/core_stream.lua" "$scs_url" "$scs_size" "$scs_blob" "$scs_sha" "$scs_output" "$scs_receipt" "$D/core-check/ca.pem" "$C/starts/core_stream_extract.lua";then
+   rm -f "$D/core-check/ca.pem";return 0
+  fi
+  rm -f "$scs_output" "$scs_receipt"
+ done
+ rm -f "$D/core-check/ca.pem";return 1
 }
 release_download(){
  f=$1; dest=$2

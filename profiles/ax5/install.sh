@@ -24,6 +24,18 @@ else
 fi
 available=$(df -k /data | awk 'END{print $4}')
 need=16000
+if [ "$mode" = --install ];then
+ # Flash holds only the compressed core, staged application/tool and reserve.
+ # The executable compatibility check below uses RAM, never a second flash copy.
+ archive_bytes=$(lua - "$source/CORE.json" <<'LUA'
+print(require('cjson').decode(assert(io.open(arg[1])):read('*a')).archive_size)
+LUA
+ )
+ tool_tar_bytes=$(gzip -dc "$source/vendor/ShellCrash-1.9.4.tar.gz" | wc -c)
+ source_kb=$(du -sk "$source/ax5" "$source/ui" "$source/examples" | awk '{n+=$1}END{print n}')
+ case "$archive_bytes:$tool_tar_bytes:$source_kb" in *[!0-9:]*|*::*|:*|*:) fail '安装空间预算无效';;esac
+ need=$(( (archive_bytes+tool_tar_bytes+1023)/1024 + source_kb + 1024 ))
+fi
 if [ "$mode" = --update ];then
  largest=$(find "$source/ax5" "$source/ui" -type f -exec stat -c %s {} \; | awk '$1>largest{largest=$1} END{print largest+0}')
  need=$(( (largest+1023)/1024 + 256 ))
@@ -38,10 +50,11 @@ mkdir /tmp/ShellCrash/operation.lock || fail '已有操作在进行'
 date +%s > /tmp/ShellCrash/operation.lock.time
 if [ "$mode" = --update ];then stage=$(mktemp -d /tmp/ax5-source.XXXXXX);else stage=$(mktemp -d /data/.shellcrash-install.XXXXXX);fi
 committed=0
-rollback='';pending=''
+rollback='';pending='';checkstage=''
 cleanup(){
  rc=$?
  [ -z "$pending" ] || rm -f "$pending"
+ [ -z "$checkstage" ] || rm -rf "$checkstage"
  if [ "$rc" != 0 ] && [ -n "$rollback" ];then tar -xzf "$rollback" -C / || echo '源码回退失败，请使用缓存备份恢复' >&2;fi
  if [ "$rc" != 0 ] && [ "$committed" = 1 ] && [ "$mode" = --install ];then
   /etc/init.d/shellcrash stop 2>/dev/null || true
@@ -89,12 +102,28 @@ if [ "$mode" = --install ];then
  [ "$hash" = 40d97dc43df35d326916d488f748371e2e773a59569c01e23330081274ebf65b ] || fail '内核包校验失败，未安装'
  printf '%s\n' "$hash" > "$stage/panel/cache/core.sha256"
  printf 'KIND=singbox\nVERSION=1.12.13\nHASH=%s\nSOURCE=%s\n' "$hash" "$origin" > "$stage/panel/cache/core.env"
- mkdir -p "$stage/check"
- tar -xzf "$archive" -C "$stage/check" CrashCore
- chmod 700 "$stage/check/CrashCore"
- sed "s#/data/ShellCrash/ruleset/cn.srs#$stage/panel/ruleset/cn.srs#g" "$stage/panel/configs/config.json" > "$stage/check/config.json"
- GOMEMLIMIT=12MiB GOGC=25 "$stage/check/CrashCore" check -D "$stage/check" -c "$stage/check/config.json"
- rm -rf "$stage/check"
+ [ "$(tar -tzf "$archive")" = CrashCore ] || fail '内核包成员无效，未安装'
+ binary_bytes=$(tar -tzvf "$archive" | awk '{print $3}')
+ case "$binary_bytes" in ''|*[!0-9]*) fail '内核大小无效，未安装';;esac
+ [ "$binary_bytes" -ge 1000000 ] && [ "$binary_bytes" -le 40000000 ] || fail '内核大小超限，未安装'
+ mem=$(awk '/^MemAvailable:/{print $2}' /proc/meminfo)
+ [ "${mem:-0}" -ge "$(( (binary_bytes+1023)/1024 + 24576 ))" ] || fail '内存不足以保留检查内核及24MiB工作余量，未安装'
+ checkstage=$(mktemp -d /tmp/ax5-install-check.XXXXXX)
+ tar -xzf "$archive" -C "$checkstage" CrashCore
+ chmod 700 "$checkstage/CrashCore"
+ # cjson may escape '/' in JSON; rewrite the parsed path rather than sed text.
+ lua - "$stage/panel/configs/config.json" "$stage/panel/ruleset/cn.srs" "$checkstage/config.json" <<'LUA'
+local json=require('cjson')
+local cfg=json.decode(assert(io.open(arg[1])):read('*a'))
+local changed=false
+for _,rule in ipairs(cfg.route.rule_set or {}) do
+ if rule.path=='/data/ShellCrash/ruleset/cn.srs' then rule.path=arg[2];changed=true end
+end
+assert(changed,'First-install local rule-set missing')
+local f=assert(io.open(arg[3],'w'));assert(f:write(json.encode(cfg)));assert(f:close())
+LUA
+ GOMEMLIMIT=12MiB GOGC=25 "$checkstage/CrashCore" check -D "$checkstage" -c "$checkstage/config.json"
+ rm -rf "$checkstage";checkstage=''
  mv "$stage/tool" "$T";mv "$stage/panel" "$C";committed=1
 else
  echo '更新页面与适配源码，保留订阅、内核、规则和 ZeroTier'

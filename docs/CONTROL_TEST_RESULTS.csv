@@ -153,8 +153,8 @@ AX5-OPT-core-kind-1,AX5,桌面,未执行,,,,
 AX5-OPT-core-kind-1,AX5,手机窄屏,未执行,,,,
 AX5-CTRL-core-check,AX5,桌面,部分通过,真实菜单操作及状态读回通过；版本检查未重启内核；其他异常/边界待测。,私有 ax5-normal-menu-checks,2026-10-14,本地验收补丁，未发布
 AX5-CTRL-core-check,AX5,手机窄屏,部分通过,真实菜单操作及状态读回通过；版本检查未重启内核；其他异常/边界待测。,私有 ax5-normal-menu-checks,2026-10-14,本地验收补丁，未发布
-AX5-CTRL-core-update,AX5,桌面,未执行,,,,
-AX5-CTRL-core-update,AX5,手机窄屏,未执行,,,,
+AX5-CTRL-core-update,AX5,桌面,部分通过,2026-10-21新增真实后端证据：当前源码认证HTTP 1.19.27->1.19.28正向；HTTP坏回退包SHA前置拒绝/无效任务/非法参数/忙态；真实二进制下载404及官方上游非归档内容均error后自行恢复原1.19.28、原配置和18选择，HTTPS204/CONNECT200及刷新同任务结果过；原生替换后错误架构自动回退过。端别证据共享，不扩写为该端可视点击或两核全部DNS/DAV关闭/低空间边界已过。,docs/LIVE_TEST_2026-10-21_CORE_UPGRADE.md,2026-10-21,2dbff65+uncommitted; actual core/config/selector evidence private receipts
+AX5-CTRL-core-update,AX5,手机窄屏,部分通过,2026-10-21新增真实后端证据：当前源码认证HTTP 1.19.27->1.19.28正向；HTTP坏回退包SHA前置拒绝/无效任务/非法参数/忙态；真实二进制下载404及官方上游非归档内容均error后自行恢复原1.19.28、原配置和18选择，HTTPS204/CONNECT200及刷新同任务结果过；原生替换后错误架构自动回退过。端别证据共享，不扩写为该端可视点击或两核全部DNS/DAV关闭/低空间边界已过。,docs/LIVE_TEST_2026-10-21_CORE_UPGRADE.md,2026-10-21,2dbff65+uncommitted; actual core/config/selector evidence private receipts
 AX5-CTRL-remote-enabled,AX5,桌面,部分通过,本轮实际页面交互已执行；该用例全部边界与恢复场景未齐，不算全量通过,私有实机记录 ax5-full-forms；公开范围见 LIVE_TEST_2026-10-14_TRAFFIC_AND_K2P.md,2026-10-14,本地 rc.2 候选，未发布
 AX5-CTRL-remote-enabled,AX5,手机窄屏,部分通过,本轮实际页面交互已执行；该用例全部边界与恢复场景未齐，不算全量通过,私有实机记录 ax5-full-forms；公开范围见 LIVE_TEST_2026-10-14_TRAFFIC_AND_K2P.md,2026-10-14,本地 rc.2 候选，未发布
 AX5-CTRL-mirror-base,AX5,桌面,迁移前记录，待统一包重测,关闭→测试→保存→再关闭/开启主流程完成；错误密码 HTTP401、失败重试和保存拦截已验证。独立边界项详见回归报告，未全部实机注入。,旧工作区私有测试记录，未随新仓库发布,2026-10-12,工作区候选；AX5 Mihomo 1.19.28 / K2P sing-box 1.12.13
@@ -457,8 +457,8 @@ K2P-CTRL-tool-update,K2P,桌面,未执行,,,,
 K2P-CTRL-tool-update,K2P,手机窄屏,未执行,,,,
 K2P-CTRL-core-check,K2P,桌面,部分通过,真实菜单操作及状态读回通过；版本检查未重启内核；其他异常/边界待测。,私有 k2p-normal-menu-checks,2026-10-14,本地验收补丁，未发布
 K2P-CTRL-core-check,K2P,手机窄屏,部分通过,真实菜单操作及状态读回通过；版本检查未重启内核；其他异常/边界待测。,私有 k2p-normal-menu-checks,2026-10-14,本地验收补丁，未发布
-K2P-CTRL-core-update,K2P,桌面,未执行,,,,
-K2P-CTRL-core-update,K2P,手机窄屏,未执行,,,,
+K2P-CTRL-core-update,K2P,桌面,部分通过,2026-10-21新增真实后端证据：原生v13和认证HTTP 1.12.12->1.12.13正向、配置字节/3选择/HTTPS204 CONNECT200及原现场恢复过；保留此前真实内存安全拒绝/旧核自动回退证据；不扩写为所有端别可视点击/全部异常边界完成。,docs/LIVE_TEST_2026-10-21_CORE_UPGRADE.md,2026-10-21,2dbff65+uncommitted; actual core/config/selector evidence private receipts
+K2P-CTRL-core-update,K2P,手机窄屏,部分通过,2026-10-21新增真实后端证据：原生v13和认证HTTP 1.12.12->1.12.13正向、配置字节/3选择/HTTPS204 CONNECT200及原现场恢复过；保留此前真实内存安全拒绝/旧核自动回退证据；不扩写为所有端别可视点击/全部异常边界完成。,docs/LIVE_TEST_2026-10-21_CORE_UPGRADE.md,2026-10-21,2dbff65+uncommitted; actual core/config/selector evidence private receipts
 K2P-CTRL-summary-subscription-6,K2P,桌面,实机页面通过,实际点击展开/收起并恢复原状态，内容存在且无横向溢出；嵌套说明先展开父层再复原；管理写请求0，配置/PID/boot/cron前后一致；窄屏为390px浏览器布局,LIVE_TEST_2026-10-16_READONLY_CONTROLS.md；私有control-readonly-20261016.private结果与前后指纹,2026-10-16,UI SHA256 acb33db22decf1ef；恢复按钮开放；未发布
 K2P-CTRL-summary-subscription-6,K2P,手机窄屏,实机页面通过,实际点击展开/收起并恢复原状态，内容存在且无横向溢出；嵌套说明先展开父层再复原；管理写请求0，配置/PID/boot/cron前后一致；窄屏为390px浏览器布局,LIVE_TEST_2026-10-16_READONLY_CONTROLS.md；私有control-readonly-20261016.private结果与前后指纹,2026-10-16,UI SHA256 acb33db22decf1ef；恢复按钮开放；未发布
 K2P-CTRL-remote-enabled,K2P,桌面,部分通过,本轮实际页面交互已执行；该用例全部边界与恢复场景未齐，不算全量通过,私有实机记录 k2p-full-forms；公开范围见 LIVE_TEST_2026-10-14_TRAFFIC_AND_K2P.md,2026-10-14,本地 rc.2 候选，未发布

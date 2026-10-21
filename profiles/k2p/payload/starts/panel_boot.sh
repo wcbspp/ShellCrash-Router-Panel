@@ -44,10 +44,19 @@ if [ "$1" = boot ];then
  fi
  SC_BOOT_DELAY_APPLIED=1;export SC_BOOT_DELAY_APPLIED
 fi
-mount -t tmpfs -o remount,rw,size=45M tmpfs /tmp
+# An owned core-update worker retains its rollback archive until commit. Keep
+# that worker's existing64M temporary budget through boot; it restores45M after
+# commit/rollback. This is a quota ceiling, not a memory-protection reduction.
+case "${SC_CORE_UPDATE_TMPFS:-0}" in 1)sc_boot_tmpfs_limit=64M;;*)sc_boot_tmpfs_limit=45M;;esac
+unset SC_CORE_UPDATE_TMPFS
+mount -t tmpfs -o remount,rw,size="$sc_boot_tmpfs_limit" tmpfs /tmp
 # Configuration transactions can supply the already verified executable without an archive.
 printf '%s core_reuse=%s executable=%s\n' "$(date '+%m-%d %H:%M:%S')" "${SC_REUSE_RUNNING_CORE:-0}" "$(test -x /tmp/ShellCrash/CrashCore && echo 1 || echo 0)" >> /tmp/sc-admin/events.log
-if [ "$SC_REUSE_RUNNING_CORE" != 1 ] || [ ! -x /tmp/ShellCrash/CrashCore ];then
+if [ "$SC_REUSE_RUNNING_CORE" = 1 ];then
+ # An owned transaction already holds its verified binary. Never stage a
+ # second archive if descriptor handoff fails: abort to its rollback instead.
+ [ -x /tmp/ShellCrash/CrashCore ] || { printf '%s Verified core handoff unavailable; refusing archive fallback\n' "$(date '+%m-%d %H:%M:%S')" >> /tmp/sc-admin/events.log;exit 1; }
+else
  "$CRASHDIR/starts/download_core.sh" || exit 1
 fi
 [ -f "$CRASHDIR/configs/panel-disabled" ] && exit 0

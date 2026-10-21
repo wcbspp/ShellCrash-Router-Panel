@@ -1,3 +1,17 @@
+2026-10-21 RC3最终检查：两机完整备份读回校验与现场保持通过；根138/AX92 Python+27JS/K212 Python+29JS、构建与基线通过。AX16路半小时，K23路约6分钟触及测试安全余量停流；均无新增kill，但完整高负载不算通过。用户明确不等待24h，原业务未验项保留。见[最终检查](RC3_FINAL_CHECK.md)与[RC3限制](RELEASE_RC3.md)。
+
+2026-10-21私有RC3收尾：用户明确不再等待满24小时。实际未满24h、AX持续负载仅16路通过、K负载本轮结论与业务边界未全验均如实保留，不宣布全P0通过。两机新装/跨版、恢复及新增HTTP失败边界证据沿用。见[RC3说明](RELEASE_RC3.md)。以下历史状态不覆盖此决定。
+
+2026-10-21 17:35最新：两机原生及认证HTTP真实跨版本正向已通过并恢复现场；AX HTTP下载404/非归档自动回退、K来源预检失败边界、AX桌面/窄屏恢复弹窗只读边界已补齐。AX16路真实代理持续半小时无重启/新增kill，仅部分负载通过，K阶段进行中；完整负载/业务边界/最终连续24h仍开放，非RC3。详见[本批边界记录](LIVE_TEST_2026-10-21_HTTP_BOUNDARIES.md)。以下为保留的历史记录，进行中状态以本段和私有最新status为准。
+
+Latest AX current-source HTTP positive completed: real1.19.27->1.19.28, config bytes/18 selectors/formal readiness/explicitHTTPS204 CONNECT200 and original restore/sourceSHA verified. Native post-replacement incompatible-architecture rollbackv4 also passed. Root138/AX92Python+27JS/build/baseline pass. HTTP failure/load/memory/business/final24h gates remainOPEN; notRC3.
+
+2026-10-21 AX5: extraction memory and pinned CDN URL guards fixed; root138/AX92Python+27JS/build/baseline pass. Genuine incompatible-architecture post-replacement product rollback restored1.19.28, exact configuration and18 selectors with explicitHTTPS204 CONNECT200; independent recovery verified. Current-source HTTP positive is running. Remaining failure/load/business/24h gates OPEN; notRC3.
+
+2026-10-21 12:50最新：K2P原生及认证HTTP网页后台真实1.12.12->1.12.13均通过，3选择/配置字节/显式HTTPS204 CONNECT200及最终Storage原现场恢复核对；FD修复后无新增内核kill。根138/K212 Python+29JS/build/baseline通过。AX已过新装和两入口正向，替换后失败回退、持续负载/内存保护/业务边界和最终24h仍待验，非RC3。
+
+2026-10-21 12:40：K v12启动FD链接失效，后续额外归档路径期间OOM杀ZeroTier；用户恢复通道，原1.12.13/config/Storage与显式HTTPS204 CONNECT200已核对恢复。修复FD继承并禁止复用失败时下载归档回补，根138/K212 Python+29JS/build/baseline通过；真实v13进行中，完整升级仍待验。见[跨版本记录](LIVE_TEST_2026-10-21_CORE_UPGRADE.md)。
+
 # 当前验证状态
 
 2026-10-16 按需节点诊断已接通：列表保留一次内核HTTPS，点击后分别测原生Ping/HTTPS且串行。AX当前mihomo、K当前sing-box真实页面通过，K示例67.772ms/463ms；AX目标无ICMP响应而HTTPS630ms。采样最低可用AX16540/K17764KiB，配置/PID/boot/cron保持。根122/AX87 Python27JS/K198 Python29JS通过；桌面正常及实际未知key拒绝/390布局通过，新增控件表保留部分通过，不冒称全部边界或AX切核实测。见[节点诊断](LIVE_TEST_2026-10-16_NODE_DIAGNOSTIC.md)。原最终RC门槛仍OPEN。
@@ -41,7 +55,7 @@
 | 应用备份 | 两机客户端导出与 WebDAV 回读通过 SHA256、gzip CRC 和 macOS 原生 tar 解压；远端记录实际面板、工具及内核版本；两机内核包回读 SHA256/gzip/tar 通过，每机仅一份应用备份 |
 | 模式后端 | 两机 rule/direct/global 往返、核心 API 与防火墙接管检查通过，恢复 rule；AX5 直连 Google 未建立核心连接，未算访问成功；页面及真实 LAN 客户端仍待验收 |
 | 控件清单 | 348 项，含桌面和窄屏共 696 个执行位；未逐项完成，不能用自动回归代替实机验收 |
-| 干净设备安装 | 待执行；现用设备升级不作为干净安装通过证据 |
+| 干净设备安装 | K2P原生首次安装及现场恢复已通过；AX5于10月21日移除部署后实际首次安装通过，原配置/18组选择/HTTPS204恢复，见当日记录；均不以普通覆盖升级冒充 |
 | 重启、恢复、跨核及长期 | 历史一次 K2P 整机重启的资源失败由守护恢复；本轮开机约 134 秒启动，已另列启动资源与缓存问题；AX5 重启、完整应用恢复及长期验收待完成 |
 | 公开 Release | 未发布；新仓库暂时私有 |
 
