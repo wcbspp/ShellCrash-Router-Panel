@@ -8,4 +8,4 @@ K2P supports only service-provider direct subscriptions and same-provider compat
 
 Preserve current user configuration before live tests, use a single K2P management client, and restore tested settings with evidence. Keep credentials, private subscriptions, device identifiers and backup archives out of source and public artifacts. Screenshots must be reviewed for sensitive content.
 
-Public releases require documented installation, update, recovery, reboot, routing/DNS and menu/button tests on both profiles. A passed mock or offline test is not a passed device test. Do not delete old repositories during the migration; the user approved a fresh project without old commits, not premature loss of recovery sources.
+Public releases require documented installation, update, recovery, reboot, routing/DNS and menu/button tests on both profiles. A passed mock or offline test is not a passed device test. The user authorized retiring the two legacy repositories for the public 1.0 release. Preserve verified Git mirrors, release assets and metadata before deletion; keep recovery backups private.

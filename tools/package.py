@@ -11,6 +11,6 @@ for profile in PROFILES:
   for p in sorted(src.rglob('*')):
    if not p.is_file() or '__pycache__' in p.parts or p.suffix=='.pyc':continue
    if p.is_symlink():raise ValueError('Symlink in package')
-   data=p.read_bytes();i=tarfile.TarInfo(name+'/'+str(p.relative_to(src)));i.size=len(data);i.mode=0o755 if p.suffix=='.sh' else 0o644;t.addfile(i,io.BytesIO(data))
+   data=p.read_bytes();i=tarfile.TarInfo(name+'/'+str(p.relative_to(src)));i.size=len(data);i.mode=0o755 if p.suffix in ('.sh','.command') else 0o644;t.addfile(i,io.BytesIO(data))
  print(dest)
 (dist/'SHA256SUMS').write_text(''.join(f'{hashlib.sha256(p.read_bytes()).hexdigest()}  {p.name}\n' for p in sorted(dist.glob('shellcrash-router-panel-*-'+version+'.tar.gz'))))

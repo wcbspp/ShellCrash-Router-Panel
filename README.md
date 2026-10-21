@@ -1,241 +1,127 @@
 # ShellCrash Router Panel
 
-给 ShellCrash 加一个轻量网页入口。在路由器原有后台里选节点、改分流、更新订阅、查看运行状态；需要查看完整策略组与连接时，再打开高级面板。
+在路由器原来的管理页里，用网页管理 ShellCrash：选节点、更新订阅、设置分流和 DNS，查看内存与日志，需要时再打开高级面板。
 
-一份源码，分别生成 **小米 AX5** 和 **K2P / Padavan** 安装包。两种机型沿用各自的登录、启动和存储方式。路由器上不用装 Node.js、Python 或额外的网页服务。
+**1.0 正式版**，支持 Redmi AX5 和 K2P / Padavan。两个旧项目合并到这里，以后按机型下载安装包即可。已有设备先看[更新说明](docs/DEPLOYMENT.md#已有面板怎么更新)，不要把另一机型的文件直接覆盖上去。
 
-> 当前为私有候选版 `1.0.0-rc.3`。本次按用户要求不等待满24小时；完整高负载与部分业务边界仍有未验项，详见 [RC3说明](docs/RELEASE_RC3.md)。仓库保持私有，使用对应机型安装包中的电脑部署助手；已有设备先保存备份。匿名在线下载命令待仓库公开后使用。
+[下载1.0](https://github.com/wcbspp/ShellCrash-Router-Panel/releases/tag/v1.0.0) · [安装说明](docs/DEPLOYMENT.md) · [备份与恢复](docs/BACKUP.md) · [与旧版相比](docs/COMPARISON.md)
 
-## 支持哪些设备
+## 先确认设备
 
-| 项目 | 小米 AX5 | K2P |
-|---|---|---|
-| 已验证硬件 | Redmi AX5 / RA67，ARMv7 | K2P / MT7621，MIPSLE，16 MB 闪存 |
-| 已验证固件 | 原厂开发版 **1.0.105** | Padavan **4.4.198.9-100_20220804** |
-| 内核基线 | sing-box mini **1.12.13**；可切换 Mihomo **v1.19.28** | sing-box mini **1.12.13** |
-| ShellCrash 基线 | **1.9.4release** | **1.9.4release** |
-| 管理入口 | 小米后台顶部 ShellCrash | Padavan 高级设置 → ShellCrash |
-| 配置保存 | `/data/ShellCrash/configs` | `/etc/storage/ShellCrash/configs`，写入 Storage |
-| 内核保存 | 本地已校验缓存 | 默认运行在 RAM；重启后需恢复内核 |
-| 守护 | procd 或每分钟检测，只开一套 | ShellCrash 原生每分钟守护 |
+| | Redmi AX5 | K2P |
+| --- | --- | --- |
+| 验证过的硬件 | RA67，ARMv7 | MT7621，16 MB 闪存 |
+| 验证过的固件 | 小米原厂开发版 **1.0.105** | Padavan **4.4.198.9-100_20220804** |
+| 支持的内核 | sing-box mini 1.12.13、Mihomo 1.19.28 | sing-box mini 1.12.13 |
+| 页面入口 | 小米后台顶部 **ShellCrash** | 高级设置 → **ShellCrash** |
+| 订阅 | 服务商直取，也保留 ShellCrash 转换方式 | 服务商直取、同源兼容下载 |
+| 保存位置 | `/data/ShellCrash` | `/etc/storage/ShellCrash`，保存到 Storage |
 
-其他型号、其他固件以及 K2P 32 MB 改版暂未验证。机型相同不代表固件接口相同，安装脚本会检查环境后再写入。
+**这不是固件，不会替你刷机或开启 SSH。** 其他型号、其他固件、K2P 32 MB 改版没有逐一验证。sing-box mini 不支持 SSR，换面板也不会增加内核没有的协议。
 
-**面板安装包不含路由器固件，也不会刷机。** 固件与面板是两件事；已运行上述固件的设备不需要为了装面板重新刷机。固件参考和核验范围见 [固件与环境](docs/FIRMWARE.md)。
+## 安装前准备
 
-## 先准备好什么
+- 电脑连接路由器局域网，路由器已开启 SSH。AX5 通常用 `root`，K2P 通常用 `admin`，以你的设置为准。
+- 电脑安装 **Python 3.9+ 和 OpenSSH**。macOS / Linux 可直接使用；Windows 请在 WSL 里运行。路由器不用安装 Python、Node.js 或额外网页服务。
+- 保存固件配置。助手还会把本次修改前的文件备份到电脑的 `~/ShellCrash-backups/`。
+- K2P 先关闭原“科学上网”插件的运行开关，保留其配置，安装时退出其他管理页面。
+- 订阅或节点自己准备。K2P 首次安装支持兼容的 sing-box JSON 或 AnyTLS 链接；订阅输入不回显。
 
-- 已开启 SSH 的路由器。AX5 使用 `root`，K2P 通常为 `admin`，以设备实际设置为准。
-- 浏览器可以正常登录路由器后台。K2P 后台只允许一个管理客户端，安装或测试时退出其他管理页面。
-- 电脑端安装助手需要 **Python 3.9+、OpenSSH**。macOS / Linux 可直接运行；Windows 使用 WSL。
-- 在线安装时，电脑能访问 GitHub，路由器能访问 ShellCrash 内核源。访问不了时使用离线方式。
-- K2P 先关闭原“科学上网”插件的运行开关，避免重复接管流量；保留其配置即可。
-- 首次安装前保存固件配置。安装助手还会把本次修改前的备份存到电脑的 `~/ShellCrash-backups/`（可用 `--backup-dir` 修改），文件中可能包含私人配置，请自行保管。
+设备所需命令和存储要求见[固件与依赖](docs/FIRMWARE.md)。缺依赖、空间不足或检测到未知部署时，安装器会停止，不强行覆盖。
 
-AX5 安装预检要求可用内存至少 24 MB，首次安装 `/data` 剩余至少 16 MB；源码更新使用 RAM 暂存，需要 16 MB 可用内存，持久空间按最大源码文件加 256 KB 余量计算；不启动第二个内核。K2P 的 Storage 仅 512 KiB，安装和保存都要检查压缩后大小，不能按 RAM 余量判断持久空间够不够。
+## 在线一键安装
 
-## 安装
-
-先选机型，再选在线或离线方式。用户名、地址、端口都可以修改，不需要把密码写进命令。
-
-### 在线一键部署（电脑端）
+**在电脑终端运行，不是在路由器 SSH 里运行：**
 
 ```sh
-curl -fL https://raw.githubusercontent.com/wcbspp/ShellCrash-Router-Panel/main/bootstrap.py -o bootstrap.py
-python3 bootstrap.py ax5 --router 192.168.31.1
+curl -fL https://raw.githubusercontent.com/wcbspp/ShellCrash-Router-Panel/v1.0.0/bootstrap.py -o shellcrash-install.py
+python3 shellcrash-install.py
 ```
 
-K2P：
+按提示选 AX5 或 K2P，再选安装、更新或只检查。助手核对下载包 SHA256 后才进入设备安装流程。密码由 SSH 自己询问，不必写进命令。
+
+已知地址时也可直接指定；地址改过就填实际地址：
 
 ```sh
-python3 bootstrap.py k2p --router 192.168.123.1
+python3 shellcrash-install.py ax5 --router 192.168.31.1
+python3 shellcrash-install.py k2p --router 192.168.123.1
 ```
 
-在线助手下载固定版本安装包，核对 SHA256、检查归档路径与文件，再通过 SSH 部署。SSH 密码由 OpenSSH 自己询问；K2P 首次安装的订阅输入不回显。
+自定义用户名和端口加 `--user`、`--port`，只检查加 `--check-only`。GitHub 下载不通时，从 [Releases](https://github.com/wcbspp/ShellCrash-Router-Panel/releases/tag/v1.0.0) 下载对应机型 `.tar.gz`，解压后运行 `python3 start.py`。macOS 也可双击 `Install.command`。
 
-只想先检查环境，可以在命令末尾加 `--check-only`。自定义 SSH 端口加 `--port 22`，用户名加 `--user admin`。
+## 离线一键安装
 
-### 离线一键部署（电脑端）
-
-先在有网络的电脑上准备对应机型的安装包与固定版本内核：
+先在**有网络的电脑**上准备，二选一：
 
 ```sh
-python3 tools/prepare_offline.py ax5
-# 或：python3 tools/prepare_offline.py k2p
+python3 shellcrash-install.py ax5 --prepare-offline
+python3 shellcrash-install.py k2p --prepare-offline
 ```
 
-把生成的离线目录复制到连接路由器的电脑，进入目录执行：
+助手下载并分别校验面板和固定版本内核，生成 `shellcrash-router-panel-机型-offline-1.0.0` 文件夹。在已解压的安装包里，也可运行 `python3 start.py --prepare-offline`。
+
+把**整个文件夹**带到连接路由器的电脑，进入文件夹运行：
 
 ```sh
-python3 deploy.py --router 192.168.31.1 --core-file core-offline.tar.gz
+python3 start.py
 ```
 
-K2P 首次离线安装还需要本地节点文件，支持兼容的 sing-box JSON 或 AnyTLS 链接：
+内核会自动从本地文件读取。K2P 离线首次安装还要带上本地节点文件，按提示填写路径，不要填订阅网址。离线安装不会为了获取内核和节点访问公网；高级面板和订阅额外资源另算。K2P 内核运行在 RAM，重启后的离线恢复需要另行准备，见[离线注意事项](docs/DEPLOYMENT.md#离线时要注意什么)。
 
-```sh
-python3 deploy.py --router 192.168.123.1 --core-file core-offline.tar.gz --nodes-file /path/to/nodes.json
-```
+## 实机页面
 
-离线部署不会为了安装内核或读取本地节点而访问公网。K2P 安装助手先生成基础配置；若要使用服务商的完整策略和规则，安装后从配置页更新兼容的完整 sing-box 订阅。
+以下是统一版在两台设备上的实际页面。节点名、延迟、内存和运行时间是截图当时的状态，不是性能保证。
 
-AX5 首次离线安装保持直连，之后在面板填写订阅。K2P 的离线内核仅用于当前启动；要在重启后离线恢复，需另外配置外部持久存储，或已开启并验证的内网 WebDAV。[详细步骤](docs/DEPLOYMENT.md)
+**AX5 · 小米原厂后台**
 
-### 手动部署（路由器端）
+![AX5实机轻量面板](docs/assets/ax5-desktop.jpg)
 
-下载并解压对应机型的 Release 包，核对 `SHA256SUMS`，将解压目录上传到路由器 `/tmp`。登录 SSH，进入安装目录。
+**K2P · 轻量面板**
 
-AX5：
-
-```sh
-sh install.sh --check
-sh install.sh auto
-```
-
-离线安装 AX5 时，先上传对应内核包，再执行：
-
-```sh
-SC_OFFLINE_CORE=/tmp/core-offline.tar.gz sh install.sh auto
-```
-
-K2P 需要先在电脑生成配置和管理密钥，然后上传并安装。脚本参数及恢复方法见 [手动部署](docs/DEPLOYMENT.md#手动部署)。不要随意把另一台设备的配置和密钥复制过来。
-
-安装完成后正常登录路由器后台。面板复用后台登录权限，不另设一套网页密码。遇到未知 ShellCrash 部署、自定义启动钩子或不兼容固件时，安装助手会停止，不能通过删掉检查强行覆盖。
-
-## 已有面板怎么更新
-
-AX5 仍用 `deploy.py`，安装器识别本项目已有部署后更新源码。K2P 使用单独入口：
-
-```sh
-python3 update.py --router 192.168.123.1 --check-only
-python3 update.py --router 192.168.123.1
-```
-
-K2P 更新先检查本项目与工具版本，下载应用备份到电脑，再覆盖源码并保存 Storage；不覆盖配置、内核或启动钩子。检查失败不强行安装。两台现用设备已完成源码升级验证；首次安装、完整恢复及全部控件验收范围见测试记录。
-
-## 页面预览
-
-### 小米 AX5
-
-从小米原厂后台顶部的 **ShellCrash** 进入。原厂路由设置和轻量面板使用各自的页面，入口位置如下。
-
-<img src="docs/assets/ax5-native-settings.jpg" width="960" alt="AX5 小米原厂后台与顶部 ShellCrash 入口，旧项目截图">
+![K2P实机轻量面板](docs/assets/k2p-desktop.jpg)
 
 <details>
-<summary>查看 AX5 轻量面板与手机版</summary>
+<summary>手机页面</summary>
 
-统一项目的轻量面板：
-
-<img src="docs/assets/ax5-desktop.jpg" width="960" alt="AX5 当前轻量面板">
-
-<img src="docs/assets/ax5-mobile.jpg" width="280" alt="AX5 手机轻量面板">
+<img src="docs/assets/ax5-mobile.jpg" width="280" alt="AX5实机手机页面">
+<img src="docs/assets/k2p-mobile.jpg" width="280" alt="K2P实机手机页面">
 
 </details>
 
-### K2P / Padavan
+[更多截图与来源](docs/SCREENSHOTS.md)
 
-从左侧 **高级设置 → ShellCrash** 进入，保留 Padavan 的导航和系统信息。下面是旧项目的后台集成布局示意，节点与数值为示例数据。
-
-<img src="docs/assets/k2p-native-layout.png" width="960" alt="K2P Padavan 原后台中集成 ShellCrash 的布局示意">
-
-<details>
-<summary>查看 K2P 当前轻量面板与手机版</summary>
-
-统一项目实机页面：
-
-<img src="docs/assets/k2p-desktop.jpg" width="960" alt="K2P 当前轻量面板">
-
-<img src="docs/assets/k2p-mobile.jpg" width="280" alt="K2P 手机轻量面板">
-
-</details>
-
-[更多界面及截图来源](docs/SCREENSHOTS.md)。旧项目图片用于展示入口和界面演变，当前功能以统一项目的说明为准；截图数值不代表设备规格或性能保证。
-
-## 可以做什么
+## 日常可以做什么
 
 | 页面 | 常用操作 |
-|---|---|
-| 首页 | 查看当前出口、版本、运行时长、实时上下行与本次启动累计流量、内存、自启与守护；启动、停止、重启；切换流量模式 |
-| 节点 | 按真实策略组查看成员；切换自动组或固定节点；搜索全部节点；查看协议与延迟 |
-| 常用网站分流 | Google、ChatGPT、国外 AI、GitHub 分别指定组、节点或直连；四项统一保存、取消 |
-| 检测 | 常用网站网络连通与 HTTPS 耗时；自动显示国内 / 国外网站出口及归属地，支持手动刷新与 IPv6 |
-| 配置 | 更新订阅、调整 User-Agent、排除节点；显示当前配置来源与下次更新参数、服务商提供的余量及到期时间；两机可切换 Redir / 混合接管，应用时短暂重启 ShellCrash |
-| 规则 | 查看内核实际规则、策略组和连接；添加额外域名分流 |
-| DNS | 真实 DNS / Mix、Fake IP 例外、当前设置查询与保存 |
-| 备份 | WebDAV 测试与保存、完整应用备份、基础恢复点详情、应用与配置导出 |
-| 监控与日志 | 内存趋势、保护阈值、安全清理、异常记录、操作与内核日志 |
-| 高级面板 | sing-box 用 YACD，Mihomo 用 Yacd-Meta；共用当前内核与策略选择 |
+| --- | --- |
+| 节点 | 按实际策略组切换、搜索，按需分别看 Ping 和 HTTPS 耗时 |
+| 检测 | 检查常用网站连接，区分超时、DNS、TLS 等问题 |
+| 配置 | 更新订阅，设置 User-Agent、节点过滤和内核来源 |
+| 分流与 DNS | 常用网站指定出口，额外域名覆盖，真实 DNS / Mix 与 Fake IP 例外 |
+| 备份 | WebDAV 测试和保存，完整备份、独立基础备份，同机型同内核恢复 |
+| 监控与日志 | 内存趋势、保护阈值、清理、异常与内核日志 |
+| 高级面板 | sing-box 使用 YACD，Mihomo 使用 Yacd-Meta，共用当前内核与选择 |
 
-页面只做管理，实际代理和自动择优由内核执行。关掉网页后，自动组照常工作。首页“停止”会同步暂停恢复，避免守护马上把服务重新拉起。
+关掉网页，代理和内核自动择优仍会运行。轻量测速不再连测三次；HTTPS 耗时包含连接和握手，与 Ping、已有连接后的使用体验不是同一个数值。
 
-### 订阅和分流如何共用
+## 几个容易弄混的地方
 
-默认从填写的原服务商地址获取订阅，由 ShellCrash 下载；工具获取失败时可以尝试同地址的面板兼容下载。直接下载不预检转换服务器，也不会自动把订阅交给第三方。
+- **直连、规则、全局 TCP**只描述本机接管范围。全局 TCP 不等于全协议 VPN，不保证普通 UDP 和 IPv6 一并代理；切模式后用新连接判断。
+- **K2P 不提供第三方订阅转换。** AX5 使用转换服务时，对方会收到订阅地址，请自行选择可信服务。
+- **应用导出不等于完整恢复。** 完整备份包括程序、配置、匹配内核和运行资源；恢复前检查机型、内核、组件与设备条件，再要求二次确认。
+- **小内存设备不适合无限加压。** AX5 实测16路连接半小时；K2P加到23路后触及测试安全余量，主动停流。不能当作64路持续高负载通过。连续24小时和部分业务边界仍未覆盖，见[1.0使用范围](docs/RELEASE_1.0.md)。
 
-AX5 保留第三方转换方式，服务与模板默认沿用 ShellCrash 当前选择，允许覆盖。转换前先发不含订阅的预检请求；真正转换会把订阅地址交给所选服务，启用轮询可能交给多家服务。请自行判断这些服务是否可信。
+## 开发与来源
 
-K2P **只保留服务商直取与同源兼容下载**，不展示第三方转换服务或规则模板。兼容当前 sing-box 的完整 JSON 可以保留策略组、自动组、route 与受支持的 rule-set；只返回节点时使用本机基础分流。sing-box mini 不支持 SSR，不能靠更换面板解决协议支持问题。
-
-完整配置通过校验后保留订阅策略和规则，本机 DNS、接管入口和额外域名覆盖单独保留。优先顺序是 **自定义覆盖 → 订阅规则 → 默认出口**。“跟随订阅规则”撤销覆盖；“默认代理”则是明确指定该组，含义不同。节点更新后，固定节点不存在时会按已实现的兼容策略重置到默认代理并提示，不把旧节点强塞进新配置。
-
-模板所需资源仍受格式、版本、校验和内存预算约束。不是所有 OpenClash 模板都能直接用于这两台设备；不兼容时保留当前配置。K2P 内存不足且有同数据源的已校验缓存时可继续使用旧规则集，并明确标记“本次未更新数据”。
-
-### 三种流量模式
-
-- **规则分流**：新连接按当前分流规则选择出口。
-- **直连上网**：暂停面板的透明代理与 DNS 接管；已有连接和客户端 DNS 缓存可能需要重新建立。上游网络仍可能有其他代理。
-- **全局代理**：接管的外网流量使用默认代理。Redir 接管 TCP；两机的混合方式还接管手机、电脑的 UDP。内网、管理和防循环例外继续保留。
-
-流量模式决定出口，接管方式决定哪些连接进入内核。IPv6 不在当前接管范围内，不能把网站能否打开当作模式是否生效的唯一依据。切换后用新连接观察，旧连接可能继续走原出口。
-
-### 两机的混合接管
-
-配置页可选 **Redir · TCP** 或 **混合 · TCP + UDP**。修改后按钮高亮，点击“应用并重启 ShellCrash”才生效；同值不重启，服务停止时只保存、不自动启动。使用 ShellCrash 的 `redir_mod` 设置和同一启动入口，网页与命令行共用设置。
-
-AX5 需要 Mihomo，K2P 需要受支持的 sing-box mini；两者均需 TUN 与标记路由支持，TCP 走 Redir，手机、电脑的 UDP 走 `system` TUN 并按现有规则分流。路由器程序自身的 UDP 不走代理，DNS 仍接管，避免把 ZeroTier、VPN 的底层连接再次送进代理。所选节点仍需支持 UDP；开启混合不会自动增加 Geosite 或改写订阅规则。
-
-切换前检查能力、内存和路由冲突，启动失败会尝试恢复原方式。K2P 在当前 Padavan 固件和 mini 1.12.13 上已实测切换混合。实机路由标记通过，真实客户端 UDP 的完整验收仍待完成。
-
-<img src="docs/assets/ax5-interception-mode.png" width="900" alt="AX5 配置页的混合接管设置">
-
-### 高级面板与备份
-
-高级面板按需下载到 RAM，重启后首次打开可能重新下载。本页打开高级面板后暂停轻量操作与测速，返回时重新读取内核选择；其他设备独立打开的面板仍可能操作同一内核。比例默认 90%，可调整，浏览器记住选择。
-
-WebDAV 默认关闭。填写地址、账号、密码，先点“测试连接”；通过后保存开启。更换参数需要重新测试，取消勾选并保存即可关闭。关闭或未验证时，不连接远端备份。HTTP 适合可信内网，公网使用 HTTPS。
-
-WebDAV 完整备份保存应用、当前内核和运行资源的校验清单；基础版本在折叠区手动创建或替换，与日常备份分开保存；是否另附开发源码以清单为准。所有组件上传、回读校验通过后才替换最新备份。本机导出仍为应用与配置 **`.tar.gz`**，含 `backup.info`、`RESTORE.txt` 和中文 `使用说明.txt`；内核及临时资源另存。完整组件可在电脑用 `tools/backup_bundle.py` 校验和组装 ZIP，不占路由器打包内存。版本按本机成功更新的记录恢复，远端旧备份不能让设备自动降级。一键导入和回滚仍待完成，当前按包内说明人工恢复。[备份与恢复](docs/BACKUP.md)
-
-## 上游与开发
-
-本项目依托 [ShellCrash](https://github.com/juewuy/ShellCrash)，不替代它的终端菜单。固定的工具包、原始许可和校验记录位于 `vendor/`。
-
-- [ShellCrash 1.9.4](https://github.com/juewuy/ShellCrash/releases/tag/1.9.4)：工具与脚本基线。
-- [sing-box](https://github.com/SagerNet/sing-box)：代理内核；mini 构建来自 ShellCrash 工具源。
-- [Mihomo](https://github.com/MetaCubeX/mihomo)：AX5 的另一种内核。
-- [YACD](https://github.com/haishanh/yacd) / [Yacd-Meta](https://github.com/MetaCubeX/Yacd-meta)：高级面板。
-- [rt-n56u](https://github.com/hanwckf/rt-n56u)：Padavan 接口参考，不代表所列固件已核实对应源码提交。
-- [XMiR-Patcher](https://github.com/openwrt-xiaomi/xmir-patcher)：小米 SSH 环境参考，与面板安装分开。
+公共页面和脚本在 `shared/`，固件接口在 `profiles/`。构建后生成各自安装包，路由器不运行模板编译器。开发测试需要 Node.js 和 `lupa==2.8`，这些不是路由器安装依赖。
 
 ```sh
+python3 -m pip install lupa==2.8
 python3 tools/build.py all
 python3 tools/check_baseline.py
-python3 tools/run_tests.py all
 python3 -m unittest discover -s tests
+python3 tools/run_tests.py all
 python3 tools/package.py
 ```
 
-`shared/` 放公共页面与脚本，`profiles/` 保留固件接口与能力差异。构建时只选出对应机型的代码，路由器不处理模板，不同时运行两套后端。[源码结构](docs/ARCHITECTURE.md)
-
-上线前测试包含每个菜单、按钮、桌面和窄屏视图，以及订阅、分流、DNS、下载、备份、守护、重启和回退。自动测试通过不等于实机验收完成，执行记录分别列出通过、失败与未执行。[测试计划](docs/TEST_PLAN.md) · [控件用例](docs/CONTROL_TEST_CASES.csv) · [执行记录](docs/CONTROL_TEST_RESULTS.csv) · [当前状态](docs/TEST_STATUS.md)
-
-GPL-3.0-only。第三方组件与商标沿用各自许可，见 [LICENSE](LICENSE)、[NOTICE](NOTICE.md)。公开包不包含私人订阅、运行配置、密码、设备身份、内核二进制或固件。
-
-首页流量统计的是内核处理量，包含代理与内核 DIRECT；绕过内核的流量不计入，也不能等同订阅消耗。连接明细按需查询当前活动连接，不保存客户端历史。
-
-本轮实测范围见 [查询、导出、DNS 与流量增量验收](docs/LIVE_TEST_2026-10-14_ACCEPTANCE_CONTINUATION.md) 和 [国内 IP 兜底修复](docs/LIVE_TEST_2026-10-14_DOMESTIC_FALLBACK.md)。全量控件与场景验收尚未完成，新候选发布暂停。
-
-国内直连加速的作用范围、规则优先级与流量口径见[使用说明](docs/DOMESTIC_BYPASS.md)。
-
-出口 IP、订阅余量与本轮资源清理见[实机记录](docs/LIVE_TEST_2026-10-14_IP_QUOTA_RESOURCES.md)。余量只读服务商数据，不使用内核累计量推算；内核就绪、订阅成功加载后自动查询一次。没有持续服务商轮询。出口 IP 随页面加载自动检测，首次打开检测页不重复请求。最新行为见[自动同步与归属地记录](docs/LIVE_TEST_2026-10-14_AUTOMATIC_QUOTA_GEO.md)。
-
-最新实机验收与已知限制：[重启、启动资源缓存和远端备份](docs/LIVE_TEST_2026-10-14_REBOOT_REMOTE.md)。K2P 开机延迟在资源下载前执行；WebDAV 关闭时不连接。备份页从远端读取最新记录，可手动刷新。
+基于 [ShellCrash](https://github.com/juewuy/ShellCrash) 1.9.4release；内核来自 [sing-box](https://github.com/SagerNet/sing-box) / [Mihomo](https://github.com/MetaCubeX/mihomo)，高级面板来自 [YACD](https://github.com/haishanh/yacd) / [Yacd-Meta](https://github.com/MetaCubeX/Yacd-meta)。来源和许可见 [NOTICE](NOTICE.md)、[LICENSE](LICENSE)。发布包不含私人订阅、密码、设备身份、内核二进制或路由器固件。

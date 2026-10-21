@@ -1,59 +1,24 @@
-# 界面预览
+# 实机页面
 
-## AX5：原厂后台入口
+以下四张来自统一项目在AX5和K2P上的实机测试，已检查没有订阅地址、密码、令牌或设备身份。节点名、延迟、内存、运行时间只表示截图当时的状态。
 
-原厂开发版后台顶部新增 ShellCrash 入口。以下为旧项目已经保存的界面；当前设备原厂首页存在尚未查清的 HTTP 500，路由设置和独立面板仍可访问，这张历史截图不作为当前首页故障已修复的证明。
+## AX5
 
-![AX5 原厂路由设置与 ShellCrash 入口](assets/ax5-native-settings.jpg)
+![AX5原厂后台中的轻量面板](assets/ax5-desktop.jpg)
 
-<details>
-<summary>原厂路由状态页面</summary>
+## K2P
 
-![AX5 旧项目原厂路由状态](assets/ax5-native-status.jpg)
+这是设备上实际运行的轻量页面。为避免把示例当实机结果，这里不再用旧项目的Padavan外框示意图。
 
-</details>
+![K2P轻量面板](assets/k2p-desktop.jpg)
 
-## AX5：轻量面板
+## 手机
 
-当前统一项目：
-
-![AX5 当前轻量面板](assets/ax5-desktop.jpg)
-
-<details>
-<summary>旧项目的紧凑节点页面</summary>
-
-旧版按地区展示节点，供界面演变参考；新版已经按实际策略组展示。
-
-![AX5 旧项目节点页面](assets/ax5-legacy-nodes.png)
-
-</details>
-
-## K2P：Padavan 后台集成
-
-旧项目布局示意，含示例节点和状态，用于说明 Padavan 外框、左侧菜单和内嵌页面的位置，不作为测速或实机结果证据。
-
-![K2P Padavan 后台布局](assets/k2p-native-layout.png)
-
-当前统一项目的独立轻量面板：
-
-![K2P 当前轻量面板](assets/k2p-desktop.jpg)
-
-## 手机页面
-
-<p>
-<img src="assets/ax5-mobile.jpg" width="280" alt="AX5 手机页面">
-<img src="assets/k2p-mobile.jpg" width="280" alt="K2P 手机页面">
-</p>
+<img src="assets/ax5-mobile.jpg" width="280" alt="AX5手机实机页面">
+<img src="assets/k2p-mobile.jpg" width="280" alt="K2P手机实机页面">
 
 ## 图片来源
 
-| 图片 | 来源 | 用途 |
-|---|---|---|
-| AX5 原厂设置、路由状态 | 旧 XiaoMiAX5-shellcrash-panel 项目保存图片 | 原厂后台入口与历史界面 |
-| AX5 旧节点页 | 同一旧项目 | 界面演变参考 |
-| K2P Padavan 外框 | 旧 K2P-Padavan-shellcrash-panel 的布局示意 | 后台集成方式 |
-| 两机当前桌面和手机页 | 统一项目实机测试记录 | 当前轻量页面 |
+`ax5-desktop.jpg`、`k2p-desktop.jpg`及两张`mobile.jpg`均为统一项目实机页面。截图没有包含所有新增控件，具体功能以1.0说明为准。
 
-旧图片保持原文件内容。原厂图片中的私人信息已遮盖；没有把示例数据和历史界面当成当前实机验收结果。
-
-AX5 混合接管设置：`assets/ax5-interception-mode.png`，来自本次真实配置页，仅保留设置区域，已检查没有私人信息。
+源码中另保留旧AX5原厂页面、旧节点页和旧K2P布局图片，作为界面沿革资料；它们不是1.0性能或当前固件状态的证明。旧图片内私人信息沿用原遮盖处理。

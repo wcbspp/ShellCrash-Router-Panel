@@ -26,7 +26,7 @@ def build(profile,output=None):
  target=Path(output) if output else ROOT/'build'/profile
  target.mkdir(parents=True,exist_ok=True)
  manifest=json.loads((ROOT/'profiles'/profile/'manifest.json').read_text())
- expected=set(manifest)|{'README.md','LICENSE','NOTICE.md','VERSION','deploy.py','update.py','setup.sh','DEVICE','CORE.json','MANIFEST.sha256','tools/verify_package.py','tools/backup_bundle.py','tools/__init__.py'}
+ expected=set(manifest)|{'README.md','LICENSE','NOTICE.md','VERSION','deploy.py','update.py','start.py','Install.command','setup.sh','DEVICE','CORE.json','MANIFEST.sha256','tools/verify_package.py','tools/backup_bundle.py','tools/prepare_offline.py','tools/__init__.py'}
  expected.update('docs/'+str(p.relative_to(ROOT/'docs')) for p in (ROOT/'docs').rglob('*') if p.is_file())
  previous=set()
  if (target/'MANIFEST.sha256').exists():
@@ -46,13 +46,14 @@ def build(profile,output=None):
   src=ROOT/source;dst=target/relative;dst.parent.mkdir(parents=True,exist_ok=True)
   if src.suffix=='.in':dst.write_text(render(src.read_text(),profile));dst.chmod(0o644)
   else:shutil.copy2(src,dst)
- for name in ['README.md','LICENSE','NOTICE.md','VERSION','deploy.py','update.py']:
+ for name in ['README.md','LICENSE','NOTICE.md','VERSION','deploy.py','update.py','start.py','Install.command']:
   shutil.copy2(ROOT/name,target/name)
  # The firmware-specific scripts keep their legacy paths; no compiler runs on-device.
  shutil.copy2(ROOT/'install.sh',target/'setup.sh')
  shutil.copy2(ROOT/'tools/verify_package.py',target/'tools/verify_package.py')
  shutil.copy2(ROOT/'tools/__init__.py',target/'tools/__init__.py')
  shutil.copy2(ROOT/'tools/backup_bundle.py',target/'tools/backup_bundle.py')
+ shutil.copy2(ROOT/'tools/prepare_offline.py',target/'tools/prepare_offline.py')
  shutil.copytree(ROOT/'docs',target/'docs',dirs_exist_ok=True)
  (target/'DEVICE').write_text(profile+'\n')
  shutil.copy2(ROOT/'profiles'/profile/'core.json',target/'CORE.json')

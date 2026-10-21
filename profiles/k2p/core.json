@@ -2,5 +2,9 @@
   "version": "1.12.13",
   "arch": "mipsle-softfloat",
   "archive_size": 9025081,
-  "sha256": "8908cee4a14591f3b8e2d6b6046a6456f8448e5b6f80948886b8864fc02145a7"
+  "sha256": "8908cee4a14591f3b8e2d6b6046a6456f8448e5b6f80948886b8864fc02145a7",
+  "urls": [
+    "https://testingcf.jsdelivr.net/gh/juewuy/ShellCrash@7b1471a33bcf195cf2b7fb8f6f40fe27a9646ba5/bin/singbox/singbox-linux-mipsle-softfloat.tar.gz",
+    "https://raw.githubusercontent.com/juewuy/ShellCrash/7b1471a33bcf195cf2b7fb8f6f40fe27a9646ba5/bin/singbox/singbox-linux-mipsle-softfloat.tar.gz"
+  ]
 }

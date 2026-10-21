@@ -2,5 +2,9 @@
   "version": "1.12.13",
   "arch": "armv7",
   "archive_size": 9503635,
-  "sha256": "40d97dc43df35d326916d488f748371e2e773a59569c01e23330081274ebf65b"
+  "sha256": "40d97dc43df35d326916d488f748371e2e773a59569c01e23330081274ebf65b",
+  "urls": [
+    "https://testingcf.jsdelivr.net/gh/juewuy/ShellCrash@21734eca91ec7a540494a5f43eac485403c18dac/bin/singbox/singbox-linux-armv7.tar.gz",
+    "https://raw.githubusercontent.com/juewuy/ShellCrash/21734eca91ec7a540494a5f43eac485403c18dac/bin/singbox/singbox-linux-armv7.tar.gz"
+  ]
 }
