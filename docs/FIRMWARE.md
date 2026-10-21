@@ -7,7 +7,7 @@
 | 项目 | 入口 | 说明 |
 | --- | --- | --- |
 | ShellCrash | [官方上游仓库](https://github.com/juewuy/ShellCrash) | 本面板适配1.9.4release，安装包带有工具，不必先重复安装 |
-| AX5固件 | [小米官方1.0.105文件](https://cdn.cnbj1.fds.api.mi-img.com/xiaoqiang/rom/ra67/miwifi_ra67_firmware_59980_1.0.105.bin) · [官方下载页](https://www.miwifi.com/miwifi_download.html) | Redmi AX5 / RA67，官方标注稳定版 |
+| AX5固件 | [小米官方1.0.105文件](https://cdn.cnbj1.fds.api.mi-img.com/xiaoqiang/rom/ra67/miwifi_ra67_firmware_59980_1.0.105.bin) · [官方下载页](https://www.miwifi.com/miwifi_download.html) | Redmi AX5 / RA67，刷写前核对机型与版本 |
 | AX5 SSH | [XMiR-Patcher作者仓库](https://github.com/openwrt-xiaomi/xmir-patcher) | 社区维护工具，按其说明操作，不是小米官方解锁服务 |
 | K2P配套固件 | [固件与校验文件](https://github.com/wcbspp/ShellCrash-Router-Panel/releases/tag/firmware-k2p-16m-4.4.198.9-100) | 使用者保存的16MB K2P固件，具体文件见下方 |
 | Padavan源码参考 | [hanwckf/rt-n56u](https://github.com/hanwckf/rt-n56u) | 不把它直接当作所附二进制的确切构建来源 |
@@ -20,7 +20,7 @@
 
 ## AX5
 
-实机环境为Redmi AX5 / RA67、原厂1.0.105、ARMv7。小米[官方下载接口](https://api.miwifi.com/upgrade/log/latest?typeList=RA67STA)将1.0.105标为稳定版，对应上方官方直链；不要把名称相近的小米AX1800固件混用。
+实机环境为Redmi AX5 / RA67、小米原厂1.0.105开发版、ARMv7。固件下载入口见上表，不要把名称相近的小米AX1800固件混用。
 
 安装前按XMiR-Patcher作者说明开启SSH，确认能用root登录。该工具与本面板各自有适用范围，面板不会替它执行解锁步骤。已运行兼容固件、SSH正常的设备不必重刷。
 
