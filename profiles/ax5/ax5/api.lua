@@ -66,7 +66,7 @@ function A.read()
 end
 function A.upload()
  if H.getenv('REQUEST_METHOD')~='POST'or not csrf()then reply({error='forbidden'},403);return end
- local d=body();if not d or type(d.id)~='string'or not d.id:match('^%x%x%x%x%x%x%x%x$')or not ({source=true,bounds=true,filter=true,mirror=true,policy=true,group=true,profile=true,restore=true})[d.kind]or type(d.data)~='string'or #d.data>1600000 then reply({error='invalid_upload'},400);return end
+ local d=body();if not d or type(d.id)~='string'or not d.id:match('^%x%x%x%x%x%x%x%x$')or not ({source=true,bounds=true,filter=true,mirror=true,policy=true,group=true,profile=true,restore=true,access=true})[d.kind]or type(d.data)~='string'or #d.data>1600000 then reply({error='invalid_upload'},400);return end
  local job=M.load(M.R..'/job.json');if job.active then reply({error='busy'},409);return end
  local ok,raw=pcall(require('nixio').bin.b64decode,d.data);if not ok or not raw then reply({error='invalid_upload'},400);return end
  -- Small requests avoid Xiaomi LuCI's limited form parser. Publish only a complete upload.
@@ -89,7 +89,7 @@ function A.upload()
 end
 function A.control()
  if H.getenv('REQUEST_METHOD')~='POST'or not csrf()then reply({error='forbidden'},403);return end
- local d=body();local allowed={nodeping=true,start=true,stop=true,restart=true,clear=true,cleanup=true,memcfg=true,fetch=true,apply=true,dns=true,policy=true,groupmode=true,grouplayout=true,rules=true,domainupdate=true,corecheck=true,coreupdate=true,toolcheck=true,toolupdate=true,guard=true,transport=true,cnbypass=true,proxymode=true,advanced=true,mirrortest=true,mirrorsave=true,mirrorsync=true,mirrorverify=true,backuplocal=true,backupremote=true,baselinecreate=true,restorecheck=true,restorego=true}
+ local d=body();local allowed={nodeping=true,start=true,stop=true,restart=true,clear=true,cleanup=true,memcfg=true,fetch=true,apply=true,dns=true,policy=true,groupmode=true,grouplayout=true,rules=true,domainupdate=true,corecheck=true,coreupdate=true,toolcheck=true,toolupdate=true,guard=true,transport=true,cnbypass=true,access=true,proxymode=true,advanced=true,mirrortest=true,mirrorsave=true,mirrorsync=true,mirrorverify=true,backuplocal=true,backupremote=true,baselinecreate=true,restorecheck=true,restorego=true}
  if not d or type(d.script)~='string'then reply({error='invalid_action'},400);return end
  local action=d.script:match('^sc%-(%w+)%.sh$');if not allowed[action]then reply({error='unsupported_action'},400);return end
  local args=d.args or {};if type(args)~='table'or #args>3 then reply({error='invalid_arguments'},400);return end;for _,v in ipairs(args)do if type(v)~='string'or #v>100 or not v:match('^[%w+/=]+$')then reply({error='invalid_arguments'},400);return end end

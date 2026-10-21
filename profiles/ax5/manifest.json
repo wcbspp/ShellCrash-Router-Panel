@@ -171,5 +171,6 @@
   "ax5/node-ping.sh": "shared/lib/node-ping.sh",
   "ax5/node-ping-target.lua": "profiles/ax5/ax5/node-ping-target.lua",
   "tests/test_node_diagnostic.js": "shared/tests/test_node_diagnostic.js",
-  "tests/test_core_install_memory.py": "profiles/ax5/tests/test_core_install_memory.py"
+  "tests/test_core_install_memory.py": "profiles/ax5/tests/test_core_install_memory.py",
+  "ax5/proxy-access.sh": "shared/lib/proxy-access.sh"
 }

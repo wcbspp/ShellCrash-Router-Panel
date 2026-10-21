@@ -847,3 +847,15 @@ K2P-CTRL-node-ping-run,K2P,桌面,部分通过,真实桌面点击打开/单次Pi
 K2P-CTRL-node-ping-run,K2P,手机窄屏,部分通过,真实桌面点击打开/单次Ping/单次HTTPS/收起；实际后台未知节点拒绝；390px只核对布局，不冒称全部边界实机通过。单元覆盖取消/变化/低内存/超时。,work/task-state/node-ping-20261016.private/k2p-results.json,2026-10-16,本轮源码待提交；配置/PID/boot/cron保持
 K2P-CTRL-node-https-run,K2P,桌面,部分通过,真实桌面点击打开/单次Ping/单次HTTPS/收起；实际后台未知节点拒绝；390px只核对布局，不冒称全部边界实机通过。单元覆盖取消/变化/低内存/超时。,work/task-state/node-ping-20261016.private/k2p-results.json,2026-10-16,本轮源码待提交；配置/PID/boot/cron保持
 K2P-CTRL-node-https-run,K2P,手机窄屏,部分通过,真实桌面点击打开/单次Ping/单次HTTPS/收起；实际后台未知节点拒绝；390px只核对布局，不冒称全部边界实机通过。单元覆盖取消/变化/低内存/超时。,work/task-state/node-ping-20261016.private/k2p-results.json,2026-10-16,本轮源码待提交；配置/PID/boot/cron保持
+AX5-CTRL-proxy-access-enabled,AX5,桌面,未执行,本地实现与规则事务测试不代替真机页面及客户端验证,,,
+AX5-CTRL-proxy-access-enabled,AX5,手机窄屏,未执行,本地实现与规则事务测试不代替真机页面及客户端验证,,,
+AX5-CTRL-proxy-access-macs,AX5,桌面,未执行,本地实现与规则事务测试不代替真机页面及客户端验证,,,
+AX5-CTRL-proxy-access-macs,AX5,手机窄屏,未执行,本地实现与规则事务测试不代替真机页面及客户端验证,,,
+AX5-CTRL-proxy-access-save,AX5,桌面,未执行,本地实现与规则事务测试不代替真机页面及客户端验证,,,
+AX5-CTRL-proxy-access-save,AX5,手机窄屏,未执行,本地实现与规则事务测试不代替真机页面及客户端验证,,,
+K2P-CTRL-proxy-access-enabled,K2P,桌面,未执行,本地实现与规则事务测试不代替真机页面及客户端验证,,,
+K2P-CTRL-proxy-access-enabled,K2P,手机窄屏,未执行,本地实现与规则事务测试不代替真机页面及客户端验证,,,
+K2P-CTRL-proxy-access-macs,K2P,桌面,未执行,本地实现与规则事务测试不代替真机页面及客户端验证,,,
+K2P-CTRL-proxy-access-macs,K2P,手机窄屏,未执行,本地实现与规则事务测试不代替真机页面及客户端验证,,,
+K2P-CTRL-proxy-access-save,K2P,桌面,未执行,本地实现与规则事务测试不代替真机页面及客户端验证,,,
+K2P-CTRL-proxy-access-save,K2P,手机窄屏,未执行,本地实现与规则事务测试不代替真机页面及客户端验证,,,

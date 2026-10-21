@@ -1,6 +1,8 @@
 #!/bin/sh
 . /data/ShellCrash/ax5/core-env.sh
 umask 077
+. "$C/ax5/proxy-access.sh"
+ac_enforce || exit 1
 child=''
 ending=0
 vm_old=$(cat /proc/sys/vm/overcommit_memory)

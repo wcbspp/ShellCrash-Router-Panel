@@ -645,3 +645,9 @@ K2P-RESTORE-NATIVE-coldboot,K2P,桌面,通过,一次真实整机重启，新boot
 K2P-RESTORE-NATIVE-coldboot,K2P,手机窄屏,未执行,命令行及原生验证不代表手机页面执行,LIVE_TEST_2026-10-16_K2P_RESTORE.md,2026-10-16,rc.2 本地恢复原型 / sing-box mini 1.12.13
 K2P-RESTORE-NATIVE-client,K2P,桌面,未执行,真实Wi-Fi客户端确认列在手机端，不代表桌面页面恢复操作,LIVE_TEST_2026-10-16_K2P_RESTORE.md,2026-10-16,rc.2 本地恢复原型 / sing-box mini 1.12.13
 K2P-RESTORE-NATIVE-client,K2P,手机窄屏,通过,用户在重启后确认全部正常,LIVE_TEST_2026-10-16_K2P_RESTORE.md,2026-10-16,rc.2 本地恢复原型 / sing-box mini 1.12.13
+AX5-CTRL-proxy-access-enabled,AX5,桌面,未执行,本地实现与规则事务测试不代替真机页面及客户端验证,,,
+AX5-CTRL-proxy-access-enabled,AX5,手机窄屏,未执行,本地实现与规则事务测试不代替真机页面及客户端验证,,,
+AX5-CTRL-proxy-access-macs,AX5,桌面,未执行,本地实现与规则事务测试不代替真机页面及客户端验证,,,
+AX5-CTRL-proxy-access-macs,AX5,手机窄屏,未执行,本地实现与规则事务测试不代替真机页面及客户端验证,,,
+AX5-CTRL-proxy-access-save,AX5,桌面,未执行,本地实现与规则事务测试不代替真机页面及客户端验证,,,
+AX5-CTRL-proxy-access-save,AX5,手机窄屏,未执行,本地实现与规则事务测试不代替真机页面及客户端验证,,,

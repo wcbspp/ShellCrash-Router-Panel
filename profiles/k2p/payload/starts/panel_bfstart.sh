@@ -3,6 +3,8 @@
 PANEL_HOME=${CRASHDIR:-/etc/storage/ShellCrash}
 . "$PANEL_HOME/starts/panel_env.sh" || exit 1
 C=/etc/storage/ShellCrash
+. "$C/starts/proxy-access.sh"
+ac_enforce || exit 1
 D=/tmp/sc-admin
 mkdir -p "$D"
 rm -f /tmp/ShellCrash/manual-stop "$C/configs/panel-disabled"

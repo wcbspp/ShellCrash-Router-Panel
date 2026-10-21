@@ -33,11 +33,11 @@ class TrafficMode(unittest.TestCase):
   self.tmp=tempfile.TemporaryDirectory();self.p=Path(self.tmp.name);b=self.p/'bin';b.mkdir()
   for name in ['curl','pidof','iptables','iptables-restore']:
    f=b/name;f.write_text(MOCK);f.chmod(0o755)
-  starts=self.p/'starts';starts.mkdir();(starts/'policy_capture.sh').write_bytes((ROOT/'payload/starts/policy_capture.sh').read_bytes())
+  starts=self.p/'starts';starts.mkdir();(starts/'proxy-access.sh').write_bytes((ROOT/'payload/starts/proxy-access.sh').read_bytes());(starts/'policy_capture.sh').write_bytes((ROOT/'payload/starts/policy_capture.sh').read_bytes())
   self.config=self.p/'configs';self.config.mkdir();(self.config/'ShellCrash.cfg').write_text('secret=fixture\n')
   self.state=self.p/'state.json';self.original={'PREROUTING':[],'shellcrash':['-A shellcrash -d 192.168.0.0/16 -j RETURN','-A shellcrash -m set --match-set cn_ip dst -j RETURN','-A shellcrash -s 192.168.1.0/24 -p tcp -j REDIRECT --to-ports 7892'],'shellcrash_dns':['-A shellcrash_dns -p udp -j REDIRECT --to-ports 1053']}
   self.state.write_text(json.dumps({'mode':'rule','chains':self.original}))
-  self.env={**os.environ,'PATH':str(b)+':'+os.environ['PATH'],'MOCK_STATE':str(self.state),'MOCK_FAIL':str(self.p/'fail'),'SC_TRAFFIC_ROOT':str(self.p/'traffic'),'SC_TRAFFIC_MODE_FILE':str(self.p/'mode')}
+  self.env={**os.environ,'PATH':str(b)+':'+os.environ['PATH'],'MOCK_STATE':str(self.state),'MOCK_FAIL':str(self.p/'fail'),'SC_ACCESS_RUNTIME':str(self.p/'acl'),'SC_TRAFFIC_ROOT':str(self.p/'traffic'),'SC_TRAFFIC_MODE_FILE':str(self.p/'mode')}
  def tearDown(self):self.tmp.cleanup()
  def run_mode(self,mode):
   script=f'C="{self.p}"; PANEL_LAN_IP=127.0.0.1; . "{ROOT}/payload/starts/traffic_mode.sh"; traffic_mode_apply {mode}'

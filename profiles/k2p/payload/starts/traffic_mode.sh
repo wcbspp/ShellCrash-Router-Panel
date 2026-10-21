@@ -17,14 +17,14 @@ traffic_mode_apply(){
   for chain in shellcrash shellcrash_dns shellcrash_out shellcrash_dns_out;do
    if iptables -t nat -S "$chain" > "$T/chain" 2>/dev/null;then
     printf ':%s - [0:0]\n' "$chain"
-    sed -n '/^-A /p' "$T/chain"
+    sed -n '/SC_ACL_/d;/^-A /p' "$T/chain"
    fi
   done
   printf 'COMMIT\n'
   printf '*mangle\n'
   for chain in shellcrash_mark shellcrash_mark_out;do
    if iptables -t mangle -S "$chain" > "$T/chain" 2>/dev/null;then
-    printf ':%s - [0:0]\n' "$chain";sed -n '/^-A /p' "$T/chain"
+    printf ':%s - [0:0]\n' "$chain";sed -n '/SC_ACL_/d;/^-A /p' "$T/chain"
    fi
   done
   printf 'COMMIT\n'
@@ -61,6 +61,7 @@ traffic_mode_apply(){
    done
    iptables -t nat -I PREROUTING 1 -p tcp -m comment --comment SC_PANEL_GLOBAL -j shellcrash || return 1
   fi
+  . "$C/starts/proxy-access.sh";ac_enforce || return 1
  }
  if traffic_api -X PATCH -H 'Content-Type: application/json' -d "{\"mode\":\"$requested\"}" >/dev/null && traffic_fw "$requested";then
   actual=$(traffic_api | sed -n 's/.*"mode"[ ]*:[ ]*"\([A-Za-z]*\)".*/\1/p' | tr 'A-Z' 'a-z')
@@ -79,6 +80,7 @@ traffic_mode_apply(){
  printf "%s mode=%s before=%s verification failed; reverting\n" "$(date +%s)" "$requested" "$before" >> "$T/events.log"
  traffic_unhook
  traffic_restore "$T/before"
+ . "$C/starts/proxy-access.sh";ac_enforce || :
  [ "$previous" != global ] || iptables -t nat -I PREROUTING 1 -p tcp -m comment --comment SC_PANEL_GLOBAL -j shellcrash
  traffic_api -X PATCH -H 'Content-Type: application/json' -d "{\"mode\":\"$before\"}" >/dev/null
  rm -f "$T/auth" "$T/before" "$T/chain"

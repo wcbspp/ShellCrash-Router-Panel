@@ -92,7 +92,9 @@ status(){
  transport_active=$(cat /tmp/ShellCrash/transport-runtime 2>/dev/null)
  [ "$running" = true ] || transport_active=''
  case "$transport_active" in redir|mixed|'') :;; *) transport_active=unknown;;esac
- printf '{"cn_bypass":%s,' "$cn_state"
+ acl_enabled=false;[ "$(head -n 1 "$C/configs/proxy-access" 2>/dev/null)" != 1 ] || acl_enabled=true
+ printf '{"proxy_access":{"enabled":%s,"macs_b64":"%s","error":"%s"},' "$acl_enabled" "$(tail -n +2 "$C/configs/proxy-access" 2>/dev/null|base64|tr -d '\n')" "$(head -n 1 /tmp/ShellCrash/proxy-access/error 2>/dev/null | tr -cd a-z_)"
+ printf '"cn_bypass":%s,' "$cn_state"
  printf '"pid":%s,"transport":{"configured":"%s","active":"%s","mixed_available":%s},' "${pid:-0}" "$configured" "$transport_active" "$mixed_available"
  native_kind='';[ ! -f "$C/configs/native-profile" ] || native_kind=singbox
  printf '"template_kind":"%s","traffic_mode":"%s",' "$native_kind" "$traffic_mode"
@@ -184,6 +186,15 @@ case "$act" in
   phase working '正在复核确认凭据'
   trap - EXIT
   exec sh "$C/starts/recovery-dispatch.sh" k2p "$id" "$ticket";;
+ access)
+  valid_id "$id" && [ "$id" = "$(cat "$D/id")" ] && [ "$(cat "$D/kind")" = access ] || exit 1
+  lock || exit 1;phase working '正在应用代理设备名单'
+  [ "$(wc -c < "$D/upload.parts")" -le 9000 ] || { fail '白名单过大';exit 1; }
+  sort "$D/upload.parts" | awk '!seen[$1]++{printf "%s",$2}' > "$D/access.b64"
+  base64 -d "$D/access.b64" > "$D/access.input" || { fail '名单传输不完整';exit 1; }
+  . "$C/starts/proxy-access.sh"
+  if ac_commit "$D/access.input";then phase done '代理设备设置已保存，无需重启内核';else fail '白名单保存或应用失败，请查看日志确认当前规则与保存状态';exit 1;fi
+  rm -f "$D/access.b64" "$D/access.input" "$D/upload.parts";;
  cnbypass)
   valid_id "$id" || exit 1;case "$3" in 0|1) :;;*)exit 1;;esac
   lock || exit 1;echo "$id" > "$D/id";phase working '正在应用国内 IP 绕过'
@@ -330,7 +341,7 @@ case "$act" in
  new)
   valid_id "$id" || exit 1
   owner_live && exit 1
-  kind=$3; case "$kind" in source|bounds|profile|filter|mirror|policy|group|restore) :;; *) exit 1;; esac
+  kind=$3; case "$kind" in source|bounds|profile|filter|mirror|policy|group|restore|access) :;; *) exit 1;; esac
   [ "$(cat "$D/phase" 2>/dev/null)" = uploading ] && [ -f "$D/upload.parts" ] && [ "$id" = "$(cat "$D/id" 2>/dev/null)" ] && [ "$kind" = "$(cat "$D/kind" 2>/dev/null)" ] && exit 0
   if [ "$kind" = bounds ] || [ "$kind" = profile ]; then [ "$id" = "$(cat "$D/id" 2>/dev/null)" ] && [ -s "$D/candidate.url.b64" ] || exit 1; else
    rm -f "$D/sub.raw" "$D/candidate.url.b64" "$D/previous.json" "$D/candidate.json" "$D/bounds.gz" "$D/bounds.json" "$D/check.json"

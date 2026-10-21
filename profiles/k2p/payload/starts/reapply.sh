@@ -14,3 +14,5 @@ export CRASHDIR
 sh "$CRASHDIR/starts/fw_stop.sh"
 ck_cn_ipv4
 . "$CRASHDIR/starts/fw_start.sh"
+
+C=$CRASHDIR;. "$C/starts/proxy-access.sh";ac_enforce || exit 1

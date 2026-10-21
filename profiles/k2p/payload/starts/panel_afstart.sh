@@ -23,6 +23,8 @@ sh "$C/starts/subscription-quota.sh" k2p auto || :
 policy_capture_apply || logger -t ShellCrash 'Domain routing capture failed; check owned country-IP bypass'
 # Ordinary UDP stays direct; reject UDP to virtual IPs to permit TCP fallback.
 while iptables -D FORWARD -p udp -d 198.18.0.0/15 -j REJECT 2>/dev/null; do :; done
+. "$C/starts/proxy-access.sh"
+ac_enforce || { logger -t ShellCrash "Proxy access firewall failed";exit 1; }
 [ "$transport" != '混合模式' ] || exit 0
 mode=$(sed -n 's/^dns_mod=//p' /etc/storage/ShellCrash/configs/ShellCrash.cfg | head -1)
 [ "$mode" = mix ] || [ "$mode" = fake-ip ] || exit 0

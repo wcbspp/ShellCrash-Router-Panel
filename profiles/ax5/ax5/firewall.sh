@@ -18,6 +18,9 @@ https_rules(){
  [ -n "$clients" ] || return 0
  iptables -N SC_AX5_HTTPS || return 1
  for client in $clients;do
+  if [ "$(head -n 1 "$C/configs/proxy-access" 2>/dev/null)" = 1 ];then
+   tail -n +2 "$C/configs/proxy-access" | grep -Fqi -x "$client" || continue
+  fi
   iptables -A SC_AX5_HTTPS -m mac --mac-source "$client" -p udp --dport 443 -j REJECT --reject-with icmp-port-unreachable || { stop_https_rules;return 1; }
  done
  iptables -I FORWARD 1 -i br-lan -j SC_AX5_HTTPS || { stop_https_rules;return 1; }
@@ -36,12 +39,13 @@ stop_rules() {
   rm -f "$R/udp-route-owned"
  fi
  rm -f "$R/transport-mode"
+ while iptables -t nat -D PREROUTING -i br-lan -p udp --dport 53 -j SC_AX5_LDNS 2>/dev/null;do :;done
  while iptables -t nat -D PREROUTING -i br-lan -p tcp -j SC_AX5_IN 2>/dev/null; do :; done
  while iptables -t nat -D OUTPUT -p tcp -j SC_AX5_OUT 2>/dev/null; do :; done
  while iptables -t nat -D PREROUTING -i br-lan -p udp --dport 53 -j REDIRECT --to-ports 1053 2>/dev/null; do :; done
  while iptables -t nat -D PREROUTING -i br-lan -p tcp --dport 53 -j REDIRECT --to-ports 1053 2>/dev/null; do :; done
  for proto in tcp udp; do while iptables -t nat -D OUTPUT -p "$proto" --dport 53 -j SC_AX5_DNS 2>/dev/null; do :; done; done
- for tablechain in SC_AX5_IN SC_AX5_OUT SC_AX5_DNS; do iptables -t nat -F "$tablechain" 2>/dev/null; iptables -t nat -X "$tablechain" 2>/dev/null; done
+ for tablechain in SC_AX5_IN SC_AX5_OUT SC_AX5_DNS SC_AX5_LDNS; do iptables -t nat -F "$tablechain" 2>/dev/null; iptables -t nat -X "$tablechain" 2>/dev/null; done
  for tablechain in 'OUTPUT -o lo' 'PREROUTING -i lo'; do
   iptables -t raw -D $tablechain -m comment --comment SC_AX5_CONNTRACK -j ACCEPT 2>/dev/null
  done
@@ -50,6 +54,7 @@ stop_rules() {
 stop_rules
 if [ "${1:-start}" != start ];then
  [ ! -f "$C/configs/cn-bypass" ] || SC_CN_FLOW_MODE=direct "$C/ax5/cn-bypass.sh" apply
+ . "$C/ax5/proxy-access.sh";ac_enforce || exit 1
  exit 0
 fi
 [ -s "$R/core.pid" ] && kill -0 "$(cat "$R/core.pid")" 2>/dev/null || exit 0
@@ -60,6 +65,8 @@ iptables -t raw -I PREROUTING 1 -i lo -m comment --comment SC_AX5_CONNTRACK -j A
 iptables -t nat -N SC_AX5_IN
 iptables -t nat -N SC_AX5_OUT
 iptables -t nat -N SC_AX5_DNS
+iptables -t nat -N SC_AX5_LDNS
+iptables -t nat -A SC_AX5_LDNS -j REDIRECT --to-ports 1053
 iptables -t nat -A SC_AX5_DNS -m mark --mark 0x5343 -j RETURN
 for proto in tcp udp; do iptables -t nat -A SC_AX5_DNS -p "$proto" -j REDIRECT --to-ports 1053; done
 iptables -t nat -A SC_AX5_IN -p tcp --dport 53 -j REDIRECT --to-ports 1053
@@ -72,7 +79,7 @@ for chain in SC_AX5_IN SC_AX5_OUT; do iptables -t nat -A "$chain" -p tcp -j REDI
 iptables -t nat -I OUTPUT 1 -p tcp -j SC_AX5_OUT
 for proto in tcp udp; do iptables -t nat -I OUTPUT 1 -p "$proto" --dport 53 -j SC_AX5_DNS; done
 iptables -t nat -I PREROUTING 1 -i br-lan -p tcp -j SC_AX5_IN
-iptables -t nat -I PREROUTING 1 -i br-lan -p udp --dport 53 -j REDIRECT --to-ports 1053
+iptables -t nat -I PREROUTING 1 -i br-lan -p udp --dport 53 -j SC_AX5_LDNS
 transport=redir
 if mixed_configured;then
  # Same system-TUN path as ShellCrash mixed mode. Only LAN UDP enters TUN;
@@ -99,5 +106,7 @@ fi
 https_rules
 printf '%s\n' "$transport" > "$R/transport-mode"
 [ ! -f "$C/configs/cn-bypass" ] || "$C/ax5/cn-bypass.sh" apply
+. "$C/ax5/proxy-access.sh"
+ac_enforce || exit 1
 # DNS interception is removed on stop. Original dnsmasq configuration stays intact.
 exit 0

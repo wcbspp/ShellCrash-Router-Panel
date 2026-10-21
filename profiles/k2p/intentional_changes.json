@@ -20,8 +20,8 @@
     "removed": true
   },
   "payload/padavan/manager.js": {
-    "sha256": "0f4284de7689ed36cb0d62183d72c76b25a05c4b103391b8650c54387692cf79",
-    "reason": "Whitelist restorego without increasing the stock 58-character authenticated command limit.; Reviewed on-demand node diagnostics, bounded root-array scan, firmware-compatible change token and explicit control coverage; original baseline preserved."
+    "sha256": "950f821b65487660de1560216c3c508f82793c265a11992b9e19ab54b8f2ea19",
+    "reason": "Whitelist restorego without increasing the stock 58-character authenticated command limit.; Reviewed on-demand node diagnostics, bounded root-array scan, firmware-compatible change token and explicit control coverage; original baseline preserved. MAC proxy-access switch: authenticated bounded upload and persisted policy, owned IPv4/IPv6 firewall gates for transparent and explicit proxy paths, startup/mode reapply without core restart; UI state and confirmation. Local firewall transaction tests required; device validation pending."
   },
   "payload/starts/backup-app.sh": {
     "sha256": "7bdf8be3b64852e62399c9e8685fb7e817ca8cbe67b2d81656000a0f5017c7f6",
@@ -32,8 +32,8 @@
     "reason": "Exercise the real local exporter and require the local recovery execution capability to be excluded alongside credentials."
   },
   "payload/starts/panel_bfstart.sh": {
-    "sha256": "f92ed90fe2ae30a4ee6da7f32acbfe5d46832156c7a21cddb3a6353bfe3d0559",
-    "reason": "Reboot acceptance fixes: initialized routing hooks, safe executable reuse, remote domain cache, pre-download startup delay and explicit remote backup catalog query"
+    "sha256": "15bf07036707dad0a72ff7154a6bb669e78fd609008a93b9eab932574801c3e4",
+    "reason": "Reboot acceptance fixes: initialized routing hooks, safe executable reuse, remote domain cache, pre-download startup delay and explicit remote backup catalog query MAC proxy-access switch: authenticated bounded upload and persisted policy, owned IPv4/IPv6 firewall gates for transparent and explicit proxy paths, startup/mode reapply without core restart; UI state and confirmation. Local firewall transaction tests required; device validation pending."
   },
   "payload/starts/webdav.sh": {
     "sha256": "3b38f9a18ab8a94a0b8b8384c14cc8c1d7f7154f7419ec360a065cf81cace170",
@@ -68,8 +68,8 @@
     "reason": "Reviewed quota lifecycle hooks, bounded/coalesced event worker, automatic cache display; once-per-load domestic/international IP and location probes with cancellation and bounded JSON.; Reviewed on-demand node diagnostics, bounded root-array scan, firmware-compatible change token and explicit control coverage; original baseline preserved."
   },
   "payload/ui/index.html": {
-    "sha256": "97b9cade6938ba46f701ee7c5f96657612402830c164690bfa0c78a3295adc8f",
-    "reason": "Read-only recovery dialog controls included in detailed menu/button inventory; compact responsive backup entry, independent baseline actions and saved/draft path status. Wrap ZeroTier diagnostic text on narrow screens without hiding content.; Node delay now uses one kernel request per node, with matching help and cancellation display.; Use Gstatic HTTP 204 delay target and explain test-site TLS exclusion.; Correct HTTP fallback assumption: explicit HTTPS target and honest request-time help.; Reviewed on-demand node diagnostics, bounded root-array scan, firmware-compatible change token and explicit control coverage; original baseline preserved."
+    "sha256": "8596aca31f557cd7d2290dcc5f72dede763d4fae3df8c14d1fb49a0d87f4e2c7",
+    "reason": "Read-only recovery dialog controls included in detailed menu/button inventory; compact responsive backup entry, independent baseline actions and saved/draft path status. Wrap ZeroTier diagnostic text on narrow screens without hiding content.; Node delay now uses one kernel request per node, with matching help and cancellation display.; Use Gstatic HTTP 204 delay target and explain test-site TLS exclusion.; Correct HTTP fallback assumption: explicit HTTPS target and honest request-time help.; Reviewed on-demand node diagnostics, bounded root-array scan, firmware-compatible change token and explicit control coverage; original baseline preserved. MAC proxy-access switch: authenticated bounded upload and persisted policy, owned IPv4/IPv6 firewall gates for transparent and explicit proxy paths, startup/mode reapply without core restart; UI state and confirmation. Local firewall transaction tests required; device validation pending."
   },
   "tests/test_search.js": {
     "sha256": "3ca14402185275cd4c233a9d9dae8eca9ef259890d2a5c786f6c43b08d12d483",
@@ -84,8 +84,8 @@
     "reason": "Regression coverage for manual path rollback/pin readback, partial and stale measurements, UA choice/state isolation and truthful filtered counts."
   },
   "payload/starts/manage.sh": {
-    "sha256": "df93488d4aabab422d7d5b8c4ac85cd2a6c3daa6388ba4a2200e1845e82068c0",
-    "reason": "Authenticated restorego transfers its operation lock and PID to the independent dispatcher. Every new operation invalidates earlier confirmation tickets through a monotonic operation revision.; Reviewed on-demand node diagnostics, bounded root-array scan, firmware-compatible change token and explicit control coverage; original baseline preserved. Close FD3 only in the boot child; it reaches the parent proc-FD path without pinning the executable in descendants. Pass an enum-only temporary core-update tmpfs budget. Load the executable FD helper for coreupdate as well: native v8 proved both startup and rollback otherwise call undefined helper functions. Preserve FD3 in bounded boot child; verified-handoff failure aborts without downloading/decompressing a second candidate. Native v12 exposed an FD link failure followed by excessive tmpfs and ZeroTier OOM; full upgrade remains a separate live gate."
+    "sha256": "5f9b0a2d2befddec72bf02dabd24ebfd45076de42c7d570c27899693735af983",
+    "reason": "Authenticated restorego transfers its operation lock and PID to the independent dispatcher. Every new operation invalidates earlier confirmation tickets through a monotonic operation revision.; Reviewed on-demand node diagnostics, bounded root-array scan, firmware-compatible change token and explicit control coverage; original baseline preserved. Close FD3 only in the boot child; it reaches the parent proc-FD path without pinning the executable in descendants. Pass an enum-only temporary core-update tmpfs budget. Load the executable FD helper for coreupdate as well: native v8 proved both startup and rollback otherwise call undefined helper functions. Preserve FD3 in bounded boot child; verified-handoff failure aborts without downloading/decompressing a second candidate. Native v12 exposed an FD link failure followed by excessive tmpfs and ZeroTier OOM; full upgrade remains a separate live gate. MAC proxy-access switch: authenticated bounded upload and persisted policy, owned IPv4/IPv6 firewall gates for transparent and explicit proxy paths, startup/mode reapply without core restart; UI state and confirmation. Local firewall transaction tests required; device validation pending."
   },
   "tests/test_proxy_mode.js": {
     "sha256": "0d476681fd7c939c813fea8283fbb786eab2d3a1432fd0b4cedf240ef4489183",
@@ -96,20 +96,20 @@
     "reason": " Website checks distinguish transport/TLS failures, API errors and HTTP 4xx/5xx responses; access errors use amber rather than success green. Regression includes all AX endpoint IDs/URLs. Reviewed 2026-10-14: website cards now test network reachability and HTTPS request time only; HTTP 403/429/5xx count as reachable rather than access errors, TLS/malformed delay/API failures remain failed. Global/direct mode applies to domestic targets too. No service-unlock or CF diagnosis, no new timers or processes. Includes DOM regression for green 403 reachability, diagnostic-only HTTP code, and TLS failure rendering."
   },
   "payload/starts/padavan_ui.sh": {
-    "sha256": "e740cf684e87b2984755c25fdb3235547337ad810967a2e29d56f39a4f83c5e0",
-    "reason": "Generate a CSRF-checked two-argument restorego wrapper using the existing stock command buffer.; Reviewed on-demand node diagnostics, bounded root-array scan, firmware-compatible change token and explicit control coverage; original baseline preserved."
+    "sha256": "cdd5ed007b805db120fcbc539803ed3b416b47d5a419e2c8830c6bf3b65f48c1",
+    "reason": "Generate a CSRF-checked two-argument restorego wrapper using the existing stock command buffer.; Reviewed on-demand node diagnostics, bounded root-array scan, firmware-compatible change token and explicit control coverage; original baseline preserved. MAC proxy-access switch: authenticated bounded upload and persisted policy, owned IPv4/IPv6 firewall gates for transparent and explicit proxy paths, startup/mode reapply without core restart; UI state and confirmation. Local firewall transaction tests required; device validation pending."
   },
   "payload/starts/panel_afstart.sh": {
-    "sha256": "810aa59a84ed47cc5acf0f03ad1e089a3ae0fab4a6a3e1f5d1ac7860fdad31cc",
-    "reason": "Initialize firmware PATH, runtime directory and LAN API context before post-start routing and quota hooks; preserve mixed-mode handling."
+    "sha256": "dd3441e185ef8c42f3a6d6baa6879216f8c66848f0b550cb9b9901b50f14fe6e",
+    "reason": "Initialize firmware PATH, runtime directory and LAN API context before post-start routing and quota hooks; preserve mixed-mode handling. MAC proxy-access switch: authenticated bounded upload and persisted policy, owned IPv4/IPv6 firewall gates for transparent and explicit proxy paths, startup/mode reapply without core restart; UI state and confirmation. Local firewall transaction tests required; device validation pending."
   },
   "payload/starts/traffic_mode.sh": {
-    "sha256": "9d0856defd8b8a0088427d9ddf6ea8c6e8a8d55c5f1ac74f54da16c2696d5842",
-    "reason": " Reviewed 2026-10-14: compact kernel traffic counter sampling, since-core-start totals; actual transport-dependent flow labels and rule/DNS scope. K2P mixed delegates to official ShellCrash setter/start with running executable reuse, memory/capability guards, selector preservation and rollback; direct/global also handle owned UDP marking chains. Reviewed: inspection reports actual memory reserve; K native/domain policies must reach core before owned country-IP bypass, preserving private exceptions and basic-config optimization. Tested base/native/custom modes and rollback. Reviewed 2026-10-14: opt-in domestic IPv4 firewall bypass with conservative rule/DNS eligibility, owned atomic chain application, no core restart, explicit global/direct suspension and conflict rejection; short rule-maintenance explanations; traffic scope follows actual mode without relabelling historical totals as proxy quota. Added scoped control inventory and regression coverage."
+    "sha256": "06b258fbce1a0bf271a68ac8c459de3965e1175aea040eeec1d912b9ac5c1d1d",
+    "reason": " Reviewed 2026-10-14: compact kernel traffic counter sampling, since-core-start totals; actual transport-dependent flow labels and rule/DNS scope. K2P mixed delegates to official ShellCrash setter/start with running executable reuse, memory/capability guards, selector preservation and rollback; direct/global also handle owned UDP marking chains. Reviewed: inspection reports actual memory reserve; K native/domain policies must reach core before owned country-IP bypass, preserving private exceptions and basic-config optimization. Tested base/native/custom modes and rollback. Reviewed 2026-10-14: opt-in domestic IPv4 firewall bypass with conservative rule/DNS eligibility, owned atomic chain application, no core restart, explicit global/direct suspension and conflict rejection; short rule-maintenance explanations; traffic scope follows actual mode without relabelling historical totals as proxy quota. Added scoped control inventory and regression coverage. MAC proxy-access switch: authenticated bounded upload and persisted policy, owned IPv4/IPv6 firewall gates for transparent and explicit proxy paths, startup/mode reapply without core restart; UI state and confirmation. Local firewall transaction tests required; device validation pending."
   },
   "tests/test_traffic_mode.py": {
-    "sha256": "c8ae3f30c03983eb992fdac86268ca2c8eb1f45aa7bc35b9b3ab5b3ada5e2b54",
-    "reason": " Reviewed 2026-10-14: compact kernel traffic counter sampling, since-core-start totals; actual transport-dependent flow labels and rule/DNS scope. K2P mixed delegates to official ShellCrash setter/start with running executable reuse, memory/capability guards, selector preservation and rollback; direct/global also handle owned UDP marking chains. Reviewed: inspection reports actual memory reserve; K native/domain policies must reach core before owned country-IP bypass, preserving private exceptions and basic-config optimization. Tested base/native/custom modes and rollback."
+    "sha256": "73c83cb225ad72638fcc31631e1a1f656060f360b36d9e46a34a163ef1235611",
+    "reason": " Reviewed 2026-10-14: compact kernel traffic counter sampling, since-core-start totals; actual transport-dependent flow labels and rule/DNS scope. K2P mixed delegates to official ShellCrash setter/start with running executable reuse, memory/capability guards, selector preservation and rollback; direct/global also handle owned UDP marking chains. Reviewed: inspection reports actual memory reserve; K native/domain policies must reach core before owned country-IP bypass, preserving private exceptions and basic-config optimization. Tested base/native/custom modes and rollback. MAC proxy-access switch: authenticated bounded upload, transactional IPv4/IPv6 firewall, startup/mode reapply, controls and unexecuted device acceptance cases; device validation pending."
   },
   "payload/starts/dashboard-install.sh": {
     "sha256": "518e890c9515867f4d9deb6cd2c7b38042b0eb5876117484f49e0c16eeac50f4",
@@ -136,8 +136,8 @@
     "reason": "Validate bounded HTTPS custom native sources before any table changes; retain the fixed web default and existing rollback."
   },
   "payload/starts/afstart.sh": {
-    "sha256": "59a5246f877eae679f30ca0c88a2c49a0e659b71a883f0b6b3c9cdea5e30ea91",
-    "reason": "Reboot acceptance fixes: initialized routing hooks, safe executable reuse, remote domain cache, pre-download startup delay and explicit remote backup catalog query"
+    "sha256": "a57cdd4e01b31b4b47283fd9f40a580bfa40a929ce32984e2e274c7f3b190e79",
+    "reason": "Reboot acceptance fixes: initialized routing hooks, safe executable reuse, remote domain cache, pre-download startup delay and explicit remote backup catalog query MAC proxy-access switch: authenticated bounded upload and persisted policy, owned IPv4/IPv6 firewall gates for transparent and explicit proxy paths, startup/mode reapply without core restart; UI state and confirmation. Local firewall transaction tests required; device validation pending."
   },
   "payload/starts/mirror_update.sh": {
     "sha256": "f0c336773d983892176b3a35079924b1bed6fbf0943c3cdd67cbb0a6d38fe896",
@@ -206,5 +206,9 @@
   "payload/starts/core_update.sh": {
     "reason": "Bounded low-memory upgrade retains local rollback archive and 24MiB extraction reserve. Existing Lua/nixio pipes verify compressed SHA256 and pinned Git blob while parsing one bounded regular member; release checked binary before a second digest-bound archive download for existing mirror/cache/start logic. No threshold reduction or firmware dependency. Live gates recorded separately. Records only job/version/order inputs for precise rejection attribution. Hash-verified binary report is authoritative when a source-wide version index describes a different build; recheck anti-downgrade against actual semver before configuration validation/start/persistence; retain index label as diagnostic metadata. Streamed candidates now start through the existing validated FD reuse path; no second compressed candidate overlaps old rollback archive and executable. Keep full old local archive until readiness and Storage commit; release candidate FD before any rollback. Authenticated cached body can publish verified metadata without another archive copy. Optional local compressed cache remains unchanged and still hash-gated at future boot.",
     "sha256": "5d42d3ec740ee525de06d6fe2fd82b78ad2bf7142830599f5b818247fc56e00a"
+  },
+  "payload/starts/reapply.sh": {
+    "sha256": "7a466a27fc2d18aaeb758f5254fbca72864c068894df808f2e2876ff9c0cc7a1",
+    "reason": " MAC proxy-access switch: authenticated bounded upload and persisted policy, owned IPv4/IPv6 firewall gates for transparent and explicit proxy paths, startup/mode reapply without core restart; UI state and confirmation. Local firewall transaction tests required; device validation pending."
   }
 }
