@@ -52,6 +52,7 @@ function A.read()
   M.run('C='..M.C..' D='..M.R..' sh -c \'. "$C/ax5/remote.sh"; dav_catalog > "$D/remote-catalog.out"\'');H.prepare_content('application/json');H.write(M.read(M.R..'/remote-catalog.out',6144));return
  elseif kind=='quota'or kind=='quotacheck'then
   local result=M.exec('sh '..M.C..'/ax5/subscription-quota.sh ax5 '..(kind=='quota'and'read'or'check'));local ok,v=pcall(M.json.decode,result);reply(ok and v or{state='request_failed'});return
+ elseif kind=='accessdevices'then local raw=M.exec('lua '..M.C..'/ax5/access-devices.lua list '..M.C);local ok,v=pcall(M.json.decode,raw);reply(ok and v or{devices={},error='query_failed'});return
  elseif kind=='nodepingresult'then reply(M.load(M.R..'/nodepingresult.json',{state='idle'}));return
  elseif kind=='state'then reply(M.state());return end
  local paths={progress=M.R..'/subscription.progress',subscriptionlog=M.R..'/subscription-tool.log',endpoint=M.R..'/subscription.endpoint',policy=M.C..'/configs/policy.tsv',filter=M.C..'/configs/fake_ip_filter.list',subscriptionnodes=M.R..'/subscription.nodes.raw',subscription=M.R..'/subscription.raw',memory=M.R..'/memory.csv',incidents=M.R..'/incidents',logs=M.R..'/core.log'}

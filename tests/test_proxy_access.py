@@ -29,6 +29,7 @@ elif op=='-I':
  if os.environ.get('ACL_FAIL')=='mangle' and t=='mangle':sys.exit(1)
  d[key].insert(n-1,rule)
 elif op=='-D':
+ if os.environ.get('ACL_FAIL')=='delete' and 'SC_ACL_' in ' '.join(a):sys.exit(1)
  if a[2:] not in d[key]:sys.exit(1)
  d[key].remove(a[2:])
 elif op=='-F':d[key]=[]
@@ -56,9 +57,9 @@ class ProxyAccess(unittest.TestCase):
  def enabled(self):
   self.policy('1\n02:11:22:33:44:55\n');self.assertEqual(self.runsh('ac_apply').returncode,0)
  def test_validation_and_empty_enabled(self):
-  for text in ['1\n','0\n02:11:22:33:44:55\n','1\nAA:00:11:22:33:44\n']:
+  for text in ['0\n02:11:22:33:44:55\n','1\nAA:00:11:22:33:44\n']:
    self.policy(text);self.assertEqual(self.runsh('ac_validate "$C/configs/proxy-access"').returncode,0,text)
-  for text in ['', 'yes\n','1\nff:ff:ff:ff:ff:ff\n','1\n00:00:00:00:00:00\n','1\n02:11:22:33:44:55;id\n','1\n02:11:22:33:44:55\n02:11:22:33:44:55\n']:
+  for text in ['', '1\n', 'yes\n','1\nff:ff:ff:ff:ff:ff\n','1\n00:00:00:00:00:00\n','1\n02:11:22:33:44:55;id\n','1\n02:11:22:33:44:55\n02:11:22:33:44:55\n']:
    self.policy(text);self.assertNotEqual(self.runsh('ac_validate "$C/configs/proxy-access"').returncode,0,text)
  def test_default_disabled_leaves_original_firewall(self):
   self.assertEqual(self.runsh('ac_apply').returncode,0);self.assertEqual(json.loads(self.fw.read_text()),self.base)
@@ -88,11 +89,26 @@ class ProxyAccess(unittest.TestCase):
   self.assertNotEqual(result.returncode,0)
   self.assertEqual((self.c/'configs/proxy-access').read_text(),'1\n02:11:22:33:44:55\n')
   d=json.loads(self.fw.read_text());self.assertNotIn('02:22:33:44:55:66',json.dumps(d))
- def test_empty_list_rejects_all_and_missing_mac_support_does_not_open_saved_policy(self):
-  self.policy('1\n');self.assertEqual(self.runsh('ac_apply').returncode,0)
-  d=json.loads(self.fw.read_text());self.assertEqual(d['filter:SC_ACL_A_I'],[['-i','lo','-j','RETURN'],['-j','REJECT']])
+ def test_empty_list_cannot_enable_and_missing_mac_support_is_fail_closed(self):
+  self.policy('1\n');self.assertNotEqual(self.runsh('ac_apply').returncode,0)
+  self.assertEqual(json.loads(self.fw.read_text()),self.base)
   self.policy('1\n02:11:22:33:44:55\n')
   self.assertNotEqual(self.runsh('ac_enforce',ACL_FAIL='mac').returncode,0)
   d=json.loads(self.fw.read_text());self.assertEqual(d['filter:INPUT'][0][-1],'SC_ACL_LOCK')
   self.assertEqual(d['filter:SC_ACL_LOCK'][-1],['-j','REJECT'])
+ def test_ip_input_and_official_native_files_are_used(self):
+  starts=self.c/'starts';starts.mkdir();libs=self.c/'libs';libs.mkdir()
+  (starts/'reapply.sh').write_text('exit 0\n')
+  (starts/'proxy-access-native.sh').write_text('exit 0\n')
+  (libs/'set_config.sh').write_bytes((ROOT/'vendor/ShellCrash-1.9.4/libs/set_config.sh').read_bytes())
+  (self.c/'configs/ShellCrash.cfg').write_text('secret=fixture\n')
+  candidate=self.p/'candidate';candidate.write_text('1\n192.168.1.25\n02:11:22:33:44:55\n');self.env['CANDIDATE']=str(candidate)
+  self.assertEqual(self.runsh('ac_commit "$CANDIDATE"').returncode,0)
+  self.assertEqual((self.c/'configs/mac').read_text(),'02:11:22:33:44:55\n')
+  self.assertEqual((self.c/'configs/ip_filter').read_text(),'192.168.1.25\n')
+  self.assertIn('macfilter_type=白名单',(self.c/'configs/ShellCrash.cfg').read_text())
+ def test_failed_rule_deletion_does_not_flush_live_policy_or_claim_disabled(self):
+  self.enabled();self.policy('0\n02:11:22:33:44:55\n')
+  self.assertNotEqual(self.runsh('ac_apply',ACL_FAIL='delete').returncode,0)
+  d=json.loads(self.fw.read_text());self.assertIn(['-m','mac','--mac-source','02:11:22:33:44:55','-j','RETURN'],d['filter:SC_ACL_A_I'])
 if __name__=='__main__':unittest.main()

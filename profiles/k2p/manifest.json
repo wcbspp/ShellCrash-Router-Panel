@@ -268,5 +268,7 @@
   "payload/starts/core_stream_extract.lua": "profiles/k2p/payload/starts/core_stream_extract.lua",
   "tests/test_upgrade_helper_dispatch.py": "profiles/k2p/tests/test_upgrade_helper_dispatch.py",
   "payload/starts/core_http.lua": "profiles/k2p/payload/starts/core_http.lua",
-  "payload/starts/proxy-access.sh": "shared/lib/proxy-access.sh"
+  "payload/starts/proxy-access.sh": "shared/lib/proxy-access.sh",
+  "payload/starts/access-devices.lua": "shared/lib/access-devices.lua",
+  "payload/starts/proxy-access-native.sh": "profiles/k2p/payload/starts/proxy-access-native.sh"
 }

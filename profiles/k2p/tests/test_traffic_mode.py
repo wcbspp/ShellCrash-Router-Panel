@@ -18,6 +18,9 @@ elif tool=='iptables-restore':
   if x and x[0]=='-A':d['chains'][x[1]].append(line)
 elif tool=='iptables':
  a=a[2:] if a[:1]==['-t'] else a
+ if a==['-S']:
+  for rows in d['chains'].values():print('\n'.join(rows))
+  sys.exit(0)
  op,chain=a[:2]
  if chain not in d['chains']:sys.exit(1)
  if op=='-S':print('-N '+chain);print('\n'.join(d['chains'][chain]));sys.exit(0)

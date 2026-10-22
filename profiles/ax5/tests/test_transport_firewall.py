@@ -21,7 +21,7 @@ class TransportFirewall(unittest.TestCase):
                 (root / 'ram/udp-route-owned').touch()
             (root / 'config/ax5/proxy-access.sh').write_text((ROOT/'ax5/proxy-access.sh').read_text())
             log = root / 'commands'
-            (root / 'bin/iptables').write_text('#!/bin/sh\necho "iptables $*" >> "$TEST_LOG"\ncase " $* " in *" -D "*) exit 1;; esac\n')
+            (root / 'bin/iptables').write_text('#!/bin/sh\necho "iptables $*" >> "$TEST_LOG"\ncase " $* " in *" -D "*) exit 1;; esac\ncase " $* " in *" --to-ports "*) case " $* " in *" -p tcp "*|*" -p udp "*|*" -p sctp "*|*" -p dccp "*) :;; *) exit 2;; esac;; esac\n')
             (root / 'bin/ip').write_text('#!/bin/sh\necho "ip $*" >> "$TEST_LOG"\ncase "$*" in "route show table 21313"|"rule show") exit 0;; "rule add "*) [ "$TEST_FAIL" != 1 ] || exit 1;; esac\nexit 0\n')
             for binary in (root / 'bin').iterdir():
                 binary.chmod(0o700)
@@ -47,6 +47,11 @@ class TransportFirewall(unittest.TestCase):
         self.assertFalse(any('SC_AX5_HTTPS -m mac' in line for line in calls))
         self.assertFalse(any(' -I FORWARD ' in line and 'SC_AX5_FAKE_UDP -j REJECT' in line for line in calls))
         self.assertFalse(any('-t mangle -I OUTPUT' in line for line in calls))
+
+    def test_lan_dns_redirect_has_protocol_required_by_real_iptables(self):
+        code, calls, _, _ = self.fixture(mixed=False)
+        self.assertEqual(code, 0)
+        self.assertIn('iptables -t nat -A SC_AX5_LDNS -p udp -j REDIRECT --to-ports 1053', calls)
 
     def test_redir_keeps_compatibility_and_does_not_touch_foreign_routes(self):
         code, calls, owned, mode = self.fixture(mixed=False)

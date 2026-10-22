@@ -66,7 +66,7 @@ iptables -t nat -N SC_AX5_IN
 iptables -t nat -N SC_AX5_OUT
 iptables -t nat -N SC_AX5_DNS
 iptables -t nat -N SC_AX5_LDNS
-iptables -t nat -A SC_AX5_LDNS -j REDIRECT --to-ports 1053
+iptables -t nat -A SC_AX5_LDNS -p udp -j REDIRECT --to-ports 1053
 iptables -t nat -A SC_AX5_DNS -m mark --mark 0x5343 -j RETURN
 for proto in tcp udp; do iptables -t nat -A SC_AX5_DNS -p "$proto" -j REDIRECT --to-ports 1053; done
 iptables -t nat -A SC_AX5_IN -p tcp --dport 53 -j REDIRECT --to-ports 1053

@@ -61,7 +61,7 @@ traffic_mode_apply(){
    done
    iptables -t nat -I PREROUTING 1 -p tcp -m comment --comment SC_PANEL_GLOBAL -j shellcrash || return 1
   fi
-  . "$C/starts/proxy-access.sh";ac_enforce || return 1
+  . "$C/starts/proxy-access.sh";[ "${SC_ACCESS_REBUILD:-0}" = 1 ] || ac_enforce || return 1
  }
  if traffic_api -X PATCH -H 'Content-Type: application/json' -d "{\"mode\":\"$requested\"}" >/dev/null && traffic_fw "$requested";then
   actual=$(traffic_api | sed -n 's/.*"mode"[ ]*:[ ]*"\([A-Za-z]*\)".*/\1/p' | tr 'A-Z' 'a-z')
@@ -80,7 +80,7 @@ traffic_mode_apply(){
  printf "%s mode=%s before=%s verification failed; reverting\n" "$(date +%s)" "$requested" "$before" >> "$T/events.log"
  traffic_unhook
  traffic_restore "$T/before"
- . "$C/starts/proxy-access.sh";ac_enforce || :
+ . "$C/starts/proxy-access.sh";[ "${SC_ACCESS_REBUILD:-0}" = 1 ] || ac_enforce || :
  [ "$previous" != global ] || iptables -t nat -I PREROUTING 1 -p tcp -m comment --comment SC_PANEL_GLOBAL -j shellcrash
  traffic_api -X PATCH -H 'Content-Type: application/json' -d "{\"mode\":\"$before\"}" >/dev/null
  rm -f "$T/auth" "$T/before" "$T/chain"
