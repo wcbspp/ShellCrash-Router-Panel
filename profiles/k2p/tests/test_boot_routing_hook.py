@@ -7,7 +7,9 @@ ROOT = Path(__file__).resolve().parents[1]
 class BootRoutingHook(unittest.TestCase):
  def test_hook_initializes_runtime_and_router_address(self):
   with tempfile.TemporaryDirectory() as tmp:
-   p=Path(tmp);c=p/'config';d=p/'runtime';s=c/'starts';s.mkdir(parents=True);(c/'configs').mkdir()
+   p=Path(tmp);c=p/'config';d=p/'runtime';s=c/'starts';s.mkdir(parents=True);(c/'configs').mkdir();(p/'ram').mkdir();b=p/'bin';b.mkdir()
+   for name in ['iptables','ip6tables']:
+    f=b/name;f.write_text('#!/bin/sh\n[ "$1" != -D ] || exit 1\necho MARK\n');f.chmod(0o700)
    (c/'configs/ShellCrash.cfg').write_text('redir_mod=混合模式\n')
    (s/'panel_env.sh').write_text('PANEL_LAN_IP=192.168.123.1\n')
    (s/'proxy-access.sh').write_text((ROOT/'payload/starts/proxy-access.sh').read_text())
@@ -16,7 +18,7 @@ class BootRoutingHook(unittest.TestCase):
    hook=(ROOT/'payload/starts/panel_afstart.sh').read_text().replace('/etc/storage/ShellCrash',str(c)).replace('/tmp/sc-admin',str(d)).replace('/tmp/ShellCrash',str(p/'ram'))
    # Only firmware commands are mocked; the environment initialization is real.
    script='pidof(){ :; };ip(){ :; };iptables(){ if [ "$1" = -D ];then return 1;fi;echo MARK; };logger(){ echo "$*" >&2; };\n'+hook
-   r=subprocess.run(['sh','-c',script],env={'PATH':'/bin:/usr/bin','SC_ACCESS_RUNTIME':str(p/'acl')},capture_output=True,text=True)
+   r=subprocess.run(['sh','-c',script],env={'PATH':str(b)+':/bin:/usr/bin','SC_ACCESS_RUNTIME':str(p/'acl')},capture_output=True,text=True)
    self.assertEqual(r.returncode,0,r.stderr);self.assertEqual((d/'result').read_text().strip(),'ready')
 
  def refresh(self,applied,checked='rule:ready',busy=False):
