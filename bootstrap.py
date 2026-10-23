@@ -3,7 +3,7 @@
 import argparse,hashlib,re,subprocess,sys,tarfile,tempfile,urllib.request,urllib.error,shutil
 from pathlib import Path
 REPOSITORY='wcbspp/ShellCrash-Router-Panel'
-VERSION='1.0.0'
+VERSION='1.0.1'
 MAX_PACKAGE=4*1024*1024
 
 def fetch(url,limit):

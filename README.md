@@ -1,10 +1,10 @@
 # ShellCrash Router Panel
 
-在路由器原来的管理页里，用网页管理 ShellCrash：选节点、更新订阅、设置分流和 DNS，查看内存与日志，需要时再打开高级面板。
+在路由器原来的管理页里，用网页管理 ShellCrash：选节点、更新订阅、设置分流和 DNS，查看内存与日志，需要时再打开高级面板。也可以按 IP、MAC 和设备名称选择哪些设备允许使用代理。
 
-**1.0 正式版**，支持 Redmi AX5 和 K2P / Padavan。选好对应机型的安装包，按向导安装；已经在用面板的设备走[更新入口](docs/DEPLOYMENT.md#已有面板怎么更新)。
+**1.0.1 正式版**，支持 Redmi AX5 和 K2P / Padavan。选好对应机型的安装包，按向导安装；已经在用面板的设备走[更新入口](docs/DEPLOYMENT.md#已有面板怎么更新)。
 
-[下载1.0](https://github.com/wcbspp/ShellCrash-Router-Panel/releases/tag/v1.0.0) · [安装说明](docs/DEPLOYMENT.md) · [备份与恢复](docs/BACKUP.md) · [页面使用说明](docs/USAGE.md)
+[下载1.0.1](https://github.com/wcbspp/ShellCrash-Router-Panel/releases/tag/v1.0.1) · [安装说明](docs/DEPLOYMENT.md) · [备份与恢复](docs/BACKUP.md) · [页面使用说明](docs/USAGE.md)
 
 ## 先确认设备
 
@@ -42,7 +42,7 @@
 **在电脑终端运行，不是在路由器 SSH 里运行：**
 
 ```sh
-curl -fL https://raw.githubusercontent.com/wcbspp/ShellCrash-Router-Panel/v1.0.0/bootstrap.py -o shellcrash-install.py
+curl -fL https://raw.githubusercontent.com/wcbspp/ShellCrash-Router-Panel/v1.0.1/bootstrap.py -o shellcrash-install.py
 python3 shellcrash-install.py
 ```
 
@@ -55,7 +55,7 @@ python3 shellcrash-install.py ax5 --router 192.168.31.1
 python3 shellcrash-install.py k2p --router 192.168.123.1
 ```
 
-自定义用户名和端口加 `--user`、`--port`，只检查加 `--check-only`。GitHub 下载不通时，从 [Releases](https://github.com/wcbspp/ShellCrash-Router-Panel/releases/tag/v1.0.0) 下载对应机型 `.tar.gz`，解压后运行 `python3 start.py`。macOS 也可双击 `Install.command`。
+自定义用户名和端口加 `--user`、`--port`，只检查加 `--check-only`。GitHub 下载不通时，从 [Releases](https://github.com/wcbspp/ShellCrash-Router-Panel/releases/tag/v1.0.1) 下载对应机型 `.tar.gz`，解压后运行 `python3 start.py`。macOS 也可双击 `Install.command`。
 
 ## 离线一键安装
 
@@ -66,7 +66,7 @@ python3 shellcrash-install.py ax5 --prepare-offline
 python3 shellcrash-install.py k2p --prepare-offline
 ```
 
-助手下载并分别校验面板和固定版本内核，生成 `shellcrash-router-panel-机型-offline-1.0.0` 文件夹。在已解压的安装包里，也可运行 `python3 start.py --prepare-offline`。
+助手下载并分别校验面板和固定版本内核，生成 `shellcrash-router-panel-机型-offline-1.0.1` 文件夹。在已解压的安装包里，也可运行 `python3 start.py --prepare-offline`。
 
 把**整个文件夹**带到连接路由器的电脑，进入文件夹运行：
 
@@ -133,6 +133,12 @@ AX5 支持服务商直取及 ShellCrash 的转换方式；使用转换服务时�
 规则页显示内核当前使用的规则、策略组和连接。需要为某些网站另选出口时，使用常用网站分流或额外域名规则；“跟随订阅规则”会撤销这一项本地指定，让订阅继续决定出口。
 
 DNS 页可查询和设置真实 DNS / Mix 及支持的 Fake IP 例外。不同内核的能力和字段不同，页面按当前内核显示。流量接管范围以设备与当前设置为准，全局 TCP 不等于全协议 VPN。[分流与接管说明](docs/DOMESTIC_BYPASS.md)
+
+### 设备白名单：只让选中的设备使用代理
+
+在规则页点击“设置并开启”，按 IP、名称和 MAC 选择设备，也支持手工添加。已识别的设备优先按 MAC 匹配，避免 DHCP 换地址影响名单。至少选一台才能确认开启。
+
+关闭时所有接入设备都可以使用代理，名单只读。开启后点击“管理名单”调整；取消不保存，关闭开关会确认停用并保留名单。名单外设备仍可直连，透明代理和本面板管理的 HTTP / SOCKS 入口一起受限。[详细用法](docs/USAGE.md#代理设备白名单)
 
 ### 高级面板：展开看完整策略、规则和连接
 

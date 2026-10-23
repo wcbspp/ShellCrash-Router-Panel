@@ -173,5 +173,6 @@
   "tests/test_node_diagnostic.js": "shared/tests/test_node_diagnostic.js",
   "tests/test_core_install_memory.py": "profiles/ax5/tests/test_core_install_memory.py",
   "ax5/proxy-access.sh": "shared/lib/proxy-access.sh",
-  "ax5/access-devices.lua": "shared/lib/access-devices.lua"
+  "ax5/access-devices.lua": "shared/lib/access-devices.lua",
+  "ax5/proxy-access-ready": "shared/lib/proxy-access-ready"
 }

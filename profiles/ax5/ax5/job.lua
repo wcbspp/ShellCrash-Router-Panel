@@ -88,7 +88,7 @@ local function execute()
   require('nixio').exec('/bin/sh',M.C..'/ax5/recovery-dispatch.sh','ax5',id,args[2]);fail('恢复执行器未能调度')
  elseif a=='advanced'then os.remove(M.R..'/dashboard-error');local advanced_kind=M.read(M.C..'/cache/core.env'):match('KIND=([^%s]+)')or'singbox';if not M.run('sh '..M.C..'/ax5/dashboard-install.sh '..M.C..' '..advanced_kind..' >> '..M.R..'/worker.log 2>&1')then local reason=M.read(M.R..'/dashboard-error'):gsub('%s+$','');fail(reason~=''and reason or'高级面板下载或校验失败，请查看运行日志')end;phase('done','高级面板已准备',false)
  elseif a=='access'then
-  assert(M.read(M.C..'/configs/proxy-access-verified')=='1\n','设备限制尚在验证，暂不应用；现有代理保持不变')
+  assert(M.read(M.C..'/ax5/proxy-access-ready')=='1\n','设备限制尚在验证，暂不应用；现有代理保持不变')
   assert(M.read(M.R..'/upload-id-access'):gsub('%s+$','')==id,'白名单传输已失效，请重试')
   if not M.run('C='..M.C..[[ sh -c '. "$C/ax5/proxy-access.sh"; ac_commit /tmp/ShellCrash/upload-access' >> ]]..M.R..'/worker.log 2>&1')then fail('白名单保存或应用失败，请查看日志确认当前规则与保存状态')end
   os.remove(M.R..'/upload-access');os.remove(M.R..'/upload-id-access');phase('done','代理设备设置已保存，无需重启内核',false)

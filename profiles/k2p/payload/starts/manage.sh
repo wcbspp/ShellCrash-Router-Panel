@@ -93,7 +93,7 @@ status(){
  [ "$running" = true ] || transport_active=''
  case "$transport_active" in redir|mixed|'') :;; *) transport_active=unknown;;esac
  acl_enabled=false;[ "$(head -n 1 "$C/configs/proxy-access" 2>/dev/null)" != 1 ] || acl_enabled=true
- acl_available=false;[ "$(cat "$C/configs/proxy-access-verified" 2>/dev/null)" != 1 ] || acl_available=true
+ acl_available=false;[ "$(cat "$C/starts/proxy-access-ready" 2>/dev/null)" != 1 ] || acl_available=true
  printf '{"proxy_access":{"available":%s,"enabled":%s,"macs_b64":"%s","error":"%s"},' "$acl_available" "$acl_enabled" "$(tail -n +2 "$C/configs/proxy-access" 2>/dev/null|base64|tr -d '\n')" "$(head -n 1 /tmp/ShellCrash/proxy-access/error 2>/dev/null | tr -cd a-z_)"
  printf '"cn_bypass":%s,' "$cn_state"
  printf '"pid":%s,"transport":{"configured":"%s","active":"%s","mixed_available":%s},' "${pid:-0}" "$configured" "$transport_active" "$mixed_available"
@@ -190,7 +190,7 @@ case "$act" in
   exec sh "$C/starts/recovery-dispatch.sh" k2p "$id" "$ticket";;
  access)
   valid_id "$id" && [ "$id" = "$(cat "$D/id")" ] && [ "$(cat "$D/kind")" = access ] || exit 1
-  [ "$(cat "$C/configs/proxy-access-verified" 2>/dev/null)" = 1 ] || { fail '设备限制尚在验证，暂不应用；现有代理保持不变';exit 1; }
+  [ "$(cat "$C/starts/proxy-access-ready" 2>/dev/null)" = 1 ] || { fail '设备限制尚在验证，暂不应用；现有代理保持不变';exit 1; }
   lock || exit 1;phase working '正在应用代理设备名单'
   [ "$(wc -c < "$D/upload.parts")" -le 9000 ] || { fail '白名单过大';exit 1; }
   sort "$D/upload.parts" | awk '!seen[$1]++{printf "%s",$2}' > "$D/access.b64"
