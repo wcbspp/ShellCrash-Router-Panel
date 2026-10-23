@@ -15,7 +15,7 @@ class BootRoutingHook(unittest.TestCase):
    (s/'proxy-access.sh').write_text((ROOT/'payload/starts/proxy-access.sh').read_text())
    (s/'subscription-quota.sh').write_text('exit 0\n')
    (s/'policy_capture.sh').write_text('policy_capture_apply(){ [ -d "$D" ] && [ "$PANEL_LAN_IP" = 192.168.123.1 ] && echo ready > "$D/result"; }\n')
-   hook=(ROOT/'payload/starts/panel_afstart.sh').read_text().replace('/etc/storage/ShellCrash',str(c)).replace('/tmp/sc-admin',str(d)).replace('/tmp/ShellCrash',str(p/'ram'))
+   hook=(ROOT/'payload/starts/panel_afstart.sh').read_text().replace('/etc/storage/ShellCrash',str(c)).replace('/tmp/sc-admin',str(d)).replace('/tmp/ShellCrash',str(p/'ram')).replace('PATH=/usr/sbin:/usr/bin:/sbin:/bin','PATH='+str(b)+':/usr/sbin:/usr/bin:/sbin:/bin')
    # Only firmware commands are mocked; the environment initialization is real.
    script='pidof(){ :; };ip(){ :; };iptables(){ if [ "$1" = -D ];then return 1;fi;echo MARK; };logger(){ echo "$*" >&2; };\n'+hook
    r=subprocess.run(['sh','-c',script],env={'PATH':str(b)+':/bin:/usr/bin','SC_ACCESS_RUNTIME':str(p/'acl')},capture_output=True,text=True)
