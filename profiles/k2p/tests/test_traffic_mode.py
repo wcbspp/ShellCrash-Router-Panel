@@ -16,7 +16,7 @@ elif tool=='iptables-restore':
   x=line.split()
   if x and x[0].startswith(':'):d['chains'][x[0][1:]]=[]
   if x and x[0]=='-A':d['chains'][x[1]].append(line)
-elif tool=='iptables':
+elif tool in ('iptables','ip6tables'):
  a=a[2:] if a[:1]==['-t'] else a
  if a==['-S']:
   for rows in d['chains'].values():print('\n'.join(rows))
@@ -34,7 +34,7 @@ p.write_text(json.dumps(d))
 class TrafficMode(unittest.TestCase):
  def setUp(self):
   self.tmp=tempfile.TemporaryDirectory();self.p=Path(self.tmp.name);b=self.p/'bin';b.mkdir()
-  for name in ['curl','pidof','iptables','iptables-restore']:
+  for name in ['curl','pidof','iptables','ip6tables','iptables-restore']:
    f=b/name;f.write_text(MOCK);f.chmod(0o755)
   starts=self.p/'starts';starts.mkdir();(starts/'proxy-access.sh').write_bytes((ROOT/'payload/starts/proxy-access.sh').read_bytes());(starts/'policy_capture.sh').write_bytes((ROOT/'payload/starts/policy_capture.sh').read_bytes())
   self.config=self.p/'configs';self.config.mkdir();(self.config/'ShellCrash.cfg').write_text('secret=fixture\n')
