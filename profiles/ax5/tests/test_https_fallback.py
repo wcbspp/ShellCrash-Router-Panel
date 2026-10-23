@@ -14,6 +14,8 @@ class FallbackTests(unittest.TestCase):
             config = temp / 'config'
             config.mkdir()
             (config / 'configs').mkdir()
+            (config / 'ax5').mkdir()
+            (config / 'ax5/proxy-access.sh').write_text((ROOT / 'ax5/proxy-access.sh').read_text())
             ram = temp / 'ram'
             ram.mkdir()
             (ram / 'core.pid').write_text(str(os.getpid()))
@@ -24,10 +26,12 @@ class FallbackTests(unittest.TestCase):
             binary = temp / 'iptables'
             binary.write_text('#!/bin/sh\nprintf "%s\\n" "$*" >> "' + str(log) + '"\ncase " $* " in *" -D "*) exit 1;; esac\nexit 0\n')
             binary.chmod(0o700)
+            (temp / 'ip6tables').write_text(binary.read_text())
+            (temp / 'ip6tables').chmod(0o700)
             source = (ROOT / 'ax5/firewall.sh').read_text().replace('C=/data/ShellCrash', 'C=' + str(config)).replace('R=/tmp/ShellCrash', 'R=' + str(ram))
             script = temp / 'firewall.sh'
             script.write_text(source)
-            result = subprocess.run(['sh', str(script), action], env=dict(os.environ, PATH=str(temp) + ':' + os.environ['PATH']), capture_output=True, text=True)
+            result = subprocess.run(['sh', str(script), action], env=dict(os.environ, PATH=str(temp) + ':' + os.environ['PATH'], SC_ACCESS_RUNTIME=str(ram / 'access')), capture_output=True, text=True)
             self.assertEqual(result.returncode, 0, result.stderr)
             return log.read_text().splitlines()
 

@@ -22,6 +22,7 @@ class TransportFirewall(unittest.TestCase):
             (root / 'config/ax5/proxy-access.sh').write_text((ROOT/'ax5/proxy-access.sh').read_text())
             log = root / 'commands'
             (root / 'bin/iptables').write_text('#!/bin/sh\necho "iptables $*" >> "$TEST_LOG"\ncase " $* " in *" -D "*) exit 1;; esac\ncase " $* " in *" --to-ports "*) case " $* " in *" -p tcp "*|*" -p udp "*|*" -p sctp "*|*" -p dccp "*) :;; *) exit 2;; esac;; esac\n')
+            (root / 'bin/ip6tables').write_text((root / 'bin/iptables').read_text())
             (root / 'bin/ip').write_text('#!/bin/sh\necho "ip $*" >> "$TEST_LOG"\ncase "$*" in "route show table 21313"|"rule show") exit 0;; "rule add "*) [ "$TEST_FAIL" != 1 ] || exit 1;; esac\nexit 0\n')
             for binary in (root / 'bin').iterdir():
                 binary.chmod(0o700)
