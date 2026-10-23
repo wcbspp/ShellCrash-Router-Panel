@@ -776,7 +776,7 @@ setInterval(pollTraffic,4000);
 document.addEventListener('visibilitychange',()=>{if(document.hidden){trafficController?.abort();trafficPrevious=null}else pollTraffic()});
 window.addEventListener('pagehide',()=>trafficController?.abort());
 
-let proxyAccessDirty=false,accessDevices=[],accessSelected=new Set(),accessLoaded=false,accessLoading=false;
+let proxyAccessDirty=false,proxyAccessEditing=false,accessDevices=[],accessSelected=new Set(),accessLoaded=false,accessLoading=false;
 function accessKey(device){return(device.mac||device.ip||'').toLowerCase()}
 function validAccessAddress(value){
  if(/^([0-9a-f]{2}:){5}[0-9a-f]{2}$/.test(value))return parseInt(value.slice(0,2),16)%2===0&&value!=='00:00:00:00:00:00';
@@ -790,8 +790,8 @@ function paintAccessDevices(){
  if(!rows.length){const text=document.createElement('p');text.className='small-note';text.textContent=accessLoading?'正在读取设备…':'暂未发现设备，可刷新列表或手工添加 IP / MAC。';host.append(text)}
  for(const device of rows){
   const label=document.createElement('label');label.className='access-device';
-  const check=document.createElement('input');check.type='checkbox';check.checked=accessSelected.has(accessKey(device))||accessSelected.has(device.ip);check.disabled=manageBusy||nativeState?.active||advancedActive;
-  check.onchange=()=>{if(check.checked){accessSelected.delete(device.ip);accessSelected.add(accessKey(device))}else{accessSelected.delete(accessKey(device));accessSelected.delete(device.ip)}proxyAccessDirty=true;paintProxyAccess(nativeState||{})};
+  const check=document.createElement('input');check.type='checkbox';check.checked=accessSelected.has(accessKey(device))||accessSelected.has(device.ip);check.disabled=!proxyAccessEditing||manageBusy||nativeState?.active||advancedActive;
+  check.onchange=()=>{if(check.disabled)return;if(check.checked){accessSelected.delete(device.ip);accessSelected.add(accessKey(device))}else{accessSelected.delete(accessKey(device));accessSelected.delete(device.ip)}proxyAccessDirty=true;paintProxyAccess(nativeState||{})};
   const info=document.createElement('span');const name=document.createElement('strong');name.textContent=device.name||'未命名设备';
   const ip=document.createElement('span');ip.textContent=device.ip||'IP 暂未知';
   const hardware=document.createElement('small');hardware.textContent=device.mac||'MAC 暂未知';
@@ -805,30 +805,57 @@ async function refreshAccessDevices(){
 }
 function paintProxyAccess(s){
  const box=el('proxy-access-enabled'),save=el('proxy-access-save');if(!box||!save)return;
- if(!proxyAccessDirty){box.checked=!!s.proxy_access?.enabled;accessSelected=new Set(decode(s.proxy_access?.macs_b64||'').trim().split(/\s+/).filter(Boolean))}
- const busy=manageBusy||s.active||advancedActive;if(!accessSelected.size&&proxyAccessDirty)box.checked=false;
- box.disabled=busy||!s.proxy_access?.available||(!accessSelected.size&&!box.checked);save.disabled=busy||!s.proxy_access?.available||(!proxyAccessDirty&&!s.proxy_access?.error);
- for(const id of ['proxy-access-macs','proxy-access-add','proxy-access-refresh'])if(el(id))el(id).disabled=busy;
- el('proxy-access-result').textContent=!s.proxy_access?.available?'设备限制正在验证，可先查看和选择设备，暂未开放应用。':s.proxy_access?.error==='memory_low'?'内存余量不足，当前设置未修改，请稍后再试。':s.proxy_access?.error?'规则应用未完成，请检查日志并重试。':proxyAccessDirty?'有未应用的修改。':box.checked?'已开启：仅选中的设备可使用代理。':'已关闭：所有接入设备均可使用代理。';
+ const policy=s.proxy_access||{},busy=manageBusy||s.active||advancedActive,enabled=!!policy.enabled,available=!!policy.available;
+ box.checked=enabled;
+ if(!proxyAccessEditing)accessSelected=new Set(decode(policy.macs_b64||'').trim().split(/\s+/).filter(Boolean));
+ box.disabled=busy||!available||(!enabled&&!accessSelected.size);
+ save.disabled=busy||!available||!proxyAccessEditing||!accessSelected.size||(enabled&&!proxyAccessDirty);
+ save.textContent=enabled?'保存名单':'确认开启';
+ for(const id of ['proxy-access-macs','proxy-access-add','proxy-access-refresh'])if(el(id))el(id).disabled=busy||!available||!proxyAccessEditing;
+ el('proxy-access-edit').disabled=busy||!available;el('proxy-access-edit').textContent=enabled?'管理名单':'设置并开启';el('proxy-access-cancel').disabled=busy;
+ const result=el('proxy-access-result');result.dataset.state=busy?'busy':policy.error?'error':enabled?'on':'off';
+ result.textContent=busy?'正在应用设置，请稍候…':!available?'设备限制暂未开放，请稍后再试。':policy.error==='memory_low'?'内存余量不足，设置未改变，请稍后再试。':policy.error?'规则应用未完成，当前状态请以实际生效结果为准。':enabled?'白名单已开启 · 仅名单内设备可以使用代理':'白名单已关闭 · 所有接入设备均可使用代理';
+ const saved=decode(policy.macs_b64||'').trim().split(/\s+/).filter(Boolean).length;
+ el('proxy-access-summary').textContent=saved?'已保存 '+saved+' 台设备'+(enabled?'':'，名单保留，尚未限制代理'):'尚未设置名单';
+ el('proxy-access-editor-title').textContent=enabled?'管理代理设备':'选择设备并开启白名单';
+ el('proxy-access-editor-note').textContent=!accessSelected.size?'至少选择一台设备，才能确认开启。':enabled?(proxyAccessDirty?'修改尚未保存。':'只允许已勾选的设备使用代理。'):'确认开启后才会限制代理；取消不会修改当前设置。';
  el('proxy-access-count').textContent='已选择 '+accessSelected.size+' / 64 台';paintAccessDevices();
  if(!accessLoaded&&!busy&&!el('rules-tab')?.hidden)refreshAccessDevices();
 }
+function openProxyAccessEditor(){
+ if(manageBusy||nativeState?.active||advancedActive||!nativeState?.proxy_access?.available)return;
+ proxyAccessDirty=false;proxyAccessEditing=false;paintProxyAccess(nativeState||{});proxyAccessEditing=true;paintProxyAccess(nativeState||{});el('proxy-access-editor').showModal();
+}
+function closeProxyAccessEditor(){
+ if(manageBusy||nativeState?.active)return;
+ proxyAccessEditing=false;proxyAccessDirty=false;el('proxy-access-macs').value='';el('proxy-access-editor').close();paintProxyAccess(nativeState||{});
+}
 function addAccessAddress(){
+ if(!proxyAccessEditing||manageBusy||nativeState?.active||advancedActive)return;
  const input=el('proxy-access-macs'),entries=input.value.toLowerCase().split(/[\s,;]+/).filter(Boolean),next=new Set(accessSelected);
  if(!entries.length||entries.some(v=>!validAccessAddress(v))){note('请输入有效的 IP 或设备 MAC 地址。',true);return}
  for(const address of entries){const device=accessDevices.find(d=>d.ip===address||d.mac===address);next.add(device?accessKey(device):address)}
  if(next.size>64){note('最多选择 64 个设备或地址。',true);return}accessSelected=next;proxyAccessDirty=true;input.value='';paintProxyAccess(nativeState||{});
 }
-async function saveProxyAccess(){
- if(el('proxy-access-save').disabled)return;
- const enabled=el('proxy-access-enabled').checked,addresses=[...accessSelected];
+async function applyProxyAccess(enabled,addresses){
+ if(manageBusy||nativeState?.active||advancedActive||!nativeState?.proxy_access?.available)return;
  if(addresses.length>64||addresses.some(v=>!validAccessAddress(v))||enabled&&!addresses.length){note('请选择至少一台设备或填写有效地址后再开启。',true);return}
- if(enabled&&!confirm('开启后，名单外设备无法使用代理，现有代理连接也会受限。确认应用？'))return;
+ if(!confirm(enabled?'开启后，名单外设备无法使用代理，现有代理连接也会受限。确认应用？':'关闭白名单后，所有接入设备均可使用代理。确认关闭？'))return;
  const id=[...crypto.getRandomValues(new Uint8Array(4))].map(b=>b.toString(16).padStart(2,'0')).join('');
  manageBusy=true;pauseMeasurements();pauseSites();showService();
- try{await upload(id,'access',new TextEncoder().encode((enabled?'1':'0')+'\n'+(addresses.length?addresses.join('\n')+'\n':'')),'proxy-access-result');await control('sc-access.sh',[id]);await waitJob(id,'done',90000,'proxy-access-result');proxyAccessDirty=false;await syncNative();note('代理设备设置已保存，无需重启内核。')}catch(e){note(e.message,true)}finally{manageBusy=false;await syncNative().catch(()=>{});showService()}
+ try{await upload(id,'access',new TextEncoder().encode((enabled?'1':'0')+'\n'+(addresses.length?addresses.join('\n')+'\n':'')),'proxy-access-editor-note');await control('sc-access.sh',[id]);await waitJob(id,'done',90000,'proxy-access-editor-note');proxyAccessDirty=false;proxyAccessEditing=false;el('proxy-access-editor').close();await syncNative();note(enabled?'设备白名单已生效。':'白名单已关闭，原名单已保留。')}catch(e){note(e.message,true)}finally{manageBusy=false;await syncNative().catch(()=>{});showService()}
 }
-if(el('proxy-access-enabled'))el('proxy-access-enabled').onchange=()=>{proxyAccessDirty=true;paintProxyAccess(nativeState||{})};
+async function saveProxyAccess(){
+ if(el('proxy-access-save').disabled||!proxyAccessEditing)return;
+ await applyProxyAccess(true,[...accessSelected]);
+}
+if(el('proxy-access-enabled'))el('proxy-access-enabled').onchange=()=>{
+ const enabled=!!nativeState?.proxy_access?.enabled;el('proxy-access-enabled').checked=enabled;
+ if(enabled){const addresses=decode(nativeState.proxy_access.macs_b64||'').trim().split(/\s+/).filter(Boolean);applyProxyAccess(false,addresses)}else openProxyAccessEditor();
+};
+if(el('proxy-access-edit'))el('proxy-access-edit').onclick=openProxyAccessEditor;
+if(el('proxy-access-cancel'))el('proxy-access-cancel').onclick=closeProxyAccessEditor;
+if(el('proxy-access-editor'))el('proxy-access-editor').oncancel=e=>{e.preventDefault();closeProxyAccessEditor()};
 if(el('proxy-access-save'))el('proxy-access-save').onclick=saveProxyAccess;
 if(el('proxy-access-add'))el('proxy-access-add').onclick=addAccessAddress;
 if(el('proxy-access-refresh'))el('proxy-access-refresh').onclick=refreshAccessDevices;

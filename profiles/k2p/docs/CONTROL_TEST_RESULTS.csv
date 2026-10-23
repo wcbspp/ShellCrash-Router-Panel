@@ -646,11 +646,11 @@ K2P-RESTORE-NATIVE-coldboot,K2P,手机窄屏,未执行,命令行及原生验证�
 K2P-RESTORE-NATIVE-client,K2P,桌面,未执行,真实Wi-Fi客户端确认列在手机端，不代表桌面页面恢复操作,LIVE_TEST_2026-10-16_K2P_RESTORE.md,2026-10-16,rc.2 本地恢复原型 / sing-box mini 1.12.13
 K2P-RESTORE-NATIVE-client,K2P,手机窄屏,通过,用户在重启后确认全部正常,LIVE_TEST_2026-10-16_K2P_RESTORE.md,2026-10-16,rc.2 本地恢复原型 / sing-box mini 1.12.13
 K2P-CTRL-proxy-access-enabled,K2P,桌面,未执行,真实页面已核对验证门控禁用及空名单禁开；完整保存交互仍待开放前验证,,,
-K2P-CTRL-proxy-access-enabled,K2P,手机窄屏,通过,真实认证页面：设备选择、手工IP转MAC及非法拒绝、空名单禁开、确认保存、关闭保存和刷新保留；实际LAN请求通过；启用重启及Storage读回通过,,,
+K2P-CTRL-proxy-access-enabled,K2P,手机窄屏,通过,新流程真实认证页面：独立窗口确认开启、取消无提交、关闭开关直接确认停用，刷新后只读；后台共2次确认提交；原设置恢复，核心与节点配置未变,,,
 K2P-CTRL-proxy-access-macs,K2P,桌面,通过,真实认证桌面页面：自动设备列表、刷新、MAC勾选、已知IP转MAC、非法地址拒绝及无横向溢出；此宽度未提交配置,,,
 K2P-CTRL-proxy-access-macs,K2P,手机窄屏,通过,真实认证页面：设备选择、手工IP转MAC及非法拒绝、空名单禁开、确认保存、关闭保存和刷新保留；实际LAN请求通过；启用重启及Storage读回通过,,,
 K2P-CTRL-proxy-access-save,K2P,桌面,未执行,真实页面已核对验证门控禁用及空名单禁开；完整保存交互仍待开放前验证,,,
-K2P-CTRL-proxy-access-save,K2P,手机窄屏,通过,真实认证页面：设备选择、手工IP转MAC及非法拒绝、空名单禁开、确认保存、关闭保存和刷新保留；实际LAN请求通过；启用重启及Storage读回通过,,,
+K2P-CTRL-proxy-access-save,K2P,手机窄屏,通过,新流程真实认证页面：独立窗口确认开启、取消无提交、关闭开关直接确认停用，刷新后只读；后台共2次确认提交；原设置恢复，核心与节点配置未变,,,
 AX5-CTRL-traffic-connections,K2P,桌面,未执行,,,,
 AX5-CTRL-traffic-connections,K2P,手机窄屏,未执行,,,,
 K2P-CTRL-traffic-connections,K2P,桌面,未执行,,,,
@@ -661,3 +661,7 @@ K2P-CTRL-proxy-access-add,K2P,桌面,通过,真实认证桌面页面：自动设
 K2P-CTRL-proxy-access-add,K2P,手机窄屏,通过,真实认证页面：设备选择、手工IP转MAC及非法拒绝、空名单禁开、确认保存、关闭保存和刷新保留；实际LAN请求通过；启用重启及Storage读回通过,,,
 K2P-CTRL-summary-rules-proxy-access-manual,K2P,桌面,通过,真实认证桌面页面：自动设备列表、刷新、MAC勾选、已知IP转MAC、非法地址拒绝及无横向溢出；此宽度未提交配置,,,
 K2P-CTRL-summary-rules-proxy-access-manual,K2P,手机窄屏,通过,真实认证页面：设备选择、手工IP转MAC及非法拒绝、空名单禁开、确认保存、关闭保存和刷新保留；实际LAN请求通过；启用重启及Storage读回通过,,,
+K2P-CTRL-proxy-access-edit,K2P,桌面,未执行,桌面1280窗口布局无溢出，操作区可见；完整交互在手机窄屏执行，此宽度未重复提交,,,
+K2P-CTRL-proxy-access-edit,K2P,手机窄屏,通过,新设备窗口实机验证：关闭只读、空名单不能确认、取消无提交、确认开启、开关直接确认停用、刷新后仍只读；原名单与开关恢复,,,
+K2P-CTRL-proxy-access-cancel,K2P,桌面,未执行,桌面1280窗口布局无溢出，操作区可见；完整交互在手机窄屏执行，此宽度未重复提交,,,
+K2P-CTRL-proxy-access-cancel,K2P,手机窄屏,通过,新设备窗口实机验证：关闭只读、空名单不能确认、取消无提交、确认开启、开关直接确认停用、刷新后仍只读；原名单与开关恢复,,,
