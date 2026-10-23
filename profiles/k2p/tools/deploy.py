@@ -118,7 +118,7 @@ def main():
     args.backup_dir.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(prefix='sc-panel-') as td:
         private = Path(td)
-        options = ['-p', str(port), '-o', 'ConnectTimeout=10', '-o', 'ControlMaster=auto',
+        options = ['-p', str(port), '-o', 'HostKeyAlgorithms=+ssh-rsa', '-o', 'ConnectTimeout=10', '-o', 'ControlMaster=auto',
                    '-o', 'ControlPersist=300', '-o', 'ControlPath=' + str(private / 'ssh')]
         target = user + '@' + host
         remote_dir = '/tmp/sc-panel-' + private.name.removeprefix('sc-panel-')

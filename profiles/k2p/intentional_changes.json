@@ -4,8 +4,8 @@
     "sha256": "8d98e2721009f17b0df272a9d63fcd15a3854721ae13704c8078006e9ba60e0d"
   },
   "tools/deploy.py": {
-    "reason": "Optional local node/core input; same SSH preflight/backup/rollback; client backups default outside the signed package; snapshot selects only highest-priority regular rules file, skipping legacy symlinks without weakening archive validation",
-    "sha256": "c3de00a0beda5d18e8f7cb199b891d196bca4e14d14ed992e2139e2669b8b7d9"
+    "reason": "Optional local node/core input; same SSH preflight/backup/rollback; client backups default outside the signed package; snapshot selects only highest-priority regular rules file, skipping legacy symlinks without weakening archive validation; Add legacy RSA host-key negotiation for the verified firmware while retaining ordinary host fingerprint checks; no global SSH configuration or StrictHostKeyChecking bypass.",
+    "sha256": "1304ea65990ce2cbe71b5b5a996b37df01c84f4366f1a4a0c627cecbc364b6e5"
   },
   "tests/test_cleanup.py": {
     "reason": "Rewrite fixture paths once; supports Linux /tmp without double prefix",

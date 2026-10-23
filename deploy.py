@@ -31,7 +31,7 @@ def main():
  if not shutil.which('ssh'):raise ValueError('找不到 OpenSSH；Windows 请在 WSL 运行')
  a.backup_dir.mkdir(parents=True,exist_ok=True)
  with tempfile.TemporaryDirectory(prefix='sc-ax5-') as td:
-  opts=['-p',str(a.port),'-o','ConnectTimeout=10','-o','ControlMaster=auto','-o','ControlPersist=300','-o','ControlPath='+td+'/ssh']
+  opts=['-p',str(a.port),'-o','HostKeyAlgorithms=+ssh-rsa','-o','ConnectTimeout=10','-o','ControlMaster=auto','-o','ControlPersist=300','-o','ControlPath='+td+'/ssh']
   ssh=['ssh',*opts,user+'@'+host];remote='/tmp/sc-ax5-'+Path(td).name;quote=shlex.quote(remote)
   data=io.BytesIO()
   with tarfile.open(fileobj=data,mode='w:gz') as t:

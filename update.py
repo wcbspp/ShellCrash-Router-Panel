@@ -13,7 +13,7 @@ def main():
  if a.host_key_alias and not re.fullmatch(r'[A-Za-z0-9.-]{1,253}',a.host_key_alias):raise ValueError('SSH 主机标识无效')
  subprocess.run([sys.executable,str(ROOT/'tools/verify_package.py'),str(ROOT)],check=True)
  with tempfile.TemporaryDirectory(prefix='sc-update-') as td:
-  opts=['-p',str(a.port),'-o','ConnectTimeout=10','-o','ControlMaster=auto','-o','ControlPersist=300','-o','ControlPath='+td+'/ssh'];opts+=['-o','HostKeyAlias='+a.host_key_alias] if a.host_key_alias else [];ssh=['ssh',*opts,a.user+'@'+host];remote='/tmp/sc-update-'+Path(td).name;q=shlex.quote(remote)
+  opts=['-p',str(a.port),'-o','HostKeyAlgorithms=+ssh-rsa','-o','ConnectTimeout=10','-o','ControlMaster=auto','-o','ControlPersist=300','-o','ControlPath='+td+'/ssh'];opts+=['-o','HostKeyAlias='+a.host_key_alias] if a.host_key_alias else [];ssh=['ssh',*opts,a.user+'@'+host];remote='/tmp/sc-update-'+Path(td).name;q=shlex.quote(remote)
   data=io.BytesIO()
   with tarfile.open(fileobj=data,mode='w:gz') as t:
    for name in ['payload','tools/update.sh','tools/legacy-migration.sha256']:
