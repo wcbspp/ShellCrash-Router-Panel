@@ -89,6 +89,9 @@ async function loadIncidents(){
 }
 el('incident-open').onclick=()=>{showTab('monitor');el('incident-details').open=true;loadIncidents()};
 el('incident-refresh').onclick=loadIncidents;
+let oomEvidence='';
+el('oom-load').onclick=async()=>{const button=el('oom-load');button.disabled=true;try{oomEvidence=(await nativeRead('oom')).replace(/https?:\/\/[^\s<>]+/g,'[链接已隐藏]');el('oom-output').textContent=oomEvidence;el('oom-output').hidden=!oomEvidence;el('oom-download').disabled=!oomEvidence;el('oom-status').textContent=oomEvidence?'OOM 记录已载入；分享前请检查设备信息。':'暂无 OOM 取证记录。'}catch(e){el('oom-status').textContent='读取失败：'+e.message}finally{button.disabled=false}};
+el('oom-download').onclick=()=>{if(!oomEvidence)return;const url=URL.createObjectURL(new Blob([oomEvidence],{type:'text/plain;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download='shellcrash-oom-evidence.txt';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)};
 
 function paintMonitor(){
  if(!nativeState)return;const s=nativeState,mb=n=>(Number(n||0)/1024).toFixed(1)+' MB';

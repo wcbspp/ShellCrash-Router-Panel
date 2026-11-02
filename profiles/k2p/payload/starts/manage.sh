@@ -233,6 +233,7 @@ case "$act" in
  remotecatalog) . "$C/starts/remote.sh";dav_catalog;;
  recoveryplan) if [ -s "$D/recovery-plan.json" ];then head -c 8192 "$D/recovery-plan.json";else printf '{"verified":false}\n';fi;;
  status) status;;
+ oom) CRASHDIR="$C" "$C/starts/oom-store.sh" read;;
  incidents) [ ! -f "$D/incidents.log" ] || tail -100 "$D/incidents.log";;
  memory) [ ! -f "$D/resources.csv" ] || awk -F, 'NF==15{print $1 "," $2 "," $3 "," $4 "," $5 ",0"}' "$D/resources.csv";;
  cleanup)

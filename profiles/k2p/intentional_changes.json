@@ -68,8 +68,8 @@
     "reason": "Reviewed quota lifecycle hooks, bounded/coalesced event worker, automatic cache display; once-per-load domestic/international IP and location probes with cancellation and bounded JSON.; Reviewed on-demand node diagnostics, bounded root-array scan, firmware-compatible change token and explicit control coverage; original baseline preserved."
   },
   "payload/ui/index.html": {
-    "sha256": "c57de4ce46fafde4dbe7d38f0b6227b8410802726ada9e2ef9e422b8eab85917",
-    "reason": "Read-only recovery dialog controls included in detailed menu/button inventory; compact responsive backup entry, independent baseline actions and saved/draft path status. Wrap ZeroTier diagnostic text on narrow screens without hiding content.; Node delay now uses one kernel request per node, with matching help and cancellation display.; Use Gstatic HTTP 204 delay target and explain test-site TLS exclusion.; Correct HTTP fallback assumption: explicit HTTPS target and honest request-time help.; Reviewed on-demand node diagnostics, bounded root-array scan, firmware-compatible change token and explicit control coverage; original baseline preserved. MAC proxy-access switch: authenticated bounded upload and persisted policy, owned IPv4/IPv6 firewall gates for transparent and explicit proxy paths, startup/mode reapply without core restart; UI state and confirmation. Local firewall transactions plus real IPv4 LAN HTTP/SOCKS/DNS, UI and enabled-policy boot verified separately; physical IPv6 traffic not available on the AX LAN. IP/MAC device picker and nonempty enable guard; official LAN-chain generation without service/ipset teardown; native shell compatibility; modes/base rollback. Tests and real client verification recorded separately.; Explicit editor dialog with off-state read-only, cancel without writes, nonempty confirmation and direct confirmed disable; highlighted responsive UI."
+    "sha256": "39c50952a006dc2d5c657228b2ba7de81097f4c00e22fc996e03d826c6244434",
+    "reason": "Read-only recovery dialog controls included in detailed menu/button inventory; compact responsive backup entry, independent baseline actions and saved/draft path status. Wrap ZeroTier diagnostic text on narrow screens without hiding content.; Node delay now uses one kernel request per node, with matching help and cancellation display.; Use Gstatic HTTP 204 delay target and explain test-site TLS exclusion.; Correct HTTP fallback assumption: explicit HTTPS target and honest request-time help.; Reviewed on-demand node diagnostics, bounded root-array scan, firmware-compatible change token and explicit control coverage; original baseline preserved. MAC proxy-access switch: authenticated bounded upload and persisted policy, owned IPv4/IPv6 firewall gates for transparent and explicit proxy paths, startup/mode reapply without core restart; UI state and confirmation. Local firewall transactions plus real IPv4 LAN HTTP/SOCKS/DNS, UI and enabled-policy boot verified separately; physical IPv6 traffic not available on the AX LAN. IP/MAC device picker and nonempty enable guard; official LAN-chain generation without service/ipset teardown; native shell compatibility; modes/base rollback. Tests and real client verification recorded separately.; Explicit editor dialog with off-state read-only, cancel without writes, nonempty confirmation and direct confirmed disable; highlighted responsive UI.; OOM evidence capture and on-demand monitor page export.; Add OOM monitor evidence and controls; device checks remain pending.; Persist bounded AX5 OOM records and keep K2P validation pending."
   },
   "tests/test_search.js": {
     "sha256": "3ca14402185275cd4c233a9d9dae8eca9ef259890d2a5c786f6c43b08d12d483",
@@ -84,8 +84,8 @@
     "reason": "Regression coverage for manual path rollback/pin readback, partial and stale measurements, UA choice/state isolation and truthful filtered counts."
   },
   "payload/starts/manage.sh": {
-    "sha256": "ae95dbfba7b8ff6fa41a1287445807a653dd7ac549234d619b485ed44cbfca63",
-    "reason": "Authenticated restorego transfers its operation lock and PID to the independent dispatcher. Every new operation invalidates earlier confirmation tickets through a monotonic operation revision.; Reviewed on-demand node diagnostics, bounded root-array scan, firmware-compatible change token and explicit control coverage; original baseline preserved. Close FD3 only in the boot child; it reaches the parent proc-FD path without pinning the executable in descendants. Pass an enum-only temporary core-update tmpfs budget. Load the executable FD helper for coreupdate as well: native v8 proved both startup and rollback otherwise call undefined helper functions. Preserve FD3 in bounded boot child; verified-handoff failure aborts without downloading/decompressing a second candidate. Native v12 exposed an FD link failure followed by excessive tmpfs and ZeroTier OOM; full upgrade remains a separate live gate. MAC proxy-access switch: authenticated bounded upload and persisted policy, owned IPv4/IPv6 firewall gates for transparent and explicit proxy paths, startup/mode reapply without core restart; UI state and confirmation. Local firewall transactions plus real IPv4 LAN HTTP/SOCKS/DNS, UI and enabled-policy boot verified separately; physical IPv6 traffic not available on the AX LAN. IP/MAC device picker and nonempty enable guard; official LAN-chain generation without service/ipset teardown; native shell compatibility; modes/base rollback. Tests and real client verification recorded separately.; Version1.0.1 ships the validated access capability with runtime code; clean installs and updates do not depend on a private device marker. User policy defaults off on a clean install and existing settings are preserved."
+    "sha256": "e6453125815641794f5e9ceb6ce7dc6e0d6fe316f47e6665bba91df1cc387707",
+    "reason": "Provide authenticated access to persistent evidence and pending status."
   },
   "tests/test_proxy_mode.js": {
     "sha256": "0d476681fd7c939c813fea8283fbb786eab2d3a1432fd0b4cedf240ef4489183",
@@ -96,8 +96,8 @@
     "reason": " Website checks distinguish transport/TLS failures, API errors and HTTP 4xx/5xx responses; access errors use amber rather than success green. Regression includes all AX endpoint IDs/URLs. Reviewed 2026-10-14: website cards now test network reachability and HTTPS request time only; HTTP 403/429/5xx count as reachable rather than access errors, TLS/malformed delay/API failures remain failed. Global/direct mode applies to domestic targets too. No service-unlock or CF diagnosis, no new timers or processes. Includes DOM regression for green 403 reachability, diagnostic-only HTTP code, and TLS failure rendering."
   },
   "payload/starts/padavan_ui.sh": {
-    "sha256": "5ad8c11693501660e7c77e7562f3404717941e347eb42bfa2f26deb9cc91f03d",
-    "reason": "Generate a CSRF-checked two-argument restorego wrapper using the existing stock command buffer.; Reviewed on-demand node diagnostics, bounded root-array scan, firmware-compatible change token and explicit control coverage; original baseline preserved. MAC proxy-access switch: authenticated bounded upload and persisted policy, owned IPv4/IPv6 firewall gates for transparent and explicit proxy paths, startup/mode reapply without core restart; UI state and confirmation. Local firewall transactions plus real IPv4 LAN HTTP/SOCKS/DNS, UI and enabled-policy boot verified separately; physical IPv6 traffic not available on the AX LAN. IP/MAC device picker and nonempty enable guard; official LAN-chain generation without service/ipset teardown; native shell compatibility; modes/base rollback. Tests and real client verification recorded separately."
+    "sha256": "623bf991c6df79e4fcc2a568531da6a68a3c4e733d19906b6f3fc2c71bf4299f",
+    "reason": "Generate a CSRF-checked two-argument restorego wrapper using the existing stock command buffer.; Reviewed on-demand node diagnostics, bounded root-array scan, firmware-compatible change token and explicit control coverage; original baseline preserved. MAC proxy-access switch: authenticated bounded upload and persisted policy, owned IPv4/IPv6 firewall gates for transparent and explicit proxy paths, startup/mode reapply without core restart; UI state and confirmation. Local firewall transactions plus real IPv4 LAN HTTP/SOCKS/DNS, UI and enabled-policy boot verified separately; physical IPv6 traffic not available on the AX LAN. IP/MAC device picker and nonempty enable guard; official LAN-chain generation without service/ipset teardown; native shell compatibility; modes/base rollback. Tests and real client verification recorded separately.; OOM evidence capture and on-demand monitor page export."
   },
   "payload/starts/panel_afstart.sh": {
     "sha256": "dd3441e185ef8c42f3a6d6baa6879216f8c66848f0b550cb9b9901b50f14fe6e",
@@ -152,8 +152,8 @@
     "reason": "Reviewed backup transaction: authenticated live DAV gate, complete component manifest and independent baseline catalog, exact installed-version recovery, CLI update persistence/feedback; failure preserves previous backup and user settings"
   },
   "payload/starts/tool_update.sh": {
-    "sha256": "b2bdf3a654942ec9385eaaf6d34a908e10eb94385726097145f708623e06d432",
-    "reason": "Reviewed backup transaction: authenticated live DAV gate, complete component manifest and independent baseline catalog, exact installed-version recovery, CLI update persistence/feedback; failure preserves previous backup and user settings"
+    "sha256": "4339b2ac409fa45fd7592f85b0e516b69d61443305185740d2a379943398a2bb",
+    "reason": "Reviewed backup transaction: authenticated live DAV gate, complete component manifest and independent baseline catalog, exact installed-version recovery, CLI update persistence/feedback; failure preserves previous backup and user settings; Support OpenSSL SHA256 fallback on firmware without sha256sum."
   },
   "tests/test_control_inventory.py": {
     "sha256": "0daa2d77ed133aa97d0b870a17958d0bb3f0a63361be2f82db3ff9aae06d68ab",
@@ -196,8 +196,8 @@
     "sha256": "2373cd1f8e653ac340c0ad510e6205e2a20cf9a053a03b007c2a1099dc016404"
   },
   "payload/starts/save_storage.sh": {
-    "reason": "Differentiate Storage lock contention with exit 75; installer retries only busy persistence within 75s while native afstart saves asynchronously, preserving other owners and real flash-failure rollback. Retains prior fresh-install and bounded diagnostic fixes.",
-    "sha256": "07bbe90b0560e8a83e9d5a2d1d6cd633dafd14ec21581b485fbf822019366bc2"
+    "reason": "Enforce Storage reserve and verify real partition readback, including cached-hash path.",
+    "sha256": "26a2ad51c03ea7dcb1a0dea3bab04b56097f421f65e9fede53726a81bbdd6f8e"
   },
   "payload/starts/cn_bypass.sh": {
     "reason": "Preserve conservative eligibility and priority warning with one cold-status parse instead of two; native client deadline is 10s. Quoted-token/chunk-boundary parsing and invalid-config refusal remain unchanged.",
@@ -210,5 +210,17 @@
   "payload/starts/reapply.sh": {
     "sha256": "7a466a27fc2d18aaeb758f5254fbca72864c068894df808f2e2876ff9c0cc7a1",
     "reason": " MAC proxy-access switch: authenticated bounded upload and persisted policy, owned IPv4/IPv6 firewall gates for transparent and explicit proxy paths, startup/mode reapply without core restart; UI state and confirmation. Local firewall transactions plus real IPv4 LAN HTTP/SOCKS/DNS, UI and enabled-policy boot verified separately; physical IPv6 traffic not available on the AX LAN."
+  },
+  "payload/padavan/health.js": {
+    "reason": "; OOM evidence capture and on-demand monitor page export.; Persist bounded AX5 OOM records and keep K2P validation pending.",
+    "sha256": "4c26ccabf9dc76088a689ac563b549c058ff1e5624bb61791071b88326fce701"
+  },
+  "payload/starts/incident_record.sh": {
+    "reason": "Enqueue bounded evidence only after successful capture and fingerprint the matching OOM event.",
+    "sha256": "781cbb152c6d827d724f73698bc68c1e3527c6c86c9216559cf9d1f7e9f8ff06"
+  },
+  "payload/starts/memory_sample.sh": {
+    "sha256": "d7f37e0b2bbf9f8674700cfddc6b988bcdfd15f6d02dce19888f1327c8db8511",
+    "reason": "Retry bounded OOM queue after low-memory and lock checks with bounded backoff."
   }
 }

@@ -29,10 +29,12 @@ else
 fi
 child=$!
 echo "$child" > "$R/core.pid"
+ready=0
 for i in 1 2 3 4 5; do
  if curl --noproxy '*' -s -o /dev/null --connect-timeout 1 --max-time 2 http://127.0.0.1:9999/version; then
   if lua -e 'dofile("/data/ShellCrash/ax5/traffic-mode.lua").apply("rule")' && lua "$C/ax5/state.lua" restore; then
    cp "$R/transport-prepared" "$R/transport-runtime"
+   ready=1
    printf '1\n' > "$R/service-ready"
    sh "$C/ax5/subscription-quota.sh" ax5 auto || :
    break
@@ -43,8 +45,10 @@ for i in 1 2 3 4 5; do
  kill -0 "$child" 2>/dev/null || break
  sleep 1
 done
+if [ "$ready" = 0 ] && [ "$ending" = 0 ];then kill -TERM "$child" 2>/dev/null || :;fi
 wait "$child"
 code=$?
+[ "$ready" = 1 ] || [ "$ending" = 1 ] || code=1
 if [ "$ending" = 1 ]; then wait "$child" 2>/dev/null; fi
 if [ -f "$R/fakeip.db" ] && [ "$ending" = 1 ]; then
  size=$(wc -c < "$R/fakeip.db")

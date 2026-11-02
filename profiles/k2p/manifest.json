@@ -271,5 +271,6 @@
   "payload/starts/proxy-access.sh": "shared/lib/proxy-access.sh",
   "payload/starts/access-devices.lua": "shared/lib/access-devices.lua",
   "payload/starts/proxy-access-native.sh": "profiles/k2p/payload/starts/proxy-access-native.sh",
-  "payload/starts/proxy-access-ready": "shared/lib/proxy-access-ready"
+  "payload/starts/proxy-access-ready": "shared/lib/proxy-access-ready",
+  "payload/starts/oom-store.sh": "profiles/k2p/payload/starts/oom-store.sh"
 }

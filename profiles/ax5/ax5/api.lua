@@ -32,6 +32,15 @@ function A.read()
   local templates={};for line in list:gmatch('[^\r\n]+')do local name,url=line:match('^5%d%d%s+(%S+)%s+(https?://%S+)');if name and #templates<100 then templates[#templates+1]={name=name,url=url}end end
   local defaults=dofile(M.C..'/ax5/subscription-defaults.lua').read(M.read(T..'/configs/ShellCrash.cfg'),list,M.read(T..'/version',64))
   reply({servers=entries,templates=templates,defaults=defaults});return
+ elseif kind=='oom'then
+  local raw=M.read(M.C..'/configs/oom-records.json',65537);local status=M.read(M.R..'/oom-save-status',512)
+  local ok,data=pcall(M.json.decode,raw);local rows={}
+  if raw~='' and (not ok or type(data)~='table' or type(data.records)~='table')then reply({error='oom_records_invalid'},500);return end
+  if ok and type(data)=='table' and type(data.records)=='table' then for i,r in ipairs(data.records)do
+   rows[#rows+1]='=== OOM '..i..' | '..tostring(r.time or '')..' | PID '..tostring(r.pid or '')..' ===\n'..'boot='..tostring(r.boot or '')..' exit_code='..tostring(r.exit_code or '')..'\n'..tostring(r.samples or '')..'\n'..tostring(r.kernel or '')
+  end end
+  if status:match('^failed')then rows[#rows+1]='最近一次持久保存失败：'..status end
+  H.prepare_content('text/plain');H.write(table.concat(rows,'\n\n'));return
  elseif kind=='zerotier'then reply(M.zerotier());return
  elseif kind=='zerotierlog'then H.prepare_content('text/plain');H.write(M.read(M.R..'/zerotier-diagnostic',8192));return
  elseif kind=='inspect'then
@@ -59,7 +68,7 @@ function A.read()
  if not paths[kind]then reply({error='not_found'},404);return end
  H.prepare_content('text/plain');local text=M.read(paths[kind],(kind=='subscription'or kind=='subscriptionnodes')and 1572864 or 262144)
  if kind=='logs'then
-  local groups={{'操作记录','operations.log',32768},{'内核运行','core.log',32768},{'订阅获取','subscription-tool.log',16384},{'服务启动与备份','service.log',16384},{'最近后台操作','worker.log',8192},{'配置校验','check.log',8192},{'最近异常','last-exit.txt',8192}}
+  local groups={{'操作记录','operations.log',32768},{'内核运行','core.log',32768},{'订阅获取','subscription-tool.log',16384},{'服务启动与备份','service.log',16384},{'最近后台操作','worker.log',8192},{'配置校验','check.log',8192},{'最近异常','last-exit.txt',8192},{'异常内存取证','oom-evidence.txt',196608}}
   local rows={};for _,g in ipairs(groups)do rows[#rows+1]='=== '..g[1]..' ===\n'..M.read(M.R..'/'..g[2],g[3])end
   text=table.concat(rows,'\n');text=text:gsub('https?://[^%s]+','[链接已隐藏]')
  end

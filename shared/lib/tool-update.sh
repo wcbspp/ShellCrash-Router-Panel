@@ -78,7 +78,7 @@ tar -xzf "$work/package.tar.gz" -C "$work/upstream"
 [ "$(tr -d '\r\n' < "$work/upstream/version")" = "$latest" ] || exit 1
 for file in menu.sh start.sh init.sh libs/get_config.sh libs/web_get_bin.sh menus/9_upgrade.sh;do [ -s "$work/upstream/$file" ] || exit 1;done
 while read -r expected file;do
- actual=$(sha256sum "$work/upstream/$file" | awk '{print $1}')
+ if command -v sha256sum >/dev/null 2>&1;then actual=$(sha256sum "$work/upstream/$file" | awk '{print $1}');else actual=$(openssl dgst -sha256 "$work/upstream/$file" | awk '{print $NF}');fi
  [ "$actual" = "$expected" ] || { echo "Adapter compatibility check failed: $file; current tool retained." >&2;exit 1; }
 done < "$A/tool-guards.list"
 # Only install upstream script files. Configs, panel, hooks, rules and credentials are separate.
