@@ -15,13 +15,14 @@ resource_limits
 [ "$rh_limits_valid" = 1 ] || { echo '内存保护设置无效，未创建备份';exit 1; }
 protect_kb=$((rh_protect_mb*1024))
 [ "${available:-0}" -ge "$((protect_kb+512))" ] || { echo '可用内存不足以安全打包，现有服务保持运行';exit 1; }
-mkdir /tmp/shellcrash-storage-save.lock 2>/dev/null || { echo 'Storage 正在保存，请稍后重试';exit 1; }
+. "$C/starts/storage-lock.sh"
+storage_lock_acquire || { echo 'Storage 正在保存，请稍后重试';exit 1; }
 lockheld=1
 umask 077
 mkdir -p "$D"
 stage="/etc/storage/.sc-backup-stage.$$"
 file="$D/application-backup.tar.gz"
-trap 'rm -rf "$stage";rm -f "$file.new" "$D/backup-download.txt.new" "$D/runtime-assets-backup.tar.gz" "$D/runtime-assets-backup.tar.gz.new" "$D/runtime-backup.info" "$D/runtime-tar.error";[ "$lockheld" != 1 ] || rmdir /tmp/shellcrash-storage-save.lock 2>/dev/null' EXIT
+trap 'rm -rf "$stage";rm -f "$file.new" "$D/backup-download.txt.new" "$D/runtime-assets-backup.tar.gz" "$D/runtime-assets-backup.tar.gz.new" "$D/runtime-backup.info" "$D/runtime-tar.error";[ "$lockheld" != 1 ] || storage_lock_release' EXIT
 rm -rf "$stage";mkdir -p "$stage"
 # Only project files, never firmware, Entware, ZeroTier identity, SSH keys or runtime logs.
 for folder in configs ui padavan starts libs tools menus task jsons yamls ruleset;do
@@ -67,7 +68,7 @@ tar -cf - -C "$stage" . 2> "$D/backup-tar.error" | gzip -c | head -c "$((limit+1
 gzip -t "$file.new" || { echo '备份压缩校验失败';exit 1; }
 mv "$file.new" "$file"
 rm -rf "$stage"
-rmdir /tmp/shellcrash-storage-save.lock;lockheld=0
+storage_lock_release;lockheld=0
 if [ "$mode" = local ];then
  # Release the file copy before allocating the encoded download representation.
  rm -rf "$stage"

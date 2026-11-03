@@ -237,8 +237,8 @@ def pack(source, output, model=None):
                     archive.writestr('manifest.json', json.dumps(manifest, ensure_ascii=False, indent=2)+'\n')
                     for name, path in bundle.paths.items(): archive.write(path, name)
                     guide = ('ShellCrash 完整应用备份（不是固件）\n'
-                             '当前完整恢复入口尚未开放执行，可先校验和保存；不要自行解压覆盖设备。\n'
-                             '恢复窗口开放后选择此完整 ZIP，程序按清单识别组件，不必逐个选择文件。\n'
+                             '同机型、同内核可通过备份页面的恢复窗口检查并执行；不要自行解压覆盖设备。\n'
+                             '本地 ZIP 用于电脑端检查；网页恢复请按说明将组件上传至 WebDAV。\n'
                              'application.tar.gz：程序与当时的配置；core.tar.gz：匹配内核；\n'
                              'runtime-assets.tar.gz：高级面板与必要规则资源；source.tar.gz（如有）：开发源码，仅供查阅。\n'
                              '完整回退会覆盖后来的订阅、DNS、分流和启动设置，需要明确确认。\n'

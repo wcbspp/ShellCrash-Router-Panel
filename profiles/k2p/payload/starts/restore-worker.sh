@@ -94,7 +94,7 @@ rollback(){
  restore_runtime "$X/rollback-runtime.tar.gz" || return 1
  stream_core "$CHECKPOINT/core.tar.gz" "$R/CrashCore" || return 1
  if [ "$(field previous_enabled)" = 1 ];then rm -f "$C/configs/panel-disabled";fi
- sh "$X/save_storage.sh" >> "$X/storage.log" 2>&1 || return 1
+ SC_STORAGE_LOCK_HELPER="$X/storage-lock.sh" sh "$X/save_storage.sh" >> "$X/storage.log" 2>&1 || return 1
  start_check "$(field previous_enabled)" "$(field previous_mode)"
 }
 finish(){
@@ -128,6 +128,7 @@ protect=$(field protect_kb)
 mkdir "$X/credentials"
 for name in recovery-enabled mirror.conf webdav.auth webdav.user mirror-id mirror_key mirror_known_hosts remote.verified remote.checked;do [ ! -f "$C/configs/$name" ] || cp "$C/configs/$name" "$X/credentials/$name";done
 cp "$C/starts/save_storage.sh" "$X/save_storage.sh"
+cp "$C/starts/storage-lock.sh" "$X/storage-lock.sh"
 CRASHDIR=$C;export CRASHDIR
 . "$C/starts/panel_env.sh"
 secret=$(sed -n 's/^secret=//p' "$C/configs/ShellCrash.cfg" | head -1)
@@ -191,7 +192,7 @@ phase validating '正在检查目标内核与配置'
 if [ "$(field rehearsal_failure)" = after-write ];then echo 'Controlled rehearsal failure after write' >&2;exit 1;fi
 [ "$(field target_enabled)" != 1 ] || rm -f "$C/configs/panel-disabled"
 phase persisting '正在保存已恢复的持久配置'
-sh "$X/save_storage.sh" >> "$X/storage.log" 2>&1
+SC_STORAGE_LOCK_HELPER="$X/storage-lock.sh" sh "$X/save_storage.sh" >> "$X/storage.log" 2>&1
 phase starting '正在启动并核对恢复后的内核'
 start_check "$(field target_enabled)" "$(field target_mode)"
 STATE=done;FINISHED=1

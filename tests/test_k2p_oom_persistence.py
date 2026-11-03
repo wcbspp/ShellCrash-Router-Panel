@@ -10,7 +10,8 @@ class K2PPersistence(unittest.TestCase):
   awk=self.bin/'awk';awk.write_text('#!/bin/sh\ncase "$*" in */proc/meminfo*) echo "${TEST_AVAIL:-30000}";; *) exec /usr/bin/awk "$@";; esac\n');awk.chmod(0o755)
   saver=self.c/'starts/save_storage.sh';saver.write_text('#!/bin/sh\necho attempt >> \"$SC_OOM_RUNTIME/save-attempts\"\n[ "$SC_STORAGE_MAX_BYTES" = 499712 ] && [ "$SC_STORAGE_VERIFY" = 1 ] || exit 9\n[ "${SAVE_FAIL:-0}" = 0 ] || exit 1\ncp "$CRASHDIR/configs/oom-history.b64" "$SC_OOM_RUNTIME/flash-snapshot"\n');saver.chmod(0o755)
   mover=self.bin/'mv';mover.write_text('#!/bin/sh\ncase \"${FAIL_QUEUE:-0}:$2\" in 1:*/oom-queue.b64) exit 1;; esac\nexec /bin/mv \"$@\"\n');mover.chmod(0o755)
-  self.env=dict(os.environ,CRASHDIR=str(self.c),SC_OOM_RUNTIME=str(self.d),PATH=str(self.bin)+':'+os.environ['PATH'])
+  (self.root/'uptime').write_text('12345.67 0\n')
+  self.env=dict(os.environ,CRASHDIR=str(self.c),SC_OOM_RUNTIME=str(self.d),SC_OOM_UPTIME_FILE=str(self.root/'uptime'),PATH=str(self.bin)+':'+os.environ['PATH'])
  def run_action(self,action,**kwargs):return subprocess.run(['sh',str(SCRIPT),action],env=dict(self.env,**kwargs),capture_output=True,text=True)
  def add(self,value):
   (self.d/'oom-evidence.log').write_text(value);self.assertEqual(self.run_action('enqueue').returncode,0)
@@ -47,10 +48,10 @@ class K2PPersistence(unittest.TestCase):
   lock=self.d/'oom-store.lock';lock.mkdir();(lock/'owner').write_text(str(os.getpid()))
   (self.d/'oom-evidence.log').write_text('pending event')
   self.assertNotEqual(self.run_action('enqueue').returncode,0)
-  self.assertTrue((self.d/'oom-unqueued').exists());self.assertTrue(lock.exists())
+  self.assertEqual(len(list(self.d.glob('oom-pending.*'))),1);self.assertTrue(lock.exists())
   (lock/'owner').unlink();lock.rmdir()
-  self.assertEqual(self.run_action('enqueue').returncode,0)
-  self.assertFalse((self.d/'oom-unqueued').exists())
+  pending=next(self.d.glob('oom-pending.*'));self.assertEqual(subprocess.run(['sh',str(SCRIPT),'enqueue',str(pending)],env=self.env).returncode,0)
+  self.assertFalse(list(self.d.glob('oom-pending.*')))
   self.assertEqual(self.run_action('persist').returncode,0)
   self.assertIn('pending event',self.run_action('read').stdout)
 
@@ -59,8 +60,7 @@ class K2PPersistence(unittest.TestCase):
   (self.d/'oom-evidence.log').write_text('second')
   self.assertNotEqual(self.run_action('enqueue',FAIL_QUEUE='1').returncode,0)
   self.assertEqual((self.d/'oom-queue.b64').read_bytes(),before)
-  self.assertTrue((self.d/'oom-unqueued').exists())
-  self.assertEqual(self.run_action('enqueue').returncode,0)
+  pending=next(self.d.glob('oom-pending.*'));self.assertEqual(subprocess.run(['sh',str(SCRIPT),'enqueue',str(pending)],env=self.env).returncode,0)
   self.assertEqual(self.run_action('persist').returncode,0)
   result=self.run_action('read');self.assertIn('first',result.stdout);self.assertIn('second',result.stdout)
 
@@ -86,3 +86,38 @@ class K2PPersistence(unittest.TestCase):
   self.assertNotEqual(self.run_action('persist').returncode,0);self.assertEqual(external.read_text(),'private')
   target.unlink();target.mkdir()
   self.assertNotEqual(self.run_action('persist').returncode,0);self.assertTrue(target.is_dir())
+
+ def test_invalid_base64_and_capture_failure_are_reported(self):
+  (self.d/'oom-save-status').write_text('capture_failed')
+  self.assertIn('失败',self.run_action('read').stdout)
+  (self.c/'configs/oom-history.b64').write_text('A=\n')
+  self.assertNotEqual(self.run_action('read').returncode,0)
+ def test_concurrent_events_remain_separate(self):
+  import time,base64
+  original=self.bin/'head';original.write_text('#!/bin/sh\n/usr/bin/head "$@"\ntouch "$SC_OOM_RUNTIME/waiting"\nwhile [ ! -e "$SC_OOM_RUNTIME/continue" ];do sleep .05;done\n');original.chmod(0o755)
+  (self.d/'oom-evidence.log').write_text('first')
+  first=subprocess.Popen(['sh',str(SCRIPT),'enqueue'],env=self.env,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
+  try:
+   for _ in range(200):
+    if (self.d/'waiting').exists():break
+    time.sleep(.01)
+   self.assertTrue((self.d/'waiting').exists())
+   (self.d/'oom-evidence.log').write_text('second')
+   self.assertNotEqual(self.run_action('enqueue').returncode,0)
+   (self.d/'continue').touch();self.assertEqual(first.wait(timeout=5),0)
+   original.unlink()
+   for pending in self.d.glob('oom-pending.*'):
+    self.assertEqual(subprocess.run(['sh',str(SCRIPT),'enqueue',str(pending)],env=self.env).returncode,0)
+   rows=[base64.b64decode(x).decode() for x in (self.d/'oom-queue.b64').read_text().splitlines()]
+   self.assertEqual(len(rows),2);self.assertIn('first',rows[0]);self.assertIn('second',rows[1])
+  finally:
+   if first.poll() is None:first.kill();first.wait()
+ def test_pending_events_are_processed_in_time_order(self):
+  import base64
+  pending=[]
+  for n in (100,102,101):
+   p=self.d/('oom-pending.%s.12.fixture'%n);p.write_text('event-%s'%n);pending.append(p)
+  result=subprocess.run(['sh',str(SCRIPT),'enqueue',str(pending[0])],env=self.env,capture_output=True)
+  self.assertEqual(result.returncode,0,result.stderr)
+  rows=[base64.b64decode(x).decode() for x in (self.d/'oom-queue.b64').read_text().splitlines()]
+  self.assertEqual(len(rows),2);self.assertIn('event-101',rows[0]);self.assertIn('event-102',rows[1])

@@ -13,7 +13,7 @@ class StorageReadback(unittest.TestCase):
   self.script.write_text(source)
   shim=self.p/'bin/mtd_write';shim.write_text('#!/bin/sh\necho write >> "$TEST_CALLS"\ncp "$2" "$TEST_FLASH"\n[ "${TEST_CORRUPT:-0}" = 0 ] || printf broken > "$TEST_FLASH"\n');shim.chmod(0o755)
   stat=self.p/'bin/stat';stat.write_text('#!/bin/sh\npython3 -c \"import os,sys;print(os.stat(sys.argv[1]).st_size)\" \"$3\"\n');stat.chmod(0o755)
-  self.env=dict(os.environ,PATH=str(self.p/'bin')+':'+os.environ['PATH'],TEST_FLASH=str(self.flash),TEST_CALLS=str(self.calls),SC_STORAGE_VERIFY='1',SC_STORAGE_MAX_BYTES='499712')
+  self.env=dict(os.environ,PATH=str(self.p/'bin')+':'+os.environ['PATH'],TEST_FLASH=str(self.flash),TEST_CALLS=str(self.calls),SC_STORAGE_VERIFY='1',SC_STORAGE_MAX_BYTES='499712',SC_STORAGE_LOCK=str(self.p/'lock'),SC_STORAGE_LOCK_HELPER=str(ROOT/'profiles/k2p/payload/starts/storage-lock.sh'))
  def run_save(self,**kw):return subprocess.run(['sh',str(self.script)],env=dict(self.env,**kw),capture_output=True,text=True)
  def test_verify_and_stale_cache(self):
   self.assertEqual(self.run_save().returncode,0)
@@ -29,3 +29,16 @@ class StorageReadback(unittest.TestCase):
  def test_standard_save_does_not_require_oom_readback(self):
   result=self.run_save(SC_STORAGE_VERIFY='0')
   self.assertEqual(result.returncode,0,result.stdout+result.stderr)
+
+ def test_stale_cache_is_verified_by_default(self):
+  self.assertEqual(self.run_save(SC_STORAGE_VERIFY='0').returncode,0)
+  self.flash.write_text('external change')
+  self.assertEqual(self.run_save(SC_STORAGE_VERIFY='0').returncode,0)
+  self.assertEqual(len(self.calls.read_text().splitlines()),2)
+ def test_dead_storage_owner_is_reclaimed_but_live_owner_is_not(self):
+  import time
+  lock=self.p/'lock';lock.mkdir();(lock/'owner').write_text('99999999')
+  old=time.time()-120;os.utime(lock,(old,old))
+  self.assertEqual(self.run_save().returncode,0)
+  lock.mkdir();(lock/'owner').write_text(str(os.getpid()));os.utime(lock,(old,old))
+  self.assertEqual(self.run_save().returncode,75)

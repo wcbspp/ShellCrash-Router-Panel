@@ -22,6 +22,7 @@ else
  printf 'system\n' > "$R/control-source"
 fi
 date +%s > "$R/started"
+started_uptime=$(awk '{print $1}' /proc/uptime)
 if [ "$KIND" = meta ]; then
  SAFE_PATHS="$C" GOMEMLIMIT=12MiB GOGC=25 "$R/CrashCore" -d "$R" -f "$R/config.yaml" >> "$R/core.log" 2>&1 &
 else
@@ -61,7 +62,7 @@ fi
 "$C/ax5/firewall.sh" stop
 rm -f "$R/core.pid" "$R/transport-runtime" "$R/service-ready"
 if [ "$ending" != 1 ] && [ ! -f "$R/manual-stop" ]; then
- lua "$C/ax5/state.lua" incident "$child" "$code"
+ lua "$C/ax5/state.lua" incident "$child" "$code" "$started_uptime"
 fi
 if [ "$KIND" = meta ] && [ "$(cat "$R/vm-owner" 2>/dev/null)" = $$ ]; then echo "$vm_old" > /proc/sys/vm/overcommit_memory; rm -f "$R/vm-original" "$R/vm-owner"; fi
 exit "$code"

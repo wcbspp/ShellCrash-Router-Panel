@@ -9,6 +9,7 @@ tar -tzf "$backup" | awk '/^\/|(^|\/)\.\.(\/|$)/{bad=1}END{exit bad}' || { echo 
 CRASHDIR="$C" "$C/start.sh" stop
 [ -f "$C/starts/save_storage.sh" ] || { echo '当前安装缺少保存脚本'; exit 1; }
 cp "$C/starts/save_storage.sh" /tmp/padavan-panel-restore-save.sh
+cp "$BASE/payload/starts/storage-lock.sh" /tmp/padavan-panel-storage-lock.sh
 for target in /www/state.js /sbin/mtd_storage.sh /usr/bin/update_chnroute.sh /usr/bin/update_gfwlist.sh; do
  umount "$target" >/dev/null 2>&1 || :
 done
@@ -19,6 +20,6 @@ done
  fi
 # A reboot removes web/menu/legacy bind overlays; restore files first.
 sh "$BASE/restore_storage.sh" "$backup"
-/bin/sh /tmp/padavan-panel-restore-save.sh
-rm -f /tmp/padavan-panel-restore-save.sh
+SC_STORAGE_LOCK_HELPER=/tmp/padavan-panel-storage-lock.sh /bin/sh /tmp/padavan-panel-restore-save.sh
+rm -f /tmp/padavan-panel-restore-save.sh /tmp/padavan-panel-storage-lock.sh
 echo '原始Storage已恢复。请在维护时间手动重启路由器，以移除RAM中的挂载覆盖。'

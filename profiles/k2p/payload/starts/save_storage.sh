@@ -1,9 +1,10 @@
 #!/bin/sh
 # Stream Padavan Storage using a smaller bzip2 block to fit K2P RAM.
 # EX_TEMPFAIL distinguishes a live persistence owner from a flash failure.
-mkdir /tmp/shellcrash-storage-save.lock 2>/dev/null || exit 75
+. "${SC_STORAGE_LOCK_HELPER:-/etc/storage/ShellCrash/starts/storage-lock.sh}"
+storage_lock_acquire || exit 75
 archive=/tmp/shellcrash-storage-save.tar.bz2
-trap 'rm -f "$archive"; rmdir /tmp/shellcrash-storage-save.lock 2>/dev/null' EXIT
+trap 'rm -f "$archive"; storage_lock_release' EXIT
 set -o pipefail
 cd /etc/storage || exit 1
 find * -print0 | xargs -0 touch -c -h -t 201001010000.00
@@ -22,7 +23,7 @@ verify_storage(){
  [ "$actual" = "$hash" ] || { echo 'Storage readback failed' >&2;return 1; }
 }
 if [ "$hash" = "$(cat /tmp/hashes/shellcrash-storage-md5 2>/dev/null)" ];then
- if [ "${SC_STORAGE_VERIFY:-0}" != 1 ] || verify_storage;then echo 'Storage unchanged; no flash write';exit 0;fi
+ if verify_storage;then echo 'Storage unchanged; no flash write';exit 0;fi
 fi
 mtd_write write "$archive" Storage || exit 1
 [ "${SC_STORAGE_VERIFY:-0}" != 1 ] || verify_storage || exit 1

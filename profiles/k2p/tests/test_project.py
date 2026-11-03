@@ -312,7 +312,7 @@ class BootstrapTests(unittest.TestCase):
    d=Path(td);lock=d/'save.lock';lock.mkdir();archive=d/'archive';archive.write_text('other-writer')
    script=(ROOT/'payload/starts/save_storage.sh').read_text().replace('/tmp/shellcrash-storage-save.lock',str(lock)).replace('/tmp/shellcrash-storage-save.tar.bz2',str(archive))
    path=d/'save.sh';path.write_text(script)
-   result=run(['sh',str(path)])
+   result=run(['sh',str(path)],env=dict(os.environ,SC_STORAGE_LOCK=str(lock),SC_STORAGE_LOCK_HELPER=str(ROOT/'payload/starts/storage-lock.sh')))
    self.assertEqual(result.returncode,75);self.assertTrue(lock.is_dir());self.assertEqual(archive.read_text(),'other-writer')
  def test_existing_install_restores_original_configuration(self):
   with tempfile.TemporaryDirectory() as td:

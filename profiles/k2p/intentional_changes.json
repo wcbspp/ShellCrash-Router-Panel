@@ -1,7 +1,7 @@
 {
   "install.sh": {
-    "reason": "Differentiate Storage lock contention with exit 75; installer retries only busy persistence within 75s while native afstart saves asynchronously, preserving other owners and real flash-failure rollback. Retains prior fresh-install and bounded diagnostic fixes. Fresh installs explicitly retain imported per-node TLS verification instead of native unset skip_cert defaults.",
-    "sha256": "8d98e2721009f17b0df272a9d63fcd15a3854721ae13704c8078006e9ba60e0d"
+    "reason": "Preserve the Storage lock helper across install and rollback.",
+    "sha256": "db4d2f29a1294ebc47c68ec7aeb317ea872982cf160cdcabc01b53c4518ed071"
   },
   "tools/deploy.py": {
     "reason": "Optional local node/core input; same SSH preflight/backup/rollback; client backups default outside the signed package; snapshot selects only highest-priority regular rules file, skipping legacy symlinks without weakening archive validation; Add legacy RSA host-key negotiation for the verified firmware while retaining ordinary host fingerprint checks; no global SSH configuration or StrictHostKeyChecking bypass.",
@@ -12,8 +12,8 @@
     "sha256": "3a5d79b3bfacbfa525f916e96dcd0161453bc193314f7a24ac917e0b55062fb9"
   },
   "tests/test_project.py": {
-    "reason": "Differentiate Storage lock contention with exit 75; installer retries only busy persistence within 75s while native afstart saves asynchronously, preserving other owners and real flash-failure rollback. Retains prior fresh-install and bounded diagnostic fixes. Fresh installs explicitly retain imported per-node TLS verification instead of native unset skip_cert defaults.",
-    "sha256": "d7357a7de1032d88158417bda33231850582befc6e079e96404149520cad5f0b"
+    "reason": "Verify safe Storage locking and bounded OOM persistence.",
+    "sha256": "c0f9a4fac5ad38806dae16bfd0b0a6c5004e23a0fc93680cae1673d8b4cb75e5"
   },
   "tools/build_release.py": {
     "reason": "Removed obsolete per-repository release builder; tools/package.py is the shared release pipeline",
@@ -24,12 +24,12 @@
     "reason": "Whitelist restorego without increasing the stock 58-character authenticated command limit.; Reviewed on-demand node diagnostics, bounded root-array scan, firmware-compatible change token and explicit control coverage; original baseline preserved. MAC proxy-access switch: authenticated bounded upload and persisted policy, owned IPv4/IPv6 firewall gates for transparent and explicit proxy paths, startup/mode reapply without core restart; UI state and confirmation. Local firewall transactions plus real IPv4 LAN HTTP/SOCKS/DNS, UI and enabled-policy boot verified separately; physical IPv6 traffic not available on the AX LAN. IP/MAC device picker and nonempty enable guard; official LAN-chain generation without service/ipset teardown; native shell compatibility; modes/base rollback. Tests and real client verification recorded separately. Fetch current device inventory immediately when entering Rules, retaining preview gate and in-flight guard.; Explicit editor dialog with off-state read-only, cancel without writes, nonempty confirmation and direct confirmed disable; highlighted responsive UI."
   },
   "payload/starts/backup-app.sh": {
-    "sha256": "7bdf8be3b64852e62399c9e8685fb7e817ca8cbe67b2d81656000a0f5017c7f6",
+    "sha256": "4ee4813b4132aa6fa94782c2fcb5539637d2ffc563053e060cb8067ff1f02fbb",
     "reason": "Exclude the device-local recovery capability from portable backups and release RAM archives after verified remote publication; preserve existing local-export and failure behavior."
   },
   "tests/test_backup_export.py": {
-    "sha256": "8c441e90e2dda6ed67cd16f305301ae72c7740bd3fa60a96a3bd44d70feb642f",
-    "reason": "Exercise the real local exporter and require the local recovery execution capability to be excluded alongside credentials."
+    "reason": "Verify safe Storage locking and bounded OOM persistence.",
+    "sha256": "e124b5a853fd70658b486b086524e6758813ce4ea1c974cc37b34ae13fed365f"
   },
   "payload/starts/panel_bfstart.sh": {
     "sha256": "15bf07036707dad0a72ff7154a6bb669e78fd609008a93b9eab932574801c3e4",
@@ -197,7 +197,7 @@
   },
   "payload/starts/save_storage.sh": {
     "reason": "Enforce Storage reserve and verify real partition readback, including cached-hash path.",
-    "sha256": "26a2ad51c03ea7dcb1a0dea3bab04b56097f421f65e9fede53726a81bbdd6f8e"
+    "sha256": "9fa7dc4c8cc3916e3a8a9ea379af1928fb631a8c1fb1061dea9bd55072ddcfc2"
   },
   "payload/starts/cn_bypass.sh": {
     "reason": "Preserve conservative eligibility and priority warning with one cold-status parse instead of two; native client deadline is 10s. Quoted-token/chunk-boundary parsing and invalid-config refusal remain unchanged.",
@@ -216,11 +216,19 @@
     "sha256": "4c26ccabf9dc76088a689ac563b549c058ff1e5624bb61791071b88326fce701"
   },
   "payload/starts/incident_record.sh": {
-    "reason": "Enqueue bounded evidence only after successful capture and fingerprint the matching OOM event.",
-    "sha256": "781cbb152c6d827d724f73698bc68c1e3527c6c86c9216559cf9d1f7e9f8ff06"
+    "reason": "Verify safe Storage locking and bounded OOM persistence.",
+    "sha256": "b15e22b40c11d4e151f7ab25d2b2aeb594f53a4f22894c8b8909b0ebdfd10d4d"
   },
   "payload/starts/memory_sample.sh": {
-    "sha256": "d7f37e0b2bbf9f8674700cfddc6b988bcdfd15f6d02dce19888f1327c8db8511",
-    "reason": "Retry bounded OOM queue after low-memory and lock checks with bounded backoff."
+    "reason": "Verify safe Storage locking and bounded OOM persistence.",
+    "sha256": "ed7f322eabf98dfd6640a9caf6677ce0c7ed4444a8fd1c7f3d36b5c3c62cedff"
+  },
+  "payload/starts/restore-worker.sh": {
+    "reason": "Fix storage and OOM audit findings.",
+    "sha256": "5510b42b8da24ab4cd5423c3439f119617582a3b9526963231f90c4b7c358e54"
+  },
+  "uninstall.sh": {
+    "reason": "Preserve the Storage lock helper across install and rollback.",
+    "sha256": "956feeaf6ac90200ccf1011d296c97eedae7498ec2fd943ae62c5de1b696e6cf"
   }
 }

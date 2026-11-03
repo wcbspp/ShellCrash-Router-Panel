@@ -11,7 +11,11 @@ end
 if action=='incident' then
  local text=M.exec('dmesg | tail -300');local pid=arg[2];local code=tonumber(arg[3]) or 0
  local reason='unknown'
- if text:match('Killed process '..pid..'%D') or text:match('Kill process '..pid..'%D') then reason='oom' end
+ local started=tonumber(arg[4])
+ for line in text:gmatch('[^\n]+')do
+  local stamp,found,name=line:match('%[%s*([%d%.]+)%].-Kill%w* process (%d+) %(([^%)]+)%)')
+  if started and tonumber(stamp) and tonumber(stamp)>=started and found==pid and name=='CrashCore' then reason='oom';break end
+ end
  local mem=M.memory().MemAvailable or 0
  if reason=='oom'then
   local detail=M.read(M.R..'/memory-detail.csv',196608)

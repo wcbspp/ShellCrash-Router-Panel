@@ -13,8 +13,8 @@ if [ "$act" = begin ]; then
  detected=$(date '+%Y-%m-%d %H:%M:%S'); when=$detected; reason=unknown; rss=0
  row=$(grep -E "Killed process $pid \\(CrashCore\\)" /tmp/syslog.log 2>/dev/null | tail -1)
  from_syslog=0;[ -z "$row" ] || from_syslog=1
- dmesg | tail -130 > "$D/incident-evidence.pending"
- [ -n "$row" ] || row=$(grep -E "Killed process $pid \\(CrashCore\\)" "$D/incident-evidence.pending" | tail -1)
+ dmesg | tail -130 > "$D/incident-evidence-$$.pending"
+ [ -n "$row" ] || row=$(grep -E "Killed process $pid \\(CrashCore\\)" "$D/incident-evidence-$$.pending" | tail -1)
  fingerprint=$(printf '%s' "$row" | sha256sum | awk '{print $1}')
  previous=$(cat "$D/incident-last-oom" 2>/dev/null)
  if [ -n "$row" ] && [ "$fingerprint" != "$previous" ]; then
@@ -27,13 +27,17 @@ if [ "$act" = begin ]; then
  printf '%s|%s|%s|%s|%s|%s|pending\n' "$when" "$detected" "$reason" "$pid" "$rss" "$free" >> "$D/incidents.log"
  tail -100 "$D/incidents.log" > "$D/incidents.next"; mv "$D/incidents.next" "$D/incidents.log"
  count=$(cat "$D/recoveries" 2>/dev/null); case "$count" in ''|*[!0-9]*) count=0;; esac
- { printf '\n=== PRE-EXIT RESOURCE SAMPLES ===\n'; tail -12 "$D/resources.csv" 2>/dev/null; printf '\n=== RECOVERY-TIME SNAPSHOT ===\n'; cat /proc/meminfo; cat /proc/net/sockstat; cat /proc/buddyinfo; } >> "$D/incident-evidence.pending"
+ { printf '\n=== PRE-EXIT RESOURCE SAMPLES ===\n'; tail -12 "$D/resources.csv" 2>/dev/null; printf '\n=== RECOVERY-TIME SNAPSHOT ===\n'; cat /proc/meminfo; cat /proc/net/sockstat; cat /proc/buddyinfo; } >> "$D/incident-evidence-$$.pending"
  if [ "$reason" = oom ];then
-  if { printf 'detected=%s pid=%s boot=' "$detected" "$pid";cat /proc/sys/kernel/random/boot_id 2>/dev/null;printf '\n=== 24H RESOURCE SAMPLES ===\n';tail -1441 "$D/resources.csv" 2>/dev/null;printf '\n=== KERNEL AND RECOVERY EVIDENCE ===\n';cat "$D/incident-evidence.pending";printf '\n=== OOM KILL ===\n%s\n' "$row"; } > "$D/oom-evidence.new" && mv "$D/oom-evidence.new" "$D/oom-evidence.log";then
-   [ ! -x "$PANEL_HOME/starts/oom-store.sh" ] || CRASHDIR="$PANEL_HOME" "$PANEL_HOME/starts/oom-store.sh" enqueue || :
-  else rm -f "$D/oom-evidence.new";echo capture_failed > "$D/oom-save-status";fi
+  stamp=$(cut -d. -f1 "${SC_OOM_UPTIME_FILE:-/proc/uptime}");case "$stamp" in ''|*[!0-9]*)echo capture_failed > "$D/oom-save-status";exit 1;;esac
+  event="$D/oom-event.$$";pending=$(printf '%s/oom-pending.%012d.%010d' "$D" "$stamp" "$$")
+  (set -C; : > "$event") 2>/dev/null || { echo capture_failed > "$D/oom-save-status";exit 1; }
+  if { printf 'detected=%s pid=%s boot=' "$detected" "$pid";cat /proc/sys/kernel/random/boot_id 2>/dev/null;printf '\n=== RECENT RESOURCE SAMPLES ===\n';tail -20 "$D/resources.csv" 2>/dev/null;printf '\n=== KERNEL AND RECOVERY EVIDENCE ===\n';tail -c 10000 "$D/incident-evidence-$$.pending";printf '\n=== RECENT RESOURCE SAMPLES ===\n';tail -20 "$D/resources.csv" 2>/dev/null;printf '\n=== OOM KILL ===\n%s\n' "$row"; } > "$event" && mv "$event" "$pending";then
+   cp "$pending" "$D/oom-evidence.log" || :
+   [ ! -x "$PANEL_HOME/starts/oom-store.sh" ] || CRASHDIR="$PANEL_HOME" "$PANEL_HOME/starts/oom-store.sh" enqueue "$pending" || :
+  else rm -f "$event";echo capture_failed > "$D/oom-save-status";fi
  fi
- mv "$D/incident-evidence.pending" "$D/incident-evidence-$count.log"
+ mv "$D/incident-evidence-$$.pending" "$D/incident-evidence-$count.log"
  # Retain 8 bounded kernel snapshots; not written to flash.
  [ "$count" -le 8 ] || rm -f "$D/incident-evidence-$((count-8)).log"
 elif [ "$act" = finish ]; then

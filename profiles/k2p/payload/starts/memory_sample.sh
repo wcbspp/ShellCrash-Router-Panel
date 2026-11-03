@@ -31,5 +31,11 @@ awk -F, -v min="$((up-86400))" 'NF==6 && $2>=min' "$D/memory.csv" | tail -1441 >
 mv "$D/memory.next" "$D/memory.csv"
 
 resource_snapshot
-[ ! -f "$D/oom-unqueued" ] || CRASHDIR="$C" "$C/starts/oom-store.sh" enqueue || :
+if [ -f "$D/oom-unqueued" ];then
+ CRASHDIR="$C" "$C/starts/oom-store.sh" enqueue && rm -f "$D/oom-unqueued" || :
+fi
+for pending in "$D"/oom-pending.*;do
+ [ -f "$pending" ] || continue
+ CRASHDIR="$C" "$C/starts/oom-store.sh" enqueue "$pending" || break
+done
 [ ! -s "$D/oom-queue.b64" ] || CRASHDIR="$C" "$C/starts/oom-store.sh" persist || :

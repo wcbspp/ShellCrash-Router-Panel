@@ -272,5 +272,6 @@
   "payload/starts/access-devices.lua": "shared/lib/access-devices.lua",
   "payload/starts/proxy-access-native.sh": "profiles/k2p/payload/starts/proxy-access-native.sh",
   "payload/starts/proxy-access-ready": "shared/lib/proxy-access-ready",
-  "payload/starts/oom-store.sh": "profiles/k2p/payload/starts/oom-store.sh"
+  "payload/starts/oom-store.sh": "profiles/k2p/payload/starts/oom-store.sh",
+  "payload/starts/storage-lock.sh": "profiles/k2p/payload/starts/storage-lock.sh"
 }

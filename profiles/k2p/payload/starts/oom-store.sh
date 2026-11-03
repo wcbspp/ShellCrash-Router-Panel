@@ -11,15 +11,24 @@ umask 077
 valid(){
  if [ ! -e "$1" ] && [ ! -L "$1" ];then return 0;fi
  [ -f "$1" ] && [ ! -L "$1" ] || return 1
- awk 'length($0)<1 || length($0)>8192 || $0~/[^A-Za-z0-9+\/=]/ {bad=1} END{exit bad || NR>2}' "$1"
+ awk 'length($0)<1 || length($0)>8192 || $0~/[^A-Za-z0-9+\/=]/ {bad=1} END{exit bad || NR>2}' "$1" || return 1
+ while IFS= read -r row;do
+  decoded=$(printf '%s' "$row" | base64 -d 2>/dev/null | base64 | tr -d '\n') || return 1
+  [ "$decoded" = "$row" ] || return 1
+ done < "$1"
 }
 lock(){
  if ! mkdir "$D/oom-store.lock" 2>/dev/null;then
   # Serialize stale-lock cleanup so a new owner's lock cannot be removed.
   mkdir "$D/oom-store-reap.lock" 2>/dev/null || return 1
   owner=$(cat "$D/oom-store.lock/owner" 2>/dev/null)
-  case "$owner" in ''|*[!0-9]*)rmdir "$D/oom-store-reap.lock";return 1;;esac
-  if kill -0 "$owner" 2>/dev/null;then rmdir "$D/oom-store-reap.lock";return 1;fi
+  case "$owner" in
+   ''|*[!0-9]*)
+    age=$(stat -c %Y "$D/oom-store.lock" 2>/dev/null);now=$(date +%s)
+    case "$age:$now" in *[!0-9:]*|:*)rmdir "$D/oom-store-reap.lock";return 1;;esac
+    [ "$((now-age))" -ge 60 ] || { rmdir "$D/oom-store-reap.lock";return 1; };;
+   *) if kill -0 "$owner" 2>/dev/null;then rmdir "$D/oom-store-reap.lock";return 1;fi;;
+  esac
   rm -f "$D/oom-store.lock/owner"
   rmdir "$D/oom-store.lock" 2>/dev/null || { rmdir "$D/oom-store-reap.lock";return 1; }
   rmdir "$D/oom-store-reap.lock" || return 1
@@ -30,17 +39,30 @@ lock(){
 unlock(){ rm -f "$D/oom-store.lock/owner";rmdir "$D/oom-store.lock" 2>/dev/null || :; }
 case "${1:-}" in
  enqueue)
-  [ -f "$D/oom-evidence.log" ] || exit 1
-  : > "$D/oom-unqueued"
+  pending=${2:-}
+  if [ -z "$pending" ];then
+   [ -f "$D/oom-evidence.log" ] || exit 1
+   stamp=$(cut -d. -f1 "${SC_OOM_UPTIME_FILE:-/proc/uptime}");case "$stamp" in ''|*[!0-9]*)exit 1;;esac
+   event="$D/oom-event.$$";pending=$(printf '%s/oom-pending.%012d.%010d' "$D" "$stamp" "$$")
+   (set -C; : > "$event") 2>/dev/null || exit 1
+   cp "$D/oom-evidence.log" "$event" && mv "$event" "$pending" || { rm -f "$event";exit 1; }
+  else
+   case "$pending" in "$D"/oom-pending.*) :;;*)exit 1;;esac
+   [ -f "$pending" ] && [ ! -L "$pending" ] || exit 1
+  fi
   lock || { echo queue_busy > "$D/oom-save-status";exit 1; }
   trap unlock EXIT
   trap 'exit 1' HUP INT TERM
   valid "$Q" || { echo queue_invalid > "$D/oom-save-status";exit 1; }
-  { head -c 512 "$D/oom-evidence.log";printf '\n=== RECENT EVIDENCE ===\n';tail -c 5400 "$D/oom-evidence.log"; } | base64 | tr -d '\n' > "$D/oom-entry.new" || exit 1
-  [ -s "$D/oom-entry.new" ] && [ "$(wc -c < "$D/oom-entry.new")" -le 8192 ] || exit 1
-  { [ ! -f "$Q" ] || cat "$Q";cat "$D/oom-entry.new";printf '\n'; } | tail -n 2 > "$D/oom-queue.new"
-  mv "$D/oom-queue.new" "$Q" || { echo queue_write_failed > "$D/oom-save-status";exit 1; }
-  rm -f "$D/oom-entry.new" "$D/oom-unqueued";echo pending > "$D/oom-save-status";;
+  for pending in "$D"/oom-pending.*;do
+   [ -f "$pending" ] && [ ! -L "$pending" ] || continue
+   { head -c 512 "$pending";printf '\n=== RECENT EVIDENCE ===\n';tail -c 5400 "$pending"; } | base64 | tr -d '\n' > "$D/oom-entry.new" || exit 1
+   [ -s "$D/oom-entry.new" ] && [ "$(wc -c < "$D/oom-entry.new")" -le 8192 ] || exit 1
+   { [ ! -f "$Q" ] || cat "$Q";cat "$D/oom-entry.new";printf '\n'; } | tail -n 2 > "$D/oom-queue.new"
+   mv "$D/oom-queue.new" "$Q" || { echo queue_write_failed > "$D/oom-save-status";exit 1; }
+   rm -f "$D/oom-entry.new" "$pending"
+  done
+  echo pending > "$D/oom-save-status";;
  persist)
   [ -s "$Q" ] || exit 0
   now=$(cut -d. -f1 /proc/uptime);case "$now" in ''|*[!0-9]*)now=0;;esac
@@ -83,7 +105,7 @@ case "${1:-}" in
   status=$(cat "$D/oom-save-status" 2>/dev/null);case "$status" in
    pending_low_memory)echo '内存不足，新的 OOM 记录等待保存；断电前可能丢失。';;
    pending_busy|queue_busy)echo '其他操作正在进行，新的 OOM 记录等待保存；断电前可能丢失。';;
-   pending_save_failed|rollback_failed)echo 'OOM 持久保存失败，请保留现场并检查存储。';;
+   capture_failed|queue_write_failed|pending_save_failed|rollback_failed)echo 'OOM 持久保存失败，请保留现场并检查存储。';;
    pending)echo '新的 OOM 记录等待保存；断电前可能丢失。';;
    *invalid)echo '已有 OOM 记录损坏，未覆盖，请保留现场。';;
   esac;;

@@ -96,7 +96,7 @@
     "reason": "Optional MAC-scoped HTTPS fallback rejects only selected LAN clients UDP443; inactive without config, removed in direct mode; no UDP9993 or other-device change. Idempotent owned-chain cleanup and bounded validated MAC list. Rule/global activation ignores stale former-direct state; isolated https refresh respects actual direct state. Mixed mode adds only owned LAN UDP marking/system-TUN route; private/DNS bypass; exact stop/failure cleanup; retain Redir compatibility fallback. Reviewed 2026-10-14: opt-in domestic IPv4 firewall bypass with conservative rule/DNS eligibility, owned atomic chain application, no core restart, explicit global/direct suspension and conflict rejection; short rule-maintenance explanations; traffic scope follows actual mode without relabelling historical totals as proxy quota. Added scoped control inventory and regression coverage. MAC proxy-access switch: authenticated bounded upload and persisted policy, owned IPv4/IPv6 firewall gates for transparent and explicit proxy paths, startup/mode reapply without core restart; UI state and confirmation. Local firewall transactions plus real IPv4 LAN HTTP/SOCKS/DNS, UI and enabled-policy boot verified separately; physical IPv6 traffic not available on the AX LAN.; LAN UDP DNS REDIRECT explicitly specifies udp as required by AX5 iptables 1.6.2"
   },
   "ax5/common.lua": {
-    "sha256": "e90787461c8c01dc2f0a906a00b969a84a7eafb8d1ed2ee5a83a8eeb1ed07906",
+    "sha256": "d0f611335a0597954e42a14104308bc808577e6ba5e008fa2a89c18ad030ff7f",
     "reason": "Live recovery owner prevents timestamp-only lock theft and false long-operation timeouts.; Reviewed on-demand node diagnostics, bounded root-array scan, firmware-compatible change token and explicit control coverage; original baseline preserved. MAC proxy-access switch: authenticated bounded upload and persisted policy, owned IPv4/IPv6 firewall gates for transparent and explicit proxy paths, startup/mode reapply without core restart; UI state and confirmation. Local firewall transactions plus real IPv4 LAN HTTP/SOCKS/DNS, UI and enabled-policy boot verified separately; physical IPv6 traffic not available on the AX LAN. IP/MAC device picker and nonempty enable guard; official LAN-chain generation without service/ipset teardown; native shell compatibility; modes/base rollback. Tests and real client verification recorded separately.; Version1.0.1 ships the validated access capability with runtime code; clean installs and updates do not depend on a private device marker. User policy defaults off on a clean install and existing settings are preserved."
   },
   "ax5/native-profile.lua": {
@@ -108,7 +108,7 @@
     "reason": " Validate and record prepared interception mode after runtime/core checks."
   },
   "ax5/run.sh": {
-    "sha256": "754ea1f52637e495ae9a7ab0c7604ba9e5f1248e406ae26d0f55c7dd73806610",
+    "sha256": "0fc26a4976d56c14f60ed22fa01586775cbf8543c258cab819c9c79fca38db2e",
     "reason": "Reviewed one-shot quota refresh hooks after ready startup/successful import, cache revision display, automatic domestic/international IP and geolocation probes; preserve config, source isolation, and existing memory floors. MAC proxy-access switch: authenticated bounded upload and persisted policy, owned IPv4/IPv6 firewall gates for transparent and explicit proxy paths, startup/mode reapply without core restart; UI state and confirmation. Local firewall transactions plus real IPv4 LAN HTTP/SOCKS/DNS, UI and enabled-policy boot verified separately; physical IPv6 traffic not available on the AX LAN.; Preserve selector readiness and failed recovery evidence; bounded OOM diagnostics or portable SHA verification as applicable."
   },
   "tests/mihomo-protocols.lua": {
@@ -177,7 +177,7 @@
   },
   "ax5/state.lua": {
     "reason": "Selector recovery safety and bounded OOM diagnostics; or portable official-tool digest verification.; Add OOM monitor evidence and controls; device checks remain pending.; Persist bounded AX5 OOM records and keep K2P validation pending.",
-    "sha256": "415de83f2556f87eea8aa5776723199651eb3cbff29b2c6b69ac9143a3178384"
+    "sha256": "42d8499e88ad7ebadb0ca06531a996f7f9401ddc117e086ff56d80a2def09832"
   },
   "ui/health.js": {
     "reason": "; OOM evidence capture and on-demand monitor page export.; Persist bounded AX5 OOM records and keep K2P validation pending.",

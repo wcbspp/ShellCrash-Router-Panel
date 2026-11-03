@@ -9,6 +9,7 @@ class BackupExport(unittest.TestCase):
   (self.c/'starts/backup-links.sh').write_bytes(link_source.read_bytes())
   (self.c/'starts/backup-guide.sh').write_bytes((SOURCE.parent/'backup-guide.sh').read_bytes())
   (self.c/'starts/resource_health.sh').write_bytes((SOURCE.parent/'resource_health.sh').read_bytes())
+  (self.c/'starts/storage-lock.sh').write_bytes((SOURCE.parent/'storage-lock.sh').read_bytes())
   (self.c/'starts/remote.sh').write_text('remote_ready(){ :; }\n')
   (self.c/'configs/core-installed.info').write_text('version=1.12.13\nsha256='+('1'*64)+'\n')
   (self.c/'configs/recovery-enabled').touch();(self.c/'configs/webdav.auth').write_text('private fixture');(self.c/'configs/webdav.user').write_text('user')
@@ -20,7 +21,7 @@ class BackupExport(unittest.TestCase):
   self.lock=self.root/'save.lock';source=SOURCE.read_text().replace('C=/etc/storage/ShellCrash','C='+str(self.c)).replace('D=/tmp/sc-admin','D='+str(self.d)).replace('/proc/meminfo',str(self.mem)).replace('/tmp/shellcrash-storage-save.lock',str(self.lock)).replace('/etc/storage/.sc-backup-stage.',str(self.root/' .sc-backup-stage.').replace('/ .','/.'))
   self.script=self.root/'backup.sh';self.script.write_text(source)
   (self.root/'bin').mkdir();stub=self.root/'bin/sha256sum';stub.write_text('#!/usr/bin/env python3\nimport sys,hashlib\np=sys.argv[1];print(hashlib.sha256(open(p,"rb").read()).hexdigest()+"  "+p)\n');stub.chmod(0o700)
-  self.env=dict(os.environ,PATH=str(self.root/'bin')+':'+os.environ['PATH'])
+  self.env=dict(os.environ,PATH=str(self.root/'bin')+':'+os.environ['PATH'],SC_STORAGE_LOCK=str(self.lock))
  def tearDown(self):self.tmp.cleanup()
  def run_backup(self):return subprocess.run(['sh',str(self.script),'local'],env=self.env,capture_output=True,timeout=30)
  def clean(self):

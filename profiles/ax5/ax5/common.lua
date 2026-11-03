@@ -1,7 +1,7 @@
 local M={C='/data/ShellCrash',R='/tmp/ShellCrash'}
 M.json=require('cjson')
 function M.read(p,max) local f=io.open(p,'rb');if not f then return '' end;local s=f:read(max or '*a') or '';f:close();return s end
-function M.write(p,s) local f=assert(io.open(p,'wb'));assert(f:write(s));f:close() end
+function M.write(p,s) local f=assert(io.open(p,'wb'));assert(f:write(s));assert(f:close()) end
 function M.load(p,default) local ok,v=pcall(M.json.decode,M.read(p));if ok then return v end;return default or {} end
 function M.encode(v)
  local s=M.json.encode(v)

@@ -46,7 +46,7 @@ printf '预检通过；LAN=%s，目标=%s\n' "$(nvram get lan_ipaddr)" "$C"
 [ "$mode" = --install ] || exit 0
 [ ! -d /tmp/padavan-panel-install.lock ] || { echo '已有安装任务'; exit 1; }
 mkdir /tmp/padavan-panel-install.lock
-trap 'status=$?; rm -f /tmp/padavan-panel-profile.json /tmp/padavan-panel-save.sh; rmdir /tmp/padavan-panel-install.lock 2>/dev/null || :; exit "$status"' EXIT
+trap 'status=$?; rm -f /tmp/padavan-panel-profile.json /tmp/padavan-panel-save.sh /tmp/padavan-panel-storage-lock.sh; rmdir /tmp/padavan-panel-install.lock 2>/dev/null || :; exit "$status"' EXIT
 umask 077
 backup=/tmp/padavan-panel-before-install.tar.gz
 # Back up affected storage before stopping the existing service.
@@ -60,6 +60,7 @@ printf '%s' "$secret" | grep -Eq '^[A-Za-z0-9_-]{24,128}$' || { echo '管理密�
 grep -Fq "\"secret\":\"$secret\"" /tmp/padavan-panel-profile.json || { echo '配置与管理密钥不匹配'; exit 1; }
 grep -Fq "\"external_controller\":\"$(nvram get lan_ipaddr):9999\"" /tmp/padavan-panel-profile.json || { echo '配置LAN地址与路由器不一致'; exit 1; }
 cp "$BASE/payload/starts/save_storage.sh" /tmp/padavan-panel-save.sh
+cp "$BASE/payload/starts/storage-lock.sh" /tmp/padavan-panel-storage-lock.sh
 chmod 700 /tmp/padavan-panel-save.sh
 committed=0
 install_stage=framework
@@ -90,7 +91,7 @@ rollback(){
   rm -f /tmp/sc-panel-clean.cron
  fi
  sh "$BASE/restore_storage.sh" "$backup" || return 1
- /bin/sh /tmp/padavan-panel-save.sh || echo '回滚落盘失败：务必保留备份，不要断电'
+ SC_STORAGE_LOCK_HELPER=/tmp/padavan-panel-storage-lock.sh /bin/sh /tmp/padavan-panel-save.sh || echo '回滚落盘失败：务必保留备份，不要断电'
  [ ! -f "$C/start.sh" ] || CRASHDIR="$C" "$C/start.sh" start >/dev/null 2>&1 || :
 }
 finish(){
@@ -100,7 +101,7 @@ finish(){
   capture_failure || :
   rollback || :
  fi
- rm -f /tmp/padavan-panel-profile.json /tmp/padavan-panel-save.sh
+ rm -f /tmp/padavan-panel-profile.json /tmp/padavan-panel-save.sh /tmp/padavan-panel-storage-lock.sh
  rmdir /tmp/padavan-panel-install.lock 2>/dev/null || :
  exit "$code"
 }
