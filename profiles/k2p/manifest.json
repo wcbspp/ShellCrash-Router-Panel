@@ -273,5 +273,7 @@
   "payload/starts/proxy-access-native.sh": "profiles/k2p/payload/starts/proxy-access-native.sh",
   "payload/starts/proxy-access-ready": "shared/lib/proxy-access-ready",
   "payload/starts/oom-store.sh": "profiles/k2p/payload/starts/oom-store.sh",
-  "payload/starts/storage-lock.sh": "profiles/k2p/payload/starts/storage-lock.sh"
+  "payload/starts/storage-lock.sh": "profiles/k2p/payload/starts/storage-lock.sh",
+  "payload/starts/oom-monitor.sh": "shared/lib/oom-monitor.sh",
+  "payload/starts/oom-remote.sh": "shared/lib/oom-remote.sh"
 }

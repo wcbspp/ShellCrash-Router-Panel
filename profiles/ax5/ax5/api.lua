@@ -37,7 +37,7 @@ function A.read()
   local ok,data=pcall(M.json.decode,raw);local rows={}
   if raw~='' and (not ok or type(data)~='table' or type(data.records)~='table')then reply({error='oom_records_invalid'},500);return end
   if ok and type(data)=='table' and type(data.records)=='table' then for i,r in ipairs(data.records)do
-   rows[#rows+1]='=== OOM '..i..' | '..tostring(r.time or '')..' | PID '..tostring(r.pid or '')..' ===\n'..'boot='..tostring(r.boot or '')..' exit_code='..tostring(r.exit_code or '')..'\n'..tostring(r.samples or '')..'\n'..tostring(r.kernel or '')
+   rows[#rows+1]='=== OOM '..i..' | '..tostring(r.time or '')..' | PID '..tostring(r.pid or '')..' ===\n'..'boot='..tostring(r.boot or '')..' exit_code='..tostring(r.exit_code or '')..'\n'..tostring(r.samples or '')..'\n'..tostring(r.kernel or '')..'\n'..tostring(r.context or '')
   end end
   if status:match('^failed')then rows[#rows+1]='最近一次持久保存失败：'..status end
   H.prepare_content('text/plain');H.write(table.concat(rows,'\n\n'));return
@@ -99,7 +99,7 @@ function A.upload()
 end
 function A.control()
  if H.getenv('REQUEST_METHOD')~='POST'or not csrf()then reply({error='forbidden'},403);return end
- local d=body();local allowed={nodeping=true,start=true,stop=true,restart=true,clear=true,cleanup=true,memcfg=true,fetch=true,apply=true,dns=true,policy=true,groupmode=true,grouplayout=true,rules=true,domainupdate=true,corecheck=true,coreupdate=true,toolcheck=true,toolupdate=true,guard=true,transport=true,cnbypass=true,access=true,proxymode=true,advanced=true,mirrortest=true,mirrorsave=true,mirrorsync=true,mirrorverify=true,backuplocal=true,backupremote=true,baselinecreate=true,restorecheck=true,restorego=true}
+ local d=body();local allowed={nodeping=true,start=true,stop=true,restart=true,clear=true,cleanup=true,memcfg=true,oomcfg=true,fetch=true,apply=true,dns=true,policy=true,groupmode=true,grouplayout=true,rules=true,domainupdate=true,corecheck=true,coreupdate=true,toolcheck=true,toolupdate=true,guard=true,transport=true,cnbypass=true,access=true,proxymode=true,advanced=true,mirrortest=true,mirrorsave=true,mirrorsync=true,mirrorverify=true,backuplocal=true,backupremote=true,baselinecreate=true,restorecheck=true,restorego=true}
  if not d or type(d.script)~='string'then reply({error='invalid_action'},400);return end
  local action=d.script:match('^sc%-(%w+)%.sh$');if not allowed[action]then reply({error='unsupported_action'},400);return end
  local args=d.args or {};if type(args)~='table'or #args>3 then reply({error='invalid_arguments'},400);return end;for _,v in ipairs(args)do if type(v)~='string'or #v>100 or not v:match('^[%w+/=]+$')then reply({error='invalid_arguments'},400);return end end

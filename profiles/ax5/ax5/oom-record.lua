@@ -1,5 +1,5 @@
--- A single atomic replacement keeps the two most recent bounded records.
-return function(M, evidence)
+-- A single atomic replacement keeps the most recent bounded record.
+local function save(M, evidence)
  local path=M.C..'/configs/oom-records.json'
  local free=tonumber(M.exec("df -k /data | awk 'END{print $4}'")) or 0
  assert(free>=640,'insufficient_persistent_space')
@@ -12,7 +12,7 @@ return function(M, evidence)
   records=old.records
  end
  records[#records+1]=evidence
- while #records>2 do table.remove(records,1)end
+ while #records>1 do table.remove(records,1)end
  local serialized=M.json.encode({version=1,records=records})
  assert(#serialized<=65536,'records_too_large')
  local ok,err=pcall(function()
@@ -23,4 +23,16 @@ return function(M, evidence)
  assert(M.run('sync'),'records_sync_failed')
  assert(M.read(path,65537)==serialized,'records_readback_failed')
  return true
+end
+
+return function(M,evidence)
+ assert(M.lock('oom-record.lock',60),'records_busy')
+ local dir=M.R..'/oom-record.lock'
+ local ok,result=pcall(function()
+  M.write(dir..'/owner',tostring(require('nixio').getpid()))
+  return save(M,evidence)
+ end)
+ os.remove(dir..'/owner');os.remove(dir);os.remove(dir..'.time')
+ if not ok then error(result)end
+ return result
 end

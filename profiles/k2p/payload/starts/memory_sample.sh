@@ -39,3 +39,5 @@ for pending in "$D"/oom-pending.*;do
  CRASHDIR="$C" "$C/starts/oom-store.sh" enqueue "$pending" || break
 done
 [ ! -s "$D/oom-queue.b64" ] || CRASHDIR="$C" "$C/starts/oom-store.sh" persist || :
+
+CRASHDIR="$C" SC_OOM_RUNTIME="$D" sh "$C/starts/oom-monitor.sh" >/dev/null 2>&1 &

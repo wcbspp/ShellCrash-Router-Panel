@@ -443,3 +443,5 @@ AX5-CTRL-oom-load,AX5,monitor,P1,oom-load,查看 OOM 取证,button,监控页异�
 AX5-CTRL-oom-download,AX5,monitor,P1,oom-download,下载 OOM 取证,button,监控页异常记录中显示；无记录时下载禁用,分别准备 OOM 和无记录两种情况,打开监控页并查看或下载记录,内容与本机取证一致；无记录有明确提示,读取失败及会话过期能重试；分享前检查隐私,页面状态及下载文件,无需修改配置
 K2P-CTRL-oom-load,K2P,monitor,P1,oom-load,查看 OOM 取证,button,监控页异常记录中显示；无记录时下载禁用,分别准备 OOM 和无记录两种情况,打开监控页并查看或下载记录,内容与本机取证一致；无记录有明确提示,读取失败及会话过期能重试；分享前检查隐私,页面状态及下载文件,无需修改配置
 K2P-CTRL-oom-download,K2P,monitor,P1,oom-download,下载 OOM 取证,button,监控页异常记录中显示；无记录时下载禁用,分别准备 OOM 和无记录两种情况,打开监控页并查看或下载记录,内容与本机取证一致；无记录有明确提示,读取失败及会话过期能重试；分享前检查隐私,页面状态及下载文件,无需修改配置
+AX5-CTRL-oom-remote-toggle,AX5,monitor,P0,oom-remote-toggle,远程监控,button,监控页；操作中禁用,已保存并验证WebDAV,开启、刷新、等待采样、关闭并重启核对,开关持久化；远端回读校验；关闭后停止上传,认证失败、低内存、上传失败及重启,设备及WebDAV证据,恢复原开关
+K2P-CTRL-oom-remote-toggle,K2P,monitor,P0,oom-remote-toggle,远程监控,button,监控页；操作中禁用,已保存并验证WebDAV,开启、刷新、等待采样、关闭并重启核对,开关持久化；远端回读校验；关闭后停止上传,认证失败、低内存、上传失败及重启,设备及WebDAV证据,恢复原开关

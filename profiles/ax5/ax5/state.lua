@@ -8,6 +8,23 @@ local function different(a,b)
  for k,v in pairs(b)do if a[k]~=v then return true end end
  return false
 end
+if action=='scan-oom' then
+ local start=tonumber(M.read(M.R..'/oom-scan-start',64))
+ if not start then M.write(M.R..'/oom-scan-start',M.read('/proc/uptime',64):match('^[%d.]+')or'0');return end
+ local kernel=M.exec('dmesg | tail -300');local stamp,pid,name
+ for line in kernel:gmatch('[^\n]+')do
+  local t,p,n=line:match('%[%s*([%d%.]+)%].-Kill%w* process (%d+) %(([^%)]+)%)')
+  if t then stamp,pid,name=t,p,n end
+ end
+ if not stamp or tonumber(stamp)<start then return end
+ local boot=M.read('/proc/sys/kernel/random/boot_id',80):gsub('%s+$','');local key=boot..':'..stamp..':'..pid
+ local previous=M.load(M.C..'/configs/oom-records.json',{records={}})
+ for _,r in ipairs(previous.records or{})do if r.kernel_event==key then return end end
+ local evidence={time=os.date('%Y-%m-%d %H:%M:%S'),pid=pid,name=name,boot=boot,kernel_event=key,kernel=kernel:sub(-24576),samples=M.read(M.R..'/memory-detail.csv',196608):sub(-8192),context=M.read(M.R..'/oom-monitor-current',8192)}
+ local ok,err=pcall(function()return dofile(M.C..'/ax5/oom-record.lua')(M,evidence)end)
+ M.write(M.R..'/oom-save-status',ok and 'saved' or ('failed: '..tostring(err)))
+ return
+end
 if action=='incident' then
  local text=M.exec('dmesg | tail -300');local pid=arg[2];local code=tonumber(arg[3]) or 0
  local reason='unknown'
@@ -21,7 +38,7 @@ if action=='incident' then
   local detail=M.read(M.R..'/memory-detail.csv',196608)
   local samples=detail:sub(-8192);if #detail>8192 then samples=samples:match('^[^\n]*\n(.*)$')or'' end
   local evidence={time=os.date('%Y-%m-%d %H:%M:%S'),pid=pid,exit_code=code,boot=M.read('/proc/sys/kernel/random/boot_id',80):gsub('%s+$',''),
-   samples='time,uptime,pid,rss_kb,available_kb,free_kb,unreclaimable_kb,slab_kb,shmem_kb,anon_kb,conntrack\n'..samples,kernel=text:sub(-16384)}
+   context=M.read(M.R..'/oom-monitor-current',8192),samples='time,uptime,pid,rss_kb,available_kb,free_kb,unreclaimable_kb,slab_kb,shmem_kb,anon_kb,conntrack\n'..samples,kernel=text:sub(-16384)}
   local ok,err=pcall(function()return dofile(M.C..'/ax5/oom-record.lua')(M,evidence)end)
   M.write(M.R..'/oom-save-status',ok and 'saved' or ('failed: '..tostring(err)))
  end
@@ -49,6 +66,7 @@ elseif action=='sample' then
   history[#history+1]=table.concat({now,math.floor(up),s.pid,s.rss_kb,m.MemAvailable or 0,m.MemFree or 0,m.SUnreclaim or 0,m.Slab or 0,m.Shmem or 0,m.AnonPages or 0,s.conntrack},',');while #history>1441 do table.remove(history,1)end;M.write(M.R..'/memory-detail.csv',table.concat(history,'\n')..'\n')
   locked=M.lock('operation.lock',900)
   if locked then
+ M.run('CRASHDIR='..M.C..' SC_OOM_RUNTIME='..M.R..' sh '..M.C..'/ax5/oom-monitor.sh >/dev/null 2>&1 &')
   local job=M.load(M.R..'/job.json');if not job.active and (s.memory_limits.cleanup_mb>0 and s.available_kb<s.memory_limits.cleanup_mb*1024)then M.cleanup(false)end
   if not job.active and s.running and M.read(M.R..'/service-ready')=='1\n' then
    local p=M.load(M.R..'/selectors.json');local raw=M.api('/proxies');local good,data=pcall(M.json.decode,raw)

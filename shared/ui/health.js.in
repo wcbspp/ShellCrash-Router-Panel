@@ -90,6 +90,13 @@ async function loadIncidents(){
 el('incident-open').onclick=()=>{showTab('monitor');el('incident-details').open=true;loadIncidents()};
 el('incident-refresh').onclick=loadIncidents;
 let oomEvidence='';
+el('oom-remote-toggle').onclick=async()=>{
+ if(manageBusy||nativeState?.active)return;
+ const enable=!nativeState?.oom_remote_enabled;
+ if(enable&&!confirm('开启后将使用已保存的 WebDAV，每分钟保存内存、进程和局域网连接来源摘要，以及 OOM 记录。远程文件含设备信息，请妥善保管。'))return;
+ manageBusy=true;const id=[...crypto.getRandomValues(new Uint8Array(4))].map(b=>b.toString(16).padStart(2,'0')).join('');
+ try{await control('sc-oomcfg.sh',[id,enable?'1':'0']);await waitJob(id,'done',120000,'oom-remote-state');await syncNative();paintMonitor()}catch(e){el('oom-remote-state').textContent=e.message}finally{manageBusy=false}
+};
 el('oom-load').onclick=async()=>{const button=el('oom-load');button.disabled=true;try{oomEvidence=(await nativeRead('oom')).replace(/https?:\/\/[^\s<>]+/g,'[链接已隐藏]');el('oom-output').textContent=oomEvidence;el('oom-output').hidden=!oomEvidence;el('oom-download').disabled=!oomEvidence;el('oom-status').textContent=oomEvidence?'OOM 记录已载入；分享前请检查设备信息。':'暂无 OOM 取证记录。'}catch(e){el('oom-status').textContent='读取失败：'+e.message}finally{button.disabled=false}};
 el('oom-download').onclick=()=>{if(!oomEvidence)return;const url=URL.createObjectURL(new Blob([oomEvidence],{type:'text/plain;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download='shellcrash-oom-evidence.txt';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)};
 
@@ -97,6 +104,12 @@ function paintMonitor(){
  if(!nativeState)return;const s=nativeState,mb=n=>(Number(n||0)/1024).toFixed(1)+' MB';
  el('monitor-available').textContent=mb(s.available_kb);el('monitor-rss').textContent=mb(s.rss_kb);
  el('monitor-pressure').textContent=({normal:'正常',warning:'余量偏低',protect:'保护中'}[s.pressure]||'—');el('monitor-connections').textContent=String(s.conntrack||0);
+ el('oom-remote-toggle').textContent=s.oom_remote_enabled?'关闭远程监控':'开启远程监控';el('oom-remote-toggle').disabled=manageBusy||s.active;el('oom-remote-state').textContent=s.oom_remote_enabled?({saved:'远程记录已保存',upload_pending:'上传待重试',incident_upload_pending:'OOM 记录待上传',low_memory:'内存保护中，远程记录暂停'}[decode(s.oom_remote_status_b64||'').trim()]||'已开启，等待每分钟采样'):'未开启 · 使用备份页面的 WebDAV 连接';
+@@if ax5@@
+ el('oom-storage').textContent='本地最近一次：/data/ShellCrash/configs/oom-records.json · WebDAV：shellcrash-panel/AX5/oom/';
+@@else@@
+ el('oom-storage').textContent='本地最近一次：/etc/storage/ShellCrash/configs/oom-history.b64（已保存到 Storage 后断电保留）· WebDAV：shellcrash-panel/K2P/oom/';
+@@end@@
  const limits=s.memory_limits||{warning_mb:16,protect_mb:12,cleanup_mb:0};
 @@if ax5@@
  el('memory-limits-summary').textContent='提醒 '+limits.warning_mb+' · 保护 '+limits.protect_mb+' · 清理 '+(limits.cleanup_mb?limits.cleanup_mb+' MB':'关闭');

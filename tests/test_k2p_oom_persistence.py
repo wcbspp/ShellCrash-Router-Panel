@@ -15,10 +15,20 @@ class K2PPersistence(unittest.TestCase):
  def run_action(self,action,**kwargs):return subprocess.run(['sh',str(SCRIPT),action],env=dict(self.env,**kwargs),capture_output=True,text=True)
  def add(self,value):
   (self.d/'oom-evidence.log').write_text(value);self.assertEqual(self.run_action('enqueue').returncode,0)
+ def test_noncore_oom_scan_is_queued_once(self):
+  kernel=self.bin/'dmesg';kernel.write_text('#!/bin/sh\nprintf "%s\\n" "$TEST_KERNEL"\n');kernel.chmod(0o755)
+  self.assertEqual(self.run_action('scan',TEST_KERNEL='').returncode,0)
+  (self.root/'uptime').write_text('12347.0 0\n')
+  message='[12346.0] Killed process 7 (zerotier-one)'
+  self.assertEqual(self.run_action('scan',TEST_KERNEL=message).returncode,0)
+  self.assertEqual(self.run_action('persist').returncode,0)
+  self.assertIn(message,self.run_action('read').stdout)
+  self.assertEqual(self.run_action('scan',TEST_KERNEL=message).returncode,0)
+  self.assertFalse((self.d/'oom-queue.b64').exists())
  def test_rotation_and_flash_copy(self):
   for value in ('first','second','third'):
    self.add(value);self.assertEqual(self.run_action('persist').returncode,0)
-  result=self.run_action('read');self.assertIn('second',result.stdout);self.assertIn('third',result.stdout);self.assertNotIn('first',result.stdout)
+  result=self.run_action('read');self.assertNotIn('second',result.stdout);self.assertIn('third',result.stdout);self.assertNotIn('first',result.stdout)
   self.assertEqual((self.c/'configs/oom-history.b64').read_bytes(),(self.d/'flash-snapshot').read_bytes())
  def test_save_failure_restores_previous_and_retains_pending(self):
   self.add('old');self.assertEqual(self.run_action('persist').returncode,0);before=(self.c/'configs/oom-history.b64').read_bytes()
@@ -31,18 +41,18 @@ class K2PPersistence(unittest.TestCase):
  def test_corrupt_history_is_not_replaced(self):
   p=self.c/'configs/oom-history.b64';p.write_text('not valid !\n');self.add('new');self.assertNotEqual(self.run_action('persist').returncode,0);self.assertEqual(p.read_text(),'not valid !\n')
 
- def test_restart_restores_two_events_from_saved_storage(self):
+ def test_restart_restores_latest_event_from_saved_storage(self):
   self.add('old');self.assertEqual(self.run_action('persist').returncode,0)
   self.add('new');self.assertEqual(self.run_action('persist').returncode,0)
   saved=(self.d/'flash-snapshot').read_bytes()
   (self.c/'configs/oom-history.b64').unlink();(self.c/'configs/oom-history.b64').write_bytes(saved)
   after=self.root/'after-reboot';after.mkdir();self.env['SC_OOM_RUNTIME']=str(after)
-  result=self.run_action('read');self.assertEqual(result.returncode,0);self.assertIn('old',result.stdout);self.assertIn('new',result.stdout)
- def test_failed_save_retries_and_keeps_last_two(self):
+  result=self.run_action('read');self.assertEqual(result.returncode,0);self.assertNotIn('old',result.stdout);self.assertIn('new',result.stdout)
+ def test_failed_save_retries_and_keeps_latest(self):
   self.add('one');self.assertEqual(self.run_action('persist').returncode,0)
   self.add('two');self.assertNotEqual(self.run_action('persist',SAVE_FAIL='1').returncode,0)
   self.add('three');(self.d/'oom-retry-at').write_text('0\n');self.assertEqual(self.run_action('persist').returncode,0)
-  result=self.run_action('read');self.assertNotIn('one',result.stdout);self.assertIn('two',result.stdout);self.assertIn('three',result.stdout)
+  result=self.run_action('read');self.assertNotIn('one',result.stdout);self.assertNotIn('two',result.stdout);self.assertIn('three',result.stdout)
 
  def test_busy_queue_retries_without_touching_live_lock(self):
   lock=self.d/'oom-store.lock';lock.mkdir();(lock/'owner').write_text(str(os.getpid()))
@@ -62,7 +72,7 @@ class K2PPersistence(unittest.TestCase):
   self.assertEqual((self.d/'oom-queue.b64').read_bytes(),before)
   pending=next(self.d.glob('oom-pending.*'));self.assertEqual(subprocess.run(['sh',str(SCRIPT),'enqueue',str(pending)],env=self.env).returncode,0)
   self.assertEqual(self.run_action('persist').returncode,0)
-  result=self.run_action('read');self.assertIn('first',result.stdout);self.assertIn('second',result.stdout)
+  result=self.run_action('read');self.assertNotIn('first',result.stdout);self.assertIn('second',result.stdout)
 
  def test_failed_flash_save_is_not_retried_in_tight_loop(self):
   self.add('pending');self.assertNotEqual(self.run_action('persist',SAVE_FAIL='1').returncode,0)

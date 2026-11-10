@@ -175,5 +175,7 @@
   "ax5/proxy-access.sh": "shared/lib/proxy-access.sh",
   "ax5/access-devices.lua": "shared/lib/access-devices.lua",
   "ax5/proxy-access-ready": "shared/lib/proxy-access-ready",
-  "ax5/oom-record.lua": "profiles/ax5/ax5/oom-record.lua"
+  "ax5/oom-record.lua": "profiles/ax5/ax5/oom-record.lua",
+  "ax5/oom-monitor.sh": "shared/lib/oom-monitor.sh",
+  "ax5/oom-remote.sh": "shared/lib/oom-remote.sh"
 }

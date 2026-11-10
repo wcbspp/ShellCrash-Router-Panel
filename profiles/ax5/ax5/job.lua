@@ -101,6 +101,11 @@ local function execute()
  elseif a=='start'or a=='stop'or a=='restart'then service(a);phase('done','service_operation_complete',false)
  elseif a=='clear'then M.write(M.R..'/operations.log','');M.write(M.R..'/core.log','');M.write(M.R..'/service.log','');M.write(M.R..'/subscription-tool.log','');phase('done','logs_cleared',false)
  elseif a=='cleanup'then M.cleanup(true);phase('done','memory_cleaned',false)
+ elseif a=='oomcfg'then
+  guard();local mode=args[2];assert(mode=='0'or mode=='1','invalid_oom_setting')
+  if mode=='1'then assert(M.run('C='..M.C..' D='..M.R..' sh -c \'. "$C/ax5/remote.sh"; [ "$(remote_transport)" = webdav ] && remote_ready\''),'请先在备份页面启用并验证 WebDAV')end
+  local path=M.C..'/configs/oom-remote-enabled';if mode=='1'then M.write(path,'1\n')else os.remove(path)end
+  assert(M.run('sync'),'persistent_save_failed');phase('done','远程监控设置已保存',false)
  elseif a=='memcfg'then
   guard();local w,p,c=(args[2]or''):match('^w(%d+)p(%d+)c(%d+)$');w,p,c=tonumber(w),tonumber(p),tonumber(c)
   if not w or not p or not c or p<12 or w<=p or w>64 or(c~=0 and(c<w or c>96))then fail('memory_settings_invalid')end

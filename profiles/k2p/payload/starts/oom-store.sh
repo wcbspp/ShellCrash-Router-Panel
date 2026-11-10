@@ -11,7 +11,7 @@ umask 077
 valid(){
  if [ ! -e "$1" ] && [ ! -L "$1" ];then return 0;fi
  [ -f "$1" ] && [ ! -L "$1" ] || return 1
- awk 'length($0)<1 || length($0)>8192 || $0~/[^A-Za-z0-9+\/=]/ {bad=1} END{exit bad || NR>2}' "$1" || return 1
+ awk 'length($0)<1 || length($0)>16384 || $0~/[^A-Za-z0-9+\/=]/ {bad=1} END{exit bad || NR>2}' "$1" || return 1
  while IFS= read -r row;do
   decoded=$(printf '%s' "$row" | base64 -d 2>/dev/null | base64 | tr -d '\n') || return 1
   [ "$decoded" = "$row" ] || return 1
@@ -38,6 +38,24 @@ lock(){
 }
 unlock(){ rm -f "$D/oom-store.lock/owner";rmdir "$D/oom-store.lock" 2>/dev/null || :; }
 case "${1:-}" in
+ scan)
+  up=$(cut -d. -f1 "${SC_OOM_UPTIME_FILE:-/proc/uptime}")
+  case "$up" in ''|*[!0-9]*)exit 1;;esac
+  if [ ! -s "$D/oom-scan-start" ];then echo "$up" > "$D/oom-scan-start";exit 0;fi
+  dmesg | tail -200 > "$D/oom-scan-kernel"
+  row=$(grep 'Killed process ' "$D/oom-scan-kernel" | tail -1)
+  [ -n "$row" ] || exit 0
+  case "$row" in *' (CrashCore)'*)exit 0;;esac
+  stamp=$(printf '%s\n' "$row" | sed -n 's/^.*\[[[:space:]]*\([0-9.]*\)\].*$/\1/p')
+  [ -n "$stamp" ] || exit 0
+  start=$(cat "$D/oom-scan-start")
+  awk -v t="$stamp" -v s="$start" 'BEGIN{exit !(t>=s)}' || exit 0
+  key=$(printf '%s' "$row" | sha256sum | awk '{print $1}')
+  [ "$key" != "$(cat "$D/oom-scan-key" 2>/dev/null)" ] || exit 0
+  pending=$(printf '%s/oom-pending.%012d.%010d' "$D" "$up" "$$")
+  { printf 'detected=%s source=kernel_scan\n' "$(date +%s)";cat /proc/sys/kernel/random/boot_id 2>/dev/null;cat "$D/oom-scan-kernel";printf '\n=== RESOURCE HISTORY ===\n';tail -20 "$D/resources.csv" 2>/dev/null;printf '\n=== PROCESS AND CONNECTION SNAPSHOT ===\n';cat "$D/oom-monitor-current" 2>/dev/null;printf '\n=== OOM KILL ===\n%s\n' "$row"; } > "$pending"
+  sh "$0" enqueue "$pending" || exit 1
+  echo "$key" > "$D/oom-scan-key";;
  enqueue)
   pending=${2:-}
   if [ -z "$pending" ];then
@@ -56,8 +74,8 @@ case "${1:-}" in
   valid "$Q" || { echo queue_invalid > "$D/oom-save-status";exit 1; }
   for pending in "$D"/oom-pending.*;do
    [ -f "$pending" ] && [ ! -L "$pending" ] || continue
-   { head -c 512 "$pending";printf '\n=== RECENT EVIDENCE ===\n';tail -c 5400 "$pending"; } | base64 | tr -d '\n' > "$D/oom-entry.new" || exit 1
-   [ -s "$D/oom-entry.new" ] && [ "$(wc -c < "$D/oom-entry.new")" -le 8192 ] || exit 1
+   { head -c 512 "$pending";printf '\n=== RECENT EVIDENCE ===\n';tail -c 11000 "$pending"; } | base64 | tr -d '\n' > "$D/oom-entry.new" || exit 1
+   [ -s "$D/oom-entry.new" ] && [ "$(wc -c < "$D/oom-entry.new")" -le 16384 ] || exit 1
    { [ ! -f "$Q" ] || cat "$Q";cat "$D/oom-entry.new";printf '\n'; } | tail -n 2 > "$D/oom-queue.new"
    mv "$D/oom-queue.new" "$Q" || { echo queue_write_failed > "$D/oom-save-status";exit 1; }
    rm -f "$D/oom-entry.new" "$pending"
@@ -81,7 +99,7 @@ case "${1:-}" in
   [ "$available" -ge 18432 ] || { echo pending_low_memory > "$D/oom-save-status";exit 1; }
   valid "$P" && valid "$Q" || { echo previous_invalid > "$D/oom-save-status";exit 1; }
   if [ -f "$P" ];then cp "$P" "$D/oom-previous" || exit 1;had=1;else rm -f "$D/oom-previous";had=0;fi
-  { [ ! -f "$P" ] || cat "$P";cat "$Q"; } | tail -n 2 > "$D/oom-candidate" || exit 1
+  { [ ! -f "$P" ] || cat "$P";cat "$Q"; } | tail -n 1 > "$D/oom-candidate" || exit 1
   valid "$D/oom-candidate" && [ -s "$D/oom-candidate" ] || exit 1
   cp "$D/oom-candidate" "$P.new" && mv "$P.new" "$P" || { rm -f "$P.new";exit 1; }
   if [ -f "$D/oom-save.log" ] && [ "$(wc -c < "$D/oom-save.log")" -gt 32768 ];then

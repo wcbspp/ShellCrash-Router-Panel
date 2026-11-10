@@ -32,7 +32,7 @@ if [ "$act" = begin ]; then
   stamp=$(cut -d. -f1 "${SC_OOM_UPTIME_FILE:-/proc/uptime}");case "$stamp" in ''|*[!0-9]*)echo capture_failed > "$D/oom-save-status";exit 1;;esac
   event="$D/oom-event.$$";pending=$(printf '%s/oom-pending.%012d.%010d' "$D" "$stamp" "$$")
   (set -C; : > "$event") 2>/dev/null || { echo capture_failed > "$D/oom-save-status";exit 1; }
-  if { printf 'detected=%s pid=%s boot=' "$detected" "$pid";cat /proc/sys/kernel/random/boot_id 2>/dev/null;printf '\n=== RECENT RESOURCE SAMPLES ===\n';tail -20 "$D/resources.csv" 2>/dev/null;printf '\n=== KERNEL AND RECOVERY EVIDENCE ===\n';tail -c 10000 "$D/incident-evidence-$$.pending";printf '\n=== RECENT RESOURCE SAMPLES ===\n';tail -20 "$D/resources.csv" 2>/dev/null;printf '\n=== OOM KILL ===\n%s\n' "$row"; } > "$event" && mv "$event" "$pending";then
+  if { printf 'detected=%s pid=%s boot=' "$detected" "$pid";cat /proc/sys/kernel/random/boot_id 2>/dev/null;printf '\n=== RECENT RESOURCE SAMPLES ===\n';tail -20 "$D/resources.csv" 2>/dev/null;printf '\n=== KERNEL AND RECOVERY EVIDENCE ===\n';tail -c 10000 "$D/incident-evidence-$$.pending";printf '\n=== RECENT RESOURCE SAMPLES ===\n';tail -20 "$D/resources.csv" 2>/dev/null;printf '\n=== PROCESS AND CONNECTION SNAPSHOT ===\n';tail -c 4096 "$D/oom-monitor-current" 2>/dev/null;printf '\n=== OOM KILL ===\n%s\n' "$row"; } > "$event" && mv "$event" "$pending";then
    cp "$pending" "$D/oom-evidence.log" || :
    [ ! -x "$PANEL_HOME/starts/oom-store.sh" ] || CRASHDIR="$PANEL_HOME" "$PANEL_HOME/starts/oom-store.sh" enqueue "$pending" || :
   else rm -f "$event";echo capture_failed > "$D/oom-save-status";fi

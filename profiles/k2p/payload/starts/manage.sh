@@ -103,6 +103,8 @@ status(){
  printf '"quota_revision_b64":"%s",' "$(head -c 64 "$D/subscription-quota.revision" 2>/dev/null | base64 | tr -d '\n')"
  printf '"node_config_revision":"%s",' "$(md5sum "$C/jsons/config.json" | awk '{print $1}')"
  printf '"subscription_info_b64":"%s",' "$(head -c 8192 "$C/configs/subscription-state.json" 2>/dev/null | base64 | tr -d '\n')"
+ oom_enabled=false;[ ! -f "$C/configs/oom-remote-enabled" ] || oom_enabled=true
+ printf '"oom_remote_enabled":%s,"oom_remote_status_b64":"%s",' "$oom_enabled" "$(head -c 128 "$D/oom-remote-status" 2>/dev/null | base64 | tr -d '\n')"
  remote_enabled=false;remote_enabled && remote_enabled=true
  remote_verified=false;remote_ready && remote_verified=true
  printf '"remote_enabled":%s,"remote_verified":%s,' "$remote_enabled" "$remote_verified"
@@ -244,6 +246,17 @@ case "$act" in
   . "$C/starts/resource_health.sh"
   rh_manual=1
   if resource_cleanup; then phase done memory_cleaned; else fail cleanup_busy; fi;;
+ oomcfg)
+  valid_id "$id" || exit 1
+  case "$3" in 0|1):;;*)exit 1;;esac
+  lock || exit 1
+  echo "$id" > "$D/id"
+  . "$C/starts/remote.sh"
+  if [ "$3" = 1 ];then [ "$(remote_transport)" = webdav ] && remote_ready || { fail '请先在备份页面启用并验证 WebDAV';exit 1; };fi
+  was=0;[ ! -f "$C/configs/oom-remote-enabled" ] || was=1
+  if [ "$3" = 1 ];then echo 1 > "$C/configs/oom-remote-enabled";else rm -f "$C/configs/oom-remote-enabled";fi
+  if ! save_safe;then if [ "$was" = 1 ];then echo 1 > "$C/configs/oom-remote-enabled";else rm -f "$C/configs/oom-remote-enabled";fi;fail persistent_save_failed;exit 1;fi
+  phase done '远程监控设置已保存';;
  memcfg)
   valid_id "$id" || exit 1
   lock || exit 1
