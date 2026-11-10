@@ -4,7 +4,7 @@
 
 ## 选哪个文件
 
-下载对应机型的 `shellcrash-router-panel-ax5-1.0.2.tar.gz` 或 `shellcrash-router-panel-k2p-1.0.2.tar.gz`。`source` 是开发源码，不是直接安装包；`SHA256SUMS` 用于核对下载文件。
+下载对应机型的 `shellcrash-router-panel-ax5-1.0.3.tar.gz` 或 `shellcrash-router-panel-k2p-1.0.3.tar.gz`。`source` 是开发源码，不是直接安装包；`SHA256SUMS` 用于核对下载文件。
 
 解压后运行 `python3 start.py`。macOS 可双击 `Install.command`；不能双击时用终端 Python 命令，不必关闭系统安全设置。Windows 使用 WSL。
 

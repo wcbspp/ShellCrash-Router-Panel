@@ -2,9 +2,9 @@
 
 在路由器原来的管理页里，用网页管理 ShellCrash：选节点、更新订阅、设置分流和 DNS，查看内存与日志，需要时再打开高级面板。也可以按 IP、MAC 和设备名称选择哪些设备允许使用代理。
 
-**1.0.2 正式版**，支持 Redmi AX5 和 K2P / Padavan。选好对应机型的安装包，按向导安装；已经在用面板的设备走[更新入口](docs/DEPLOYMENT.md#已有面板怎么更新)。
+**1.0.3 正式版**，支持 Redmi AX5 和 K2P / Padavan。选好对应机型的安装包，按向导安装；已经在用面板的设备走[更新入口](docs/DEPLOYMENT.md#已有面板怎么更新)。
 
-[下载1.0.2](https://github.com/wcbspp/ShellCrash-Router-Panel/releases/tag/v1.0.2) · [安装说明](docs/DEPLOYMENT.md) · [备份与恢复](docs/BACKUP.md) · [页面使用说明](docs/USAGE.md)
+[下载1.0.3](https://github.com/wcbspp/ShellCrash-Router-Panel/releases/tag/v1.0.3) · [安装说明](docs/DEPLOYMENT.md) · [备份与恢复](docs/BACKUP.md) · [页面使用说明](docs/USAGE.md)
 
 ## 先确认设备
 
@@ -42,7 +42,7 @@
 **在电脑终端运行，不是在路由器 SSH 里运行：**
 
 ```sh
-curl -fL https://raw.githubusercontent.com/wcbspp/ShellCrash-Router-Panel/v1.0.2/bootstrap.py -o shellcrash-install.py
+curl -fL https://raw.githubusercontent.com/wcbspp/ShellCrash-Router-Panel/v1.0.3/bootstrap.py -o shellcrash-install.py
 python3 shellcrash-install.py
 ```
 
@@ -55,7 +55,7 @@ python3 shellcrash-install.py ax5 --router 192.168.31.1
 python3 shellcrash-install.py k2p --router 192.168.123.1
 ```
 
-自定义用户名和端口加 `--user`、`--port`，只检查加 `--check-only`。GitHub 下载不通时，从 [Releases](https://github.com/wcbspp/ShellCrash-Router-Panel/releases/tag/v1.0.2) 下载对应机型 `.tar.gz`，解压后运行 `python3 start.py`。macOS 也可双击 `Install.command`。
+自定义用户名和端口加 `--user`、`--port`，只检查加 `--check-only`。GitHub 下载不通时，从 [Releases](https://github.com/wcbspp/ShellCrash-Router-Panel/releases/tag/v1.0.3) 下载对应机型 `.tar.gz`，解压后运行 `python3 start.py`。macOS 也可双击 `Install.command`。
 
 ## 离线一键安装
 
@@ -66,7 +66,7 @@ python3 shellcrash-install.py ax5 --prepare-offline
 python3 shellcrash-install.py k2p --prepare-offline
 ```
 
-助手下载并分别校验面板和固定版本内核，生成 `shellcrash-router-panel-机型-offline-1.0.2` 文件夹。在已解压的安装包里，也可运行 `python3 start.py --prepare-offline`。
+助手下载并分别校验面板和固定版本内核，生成 `shellcrash-router-panel-机型-offline-1.0.3` 文件夹。在已解压的安装包里，也可运行 `python3 start.py --prepare-offline`。
 
 把**整个文件夹**带到连接路由器的电脑，进入文件夹运行：
 
