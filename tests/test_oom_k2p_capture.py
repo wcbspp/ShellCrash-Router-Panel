@@ -6,7 +6,8 @@ class K2POOMCapture(unittest.TestCase):
   with tempfile.TemporaryDirectory() as temp:
    d=Path(temp); (d/'admin').mkdir();(d/'tool/starts').mkdir(parents=True);(d/'bin').mkdir();(d/'proc').mkdir()
    (d/'tool/starts/panel_env.sh').write_text('PANEL_LAN_IP=127.0.0.1\n')
-   helper=d/'tool/starts/oom-store.sh';helper.write_bytes((ROOT/'profiles/k2p/payload/starts/oom-store.sh').read_bytes());helper.chmod(0o755)
+   # The fixture is executed directly; Ubuntu /bin/sh lacks the firmware's pipefail.
+   helper=d/'tool/starts/oom-store.sh';helper.write_text((ROOT/'profiles/k2p/payload/starts/oom-store.sh').read_text().replace('#!/bin/sh','#!/usr/bin/env bash',1));helper.chmod(0o755)
    for name in ('meminfo','sockstat','buddyinfo','boot_id'):(d/'proc'/name).write_text(('fixture-'+name+'\n')*1000)
    (d/'admin/resources.csv').write_text(''.join(f'{n},2,42,100,200,300,400,500,600,700,800,9,10,11,12\n' for n in range(1441)))
    (d/'admin/memory.csv').write_text('1,2,42,100,200,0\n')
