@@ -20,5 +20,11 @@
   ],
   "mixed_kernel": "meta",
   "mixed_udp_scope": "lan-ipv4",
-  "router_udp_proxy": false
+  "router_udp_proxy": false,
+  "tunnel_service_compat": {
+    "policy": "exclude-project-tun",
+    "availability": "runtime-adapter",
+    "default": "off",
+    "shared_transaction": true
+  }
 }

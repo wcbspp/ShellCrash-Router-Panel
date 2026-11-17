@@ -275,5 +275,8 @@
   "payload/starts/oom-store.sh": "profiles/k2p/payload/starts/oom-store.sh",
   "payload/starts/storage-lock.sh": "profiles/k2p/payload/starts/storage-lock.sh",
   "payload/starts/oom-monitor.sh": "shared/lib/oom-monitor.sh",
-  "payload/starts/oom-remote.sh": "shared/lib/oom-remote.sh"
+  "payload/starts/oom-remote.sh": "shared/lib/oom-remote.sh",
+  "payload/starts/zerotier-compat-core.lua": "shared/lib/zerotier-compat.lua",
+  "payload/starts/zerotier-compat.lua": "profiles/k2p/payload/starts/zerotier-compat.lua",
+  "payload/starts/zerotier-service.sh": "profiles/k2p/payload/starts/zerotier-service.sh"
 }

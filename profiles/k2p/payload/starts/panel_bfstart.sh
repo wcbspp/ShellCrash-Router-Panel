@@ -9,6 +9,7 @@ D=/tmp/sc-admin
 mkdir -p "$D"
 rm -f /tmp/ShellCrash/manual-stop "$C/configs/panel-disabled"
 printf '%s\n' "${SC_CONTROL_SOURCE:-tool}" > /tmp/ShellCrash/control-source
+lua "$C/starts/zerotier-compat.lua" enforce || logger -t ShellCrash 'ZeroTier compatibility preparation incomplete'
 P=/tmp/panel-dns
 mkdir -p "$P" /tmp/ShellCrash/ruleset || exit 1
 hash=3b83cff9903602f27c3a6737c775f742253a24a60165ff4d9b9ef28ac22bc140

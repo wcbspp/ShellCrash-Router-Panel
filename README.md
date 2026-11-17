@@ -161,6 +161,8 @@ DNS 页可查询和设置真实 DNS / Mix 及支持的 Fake IP 例外。不同�
 
 公共页面和脚本在 `shared/`，固件接口在 `profiles/`。构建后生成各自安装包，路由器不运行模板编译器。开发测试需要 Node.js 和 `lupa==2.8`，这些不是路由器安装依赖。
 
+ZeroTier/TUN 保护共用策略、状态和控件，设备适配层只负责路径、服务重建与持久化。接入新设备见 [兼容适配说明](docs/TUN_COMPATIBILITY.md)。
+
 ```sh
 python3 -m pip install lupa==2.8
 python3 tools/build.py all

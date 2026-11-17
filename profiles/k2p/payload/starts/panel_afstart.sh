@@ -19,6 +19,7 @@ if [ "$transport" = '混合模式' ];then
  fi
 else echo redir > /tmp/ShellCrash/transport-runtime;fi
 sh "$C/starts/subscription-quota.sh" k2p auto || :
+lua "$C/starts/zerotier-compat.lua" finish || logger -t ShellCrash 'ZeroTier compatibility restart incomplete'
 . "$C/starts/policy_capture.sh"
 policy_capture_apply || logger -t ShellCrash 'Domain routing capture failed; check owned country-IP bypass'
 # Ordinary UDP stays direct; reject UDP to virtual IPs to permit TCP fallback.

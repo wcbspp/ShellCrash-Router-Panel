@@ -157,6 +157,7 @@ save_safe(){
 }
 fail(){ phase error "$1"; event "$1"; }
 case "$act" in
+ ztcompatread) exec lua "$C/starts/zerotier-compat.lua" status;;
  nodeping) exec sh "$C/starts/node-ping.sh" k2p "$id" "$3";;
  accessdevices) lua "$C/starts/access-devices.lua" list "$C";exit $?;;
  nodepingresult) if [ -f "$D/nodepingresult.json" ];then head -c 512 "$D/nodepingresult.json";else printf '{"state":"idle"}\n';fi;;
@@ -246,6 +247,14 @@ case "$act" in
   . "$C/starts/resource_health.sh"
   rh_manual=1
   if resource_cleanup; then phase done memory_cleaned; else fail cleanup_busy; fi;;
+ ztcompat)
+  valid_id "$id" || exit 1
+  case "$3" in 0|1):;;*)exit 1;;esac
+  lock || exit 1;echo "$id" > "$D/id"
+  . "$C/starts/resource_health.sh";resource_read
+  [ "$rh_pressure" != protect ] || { fail memory_protected;exit 1; }
+  phase working '正在保存兼容设置并重建 ZeroTier'
+  if lua "$C/starts/zerotier-compat.lua" set "$3" >> "$D/worker.log" 2>&1;then phase done '兼容设置已保存，连接重建可能需要数分钟';else fail '兼容设置失败，已尝试恢复原配置；请检查日志';exit 1;fi;;
  oomcfg)
   valid_id "$id" || exit 1
   case "$3" in 0|1):;;*)exit 1;;esac

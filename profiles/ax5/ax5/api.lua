@@ -42,6 +42,7 @@ function A.read()
   if status:match('^failed')then rows[#rows+1]='最近一次持久保存失败：'..status end
   H.prepare_content('text/plain');H.write(table.concat(rows,'\n\n'));return
  elseif kind=='zerotier'then local s=M.zerotier();s.compat=dofile(M.C..'/ax5/zerotier-compat.lua').status();reply(s);return
+ elseif kind=='ztcompatread'then reply(dofile(M.C..'/ax5/zerotier-compat.lua').status());return
  elseif kind=='zerotierlog'then H.prepare_content('text/plain');H.write(M.read(M.R..'/zerotier-diagnostic',8192));return
  elseif kind=='inspect'then
   local d,err,status=assert(loadfile(M.C..'/ax5/inspect.lua'))(M).query(H.formvalue('view')or'',tonumber(H.formvalue('page')or'0'),H.formvalue('q')or'')

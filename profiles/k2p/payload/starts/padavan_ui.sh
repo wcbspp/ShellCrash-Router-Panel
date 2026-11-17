@@ -37,7 +37,7 @@ control_token=$(cat /tmp/sc-admin/control-token)
 printf '{"token_b64":"%s","control_token":"%s"}\n' "$secret_b64" "$control_token" > /opt/share/www/custom/sc-auth.asp
 chmod 600 /opt/share/www/custom/sc-auth.asp
 mkdir -p /tmp/sc-admin
-for action in state logs memory incidents oom converters remoteconnection remotecatalog recoveryplan nodeprofile configprofile uploadreceipt traffic quota quotacheck nodepingresult accessdevices; do
+for action in state logs memory incidents oom converters remoteconnection remotecatalog recoveryplan nodeprofile configprofile uploadreceipt traffic quota quotacheck nodepingresult accessdevices ztcompatread; do
  verb=$action; [ "$action" != state ] || verb=status
  printf '#!/bin/sh\nexec /etc/storage/ShellCrash/starts/manage.sh %s > /tmp/sc-admin/%s.out\n' "$verb" "$action" > "/tmp/sc-$action.sh"
  chmod 700 "/tmp/sc-$action.sh"
@@ -50,9 +50,9 @@ printf '<%% nvram_dump("sc-admin/subscription.progress",""); %%>\n' > /opt/share
 [ -f "$CRASHDIR/configs/policy.tsv" ] || : > "$CRASHDIR/configs/policy.tsv"
 ln -sf "$CRASHDIR/configs/policy.tsv" /opt/share/www/custom/sc-policy.asp
 ln -sf "$CRASHDIR/configs/fake_ip_filter.list" /opt/share/www/custom/sc-filter.asp
-for action in new put fetch fetchconvert fetchpanel apply start stop restart clear cleanup memcfg oomcfg rules dns policy groupmode proxymode transport cnbypass access advanced corecheck coreupdate toolcheck toolupdate mirrorsave mirrorsync mirrorverify mirrortest backuplocal backupremote baselinecreate restorecheck restorego nodeping; do
+for action in new put fetch fetchconvert fetchpanel apply start stop restart clear cleanup memcfg oomcfg ztcompat rules dns policy groupmode proxymode transport cnbypass access advanced corecheck coreupdate toolcheck toolupdate mirrorsave mirrorsync mirrorverify mirrortest backuplocal backupremote baselinecreate restorecheck restorego nodeping; do
  case "$action" in
-  nodeping|new|put|fetchconvert|dns|memcfg|oomcfg|proxymode|transport|cnbypass|baselinecreate|restorego) argument_count=3; keep='set -- "$1" "$2"'; token_arg='$3';;
+  nodeping|new|put|fetchconvert|dns|memcfg|oomcfg|ztcompat|proxymode|transport|cnbypass|baselinecreate|restorego) argument_count=3; keep='set -- "$1" "$2"'; token_arg='$3';;
   access|cleanup|fetch|fetchpanel|apply|rules|policy|groupmode|advanced|corecheck|coreupdate|toolcheck|toolupdate|mirrorsave|mirrorsync|mirrorverify|mirrortest|backuplocal|backupremote|restorecheck) argument_count=2; keep='set -- "$1"'; token_arg='$2';;
   *) argument_count=1; keep='set --'; token_arg='$1';;
  esac

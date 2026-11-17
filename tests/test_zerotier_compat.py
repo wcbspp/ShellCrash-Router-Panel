@@ -1,7 +1,7 @@
 import json,subprocess,unittest
 from pathlib import Path
 from lupa.lua54 import LuaRuntime
-SOURCE=(Path(__file__).resolve().parents[1]/'profiles/ax5/ax5/zerotier-compat.lua').read_text()
+SOURCE=(Path(__file__).resolve().parents[1]/'shared/lib/zerotier-compat.lua').read_text()
 class Compat(unittest.TestCase):
  def test_ui_confirmation_and_result_states(self):
   subprocess.run(['node','tests/test_zerotier_compat_ui.js'],cwd=Path(__file__).resolve().parents[1],check=True,timeout=10)
@@ -34,7 +34,8 @@ dofile=function()return M end
 files['/opt/etc/init.d/S27zerotier']='#!'
 '''.replace('return123','return 123'))
   L.globals().files['/opt/var/lib/zerotier-one/local.conf']=raw
-  return L,L.execute(SOURCE)
+  L.execute("adapter={path='/opt/var/lib/zerotier-one/local.conf',prefix='utun',available=function()return true end,restart=function()return M.run('zerotier restart')end}")
+  return L,L.execute(SOURCE,L.globals().M,L.globals().adapter)
  def test_patch_preserves_unknown_bytes_and_types(self):
   raw=' { "outside":[], "settings" : {"portMappingEnabled":false,"empty":[],"nested":{"x":"a,}:b\\\"c"},"interfacePrefixBlacklist":["docker"]},"tail":{}} '
   L,Z=self.fixture(raw);new,added,had=Z.patch(raw,True,None)
@@ -88,6 +89,20 @@ files['/opt/etc/init.d/S27zerotier']='#!'
   with self.assertRaises(Exception):Z.set(True,False)
   self.assertEqual(L.globals().files['/opt/var/lib/zerotier-one/local.conf'],raw)
   self.assertEqual(L.globals().restarts,0)
+ def test_volatile_config_recovers_and_restores_absence(self):
+  L,Z=self.fixture();f=L.globals().files;p='/opt/var/lib/zerotier-one/local.conf'
+  L.globals().adapter.allow_missing=True;f[p]=None
+  self.assertTrue(Z.status().available);Z.set(True,False)
+  applied=f[p];self.assertIn('utun',applied)
+  f[p]=None;Z.enforce();self.assertEqual(f[p],applied);self.assertTrue(Z.status().pending)
+  Z.finish();Z.set(False,False);self.assertIsNone(f[p])
+ def test_persistence_failure_restores_config_and_policy(self):
+  raw='{"settings":{"portMappingEnabled":false}}';L,Z=self.fixture(raw)
+  L.execute('persist_calls=0;adapter.persist=function()persist_calls=persist_calls+1;return persist_calls>1 end')
+  with self.assertRaises(Exception):Z.set(True,False)
+  self.assertEqual(L.globals().files['/opt/var/lib/zerotier-one/local.conf'],raw)
+  self.assertIsNone(L.globals().files['/persist/configs/zerotier-compat.json'])
+  self.assertEqual(L.globals().persist_calls,2)
   L,Z=self.fixture();L.globals().files['/persist/configs/zerotier-compat.json']='{"enabled":true}'
   self.assertFalse(Z.status().available)
   with self.assertRaises(Exception):Z.set(True,False)
