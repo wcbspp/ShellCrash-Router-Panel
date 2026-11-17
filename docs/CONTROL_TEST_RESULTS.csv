@@ -891,3 +891,5 @@ AX5-CTRL-oom-remote-toggle,AX5,桌面,未执行,,,,
 AX5-CTRL-oom-remote-toggle,AX5,手机窄屏,未执行,,,,
 K2P-CTRL-oom-remote-toggle,K2P,桌面,未执行,,,,
 K2P-CTRL-oom-remote-toggle,K2P,手机窄屏,未执行,,,,
+AX5-CTRL-zt-compat-toggle,AX5,桌面,未执行,认证真机HTTP开关通过；当前会话浏览器不可用，未冒记可视点击,私有zerotier-compat-20261117证据,2026-11-17,未发布候选
+AX5-CTRL-zt-compat-toggle,AX5,手机窄屏,未执行,认证真机HTTP开关通过；当前会话浏览器不可用，未冒记可视点击,私有zerotier-compat-20261117证据,2026-11-17,未发布候选

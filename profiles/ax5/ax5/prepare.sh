@@ -3,6 +3,8 @@ set -e
 . /data/ShellCrash/ax5/core-env.sh
 umask 077
 mkdir -p "$R"
+# Same pre-start contract as ShellCrash bfstart, scoped to this opt-in adapter.
+lua "$C/ax5/zerotier-compat.lua" enforce || :
 cat /etc/hosts /tmp/hosts/dhcp.* > "$R/hosts" 2>/dev/null || true
 [ -f "$R/fakeip.db" ] || [ ! -f "$C/configs/fakeip.db" ] || cp "$C/configs/fakeip.db" "$R/fakeip.db"
 [ "$KIND" != meta ] || [ -f "$R/cache.db" ] || [ ! -f "$C/configs/mihomo-cache.db" ] || cp "$C/configs/mihomo-cache.db" "$R/cache.db"

@@ -322,11 +322,12 @@ async function downloadBackup(url,name){const old=el('backup-download');if(old)o
 el('backup-local').onclick=async()=>{if(await mirrorAction('backuplocal')){try{await downloadBackup(backendBase+'/read?kind=backup','AX5-application-backup.tar.gz')}catch(e){el('mirror-message').textContent=e.message}}};
 el('backup-core').onclick=async()=>{try{await downloadBackup(backendBase+'/read?kind=corebackup',/^[a-f0-9]{64}$/.test(nativeState?.core_sha||'')?'core-'+nativeState.core_sha+'.tar.gz':'AX5-core.tar.gz')}catch(e){el('mirror-message').textContent=e.message}};
 
-let zeroTierBusy=false,zeroTierLast=0;
+let zeroTierBusy=false,zeroTierLast=0,zeroTierCompat=null;
 async function refreshZeroTier(force=false){
  if(zeroTierBusy||(!force&&Date.now()-zeroTierLast<60000))return;zeroTierBusy=true;el('zt-refresh').disabled=true;
  try{
   const s=await nativeRead('zerotier');zeroTierLast=Date.now();el('zt-state').textContent=!s.installed?'未安装 ZeroTier':({ONLINE:'在线',OFFLINE:'离线',UNAVAILABLE:'本地接口未响应'}[s.status]||s.status)+' · '+(s.version||'—');
+  zeroTierCompat=s.compat||null;paintZeroTierCompat();
   const box=el('zt-networks');box.replaceChildren();for(const n of s.networks||[]){const p=document.createElement('p');p.className='small-note';p.textContent=n.id+' · '+({OK:'已授权',ACCESS_DENIED:'未授权',NOT_FOUND:'网络不存在',REQUESTING_CONFIGURATION:'正在请求配置',PORT_ERROR:'虚拟网卡异常'}[n.status]||n.status)+' · '+n.ips;box.append(p)}
   if(s.installed&&!(s.networks||[]).length)box.textContent='未取得已加入网络，请检查本地服务。';
   el('zt-log').textContent=await nativeRead('zerotierlog');
@@ -340,6 +341,20 @@ async function downloadBackup(url,name){
 }
 @@if ax5@@
 el('zt-refresh').onclick=()=>refreshZeroTier(true);
+function paintZeroTierCompat(){
+ const s=zeroTierCompat,b=el('zt-compat-toggle'),status=el('zt-compat-state');
+ b.disabled=manageBusy||advancedActive||!s?.available;b.textContent=s?.enabled?'撤销兼容管理':'启用兼容保护';
+ status.textContent=!s?.available?'未检测到受支持的 ZeroTier 配置或服务':s.error?'兼容处理未完成，请检查本地配置或重试':s.pending?'配置已保存，等待完成服务重建':s.enabled?(s.protected?'兼容保护已配置；不代表端到端连通性已通过':'排除项缺失，下次代理启动将尝试恢复'):s.protected?'已有 utun 排除，当前未由面板管理':'未启用；ZeroTier 可能选用代理 TUN 接口';
+}
+el('zt-compat-toggle').onclick=async()=>{
+ if(manageBusy||advancedActive||!zeroTierCompat?.available)return;
+ const enable=!zeroTierCompat.enabled;
+ const text=enable?'备份并为 AX5 ZeroTier 追加 utun 排除项；运行中的 ZeroTier 会短暂重启。代理节点和分流规则保持不变。继续？':'撤销面板添加的 utun 排除项，原有排除项保留；ZeroTier 可能短暂重启，原互访问题可能再次出现。继续？';
+ if(!confirm(text))return;
+ manageBusy=true;paintZeroTierCompat();const id=newID();let failure='';
+ try{await control('sc-ztcompat.sh',[id,enable?'1':'0']);await waitJob(id,'done',120000,'zt-compat-state');zeroTierLast=0;await refreshZeroTier(true)}catch(e){failure='设置失败：'+e.message}finally{manageBusy=false;paintZeroTierCompat();if(failure)el('zt-compat-state').textContent=failure}
+};
+
 
 async function updateDomainDatabase(){
  if(manageBusy||nativeState?.active)return;pauseMeasurements();pauseSites();manageBusy=true;showService();
@@ -404,7 +419,7 @@ function paintTransport(s){
  button.textContent=s.running?'应用并重启 ShellCrash':'保存接管方式';
  const label={redir:'Redir · TCP',mixed:'混合 · TCP + UDP',unsupported:'暂未适配'};
  el('transport-state').textContent='当前 '+(label[active||configured]||'待确认')+(s.running&&active&&active!==configured?' · 设置待重启':'');
- el('transport-result').textContent=!transportEditable?'K2P 当前适配 Redir，保留轻量接管。':changed?'有未应用的修改；应用时会短暂断开代理连接。':configured==='mixed'?'手机、电脑可接管 IPv4 TCP / UDP；路由器自身 UDP 保持直连。实际出口由首页流量模式决定。':'可接管 IPv4 TCP；普通 UDP 保持直连。实际出口由首页流量模式决定。';
+ el('transport-result').textContent=!transportEditable?'K2P 当前适配 Redir，保留轻量接管。':changed?'有未应用的修改；应用时会短暂断开代理连接。':configured==='mixed'?'手机、电脑可接管 IPv4 TCP / UDP；不主动接管路由器自身 UDP；本机服务主动选用 TUN 的情况需兼容处理。实际出口由首页流量模式决定。':'可接管 IPv4 TCP；普通 UDP 保持直连。实际出口由首页流量模式决定。';
  if(typeof paintProxyMode==='function')paintProxyMode();
 }
 async function saveTransport(){
@@ -695,11 +710,11 @@ function paintProxyMode(){
  if(running&&Object.keys(proxies).length){if(proxyMode==='direct')el('current').textContent='直连上网（内核待命）';else if(proxyMode==='global')displayNodeLabel(el('current'),resolvedNode('GLOBAL'),'全局 '+(nativeState?.transport?.active==='mixed'?'TCP / UDP':'TCP')+' 代理 / ');else displayNodeLabel(el('current'),resolvedNode(mainName()),groupLabel(mainName())+' / ');}
  const mixed=nativeState?.transport?.active==='mixed',protocol=mixed?'TCP / UDP':'TCP';
  for(const option of e.options||[])if(option.value==='global')option.textContent='全局 '+protocol+' 代理';
- const descriptions={rule:'规则：已接管的 '+protocol+' 新连接按分流规则选择出口。',direct:'直连：已暂停透明代理与 DNS 接管，新连接正常直连。',global:mixed?'全局：接管的外网 TCP / UDP 使用默认代理组；局域网与路由器 UDP 保持原路由。':'全局：外网 IPv4 TCP 使用默认代理组，取消国内 IP 绕过；普通 UDP 仍直连。'};
+ const descriptions={rule:'规则：已接管的 '+protocol+' 新连接按分流规则选择出口。',direct:'直连：已暂停透明代理与 DNS 接管，新连接正常直连。',global:mixed?'全局：接管的外网 TCP / UDP 使用默认代理组；局域网目的地址保留绕过；本机服务的 TUN 兼容状态需另行确认。':'全局：外网 IPv4 TCP 使用默认代理组，取消国内 IP 绕过；普通 UDP 仍直连。'};
  const help=el('proxy-mode-help');if(help){help.textContent=proxyModeConflict?'内核与接管模式不一致，请重新选择模式。':descriptions[proxyMode];help.classList.toggle('override',proxyMode!=='rule');}
- const scope=el('proxy-mode-scope');if(scope)scope.textContent=(mixed?'手机、电脑的外网 IPv4 TCP / UDP 按所选模式接管；路由器自身 UDP 保持直连。':'外网 IPv4 TCP 按所选模式接管；普通 UDP 保持直连。')+'局域网、ZeroTier 与内核自身保留必要例外。直连暂停透明代理与 DNS 接管，内核仍可供手动代理使用。已有连接和客户端 DNS 缓存可能需要重新建立。重启内核后恢复规则分流。节点测速不用于验证分流。';
+ const scope=el('proxy-mode-scope');if(scope)scope.textContent=(mixed?'手机、电脑的外网 IPv4 TCP / UDP 按所选模式接管；不主动接管路由器自身 UDP；本机服务主动选用 TUN 的情况需兼容处理。':'外网 IPv4 TCP 按所选模式接管；普通 UDP 保持直连。')+'局域网目的地址与内核自身有绕过保护；本机 VPN 主动选用 TUN 时，需要单独的接口兼容保护。直连暂停透明代理与 DNS 接管，内核仍可供手动代理使用。已有连接和客户端 DNS 缓存可能需要重新建立。重启内核后恢复规则分流。节点测速不用于验证分流。';
  const policy=el('policy-scope');if(policy)policy.textContent=proxyMode==='rule'?'自定义规则优先于订阅规则，作用于已接管的 '+protocol+' 新连接。保存会短暂重启服务。':proxyMode==='direct'?'当前为直连：这些规则已保存，恢复规则分流后生效。保存修改会重启服务并恢复规则分流。':'当前为全局代理：这些规则已保存，恢复规则分流后生效。保存修改会重启服务并恢复规则分流。';
- const dnsScope=el('dns-udp-scope');if(dnsScope)dnsScope.textContent=proxyMode==='direct'?'当前为直连，透明 DNS 接管已暂停；本页配置保留。保存修改会重启服务并恢复规则分流。':mixed?(proxyMode==='global'?'当前为全局代理，已接管的外网 UDP 使用默认代理组。':'局域网外网 UDP 按内核规则分流；Fake IP 的 UDP 可进入内核。')+' 路由器自身普通 UDP 保持直连。':'普通 UDP 保持直连；指向 Fake IP 的 UDP 被拒绝以便回落 TCP。游戏、STUN 等需在例外名单中。';
+ const dnsScope=el('dns-udp-scope');if(dnsScope)dnsScope.textContent=proxyMode==='direct'?'当前为直连，透明 DNS 接管已暂停；本页配置保留。保存修改会重启服务并恢复规则分流。':mixed?(proxyMode==='global'?'当前为全局代理，已接管的外网 UDP 使用默认代理组。':'局域网外网 UDP 按内核规则分流；Fake IP 的 UDP 可进入内核。')+' 不主动接管本机 UDP；ZeroTier 等服务的接口选择须另行保护。':'普通 UDP 保持直连；指向 Fake IP 的 UDP 被拒绝以便回落 TCP。游戏、STUN 等需在例外名单中。';
  if(typeof paintQuickActions==='function')paintQuickActions();
  e.title='只作用于接管的新连接；已有连接保持原出口，内核重启后恢复规则分流。';
  const traffic=el('traffic-state');if(traffic)traffic.textContent=!running?'接管已停止':proxyMode==='direct'?'接管已暂停':proxyMode==='global'?protocol+' 全局接管':protocol+' 规则接管';

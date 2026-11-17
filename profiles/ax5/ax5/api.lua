@@ -41,7 +41,7 @@ function A.read()
   end end
   if status:match('^failed')then rows[#rows+1]='最近一次持久保存失败：'..status end
   H.prepare_content('text/plain');H.write(table.concat(rows,'\n\n'));return
- elseif kind=='zerotier'then reply(M.zerotier());return
+ elseif kind=='zerotier'then local s=M.zerotier();s.compat=dofile(M.C..'/ax5/zerotier-compat.lua').status();reply(s);return
  elseif kind=='zerotierlog'then H.prepare_content('text/plain');H.write(M.read(M.R..'/zerotier-diagnostic',8192));return
  elseif kind=='inspect'then
   local d,err,status=assert(loadfile(M.C..'/ax5/inspect.lua'))(M).query(H.formvalue('view')or'',tonumber(H.formvalue('page')or'0'),H.formvalue('q')or'')
@@ -99,7 +99,7 @@ function A.upload()
 end
 function A.control()
  if H.getenv('REQUEST_METHOD')~='POST'or not csrf()then reply({error='forbidden'},403);return end
- local d=body();local allowed={nodeping=true,start=true,stop=true,restart=true,clear=true,cleanup=true,memcfg=true,oomcfg=true,fetch=true,apply=true,dns=true,policy=true,groupmode=true,grouplayout=true,rules=true,domainupdate=true,corecheck=true,coreupdate=true,toolcheck=true,toolupdate=true,guard=true,transport=true,cnbypass=true,access=true,proxymode=true,advanced=true,mirrortest=true,mirrorsave=true,mirrorsync=true,mirrorverify=true,backuplocal=true,backupremote=true,baselinecreate=true,restorecheck=true,restorego=true}
+ local d=body();local allowed={nodeping=true,start=true,stop=true,restart=true,clear=true,cleanup=true,memcfg=true,oomcfg=true,ztcompat=true,fetch=true,apply=true,dns=true,policy=true,groupmode=true,grouplayout=true,rules=true,domainupdate=true,corecheck=true,coreupdate=true,toolcheck=true,toolupdate=true,guard=true,transport=true,cnbypass=true,access=true,proxymode=true,advanced=true,mirrortest=true,mirrorsave=true,mirrorsync=true,mirrorverify=true,backuplocal=true,backupremote=true,baselinecreate=true,restorecheck=true,restorego=true}
  if not d or type(d.script)~='string'then reply({error='invalid_action'},400);return end
  local action=d.script:match('^sc%-(%w+)%.sh$');if not allowed[action]then reply({error='unsupported_action'},400);return end
  local args=d.args or {};if type(args)~='table'or #args>3 then reply({error='invalid_arguments'},400);return end;for _,v in ipairs(args)do if type(v)~='string'or #v>100 or not v:match('^[%w+/=]+$')then reply({error='invalid_arguments'},400);return end end

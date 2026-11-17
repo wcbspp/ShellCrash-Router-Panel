@@ -101,6 +101,11 @@ local function execute()
  elseif a=='start'or a=='stop'or a=='restart'then service(a);phase('done','service_operation_complete',false)
  elseif a=='clear'then M.write(M.R..'/operations.log','');M.write(M.R..'/core.log','');M.write(M.R..'/service.log','');M.write(M.R..'/subscription-tool.log','');phase('done','logs_cleared',false)
  elseif a=='cleanup'then M.cleanup(true);phase('done','memory_cleaned',false)
+ elseif a=='ztcompat'then
+  assert(args[2]=='0'or args[2]=='1','invalid_zerotier_setting')
+  if args[2]=='1'then guard()end
+  local changed=dofile(M.C..'/ax5/zerotier-compat.lua').set(args[2]=='1',false)
+  phase('done',changed and 'ZeroTier 兼容设置已生效，连接正在恢复' or '兼容设置已保存，无需重启 ZeroTier',false)
  elseif a=='oomcfg'then
   guard();local mode=args[2];assert(mode=='0'or mode=='1','invalid_oom_setting')
   if mode=='1'then assert(M.run('C='..M.C..' D='..M.R..' sh -c \'. "$C/ax5/remote.sh"; [ "$(remote_transport)" = webdav ] && remote_ready\''),'请先在备份页面启用并验证 WebDAV')end

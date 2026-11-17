@@ -38,6 +38,7 @@ for i in 1 2 3 4 5; do
    ready=1
    printf '1\n' > "$R/service-ready"
    sh "$C/ax5/subscription-quota.sh" ax5 auto || :
+   lua "$C/ax5/zerotier-compat.lua" finish || :
    break
   fi
   kill -TERM "$child" 2>/dev/null
