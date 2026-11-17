@@ -95,14 +95,15 @@ function quotaView(q){
  const messages={unknown:'点击查询当前订阅的余量。',no_subscription:'尚未保存订阅地址。',unavailable:'服务商未通过响应头提供用量数据，请到服务商查看。',request_failed:'余量查询未完成，不影响当前订阅；可稍后重试。',memory:'内存余量不足，暂缓查询。',busy:'其他操作正在进行，请稍后查询。'};
  if(state!=='ok')return {summary:messages[state]||messages.request_failed,detail:'',percent:null,bad:state==='request_failed'};
  const used=known(q.upload)&&known(q.download)&&known(q.upload+q.download)?q.upload+q.download:null,total=known(q.total)&&q.total>0?q.total:null;
+ const remaining=used!==null&&total!==null?Math.max(0,total-used):null,percent=remaining!==null?remaining/total*100:null;
  const size=n=>{const u=['B','KB','MB','GB','TB'];let i=0;while(n>=1024&&i<4){n/=1024;i++}return n.toFixed(i?1:0)+' '+u[i]};
- let summary=used!==null&&total!==null?'剩余 '+size(Math.max(0,total-used))+' · 已用 '+size(used)+' / '+size(total):used!==null?'已用 '+size(used)+' · 服务商未提供总额度':'服务商未提供完整用量，无法计算剩余流量';
+ let summary=remaining!==null?'剩余 '+size(remaining)+'（'+percent.toFixed(1)+'%） · 已用 '+size(used)+' / '+size(total):used!==null?'已用 '+size(used)+' · 服务商未提供总额度':'服务商未提供完整用量，无法计算剩余流量';
  let detail=known(q.expire)&&q.expire>0&&q.expire<=4102444800?'到期 '+new Date(q.expire*1000).toLocaleDateString('zh-CN'):'未提供到期时间';
  if(known(q.expire)&&q.expire>0&&q.expire*1000<Date.now())detail+=' · 已到期';
  if(known(q.checked)&&q.checked>0)detail+=' · 查询于 '+new Date(q.checked*1000).toLocaleString('zh-CN',{hour12:false});
- return {summary,detail,percent:used!==null&&total!==null?Math.min(100,used/total*100):null,bad:total!==null&&used>=total||known(q.expire)&&q.expire>0&&q.expire*1000<Date.now()};
+ return {summary,detail,percent,bad:percent!==null&&percent<=10||known(q.expire)&&q.expire>0&&q.expire*1000<Date.now()};
 }
-function paintQuota(q){if(q?.state==='ok')quotaLast=q;else if(!['memory','busy','request_failed'].includes(q?.state))quotaLast=null;const warning=q?.attempt_state?quotaView({state:q.attempt_state}).summary:q?.state!=='ok'&&quotaLast?quotaView(q).summary:'',v=quotaView(warning?quotaLast:q),s=el('quota-summary'),p=el('quota-progress');s.textContent=v.summary;s.classList.toggle('bad',!!v.bad||!!warning);s.classList.toggle('good',q?.state==='ok'&&!v.bad&&!warning);el('quota-detail').textContent=v.detail+(warning?' · '+warning+'（显示上次查询数据）':'');p.hidden=v.percent===null;if(!p.hidden)p.value=v.percent;}
+function paintQuota(q){if(q?.state==='ok')quotaLast=q;else if(!['memory','busy','request_failed'].includes(q?.state))quotaLast=null;const warning=q?.attempt_state?quotaView({state:q.attempt_state}).summary:q?.state!=='ok'&&quotaLast?quotaView(q).summary:'',v=quotaView(warning?quotaLast:q),s=el('quota-summary'),p=el('quota-progress');s.textContent=v.summary;s.classList.toggle('bad',!!v.bad||!!warning);s.classList.toggle('good',q?.state==='ok'&&!v.bad&&!warning);el('quota-detail').textContent=v.detail+(warning?' · '+warning+'（显示上次查询数据）':'');p.hidden=v.percent===null;p.classList.toggle('bad',!!v.bad||!!warning);if(!p.hidden){p.value=v.percent;p.title='剩余 '+v.percent.toFixed(1)+'%';}}
 function resetQuotaSource(source){if(quotaSource!==source){quotaSource=source;quotaGeneration++;quotaLast=null;paintQuota({state:'unknown'})}}
 async function refreshQuota(check){
  if(quotaBusy||manageBusy||nativeState?.active)return;quotaBusy=true;const generation=quotaGeneration;el('quota-refresh').disabled=true;if(check)el('quota-summary').textContent='正在向当前订阅提供者查询…';
