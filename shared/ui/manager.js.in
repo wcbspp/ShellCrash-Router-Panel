@@ -324,7 +324,7 @@ el('backup-core').onclick=async()=>{try{await downloadBackup(backendBase+'/read?
 
 let zeroTierBusy=false,zeroTierLast=0,zeroTierCompat=null;
 async function refreshZeroTier(force=false){
- if(zeroTierBusy||(!force&&Date.now()-zeroTierLast<60000))return;zeroTierBusy=true;el('zt-refresh').disabled=true;
+ if(zeroTierBusy||(!force&&(manageBusy||Date.now()-zeroTierLast<60000)))return;zeroTierBusy=true;el('zt-refresh').disabled=true;paintZeroTierCompat();
  try{
   const s=await nativeRead('zerotier');zeroTierLast=Date.now();el('zt-state').textContent=!s.installed?'未安装 ZeroTier':({ONLINE:'在线',OFFLINE:'离线',UNAVAILABLE:'本地接口未响应'}[s.status]||s.status)+' · '+(s.version||'—');
   zeroTierCompat=s.compat||null;paintZeroTierCompat();
@@ -332,7 +332,7 @@ async function refreshZeroTier(force=false){
   if(s.installed&&!(s.networks||[]).length)box.textContent='未取得已加入网络，请检查本地服务。';
   el('zt-log').textContent=await nativeRead('zerotierlog');
  }catch(e){el('zt-state').textContent='查询失败：'+e.message}
- finally{zeroTierBusy=false;el('zt-refresh').disabled=false}
+ finally{zeroTierBusy=false;el('zt-refresh').disabled=manageBusy;paintZeroTierCompat()}
 @@else@@
 async function downloadBackup(url,name){
  const r=await fetch(url,{cache:'no-store'});if(!r.ok)throw Error('备份文件下载失败：'+r.status);const text=await r.text();if(text.length>5400000)throw Error('备份传输超出限制');const split=text.indexOf('\n'),header=text.slice(0,split).trim().match(/^SCBACKUP1 ([0-9]+) ([a-f0-9]{64})$/);if(!header||Number(header[1])>4000000)throw Error('备份下载信息无效，请重新导出');const encoded=text.slice(split+1).replace(/\s/g,'');if(!/^[A-Za-z0-9+/]*={0,2}$/.test(encoded))throw Error('备份传输不完整，请重新导出');let binary;try{binary=atob(encoded)}catch{throw Error('备份传输不完整，请重新导出')}const bytes=Uint8Array.from(binary,c=>c.charCodeAt(0));if(bytes.length!==Number(header[1])||sha256Bytes(bytes)!==header[2])throw Error('备份下载校验失败，未导出损坏文件；请重试');if(bytes.length<32||bytes[0]!==31||bytes[1]!==139)throw Error('备份文件格式无效');
@@ -343,16 +343,16 @@ async function downloadBackup(url,name){
 el('zt-refresh').onclick=()=>refreshZeroTier(true);
 function paintZeroTierCompat(){
  const s=zeroTierCompat,b=el('zt-compat-toggle'),status=el('zt-compat-state');
- b.disabled=manageBusy||advancedActive||!s?.available;b.textContent=s?.enabled?'撤销兼容管理':'启用兼容保护';
+ b.disabled=manageBusy||advancedActive||zeroTierBusy||!s?.available;b.textContent=s?.enabled?'撤销兼容管理':'启用兼容保护';
  status.textContent=!s?.available?'未检测到受支持的 ZeroTier 配置或服务':s.error?'兼容处理未完成，请检查本地配置或重试':s.pending?'配置已保存，等待完成服务重建':s.enabled?(s.protected?'兼容保护已配置；不代表端到端连通性已通过':'排除项缺失，下次代理启动将尝试恢复'):s.protected?'已有 utun 排除，当前未由面板管理':'未启用；ZeroTier 可能选用代理 TUN 接口';
 }
 el('zt-compat-toggle').onclick=async()=>{
- if(manageBusy||advancedActive||!zeroTierCompat?.available)return;
+ if(manageBusy||advancedActive||zeroTierBusy||!zeroTierCompat?.available)return;
  const enable=!zeroTierCompat.enabled;
  const text=enable?'备份并为 AX5 ZeroTier 追加 utun 排除项；运行中的 ZeroTier 会短暂重启。代理节点和分流规则保持不变。继续？':'撤销面板添加的 utun 排除项，原有排除项保留；ZeroTier 可能短暂重启，原互访问题可能再次出现。继续？';
  if(!confirm(text))return;
- manageBusy=true;paintZeroTierCompat();const id=newID();let failure='';
- try{await control('sc-ztcompat.sh',[id,enable?'1':'0']);await waitJob(id,'done',120000,'zt-compat-state');zeroTierLast=0;await refreshZeroTier(true)}catch(e){failure='设置失败：'+e.message}finally{manageBusy=false;paintZeroTierCompat();if(failure)el('zt-compat-state').textContent=failure}
+ manageBusy=true;el('zt-refresh').disabled=true;paintZeroTierCompat();const id=newID();let failure='';
+ try{await control('sc-ztcompat.sh',[id,enable?'1':'0']);await waitJob(id,'done',120000,'zt-compat-state');zeroTierLast=0;await refreshZeroTier(true)}catch(e){failure='设置失败：'+e.message}finally{manageBusy=false;el('zt-refresh').disabled=false;paintZeroTierCompat();if(failure)el('zt-compat-state').textContent=failure}
 };
 
 
