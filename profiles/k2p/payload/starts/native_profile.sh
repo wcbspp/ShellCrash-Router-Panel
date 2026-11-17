@@ -39,6 +39,34 @@ native_dataset_key(){
   printf '%s/%s/%s' "$owner" "$repo" "$path";;
  *)return 1;;esac
 }
+native_resource_fetch()(
+ resource_url=$1;resource_next=$2;resource_sha=$3;resource_cdn=''
+ case "$resource_url" in https://raw.githubusercontent.com/*)
+  resource_rest=${resource_url#https://raw.githubusercontent.com/}
+  if printf '%s' "$resource_rest" | grep -Eq '^[A-Za-z0-9._-]+/[A-Za-z0-9._-]+/[A-Za-z0-9._-]+/[A-Za-z0-9._/-]+$';then
+   resource_owner=${resource_rest%%/*};resource_rest=${resource_rest#*/}
+   resource_repo=${resource_rest%%/*};resource_rest=${resource_rest#*/}
+   resource_ref=${resource_rest%%/*};resource_path=${resource_rest#*/}
+   resource_cdn="https://testingcf.jsdelivr.net/gh/$resource_owner/$resource_repo@$resource_ref/$resource_path"
+  fi;;esac
+ ca="$C/configs/subscription-ca.pem";tls='';[ ! -s "$ca" ] || tls="--cacert $ca"
+ # A mirror changes transport only; never substitute another dataset/version.
+ for resource_source in "$resource_url" "$resource_cdn";do
+  [ -n "$resource_source" ] || continue
+  if curl -q -4 $tls --noproxy '*' -fsSL --connect-timeout 4 --max-time 20 --max-filesize 524288 "$resource_source" -o "$resource_next";then
+   [ -z "$resource_sha" ] || echo "$resource_sha  $resource_next" | sha256sum -c - >/dev/null 2>&1 || continue
+   return 0
+  fi
+ done
+ # Cold boot must not depend on the core that these rules are needed to start.
+ if pidof CrashCore >/dev/null 2>&1 && netstat -lnt 2>/dev/null | awk '$4 ~ /:7890$/ {ready=1} END{exit !ready}';then
+  curl -q -4 $tls --noproxy '' --proxy "http://$PANEL_LAN_IP:7890" -fsSL --connect-timeout 4 --max-time 20 --max-filesize 524288 "$resource_url" -o "$resource_next" || return 1
+  [ -z "$resource_sha" ] || echo "$resource_sha  $resource_next" | sha256sum -c - >/dev/null 2>&1 || return 1
+  return 0
+ fi
+ echo '规则直连下载失败，本机代理尚未就绪；未尝试依赖代理启动' >&2
+ return 1
+)
 native_resources_prepare()(
  input=$1;candidate=$2;manifest=$3
  mkdir -p /tmp/ShellCrash/ruleset "$D/native-resource-stage" || return 1
@@ -100,10 +128,8 @@ native_resources_prepare()(
    if [ -n "$expected" ] && remote_ready && [ "$(remote_transport)" = webdav ];then
     remote_fetch rules "$expected" "$ext" "$next" 524288 && fetched=1
    fi
-   ca="$C/configs/subscription-ca.pem";tls='';[ ! -s "$ca" ] || tls="--cacert $ca"
-   # url is quoted data. Only the local router proxy is an alternate transport.
-   if [ "$fetched" = 0 ] && ! curl -4 $tls --noproxy '*' -fsSL --connect-timeout 4 --max-time 20 --max-filesize 524288 "$url" -o "$next";then
-    curl -4 $tls --proxy "http://$PANEL_LAN_IP:7890" -fsSL --connect-timeout 4 --max-time 20 --max-filesize 524288 "$url" -o "$next" || { echo "规则资源 $index 获取失败" >&2;return 1; }
+   if [ "$fetched" = 0 ];then
+    native_resource_fetch "$url" "$next" "$expected" || { echo "规则资源 $index 获取失败；需恢复同版本规则缓存或检查直连下载" >&2;return 1; }
    fi
    available=$(awk '/^MemAvailable:/{print $2}' /proc/meminfo)
    [ "${available:-0}" -ge "$(( ${rh_protect_mb:-12}*1024 ))" ] || { echo '规则资源暂存内存不足，当前配置保留' >&2;return 1; }

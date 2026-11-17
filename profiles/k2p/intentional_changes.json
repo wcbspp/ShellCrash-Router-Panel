@@ -230,5 +230,13 @@
   "uninstall.sh": {
     "reason": "Preserve the Storage lock helper across install and rollback.",
     "sha256": "956feeaf6ac90200ccf1011d296c97eedae7498ec2fd943ae62c5de1b696e6cf"
+  },
+  "payload/starts/native_profile.sh": {
+    "reason": "Cold boot uses original rule URL and same-file GitHub CDN with pinned SHA checks; local proxy fallback requires a running core and listening port, so absent core is never a download dependency.",
+    "sha256": "11accbabe1baeceab46cd43b06e0ec4ac3b964d58b2b7c0fc7510c5e04154d75"
+  },
+  "tests/test_native_resources.py": {
+    "reason": "Cover same-file CDN recovery, missing core/listener, running-proxy fallback and rejection of mismatched rule bytes.",
+    "sha256": "d3d157940e4d769e6188909fc23c3a7d6d4421e2e3f55e3e56134f3dae107be8"
   }
 }

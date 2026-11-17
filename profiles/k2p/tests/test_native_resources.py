@@ -56,6 +56,43 @@ class NativeResources(unittest.TestCase):
     def test_changed_source_cannot_replace_pinned_version(self):
         r=self.prepare('0\tbinary\t'+self.url+'\t'+('0'*64)+'\n');self.assertNotEqual(r.returncode,0)
         self.assertFalse((self.ram/'ruleset'/('native-'+('0'*64)+'.srs')).exists())
+    def fetch_with_transport(self,core=False,listener=False,mirror=False,corrupt=False):
+        payload=b'original pinned rules';sha=hashlib.sha256(payload).hexdigest()
+        (self.d/'payload').write_bytes(payload)
+        self.env.update(CORE='1' if core else '0',LISTENER='1' if listener else '0',MIRROR='1' if mirror else '0',CORRUPT='1' if corrupt else '0')
+        return self.run_shell('''
+pidof(){ [ "$CORE" = 1 ]; }
+netstat(){ [ "$LISTENER" != 1 ] || echo 'tcp 0 0 0.0.0.0:7890 0.0.0.0:* LISTEN'; }
+curl(){
+ printf '%s\\n' "$*" >> "$D/transport-calls"
+ route=direct;dest=''
+ while [ "$#" -gt 0 ];do
+  case "$1" in --proxy)route=proxy;shift;;-o)shift;dest=$1;;https://testingcf.jsdelivr.net/*)route=mirror;;esac
+  shift
+ done
+ if [ "$route" = mirror ] && [ "$MIRROR" = 1 ];then
+  if [ "$CORRUPT" = 1 ];then echo changed > "$dest";else cp "$D/payload" "$dest";fi
+ elif [ "$route" = proxy ];then cp "$D/payload" "$dest"
+ else return 28;fi
+}
+native_resource_fetch https://raw.githubusercontent.com/fixture/rules/123456/cn.srs "$D/download" '''+sha)
+    def test_cold_boot_uses_same_file_cdn_without_local_proxy(self):
+        r=self.fetch_with_transport(mirror=True);self.assertEqual(r.returncode,0,r.stderr)
+        calls=(self.d/'transport-calls').read_text()
+        self.assertIn('https://testingcf.jsdelivr.net/gh/fixture/rules@123456/cn.srs',calls)
+        self.assertNotIn('--proxy ',calls);self.assertEqual((self.d/'download').read_bytes(),b'original pinned rules')
+    def test_cold_boot_failure_does_not_attempt_unavailable_proxy(self):
+        r=self.fetch_with_transport();self.assertNotEqual(r.returncode,0)
+        self.assertNotIn('--proxy ',(self.d/'transport-calls').read_text())
+    def test_core_process_alone_does_not_mean_proxy_ready(self):
+        r=self.fetch_with_transport(core=True);self.assertNotEqual(r.returncode,0)
+        self.assertNotIn('--proxy ',(self.d/'transport-calls').read_text())
+    def test_running_proxy_remains_last_resort(self):
+        r=self.fetch_with_transport(core=True,listener=True);self.assertEqual(r.returncode,0,r.stderr)
+        self.assertIn("--noproxy  --proxy http://127.0.0.1:7890",(self.d/'transport-calls').read_text())
+    def test_cdn_cannot_substitute_different_rules(self):
+        r=self.fetch_with_transport(mirror=True,corrupt=True);self.assertNotEqual(r.returncode,0)
+        self.assertNotIn('--proxy ',(self.d/'transport-calls').read_text())
     def test_invalid_resource_input_is_rejected_before_network(self):
         for row in ['16\tbinary\t'+self.url,'0\tbad\t'+self.url,'0\tbinary\tfile:///etc/private','0\tbinary\t'+self.url+'\tbad']:
             self.assertNotEqual(self.prepare(row+'\n').returncode,0)
