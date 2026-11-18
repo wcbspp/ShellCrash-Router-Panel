@@ -130,6 +130,9 @@ status(){
  remote_checked=$(cat "$C/configs/remote.checked" 2>/dev/null);case "$remote_checked" in ''|*[!0-9]*)remote_checked=0;;esac
  printf '"remote_checked":%s,"remote_application_b64":"%s","remote_config_b64":"%s","remote_baseline_b64":"%s",' "$remote_checked" "$(head -c 2048 "$D/remote-application.json" 2>/dev/null | base64 | tr -d '\n')" "$(head -c 2048 "$D/remote-config.json" 2>/dev/null | base64 | tr -d '\n')" "$(head -c 2048 "$D/remote-baseline.json" 2>/dev/null | base64 | tr -d '\n')"
  printf '"core_uptime_seconds":%s,' "$core_uptime"
+ panel_version=$(head -c 64 "$C/starts/panel-version" 2>/dev/null)
+ case "$panel_version" in [!A-Za-z0-9]*|*[!A-Za-z0-9._+-]*) panel_version='';; esac
+ printf '"panel_version":"%s",' "$panel_version"
  core_check='{}'; [ ! -s "$D/core-check.json" ] || core_check=$(cat "$D/core-check.json")
  rules_count=$(head -1 "$C/configs/rules.meta" 2>/dev/null); case "$rules_count" in ''|*[!0-9]*) rules_count=4305;; esac
  dns_mode=$(sed -n 's/^dns_mod=//p' "$C/configs/ShellCrash.cfg" | head -1); case "$dns_mode" in mix|fake-ip|redir_host) :;; *) dns_mode=unknown;; esac
