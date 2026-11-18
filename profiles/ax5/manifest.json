@@ -181,5 +181,6 @@
   "ax5/zerotier-compat.lua": "profiles/ax5/ax5/zerotier-compat.lua",
   "ax5/zerotier-compat-core.lua": "shared/lib/zerotier-compat.lua",
   "ax5/rule-source.sh": "shared/lib/rule-source.sh",
-  "ax5/rule-assets.sh": "profiles/ax5/ax5/rule-assets.sh"
+  "ax5/rule-assets.sh": "profiles/ax5/ax5/rule-assets.sh",
+  "ax5/zerotier-monitor.lua": "shared/lib/zerotier-monitor.lua"
 }

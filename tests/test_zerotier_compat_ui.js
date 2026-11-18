@@ -1,7 +1,7 @@
 const fs=require('fs'),vm=require('vm'),assert=require('assert');
-const s=fs.readFileSync('shared/ui/manager.js.in','utf8'),start=s.indexOf('function paintZeroTierCompat(){'),end=s.indexOf('\n@@if ax5@@\nasync function waitJob(',start),code=s.slice(start,end);
+const s=fs.readFileSync('shared/ui/manager.js.in','utf8'),start=s.indexOf('let zeroTierInstalled=false;'),end=s.indexOf('\n@@if ax5@@\nasync function waitJob(',start),code=s.slice(start,end);
 (async()=>{const elements=new Map(),calls=[];let confirmed=false,fail=false;
-const box={setTimeout,el:id=>{if(!elements.has(id))elements.set(id,{});return elements.get(id)},confirm:()=>confirmed,newID:()=> '1234abcd',control:async(...a)=>{calls.push(a);if(fail)throw Error('busy')},waitJob:async()=>{},nativeRead:async()=>({available:true,enabled:true,protected:true}),zeroTierBusy:false,zeroTierCompat:{available:true,enabled:false,protected:false},manageBusy:false,advancedActive:false};
+const box={setTimeout,document:{createElement:()=>({})},el:id=>{if(!elements.has(id))elements.set(id,{replaceChildren(){this.rows=[]},append(row){this.rows.push(row)}});return elements.get(id)},confirm:()=>confirmed,newID:()=> '1234abcd',control:async(...a)=>{calls.push(a);if(fail)throw Error('busy')},waitJob:async()=>{},nativeRead:async()=>({available:true,enabled:true,protected:true}),zeroTierBusy:false,zeroTierCompat:{available:true,enabled:false,protected:false},manageBusy:false,advancedActive:false};
 vm.createContext(box);vm.runInContext(code,box);const button=box.el('zt-compat-toggle');
 box.paintZeroTierCompat();assert.equal(button.disabled,false);await button.onclick();assert.equal(calls.length,0);
 confirmed=true;await button.onclick();assert.deepEqual(Array.from(calls[0][1]),['1234abcd','1']);assert.equal(box.manageBusy,false);
@@ -10,5 +10,11 @@ box.zeroTierCompat={available:true,enabled:true,protected:true};await button.onc
 fail=true;await button.onclick();assert.match(box.el('zt-compat-state').textContent,/busy/);
 box.zeroTierCompat.available=false;box.paintZeroTierCompat();const n=calls.length;await button.onclick();assert.equal(calls.length,n);assert.equal(button.disabled,true);
 box.nativeRead=async()=>{throw Error('offline')};await box.refreshTunnelCompat(true);assert.equal(box.zeroTierCompat,null);assert.equal(button.disabled,true);assert.match(box.el('zt-compat-state').textContent,/offline/);
+ box.paintZeroTierMonitor({installed:false});
+ assert.equal(box.el('zt-monitor').hidden,true);assert.equal(box.el('zt-compat').hidden,true);
+ box.paintZeroTierMonitor({installed:true,status:'STOPPED'});
+ assert.equal(box.el('zt-monitor').hidden,false);assert.equal(box.el('zt-compat').hidden,false);assert.match(box.el('zt-state').textContent,/服务未运行/);
+ box.paintZeroTierMonitor({installed:true,status:'ONLINE',version:'1.10.1',networks:[{id:'123',status:'OK',ips:'192.0.2.1'}]});
+ assert.match(box.el('zt-state').textContent,/在线/);assert.equal(box.el('zt-networks').rows.length,1);
  console.log('ZeroTier compatibility: confirmation, enable/disable, failures and unavailable guard passed');
 })().catch(e=>{console.error(e);process.exit(1)});

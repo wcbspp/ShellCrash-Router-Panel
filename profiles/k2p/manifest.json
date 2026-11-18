@@ -279,5 +279,6 @@
   "payload/starts/zerotier-compat-core.lua": "shared/lib/zerotier-compat.lua",
   "payload/starts/zerotier-compat.lua": "profiles/k2p/payload/starts/zerotier-compat.lua",
   "payload/starts/zerotier-service.sh": "profiles/k2p/payload/starts/zerotier-service.sh",
-  "payload/starts/rule-source.sh": "shared/lib/rule-source.sh"
+  "payload/starts/rule-source.sh": "shared/lib/rule-source.sh",
+  "payload/starts/zerotier-monitor.lua": "shared/lib/zerotier-monitor.lua"
 }

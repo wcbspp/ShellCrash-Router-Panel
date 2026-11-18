@@ -8,7 +8,10 @@ local adapter={path='/var/lib/zerotier-one/local.conf',prefix='utun',allow_missi
  persist=function()return M.run('sh '..C..'/starts/zerotier-service.sh save')end}
 local Z=assert(loadfile(C..'/starts/zerotier-compat-core.lua'))(M,adapter)
 local action=arg and arg[1]
-if action=='status'then print(M.json.encode(Z.status()))
+if action=='status'then
+ local status=Z.status()
+ status.monitor=assert(loadfile(C..'/starts/zerotier-monitor.lua'))(M,'/usr/bin/zerotier-cli','/usr/bin/zerotier-one','/var/lib/zerotier-one')
+ print(M.json.encode(status))
 elseif action=='enforce'then Z.enforce()
 elseif action=='finish'then Z.finish()
 elseif action=='set'then assert(arg[2]=='0'or arg[2]=='1','invalid_zerotier_setting');Z.set(arg[2]=='1',false)
