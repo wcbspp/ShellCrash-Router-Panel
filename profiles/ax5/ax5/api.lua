@@ -43,8 +43,9 @@ function A.read()
   H.prepare_content('text/plain');H.write(table.concat(rows,'\n\n'));return
  elseif kind=='zerotier'then local s=M.zerotier();s.compat=dofile(M.C..'/ax5/zerotier-compat.lua').status();reply(s);return
  elseif kind=='ztcompatread'then
-  local status=dofile(M.C..'/ax5/zerotier-compat.lua').status()
-  status.monitor=assert(loadfile(M.C..'/ax5/zerotier-monitor.lua'))(M,'/opt/bin/zerotier-cli','/opt/bin/zerotier-one','/opt/var/lib/zerotier-one')
+  local Z=dofile(M.C..'/ax5/zerotier-compat.lua')
+  local status=Z.status()
+  status.monitor=Z.monitor()
   reply(status);return
  elseif kind=='zerotierlog'then H.prepare_content('text/plain');H.write(M.read(M.R..'/zerotier-diagnostic',8192));return
  elseif kind=='inspect'then

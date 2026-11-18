@@ -447,7 +447,5 @@ AX5-CTRL-oom-remote-toggle,AX5,monitor,P0,oom-remote-toggle,远程监控,button,
 K2P-CTRL-oom-remote-toggle,K2P,monitor,P0,oom-remote-toggle,远程监控,button,监控页；操作中禁用,已保存并验证WebDAV,开启、刷新、等待采样、关闭并重启核对,开关持久化；远端回读校验；关闭后停止上传,认证失败、低内存、上传失败及重启,设备及WebDAV证据,恢复原开关
 AX5-CTRL-zt-compat-toggle,AX5,monitor,P1,zt-compat-toggle,ZeroTier与TUN兼容,button,AX5支持的配置及服务存在；管理忙时禁用,备份配置和节点选择,取消；启用；重复启用；撤销；失败回退；代理重启,仅追加排除；保留未知字段和原有项；必要时才重启ZT；不改分流,坏JSON/软链/锁冲突/保存或重启失败拒绝并回退,任务回执/配置校验/两机访问/截图,恢复原状或按授权保留保护
 K2P-CTRL-zt-compat-toggle,K2P,monitor,P1,zt-compat-toggle,ZeroTier与TUN兼容,button,运行时能力和固件身份可用,完整私有配置及独立回退,取消；开启；重复开启；撤销；运行态恢复；保存失败,共享策略及仅添加项回退；Storage保留；原身份节点不变,能力不足或身份不一致拒绝；无stop删除身份,任务回执/Storage回读/两机访问,按授权保留保护
-AX5-CTRL-zt-compat-refresh,AX5,monitor,P1,zt-compat-refresh,检查兼容状态,button,已登录,无,查询；能力不足；忙；断线,按能力显示共享策略及状态,失败保留错误提示,状态回执,无配置改动
-K2P-CTRL-zt-compat-refresh,K2P,monitor,P1,zt-compat-refresh,检查兼容状态,button,已登录,无,查询；能力不足；忙；断线,按能力显示共享策略及状态,失败保留错误提示,状态回执,无配置改动
 K2P-CTRL-zt-refresh,K2P,monitor,P1,zt-refresh,查询状态,button,已登录且本机已安装 ZeroTier,可查询 ZeroTier 本机状态,打开监控页并查询状态,显示版本和已加入网络,未安装时隐藏；已安装但未运行时显示停止,认证状态接口和页面,还原测试环境
 K2P-CTRL-summary-monitor-zerotier,K2P,monitor,P1,summary-monitor-zerotier,诊断记录,summary,已登录且本机已安装 ZeroTier,状态查询已完成,展开再收起诊断记录,显示最近最多30条查询结果,无记录时显示提示,桌面和窄屏页面,恢复原展开状态

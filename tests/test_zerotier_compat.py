@@ -28,7 +28,7 @@ function M.exec()return running and'123' or''end
 function M.run(s)if s:find(' restart',1,true)then restarts=restarts+1;if fail_restart>0 then fail_restart=fail_restart-1;return false end end;return true end
 os.remove=function(p)files[p]=nil;return true end
 os.rename=function(a,b)if fail_rename>0 then fail_rename=fail_rename-1;return false end;files[b]=files[a];files[a]=nil;return true end
-local fs={lstat=function(p)if types[p]then return {type=types[p]}end;if files[p]then return{type='reg'}end end,chmod=function(p,mode)assert(mode=='600','native permission string required');return true end}
+local fs={readlink=function(p)return files[p]end,lstat=function(p)if types[p]then return {type=types[p]}end;if files[p]then return{type='reg'}end end,chmod=function(p,mode)assert(mode=='600','native permission string required');return true end}
 require=function(n)if n=='nixio.fs'then return fs elseif n=='nixio'then return{getpid=function()return123 end}end;error(n)end
 dofile=function()return M end
 files['/opt/etc/init.d/S27zerotier']='#!'
@@ -36,6 +36,18 @@ files['/opt/etc/init.d/S27zerotier']='#!'
   L.globals().files['/opt/var/lib/zerotier-one/local.conf']=raw
   L.execute("adapter={path='/opt/var/lib/zerotier-one/local.conf',prefix='utun',available=function()return true end,restart=function()return M.run('zerotier restart')end}")
   return L,L.execute(SOURCE,L.globals().M,L.globals().adapter)
+ def test_running_instance_must_match_adapter_executable_and_home(self):
+  L,Z=self.fixture();g=L.globals()
+  g.adapter['binary']='/opt/bin/zerotier-one';g.adapter['home']='/opt/var/lib/zerotier-one'
+  g.files['/proc/123/exe']='/opt/bin/zerotier-one'
+  g.files['/proc/123/cmdline']='/opt/bin/zerotier-one\0-d\0/tmp/other-zerotier\0'
+  self.assertFalse(Z.status().available)
+  with self.assertRaises(Exception):Z.set(True,False)
+  self.assertIsNone(g.files['/persist/configs/zerotier-compat.json'])
+  self.assertEqual(g.restarts,0)
+  g.files['/proc/123/cmdline']='/opt/bin/zerotier-one\0-d\0/opt/var/lib/zerotier-one\0'
+  self.assertTrue(Z.status().available)
+  self.assertEqual(Z.status().config_path,'/opt/var/lib/zerotier-one/local.conf')
  def test_patch_preserves_unknown_bytes_and_types(self):
   raw=' { "outside":[], "settings" : {"portMappingEnabled":false,"empty":[],"nested":{"x":"a,}:b\\\"c"},"interfacePrefixBlacklist":["docker"]},"tail":{}} '
   L,Z=self.fixture(raw);new,added,had=Z.patch(raw,True,None)

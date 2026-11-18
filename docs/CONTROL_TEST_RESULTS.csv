@@ -893,10 +893,6 @@ K2P-CTRL-oom-remote-toggle,K2P,桌面,未执行,,,,
 K2P-CTRL-oom-remote-toggle,K2P,手机窄屏,未执行,,,,
 AX5-CTRL-zt-compat-toggle,AX5,桌面,未执行,认证真机HTTP开关通过；当前会话浏览器不可用，未冒记可视点击,私有zerotier-compat-20261117证据,2026-11-17,未发布候选
 AX5-CTRL-zt-compat-toggle,AX5,手机窄屏,未执行,认证真机HTTP开关通过；当前会话浏览器不可用，未冒记可视点击,私有zerotier-compat-20261117证据,2026-11-17,未发布候选
-AX5-CTRL-zt-compat-refresh,AX5,桌面,未执行,统一控件；认证真机后台和路由保留已通过；可视点击未执行,私有zerotier-unified-20261117证据,2026-11-17,未发布候选
-AX5-CTRL-zt-compat-refresh,AX5,手机窄屏,未执行,统一控件；认证真机后台和路由保留已通过；可视点击未执行,私有zerotier-unified-20261117证据,2026-11-17,未发布候选
-K2P-CTRL-zt-compat-refresh,K2P,桌面,未执行,统一控件；认证真机后台和路由保留已通过；可视点击未执行,私有zerotier-unified-20261117证据,2026-11-17,未发布候选
-K2P-CTRL-zt-compat-refresh,K2P,手机窄屏,未执行,统一控件；认证真机后台和路由保留已通过；可视点击未执行,私有zerotier-unified-20261117证据,2026-11-17,未发布候选
 K2P-CTRL-zt-compat-toggle,K2P,桌面,未执行,统一控件；认证真机后台和路由保留已通过；可视点击未执行,私有zerotier-unified-20261117证据,2026-11-17,未发布候选
 K2P-CTRL-zt-compat-toggle,K2P,手机窄屏,未执行,统一控件；认证真机后台和路由保留已通过；可视点击未执行,私有zerotier-unified-20261117证据,2026-11-17,未发布候选
 K2P-CTRL-zt-refresh,K2P,桌面,实机后端通过,认证状态接口返回在线和一个网络,HTTP 200 及返回字段校验,2026-11-18,页面点击待验证

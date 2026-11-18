@@ -65,19 +65,24 @@ function paintZeroTierMonitor(s){
  el('zt-log').textContent=s.log||'暂无诊断记录';
 }
 function paintZeroTierCompat(){
- const s=zeroTierCompat,b=el('zt-compat-toggle'),status=el('zt-compat-state');
+ const s=zeroTierCompat,b=el('zt-compat-toggle'),status=el('zt-compat-state'),path=el('zt-config-path');
+ const external=!!(s?.protected&&(!s.enabled||s.managed===false));
  el('zt-refresh').disabled=manageBusy||zeroTierBusy;
- el('zt-compat-refresh').disabled=manageBusy||zeroTierBusy;
- b.disabled=manageBusy||advancedActive||zeroTierBusy||!s?.available;b.textContent=s?.enabled?'撤销兼容管理':'启用兼容保护';
- status.textContent=zeroTierBusy&&!s?'正在检查兼容状态…':!s?.available?'当前 ZeroTier 环境暂不支持此保护':s.error?'兼容处理未完成，请检查本地配置或重试':s.pending?'配置已保存，等待完成服务重建':s.enabled?(s.protected?'兼容保护已配置；不代表端到端连通性已通过':'排除项缺失，下次代理启动将尝试恢复'):s.protected?'已有接口排除，当前未由面板管理':'未启用；ZeroTier 可能选用代理 TUN 接口';
+ b.disabled=manageBusy||advancedActive||zeroTierBusy||!s?.available||(external&&!s.enabled);
+ b.textContent=s?.enabled?(external?'撤销面板管理':'撤销保护'):'启用保护';
+ status.textContent=zeroTierBusy&&!s?'检查中':!s?.available?'暂不可用':s.error?'处理未完成':s.pending?'等待重建':external?'已有外部排除':s.enabled?(s.protected?'面板保护已启用':'排除项缺失'):'未启用';
+ status.dataset.state=s?.available&&s.protected&&!s.error&&!s.pending?'on':(!s?.available||s?.error||s.pending||s.enabled&&!s.protected)?'warning':'off';
+ el('zt-compat-hint').textContent=!s?.available?'无法确认受支持的配置位置，请检查本机安装。':external?'现有排除项会保留，撤销面板管理也不会删除。':s.enabled?'应用或撤销本项时，ZeroTier 连接可能短暂中断。':'确认 ZeroTier 流量误入 TUN 后，再启用这项保护。';
+ path.hidden=!s?.config_path;
+ path.textContent=s?.config_path?'配置文件 '+s.config_path:'';
 }
 el('zt-compat-toggle').onclick=async()=>{
- if(manageBusy||advancedActive||zeroTierBusy||!zeroTierCompat?.available)return;
+ if(manageBusy||advancedActive||zeroTierBusy||!zeroTierCompat?.available||(zeroTierCompat.protected&&!zeroTierCompat.enabled))return;
  const enable=!zeroTierCompat.enabled;
  const text=enable?'备份并为本机 ZeroTier 追加项目 TUN 排除项；运行中的 ZeroTier 会短暂重启。代理节点和分流规则保持不变。继续？':'撤销面板添加的 TUN 排除项，原有排除项保留；ZeroTier 可能短暂重启，原互访问题可能再次出现。继续？';
  if(!confirm(text))return;
- manageBusy=true;el('zt-compat-refresh').disabled=true;paintZeroTierCompat();const id=newID();let failure='',finished=false;
- try{await control('sc-ztcompat.sh',[id,enable?'1':'0']);await waitJob(id,'done',120000,'zt-compat-state');finished=true;zeroTierLast=0;if(!await refreshTunnelCompat(true))throw Error('请点击检查兼容状态确认')}catch(e){failure=(finished?'设置已完成，状态暂未确认：':'设置失败：')+e.message}finally{manageBusy=false;el('zt-compat-refresh').disabled=false;paintZeroTierCompat();if(failure)el('zt-compat-state').textContent=failure}
+ manageBusy=true;paintZeroTierCompat();const id=newID();let failure='',finished=false;
+ try{await control('sc-ztcompat.sh',[id,enable?'1':'0']);await waitJob(id,'done',120000,'zt-compat-state');finished=true;zeroTierLast=0;if(!await refreshTunnelCompat(true))throw Error('请重新查询 ZeroTier 状态')}catch(e){failure=(finished?'设置已完成，状态暂未确认：':'设置失败：')+e.message}finally{manageBusy=false;paintZeroTierCompat();if(failure)el('zt-compat-state').textContent=failure}
 };
 async function refreshTunnelCompat(force=false){
  if(zeroTierBusy||(!force&&(manageBusy||Date.now()-zeroTierLast<60000)))return;
@@ -85,7 +90,6 @@ async function refreshTunnelCompat(force=false){
  try{for(let attempt=0;;attempt++){try{zeroTierCompat=await nativeRead('ztcompatread');paintZeroTierMonitor(zeroTierCompat.monitor);break}catch(e){if(attempt)throw e;await new Promise(r=>setTimeout(r,400))}}zeroTierLast=Date.now()}catch(e){zeroTierCompat=null;failure='查询失败：'+e.message}finally{zeroTierBusy=false;paintZeroTierCompat();if(failure){el('zt-compat-state').textContent=failure;if(zeroTierInstalled)el('zt-state').textContent=failure}}
  return !failure;
 }
-el('zt-compat-refresh').onclick=()=>refreshTunnelCompat(true);
 el('zt-refresh').onclick=()=>refreshTunnelCompat(true);
 
 @@if ax5@@

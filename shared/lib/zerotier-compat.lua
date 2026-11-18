@@ -109,29 +109,45 @@ function Z.patch(raw,enable,owned)
  M.json.decode(result)
  return result,added,not not lm
 end
+local function target()
+ if not adapter.available() then return false end
+ if not adapter.binary then return true end
+ local pids=M.exec('pidof zerotier-one 2>/dev/null')
+ if not pids:match('%S') then return true end
+ local pid=pids:match('^%s*(%d+)%s*$')
+ if not pid or fs.readlink('/proc/'..pid..'/exe')~=adapter.binary then return false end
+ local args={}
+ for v in M.read('/proc/'..pid..'/cmdline',4096):gmatch('([^%z]+)%z') do args[#args+1]=v end
+ return args[1]==adapter.binary and args[#args]==adapter.home and
+  (#args==2 or (#args==3 and args[2]=='-d'))
+end
 function Z.status()
- local ok,raw=pcall(read,path,adapter.allow_missing==true)
+ local matched=target()
+ local ok,raw=false,nil
+ if matched then ok,raw=pcall(read,path,adapter.allow_missing==true) end
  local stateok,state=pcall(function()return loadstate(read(record,true))end)
  if not stateok then state={}end
- local out={available=ok and stateok and adapter.available(),enabled=state.enabled==true,protected=false,managed=state.added==true}
+ local out={available=ok and stateok,config_path=matched and path or nil,enabled=state.enabled==true,protected=false,managed=state.added==true}
  if ok then local good,c=pcall(M.json.decode,raw);if good and type(c)=='table'and type(c.settings)=='table'and type(c.settings.interfacePrefixBlacklist)=='table'then for _,v in ipairs(c.settings.interfacePrefixBlacklist)do if v==prefix then out.protected=true end end end end
  out.policy='exclude_tun_interfaces';out.tun_prefix=prefix
  out.error=not stateok and'invalid_state'or M.read(diagnostic,128):gsub('%s+$','');out.pending=M.read(pending)~=''
  return out
 end
 local function restart()
+ assert(target(),'zerotier_target_unverified')
  assert(adapter.restart(),'zerotier_restart_failed')
  assert(M.exec('pidof zerotier-one 2>/dev/null'):match('%d'),'zerotier_not_running')
 end
 function Z.set(enable,defer)
  assert(type(enable)=='boolean','invalid_zerotier_setting')
+ assert(target(),'zerotier_target_unverified')
  assert(M.lock('zerotier-compat.lock',60),'zerotier_compat_busy')
  local old,oldstate,new,changed,wasrunning
  local function persist()if adapter.persist then assert(adapter.persist(),'zerotier_persist_failed')end;assert(M.run('sync'),'zerotier_sync_failed')end
  local ok,result=pcall(function()
   M.write(M.R..'/zerotier-compat.lock/owner',tostring(require('nixio').getpid()))
+  assert(target(),'zerotier_target_unverified')
   old=read(path,adapter.allow_missing==true);oldstate=read(record,true)
-  assert(adapter.available(),'zerotier_service_missing')
   local state=loadstate(oldstate)
   local missing=not fs.lstat(path)
   local restoring=enable and state.enabled and missing and adapter.allow_missing
@@ -159,7 +175,7 @@ function Z.set(enable,defer)
  if not ok then
   if changed and old and M.read(path)==new then if old==''then os.remove(path)else pcall(write,path,old)end;if wasrunning then pcall(restart)end end
   if oldstate then if oldstate==''then os.remove(record)else pcall(write,record,oldstate)end end
-  pcall(persist);M.write(diagnostic,'apply_failed\n')
+  if oldstate then pcall(persist)end;M.write(diagnostic,'apply_failed\n')
  end
  os.remove(M.R..'/zerotier-compat.lock/owner');os.remove(M.R..'/zerotier-compat.lock');os.remove(M.R..'/zerotier-compat.lock.time')
  if not ok then error(result,0)end
