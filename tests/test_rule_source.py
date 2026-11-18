@@ -24,6 +24,18 @@ class RuleSource(unittest.TestCase):
   r=self.fetch('0'*64,1);self.assertEqual(r.returncode,0,r.stderr);self.assertEqual((self.p/'rules.updated').read_text().strip(),hashlib.sha256(self.server.payload).hexdigest())
  def test_incompatible_latest_is_rejected(self):
   r=self.fetch('0'*64,1,False);self.assertNotEqual(r.returncode,0);self.assertFalse((self.p/'rules.updated').exists())
+ def test_bad_origin_candidate_does_not_hide_compatible_mirror(self):
+  script=''' . "$1"
+pidof(){ return 1; }
+rule_source_transfer(){ for arg;do url=$arg;done;case "$url" in *jsdelivr*) printf good > "$2";; *) printf bad > "$2";;esac; }
+rule_source_validate(){ [ "$(cat "$1")" = good ]; }
+rule_source_fetch https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/test.srs "$2" "$3" 1024 1
+'''
+  out=self.p/'result'
+  r=subprocess.run(['sh','-c',script,'test',str(SOURCE),str(out),'0'*64],env=dict(os.environ,C=str(self.p)),capture_output=True,text=True,timeout=10)
+  self.assertEqual(r.returncode,0,r.stderr)
+  self.assertEqual(out.read_text(),'good')
+  self.assertEqual((self.p/'result.updated').read_text().strip(),hashlib.sha256(b'good').hexdigest())
  def test_strict_restore_does_not_update(self):
   r=self.fetch('0'*64);self.assertNotEqual(r.returncode,0);self.assertFalse((self.p/'rules.updated').exists())
  def test_lengthless_response_cannot_exceed_the_memory_budget(self):

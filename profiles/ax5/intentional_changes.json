@@ -1,7 +1,7 @@
 {
   "install.sh": {
-    "reason": "Verified offline core; update uses RAM staging/rollback and one-file atomic replacement, 16MB RAM reserve and largest-file-plus-256KB disk headroom; fresh installation unchanged Native clean-device trial found only13976KiB flash available after preserved-panel removal. Budget compressed pinned core plus staged tool/application/rules and1MiB reserve instead of fixed16000KiB; never materialize uncompressed executable on flash. RAM-only compatibility check requires actual binary bytes plus24MiB before extraction and cleans its private temporary directory on every exit. Original baseline unchanged; native installation remains a separate gate. Rewrite staged local rule paths through cjson before compatibility check; text sed misses JSON-escaped slashes and points into the not-yet-installed directory.",
-    "sha256": "c8f010f226d811f86e43d496b789dd39c2072488ddc37bee14b7070d67329f10"
+    "reason": "Verified offline core; update uses RAM staging/rollback and one-file atomic replacement, 16MB RAM reserve and largest-file-plus-256KB disk headroom; fresh installation unchanged Native clean-device trial found only13976KiB flash available after preserved-panel removal. Budget compressed pinned core plus staged tool/application/rules and1MiB reserve instead of fixed16000KiB; never materialize uncompressed executable on flash. RAM-only compatibility check requires actual binary bytes plus24MiB before extraction and cleans its private temporary directory on every exit. Original baseline unchanged; native installation remains a separate gate. Rewrite staged local rule paths through cjson before compatibility check; text sed misses JSON-escaped slashes and points into the not-yet-installed directory. Stage setup is covered by cleanup. A failed second first-install publication removes only directories this attempt moved.",
+    "sha256": "9a655ffc9a291ce6f8776a7aee417e7dcba6401c7db014ba5e1f67464ad88b5c"
   },
   "tools/build_release.py": {
     "reason": "Removed obsolete per-repository release builder; tools/package.py is the shared release pipeline",
@@ -148,8 +148,8 @@
     "reason": "Reviewed backup transaction: authenticated live DAV gate, complete component manifest and independent baseline catalog, exact installed-version recovery, CLI update persistence/feedback; failure preserves previous backup and user settings"
   },
   "ax5/tool-update.sh": {
-    "sha256": "4339b2ac409fa45fd7592f85b0e516b69d61443305185740d2a379943398a2bb",
-    "reason": "Reviewed backup transaction: authenticated live DAV gate, complete component manifest and independent baseline catalog, exact installed-version recovery, CLI update persistence/feedback; failure preserves previous backup and user settings; Preserve selector readiness and failed recovery evidence; bounded OOM diagnostics or portable SHA verification as applicable."
+    "sha256": "3044a4b972b100b6274b0f0c4628562fd595cbff566fb5de23dc1b5822de28e5",
+    "reason": "Reviewed backup transaction: authenticated live DAV gate, complete component manifest and independent baseline catalog, exact installed-version recovery, CLI update persistence/feedback; failure preserves previous backup and user settings; Preserve selector readiness and failed recovery evidence; bounded OOM diagnostics or portable SHA verification as applicable. Keep the rollback archive and marker when rollback fails; block replacement until recovery."
   },
   "tool-patches/menus-9_upgrade.sh.patch": {
     "sha256": "e083468dd00f967d4c7b7275d1edfae0c618cd4906232303981f89f6286263f8",

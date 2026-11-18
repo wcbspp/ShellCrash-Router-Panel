@@ -6,6 +6,7 @@ local home,binary='/var/lib/zerotier-one','/usr/bin/zerotier-one'
 local adapter={home=home,binary=binary,path=home..'/local.conf',prefix='utun',allow_missing=true,storage_root='/etc/storage',
  available=function()return M.run('sh '..C..'/starts/zerotier-service.sh probe')end,
  restart=function(active)return M.run('sh '..C..'/starts/zerotier-service.sh start '..M.quote(active))end,
+ recover=function(active)return M.run('sh '..C..'/starts/zerotier-service.sh recover '..M.quote(active))end,
  persist=function()return M.run('sh '..C..'/starts/zerotier-service.sh save')end}
 local Z=assert(loadfile(C..'/starts/zerotier-compat-core.lua'))(M,adapter)
 function Z.monitor()

@@ -25,6 +25,7 @@ end
 local adapter={home=home,binary=binary,path=home..'/local.conf',prefix='utun',configured_home=configured_home,
  available=function()return M.read('/opt/etc/init.d/S27zerotier',2)~=''end,
  restart=function()return M.run('/opt/etc/init.d/S27zerotier restart >/dev/null 2>&1')end}
+adapter.recover=adapter.restart
 local Z=assert(loadfile(M.C..'/ax5/zerotier-compat-core.lua'))(M,adapter)
 function Z.monitor()
  return assert(loadfile(M.C..'/ax5/zerotier-monitor.lua'))(M,'/opt/bin/zerotier-cli',binary,Z.home)

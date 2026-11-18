@@ -47,29 +47,34 @@ mem_need=24000;[ "$mode" != --update ] || mem_need=16384
 [ "${mem:-0}" -ge "$mem_need" ] || fail "可用内存不足：此操作需要 $mem_need KB，请稍后重试"
 mkdir -p /tmp/ShellCrash
 mkdir /tmp/ShellCrash/operation.lock || fail '已有操作在进行'
-date +%s > /tmp/ShellCrash/operation.lock.time
-if [ "$mode" = --update ];then stage=$(mktemp -d /tmp/ax5-source.XXXXXX);else stage=$(mktemp -d /data/.shellcrash-install.XXXXXX);fi
-committed=0
+stage='';tool_moved=0;panel_moved=0;service_setup=0
 rollback='';pending='';checkstage=''
 cleanup(){
  rc=$?
  [ -z "$pending" ] || rm -f "$pending"
  [ -z "$checkstage" ] || rm -rf "$checkstage"
  if [ "$rc" != 0 ] && [ -n "$rollback" ];then tar -xzf "$rollback" -C / || echo '源码回退失败，请使用缓存备份恢复' >&2;fi
- if [ "$rc" != 0 ] && [ "$committed" = 1 ] && [ "$mode" = --install ];then
+ if [ "$rc" != 0 ] && [ "$service_setup" = 1 ] && [ "$mode" = --install ];then
   /etc/init.d/shellcrash stop 2>/dev/null || true
   /etc/init.d/shellcrash disable 2>/dev/null || true
-  cp "$stage/header-before.htm" /usr/lib/lua/luci/view/web/inc/header.htm
-  crontab "$stage/cron-before"
+  cp "$stage/header-before.htm" /usr/lib/lua/luci/view/web/inc/header.htm || echo '管理菜单回退失败' >&2
+  crontab "$stage/cron-before" || echo '计划任务回退失败' >&2
   rm -f /etc/init.d/shellcrash /usr/bin/crash /usr/lib/lua/luci/controller/web/shellcrash.lua /usr/lib/lua/luci/view/web/shellcrash.htm
-  rm -rf "$C" "$T"
-  echo '首次安装失败，已撤销本次新增服务与目录' >&2
  fi
- rm -rf "$stage";rmdir /tmp/ShellCrash/operation.lock 2>/dev/null || true
+ if [ "$rc" != 0 ] && [ "$mode" = --install ];then
+  [ "$panel_moved" = 0 ] || rm -rf "$C"
+  [ "$tool_moved" = 0 ] || rm -rf "$T"
+ fi
+ [ -z "$stage" ] || rm -rf "$stage"
+ rmdir /tmp/ShellCrash/operation.lock 2>/dev/null || true
+ rm -f /tmp/ShellCrash/operation.lock.time
+ return "$rc"
 }
 trap cleanup EXIT
 trap 'exit 130' INT
 trap 'exit 143' HUP TERM
+date +%s > /tmp/ShellCrash/operation.lock.time
+if [ "$mode" = --update ];then stage=$(mktemp -d /tmp/ax5-source.XXXXXX);else stage=$(mktemp -d /data/.shellcrash-install.XXXXXX);fi
 mkdir -p "$stage/panel"
 cp -r "$source/ax5" "$source/ui" "$stage/panel/"
 find "$stage/panel/ax5" -name '*.sh' -exec chmod 755 {} \;
@@ -124,7 +129,11 @@ local f=assert(io.open(arg[3],'w'));assert(f:write(json.encode(cfg)));assert(f:c
 LUA
  GOMEMLIMIT=12MiB GOGC=25 "$checkstage/CrashCore" check -D "$checkstage" -c "$checkstage/config.json"
  rm -rf "$checkstage";checkstage=''
- mv "$stage/tool" "$T";mv "$stage/panel" "$C";committed=1
+ mv "$stage/tool" "$T"
+ tool_moved=1
+ mv "$stage/panel" "$C"
+ panel_moved=1
+ service_setup=1
 else
  echo '更新页面与适配源码，保留订阅、内核、规则和 ZeroTier'
  rollback=$stage/code-before.tar.gz

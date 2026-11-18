@@ -39,12 +39,18 @@ rule_source_fetch()(
    resource_cdn="https://testingcf.jsdelivr.net/gh/$resource_owner/$resource_repo@$resource_ref/$resource_path"
   fi;;esac
  ca="$C/configs/subscription-ca.pem";tls='';[ ! -s "$ca" ] || tls="--cacert $ca"
+ keep_latest(){
+  [ "$resource_latest" = 1 ] && [ ! -s "$resource_next.latest" ] || return 0
+  if rule_source_validate "$resource_next";then
+   mv "$resource_next" "$resource_next.latest" || return 1
+  fi
+ }
  # A mirror changes transport only; never substitute another dataset/version.
  for resource_source in "$resource_url" "$resource_cdn";do
   [ -n "$resource_source" ] || continue
   if rule_source_transfer "$resource_max" "$resource_next" -q -4 $tls --noproxy '*' -fsSL --connect-timeout 4 --max-time 20 --max-filesize "$resource_max" "$resource_source";then
    [ -z "$resource_sha" ] || [ "$(rule_source_digest "$resource_next")" = "$resource_sha" ] || {
-    if [ "$resource_latest" = 1 ] && [ ! -s "$resource_next.latest" ];then mv "$resource_next" "$resource_next.latest" || return 1;fi
+    keep_latest || return 1
     continue
    }
    if [ -z "$resource_sha" ] && [ "$resource_latest" = 1 ];then rule_source_validate "$resource_next" || continue;fi
@@ -57,18 +63,18 @@ rule_source_fetch()(
    if [ -z "$resource_sha" ];then
     if [ "$resource_latest" != 1 ] || rule_source_validate "$resource_next";then return 0;fi
    elif [ "$(rule_source_digest "$resource_next")" = "$resource_sha" ];then return 0;fi
-   if [ "$resource_latest" = 1 ] && [ ! -s "$resource_next.latest" ];then mv "$resource_next" "$resource_next.latest" || return 1;fi
+   keep_latest || return 1
   fi
  fi
  if [ "$resource_latest" = 1 ] && [ ! -s "$resource_next.latest" ];then
   newest=$(rule_source_latest_url "$resource_url")
   if [ "$newest" != "$resource_url" ];then
-   rule_source_fetch "$newest" "$resource_next.latest" '' "$resource_max" 0 || rm -f "$resource_next.latest"
+   if ! rule_source_fetch "$newest" "$resource_next.latest" '' "$resource_max" 1;then rm -f "$resource_next.latest";fi
   fi
  fi
  if [ "$resource_latest" = 1 ] && [ -s "$resource_next.latest" ];then
   resource_size=$(wc -c < "$resource_next.latest")
-  [ "$resource_size" -le "$resource_max" ] && rule_source_validate "$resource_next.latest" || return 1
+  [ "$resource_size" -le "$resource_max" ] || return 1
   mv "$resource_next.latest" "$resource_next" || return 1
   rule_source_digest "$resource_next" > "$resource_next.updated" || return 1
   echo '原规则版本不可用，已校验同源最新兼容版本' >&2

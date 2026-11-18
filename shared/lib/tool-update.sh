@@ -17,6 +17,19 @@ if [ "$mode" = update ] && [ "${SC_TOOL_JOB:-0}" != 1 ];then
 fi
 release_lock(){ [ "$ownlock" = 0 ] || { rm -f "$D/operation.lock/owner";rmdir "$D/operation.lock" 2>/dev/null || true; }; }
 work=$D/tool-update
+rollback=$D/tool-previous.tar.gz
+marker=$D/tool-update-pending
+if [ "$persistent" = 1 ];then
+ rollback=$C/cache/tool-previous.tar.gz
+ marker=$C/cache/tool-update-pending
+fi
+finish(){ code=$?;trap - EXIT INT TERM;rm -rf "$work";release_lock;exit "$code"; }
+trap finish EXIT
+trap 'exit 1' INT TERM
+if [ "$mode" = update ] && [ -e "$marker" ];then
+ echo "Previous tool rollback is pending; preserve $rollback and repair it before updating." >&2
+ exit 1
+fi
 mkdir -p "$work"
 export CRASHDIR=$T
 . "$T/configs/ShellCrash.cfg"
@@ -47,9 +60,6 @@ webget(){
  done
  return 1
 }
-finish(){ code=$?;trap - EXIT INT TERM;rm -rf "$work";release_lock;exit "$code"; }
-trap finish EXIT
-trap 'exit 1' INT TERM
 get_bin "$work/version" version
 latest=$(tr -d '\r\n' < "$work/version")
 printf '%s' "$latest" | grep -Eq '^1\.[0-9]{1,2}\.[0-9]{1,3}release$' || { echo 'Only official stable releases are accepted.' >&2;exit 1; }
@@ -93,16 +103,21 @@ while read -r file;do [ -f "$T/$file" ] || { echo "New upstream file requires an
 if [ "$platform" = ax5 ];then
  available=$(df -k "$C" | awk 'END {print $4}');[ "$available" -ge 384 ] || { echo 'Insufficient space for tool rollback; service unchanged.' >&2;exit 1; }
 fi
-rollback=$D/tool-previous.tar.gz
-[ "$persistent" = 0 ] || rollback=$C/cache/tool-previous.tar.gz
 (cd "$T"; tar -czf "$rollback" -T "$work/files")
-marker=$D/tool-update-pending
-[ "$persistent" = 0 ] || marker=$C/cache/tool-update-pending
 printf '%s\n' "$current" > "$marker";sync
 success=0
+save_tool_storage(){ SC_STORAGE_VERIFY=1 "$C/starts/save_storage.sh"; }
 restore(){
  code=$?;trap - EXIT INT TERM
- if [ "$success" != 1 ];then tar -xzf "$rollback" -C "$T" || code=1;sync;if [ "$platform" = k2p ];then "$C/starts/save_storage.sh" || code=1;fi;echo 'Tool update rolled back; proxy service was not restarted.' >&2;fi
+ if [ "$success" != 1 ];then
+  if tar -xzf "$rollback" -C "$T" && sync &&
+     { [ "$platform" != k2p ] || save_tool_storage; };then
+   echo 'Tool update rolled back; proxy service was not restarted.' >&2
+  else
+   echo "Tool rollback failed; recovery archive retained at $rollback." >&2
+   rm -rf "$work";release_lock;exit 1
+  fi
+ fi
  rm -f "$marker" "$rollback";rm -rf "$work";release_lock;exit "$code"
 }
 trap restore EXIT
@@ -114,6 +129,6 @@ while read -r file;do
  mv "$T/$file.tool-new" "$T/$file"
 done < "$work/files"
 cp "$work/upstream/version" "$T/version.tool-new";mv "$T/version.tool-new" "$T/version"
-if [ "$platform" = k2p ];then "$C/starts/save_storage.sh";else "$C/ax5/tool-sync.sh";sync;fi
+if [ "$platform" = k2p ];then save_tool_storage;else "$C/ax5/tool-sync.sh";sync;fi
 success=1
 printf 'Official stable tool updated to %s; proxy and other services were not restarted.\n' "$latest"

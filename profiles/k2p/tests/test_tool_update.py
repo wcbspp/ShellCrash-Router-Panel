@@ -39,6 +39,15 @@ class ToolUpdateTests(unittest.TestCase):
   d,t,p,env=self.fixture(link=True);result=self.execute(p,env);self.assertNotEqual(result.returncode,0);self.assertEqual((t/'version').read_text().strip(),'1.9.4release');self.assertFalse((t/'unsafe').exists())
  def test_persistent_save_failure_restores_files(self):
   d,t,p,env=self.fixture(fail_save=True);before=(t/'menu.sh').read_bytes();result=self.execute(p,env);self.assertNotEqual(result.returncode,0);self.assertEqual((t/'version').read_text().strip(),'1.9.4release');self.assertEqual((t/'menu.sh').read_bytes(),before)
+ def test_failed_rollback_retains_archive_and_blocks_overwrite(self):
+  d,t,p,env=self.fixture(fail_save=True)
+  r=self.execute(p,env)
+  self.assertNotEqual(r.returncode,0);self.assertIn('rollback failed',r.stderr)
+  rollback=d/'runtime/tool-previous.tar.gz'
+  saved=rollback.read_bytes()
+  self.assertTrue((d/'runtime/tool-update-pending').exists())
+  self.assertNotEqual(self.execute(p,env).returncode,0)
+  self.assertEqual(rollback.read_bytes(),saved)
  def test_same_version_is_noop(self):
   d,t,p,env=self.fixture(version='1.9.4release');before=(t/'menu.sh').read_bytes();result=self.execute(p,env);self.assertEqual(result.returncode,0,result.stderr);self.assertEqual((t/'menu.sh').read_bytes(),before);self.assertIn('service unchanged',result.stdout)
 if __name__=='__main__':unittest.main()

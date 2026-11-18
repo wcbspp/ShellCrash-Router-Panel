@@ -84,8 +84,8 @@
     "reason": "Regression coverage for manual path rollback/pin readback, partial and stale measurements, UA choice/state isolation and truthful filtered counts."
   },
   "payload/starts/manage.sh": {
-    "sha256": "40102628cdce780001da2003b283932a44f9ce5b5ef54ae6f6ead90b8363cf7a",
-    "reason": "Provide authenticated access to persistent evidence and pending status.; Reviewed OOM monitor integration: single local incident, bounded process/source snapshots, opt-in verified WebDAV using configured memory protection and authenticated persisted UI setting. Device validation recorded separately. Unified capability-based ZeroTier/TUN policy and controls; shared lossless transaction; firmware adapter owns lifecycle and durable storage only. Existing proxy routing unchanged."
+    "sha256": "ce2078bc03095fa49fb0c32202f7be7568406337066c6fad8bfa25d2bb12ab02",
+    "reason": "Provide authenticated access to persistent evidence and pending status.; Reviewed OOM monitor integration: single local incident, bounded process/source snapshots, opt-in verified WebDAV using configured memory protection and authenticated persisted UI setting. Device validation recorded separately. Unified capability-based ZeroTier/TUN policy and controls; shared lossless transaction; firmware adapter owns lifecycle and durable storage only. Existing proxy routing unchanged. Give a new ownerless lock a grace period; serialize stale reclamation before discarding abandoned staging files."
   },
   "tests/test_proxy_mode.js": {
     "sha256": "0d476681fd7c939c813fea8283fbb786eab2d3a1432fd0b4cedf240ef4489183",
@@ -152,8 +152,8 @@
     "reason": "Reviewed backup transaction: authenticated live DAV gate, complete component manifest and independent baseline catalog, exact installed-version recovery, CLI update persistence/feedback; failure preserves previous backup and user settings"
   },
   "payload/starts/tool_update.sh": {
-    "sha256": "4339b2ac409fa45fd7592f85b0e516b69d61443305185740d2a379943398a2bb",
-    "reason": "Reviewed backup transaction: authenticated live DAV gate, complete component manifest and independent baseline catalog, exact installed-version recovery, CLI update persistence/feedback; failure preserves previous backup and user settings; Support OpenSSL SHA256 fallback on firmware without sha256sum."
+    "sha256": "3044a4b972b100b6274b0f0c4628562fd595cbff566fb5de23dc1b5822de28e5",
+    "reason": "Reviewed backup transaction: authenticated live DAV gate, complete component manifest and independent baseline catalog, exact installed-version recovery, CLI update persistence/feedback; failure preserves previous backup and user settings; Support OpenSSL SHA256 fallback on firmware without sha256sum. Verify Storage rollback, retaining the previous archive and marker if recovery fails."
   },
   "tests/test_control_inventory.py": {
     "sha256": "0daa2d77ed133aa97d0b870a17958d0bb3f0a63361be2f82db3ff9aae06d68ab",
@@ -238,5 +238,9 @@
   "tests/test_native_resources.py": {
     "reason": "Unify rule recovery: verified local and WebDAV cache, direct original/CDN, same-source latest native compatibility validation, guarded persistence/rollback and bounded startup readiness; retain routing and ZeroTier settings. Fixtures exercise the shared download policy.",
     "sha256": "24a25d64280aeaa3560953f103f49d0326b559b7d2ea8f11ad75c405c25c6595"
+  },
+  "tests/test_tool_update.py": {
+    "reason": "Allow boot recovery from the same rule source after exact caches fail, with native validation and bounded storage. Verify a failed rollback retains the archive and that a retry cannot overwrite it.",
+    "sha256": "de242b3ec63729c2691d394c9b74dfbc8f3185907e29965d053aa43c90e30e15"
   }
 }

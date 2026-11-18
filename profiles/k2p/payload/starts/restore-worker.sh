@@ -103,12 +103,19 @@ finish(){
   if [ "$STOPPED" = 1 ];then if rollback;then STATE=rolledback;else STATE=rollback_failed;fi
   else STATE=rejected;fi
  fi
- printf '{"id":"%s","state":"%s","manifest_sha256":"%s","time":%s}\n' "$ID" "$STATE" "$(field manifest_sha256)" "$(date +%s)" > "$X/result.json"
+ receipt=0
+ printf '{"id":"%s","state":"%s","manifest_sha256":"%s","time":%s}\n' "$ID" "$STATE" "$(field manifest_sha256)" "$(date +%s)" > "$X/result.json.new" && mv "$X/result.json.new" "$X/result.json" && receipt=1 || :
+
  if [ -f "$X/recovery-session.lua" ];then
   lua "$X/recovery-session.lua" result "/tmp/sc-preflight-$ID" && cp "/tmp/sc-preflight-$ID/public.json" "$D/recovery-plan.json.new" && mv "$D/recovery-plan.json.new" "$D/recovery-plan.json" || :
  fi
  case "$STATE" in done)msg='备份恢复完成';;rolledback)msg='恢复未完成，已还原操作前状态';;rollback_failed)msg='回退失败，请保留事务目录并通过 SSH 检查';;*)msg='恢复预检未通过，未覆盖应用';;esac
- phase "$([ "$STATE" = done ] && echo done || echo error)" "$msg"
+ phase "$([ "$STATE" = done ] && echo done || echo error)" "$msg" || :
+ if [ "$receipt" = 1 ] && [ "$STATE" != rollback_failed ];then
+  rm -rf "$X/credentials" "$X/target" "$X/runtime" "$X/app" || :
+  rm -f "$X/rollback-application.tar.gz" "$X/rollback-runtime.tar.gz" "$X/application.tar.gz" \
+   "$X/runtime-assets.tar.gz" "$X/core.tar.gz" "$X/proxies.json" "$X/config.original.json" "$X/config.check.json" || :
+ fi
  rm -f "$D/operation.lock/owner";rmdir "$D/operation.lock" 2>/dev/null || :
  exit "$code"
 }

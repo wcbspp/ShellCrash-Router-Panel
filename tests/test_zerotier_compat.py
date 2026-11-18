@@ -73,6 +73,22 @@ M.exec=function(cmd) if cmd:find('openssl',1,true) then return string.rep('a',64
   self.assertIsNotNone(g.files[prefix+'.json'])
   g.files['/proc/mounts']='none /mnt/ssd tmpfs rw 0 0\n'
   self.assertFalse(L.execute(SOURCE,g.M,g.adapter).status().available)
+ def test_failed_launch_recovers_without_a_running_process(self):
+  L,_=self.fixture('{}');g=L.globals()
+  L.execute("""adapter.binary='/opt/bin/zerotier-one';adapter.home='/opt/var/lib/zerotier-one'
+adapter.restart=function() running=false;return false end
+adapter.recover=function(active)
+ assert(active==adapter.home and not running)
+ assert(files[adapter.path]=='{}')
+ running=true;restarts=restarts+1;return true
+end
+""")
+  g.files['/proc/123/exe']='/opt/bin/zerotier-one'
+  g.files['/proc/123/cmdline']='/opt/bin/zerotier-one\0-d\0/opt/var/lib/zerotier-one\0'
+  Z=L.execute(SOURCE,g.M,g.adapter)
+  with self.assertRaisesRegex(Exception,'zerotier_restart_failed'):Z.set(True,False)
+  self.assertTrue(g.running);self.assertEqual(g.restarts,1)
+  self.assertFalse(Z.status().enabled)
  def test_patch_preserves_unknown_bytes_and_types(self):
   raw=' { "outside":[], "settings" : {"portMappingEnabled":false,"empty":[],"nested":{"x":"a,}:b\\\"c"},"interfacePrefixBlacklist":["docker"]},"tail":{}} '
   L,Z=self.fixture(raw);new,added,had=Z.patch(raw,True,None)

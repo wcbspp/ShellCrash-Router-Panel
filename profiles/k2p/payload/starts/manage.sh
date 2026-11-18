@@ -31,14 +31,31 @@ act=$1
 id=$2
 phase(){ printf '%s\n' "$1" > "$D/phase"; [ -z "$2" ] || printf '%s\n' "$2" > "$D/message"; }
 event(){ printf '%s %s\n' "$(date '+%m-%d %H:%M:%S')" "$1" >> "$D/events.log"; }
-owner_live(){ p=$(cat "$D/operation.lock/owner" 2>/dev/null); [ -n "$p" ] && kill -0 "$p" 2>/dev/null; }
+owner_live(){ p=$(cat "$D/operation.lock/owner" 2>/dev/null); case "$p" in ''|*[!0-9]*|0)return 1;;esac;kill -0 "$p" 2>/dev/null; }
+reap_operation_lock()(
+ guard="$D/operation.lock.reap"
+ mkdir "$guard" 2>/dev/null || return 1
+ trap 'rmdir "$guard" 2>/dev/null || :' EXIT
+ age=$(stat -c %Y "$D/operation.lock" 2>/dev/null) || return 1
+ now=$(date +%s)
+ case "$age:$now" in *[!0-9:]*|:*|*:)return 1;;esac
+ [ "$((now-age))" -ge 60 ] && ! owner_live || return 1
+ rm -f "$D/operation.lock/owner"
+ rmdir "$D/operation.lock" || return 1
+)
 lock(){
+ stale=0
  if ! mkdir "$D/operation.lock" 2>/dev/null; then
-  owner_live && return 1
-  if type native_clean_cache >/dev/null 2>&1;then native_clean_cache;fi;rm -rf "$D/native-previous";rm -f "$D/native-policy.input" "$D/native-resources.input";rm -f "$D/operation.lock/owner"; rmdir "$D/operation.lock" 2>/dev/null || return 1
+  reap_operation_lock || return 1
   mkdir "$D/operation.lock" 2>/dev/null || return 1
+  stale=1
  fi
- echo $$ > "$D/operation.lock/owner"
+ echo $$ > "$D/operation.lock/owner" || { rm -f "$D/operation.lock/owner";rmdir "$D/operation.lock" 2>/dev/null;return 1; }
+ if [ "$stale" = 1 ];then
+  if type native_clean_cache >/dev/null 2>&1;then native_clean_cache;fi
+  rm -rf "$D/native-previous"
+  rm -f "$D/native-policy.input" "$D/native-resources.input"
+ fi
  if [ "$act" != restorego ];then revision=$(cat "$D/recovery-revision" 2>/dev/null);case "$revision" in ''|*[!0-9]*)revision=0;;esac;printf '%s\n' "$((revision+1))" > "$D/recovery-revision";fi
  trap 'if [ -n "$configuration_core_source" ];then configuration_core_release;fi;if [ "$act" = dns ]; then rm -rf "$D/dns"; fi; if [ "$act" = policy ] || [ "$act" = groupmode ]; then rm -rf "$D/policy"; fi; if [ "$act" = rules ]; then rm -rf "$D/rules"; fi; if [ "$act" = fetch ] || [ "$act" = fetchconvert ]; then rm -f "$D/ca.pem"; fi; if [ "$act" = apply ]; then rm -f "$D/previous.json" "$D/candidate.json" "$D/bounds.gz" "$D/bounds.json" "$D/check.json" "$D/upload.b64" "$D/upload.parts"; fi; if type native_clean_cache >/dev/null 2>&1;then native_clean_cache;fi;rm -rf "$D/native-previous";rm -f "$D/native-policy.input" "$D/native-resources.input";rm -f "$D/operation.lock/owner"; rmdir "$D/operation.lock" 2>/dev/null' EXIT
 }

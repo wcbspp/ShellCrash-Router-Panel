@@ -34,6 +34,18 @@ esac
   unrelated=self.r/'other';unrelated.mkdir()
   self.assertNotEqual(self.run_helper('start',unrelated).returncode,0)
   self.assertFalse((self.r/'signals').exists())
+ def test_missing_pid_can_only_be_recovered_for_an_interrupted_restart(self):
+  self.script(self.bin/'sleep','exec /bin/sleep 0.1\n')
+  self.script(self.bin/'pidof','[ -f "'+str(self.r/'started')+'" ] && echo 124\n')
+  self.script(self.bin/'zerotier-one','touch "'+str(self.r/'started')+'"\n')
+  self.assertNotEqual(self.run_helper('recover',self.home).returncode,0)
+  self.assertFalse((self.r/'started').exists())
+  ram=self.r/'ram'
+  (ram/'zerotier-routes-pending').touch()
+  for name in ('interfaces','routes-4','routes-6'):(ram/('zerotier-'+name)).touch()
+  self.assertEqual(self.run_helper('recover',self.home).returncode,0)
+  self.assertTrue((self.r/'started').exists())
+  self.assertFalse((self.r/'signals').exists())
  def test_missing_identity_never_signals_service(self):
   (self.home/'identity.secret').unlink();self.assertNotEqual(self.run_helper('start').returncode,0);self.assertFalse((self.r/'signals').exists())
  def test_unexpected_process_arguments_never_signal_service(self):

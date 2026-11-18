@@ -173,23 +173,39 @@ function Z.status()
  out.error=not stateok and'invalid_state'or M.read(diagnostic,128):gsub('%s+$','');out.pending=M.read(pending)~=''
  return out
 end
-local function restart()
+local function running_target()
  local verified,active=target()
  assert(verified and (active or not adapter.binary),'zerotier_target_unverified')
- assert(adapter.restart(active),'zerotier_restart_failed')
+ return active
+end
+local function verify_running()
+ running_target()
  assert(M.exec('pidof zerotier-one 2>/dev/null'):match('%d'),'zerotier_not_running')
+end
+local function restart(active)
+ assert(adapter.restart(active),'zerotier_restart_failed')
+ verify_running()
+end
+local function recover(active)
+ assert(target(),'zerotier_target_unverified')
+ assert((adapter.recover or adapter.restart)(active),'zerotier_recovery_failed')
+ verify_running()
 end
 function Z.set(enable,defer)
  assert(type(enable)=='boolean','invalid_zerotier_setting')
  assert(target(),'zerotier_target_unverified')
  assert(M.lock('zerotier-compat.lock',60),'zerotier_compat_busy')
- local old,oldstate,new,changed,wasrunning
+ local old,oldstate,snapshots,new,changed,wasrunning,active,restart_started
  local function persist()if adapter.persist then assert(adapter.persist(),'zerotier_persist_failed')end;assert(M.run('sync'),'zerotier_sync_failed')end
  local ok,result=pcall(function()
   M.write(M.R..'/zerotier-compat.lock/owner',tostring(require('nixio').getpid()))
   assert(target(),'zerotier_target_unverified')
   old=read(path,adapter.allow_missing==true);oldstate=read(record,true)
   local state=loadstate(oldstate)
+  snapshots={}
+  for _,file in ipairs({backup..'.before',backup..'.applied',pending}) do
+   snapshots[#snapshots+1]={file=file,exists=not not fs.lstat(file),content=read(file,true)}
+  end
   local missing=not fs.lstat(path)
   local restoring=enable and state.enabled and missing and adapter.allow_missing
   local base=restoring and read(backup..'.applied',false)or(missing and'{}'or old)
@@ -209,14 +225,30 @@ function Z.set(enable,defer)
   if enable then write(backup..'.applied',new);write(record,M.json.encode({enabled=true,added=added,had_list=had,prefix=prefix,home=home}))else os.remove(record);os.remove(pending)end
   persist()
   if changed and wasrunning then
-   if defer then M.write(pending,'1\n')else restart();os.remove(pending)end
+   if defer then M.write(pending,'1\n')else active=running_target();restart_started=true;restart(active);os.remove(pending)end
   end
   os.remove(diagnostic);return changed
  end)
  if not ok then
-  if changed and old and M.read(path)==new then if old==''then os.remove(path)else pcall(write,path,old)end;if wasrunning then pcall(restart)end end
-  if oldstate then if oldstate==''then os.remove(record)else pcall(write,record,oldstate)end end
-  if oldstate then pcall(persist)end;M.write(diagnostic,'apply_failed\n')
+  local reverted=pcall(function()
+   if changed and old and M.read(path)==new then
+    if old==''then assert(os.remove(path))else write(path,old)end
+   elseif restart_started then
+    error('zerotier_config_changed')
+   end
+   if oldstate then
+    if oldstate==''then if fs.lstat(record)then assert(os.remove(record))end else write(record,oldstate)end
+   end
+   for _,item in ipairs(snapshots or {}) do
+    if item.exists then write(item.file,item.content)
+    elseif fs.lstat(item.file)then assert(os.remove(item.file))end
+   end
+  end)
+  local persisted=not oldstate or (reverted and pcall(persist))
+  local recovered=not restart_started or (reverted and pcall(recover,active))
+  local rollback_ok=reverted and persisted and recovered
+  pcall(M.write,diagnostic,rollback_ok and 'apply_failed\n' or 'rollback_failed\n')
+  if not rollback_ok then result='zerotier_rollback_failed' end
  end
  os.remove(M.R..'/zerotier-compat.lock/owner');os.remove(M.R..'/zerotier-compat.lock');os.remove(M.R..'/zerotier-compat.lock.time')
  if not ok then error(result,0)end
@@ -235,7 +267,8 @@ function Z.finish()
  if not M.lock('zerotier-compat.lock',60)then return end
  local ok=pcall(function()
   M.write(M.R..'/zerotier-compat.lock/owner',tostring(require('nixio').getpid()))
-  restart()
+  local active=running_target()
+  if not pcall(restart,active) then recover(active) end
  end)
  if ok then os.remove(pending);os.remove(diagnostic)else M.write(diagnostic,'restart_pending\n')end
  os.remove(M.R..'/zerotier-compat.lock/owner');os.remove(M.R..'/zerotier-compat.lock');os.remove(M.R..'/zerotier-compat.lock.time')

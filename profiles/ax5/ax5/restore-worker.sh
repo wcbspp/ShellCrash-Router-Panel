@@ -15,8 +15,7 @@ ID=$(field id);case "$ID" in ''|*[!a-f0-9]*)exit 2;;esac
 STATE=preparing;STOPPED=0;MUTATED=0;FINISHED=0
 phase(){
  STATE=$1;msg=$2
- printf '{"id":"%s","phase":"%s","active":true,"message_b64":"%s"}\n' "$ID" "$STATE" "$(printf '%s' "$msg" | base64 | tr -d '\n')" > "$R/job.json.new"
- mv "$R/job.json.new" "$R/job.json"
+ printf '{"id":"%s","phase":"%s","active":true,"message_b64":"%s"}\n' "$ID" "$STATE" "$(printf '%s' "$msg" | base64 | tr -d '\n')" > "$R/job.json.new" && mv "$R/job.json.new" "$R/job.json" || :
  printf '%s %s\n' "$(date +%s)" "$STATE" >> "$X/events"
  date +%s > "$R/operation.lock.time"
 }
@@ -98,13 +97,20 @@ finish(){
   else STATE=rejected;fi
  fi
  # Rollback evidence is deliberately kept. Never delete this transaction on error.
- printf '{"id":"%s","state":"%s","manifest_sha256":"%s","core_sha256":"%s","time":%s}\n' "$ID" "$STATE" "$(field manifest_sha256)" "${NEW_CORE:-unknown}" "$(date +%s)" > "$X/result.json"
+ receipt=0
+ printf '{"id":"%s","state":"%s","manifest_sha256":"%s","core_sha256":"%s","time":%s}\n' "$ID" "$STATE" "$(field manifest_sha256)" "${NEW_CORE:-unknown}" "$(date +%s)" > "$X/result.json.new" && mv "$X/result.json.new" "$X/result.json" && receipt=1 || :
+
  if [ -f "$X/recovery-session.lua" ];then
   lua "$X/recovery-session.lua" result "/tmp/sc-preflight-$ID" && cp "/tmp/sc-preflight-$ID/public.json" "$R/recovery-plan.json.new" && mv "$R/recovery-plan.json.new" "$R/recovery-plan.json" || :
  fi
  case "$STATE" in done)message='备份恢复完成';;rolledback)message='恢复未完成，已还原操作前状态';;rollback_failed)message='自动回退失败，请保留恢复目录并通过 SSH 检查';;*)message='恢复检查未通过，未覆盖应用';;esac
  printf '{"id":"%s","phase":"%s","active":false,"message_b64":"%s"}\n' "$ID" "$([ "$STATE" = done ] && echo done || echo error)" "$(printf '%s' "$message" | base64 | tr -d '\n')" > "$R/job.json.new"
  mv "$R/job.json.new" "$R/job.json"
+ if [ "$receipt" = 1 ] && [ "$STATE" != rollback_failed ];then
+  rm -rf "$X/credentials" "$X/target" "$X/runtime" "$X/app" || :
+  rm -f "$X/rollback-application.tar.gz" "$X/rollback-runtime.tar.gz" "$X/application.tar.gz" \
+   "$X/runtime-assets.tar.gz" "$X/core.tar.gz" "$X/proxies.json" "$X/config.original.json" "$X/config.check.json" || :
+ fi
  rm -f "$R/operation.lock/owner"
  rmdir "$R/operation.lock" 2>/dev/null || :
  rm -f "$R/operation.lock.time"
