@@ -24,7 +24,7 @@
     "reason": "Authenticated restoration dispatch accepts only a checked session id and one-use token; no browser execution plan. Every new operation invalidates earlier confirmation tickets through a monotonic operation revision.; Reviewed on-demand node diagnostics, bounded root-array scan, firmware-compatible change token and explicit control coverage; original baseline preserved. MAC proxy-access switch: authenticated bounded upload and persisted policy, owned IPv4/IPv6 firewall gates for transparent and explicit proxy paths, startup/mode reapply without core restart; UI state and confirmation. Local firewall transactions plus real IPv4 LAN HTTP/SOCKS/DNS, UI and enabled-policy boot verified separately; physical IPv6 traffic not available on the AX LAN. IP/MAC device picker and nonempty enable guard; official LAN-chain generation without service/ipset teardown; native shell compatibility; modes/base rollback. Tests and real client verification recorded separately.; Preserve selector readiness and failed recovery evidence; bounded OOM diagnostics or portable SHA verification as applicable.; OOM evidence capture and on-demand monitor page export.; Persist bounded AX5 OOM records and keep K2P validation pending.; Harden bounded OOM evidence and report persistence status.; Reviewed OOM monitor integration: single local incident, bounded process/source snapshots, opt-in verified WebDAV using configured memory protection and authenticated persisted UI setting. Device validation recorded separately. Reviewed opt-in AX5 ZeroTier/TUN compatibility: bounded lossless setting edits, authenticated locked jobs, explicit startup phases and truthful UDP scope; original routing rules unchanged. K2P receives wording only. Unified capability-based ZeroTier/TUN policy and controls; shared lossless transaction; firmware adapter owns lifecycle and durable storage only. Existing proxy routing unchanged."
   },
   "ax5/webdav.sh": {
-    "sha256": "3b38f9a18ab8a94a0b8b8384c14cc8c1d7f7154f7419ec360a065cf81cace170",
+    "sha256": "fe6fdf782d89f9ee78285e9bbfd14037ba74e11825155d13e3b79c2fe093c3fa",
     "reason": "Verify staged index before MOVE and preserve previous pointer until confirmed publication; existing live PROPFIND gate retained."
   },
   "tests/test_webdav.py": {
@@ -104,8 +104,8 @@
     "reason": " Imported templates retain groups/rules while managed runtime TUN follows ShellCrash mode. Reviewed domestic-IP fallback: derive from validated local ShellCrash CN table inside the kernel after explicit user/provider rules and before default proxy; preserve DNS, nodes, private/mode guards and source subscription; no resident service or country bypass that defeats overrides."
   },
   "ax5/prepare.sh": {
-    "sha256": "a3aa2a0f41dcebba62d63867ae9bace534b7c19bc8a2406c60ef7a53d312d46f",
-    "reason": " Validate and record prepared interception mode after runtime/core checks. Reviewed opt-in AX5 ZeroTier/TUN compatibility: bounded lossless setting edits, authenticated locked jobs, explicit startup phases and truthful UDP scope; original routing rules unchanged. K2P receives wording only."
+    "reason": "Unify rule recovery: verified local and WebDAV cache, direct original/CDN, same-source latest native compatibility validation, guarded persistence/rollback and bounded startup readiness; retain routing and ZeroTier settings. Fixtures exercise the shared download policy.",
+    "sha256": "b7127441b87d43411e566a78b1decb1dcc98339fbe027896b6c2cc90b122f1fb"
   },
   "ax5/run.sh": {
     "sha256": "05817492d1be0e009d3ada1eb3c11f9ff20645cc2fdbc57ac05ca54e27907786",
@@ -182,5 +182,25 @@
   "ui/health.js": {
     "sha256": "1b30d72d21c1e724a618f365e9f85ba9b0a74a1a5b127a3ecc7eca979240ce41",
     "reason": "; OOM evidence capture and on-demand monitor page export.; Persist bounded AX5 OOM records and keep K2P validation pending.; Reviewed OOM monitor integration: single local incident, bounded process/source snapshots, opt-in verified WebDAV using configured memory protection and authenticated persisted UI setting. Device validation recorded separately."
+  },
+  "ax5/database-source.sh": {
+    "reason": "Unify rule recovery: verified local and WebDAV cache, direct original/CDN, same-source latest native compatibility validation, guarded persistence/rollback and bounded startup readiness; retain routing and ZeroTier settings. Fixtures exercise the shared download policy.",
+    "sha256": "640622f0147fd1680dc4c4a5ef92af081ff59a6d8adbcb3934705f2bc3321568"
+  },
+  "ax5/mirror-sync.sh": {
+    "reason": "Unify rule recovery: verified local and WebDAV cache, direct original/CDN, same-source latest native compatibility validation, guarded persistence/rollback and bounded startup readiness; retain routing and ZeroTier settings. Fixtures exercise the shared download policy.",
+    "sha256": "bda1fa08aa8221aee63881909d5f9ec03f8470ffdc5bff2f88524f2fb39ae16d"
+  },
+  "ax5/native-resources.sh": {
+    "reason": "Unify rule recovery: verified local and WebDAV cache, direct original/CDN, same-source latest native compatibility validation, guarded persistence/rollback and bounded startup readiness; retain routing and ZeroTier settings. Fixtures exercise the shared download policy.",
+    "sha256": "d1f01dfd1f89f601d027314303f5a00139292b627f007fe18080817d7af1829b"
+  },
+  "tests/test_native_resources.py": {
+    "reason": "Unify rule recovery: verified local and WebDAV cache, direct original/CDN, same-source latest native compatibility validation, guarded persistence/rollback and bounded startup readiness; retain routing and ZeroTier settings. Fixtures exercise the shared download policy.",
+    "sha256": "a0904154f801a25f11139f04db23ac8240d106e6d9acfbca3f8d7fccfd919c72"
+  },
+  "ax5/database.lua": {
+    "reason": "Allow boot recovery from the same rule source after exact caches fail, with native validation and bounded storage.",
+    "sha256": "543c4390b5edc36b2dc2a79baeefa56032191d4350d52ec3ab4fbd8dce131913"
   }
 }

@@ -80,7 +80,13 @@ secret=$(sed -n 's/^secret=//p' "$CRASHDIR/configs/ShellCrash.cfg" | head -1)
 # Native legacy start prepares in the background. Two bounded cold-cache
 # domain downloads (up to 80s), profile normalization and native checks share
 # this deadline; 90s can roll back while preparation is still progressing.
-deadline=$(( $(cut -d. -f1 /proc/uptime) + 180 ))
+# Each native resource has bounded original/CDN/latest attempts. Do not let
+# the watchdog start a second preparation while that first worker is active.
+resource_slots=$(awk 'END{print NR+0}' "$C/configs/native-resources.tsv" 2>/dev/null || echo 0)
+case "$resource_slots" in ''|*[!0-9]*)resource_slots=0;;esac
+[ "$resource_slots" -le 16 ] || resource_slots=16
+preparation_budget=$((180+resource_slots*60))
+deadline=$(( $(cut -d. -f1 /proc/uptime) + preparation_budget ))
 while [ "$(cut -d. -f1 /proc/uptime)" -lt "$deadline" ]; do
  [ ! -f "$CRASHDIR/configs/panel-disabled" ] && [ ! -f /tmp/ShellCrash/manual-stop ] || exit 0
  if [ -n "$(pidof CrashCore)" ] && curl --noproxy '*' -fsS --connect-timeout 1 --max-time 1 -H "Authorization: Bearer $secret" "http://${PANEL_LAN_IP}:9999/version" >/dev/null 2>&1; then
@@ -93,6 +99,6 @@ while [ "$(cut -d. -f1 /proc/uptime)" -lt "$deadline" ]; do
  sleep 1
 done
 mkdir -p /tmp/sc-admin
-printf '%s Boot start did not reach a live authenticated core API within 180s (dispatch exit %s)\n' "$(date '+%m-%d %H:%M:%S')" "$native_result" >> /tmp/sc-admin/events.log
+printf '%s Boot start did not reach a live authenticated core API within %ss (dispatch exit %s)\n' "$(date '+%m-%d %H:%M:%S')" "$preparation_budget" "$native_result" >> /tmp/sc-admin/events.log
 [ "$native_result" != 0 ] || native_result=1
 exit "$native_result"

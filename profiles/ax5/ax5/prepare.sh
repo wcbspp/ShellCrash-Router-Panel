@@ -13,6 +13,7 @@ if [ ! -x "$R/CrashCore" ]; then
  tar -xzf "$C/cache/core-armv7.tar.gz" -C "$R" CrashCore
  chmod 700 "$R/CrashCore"
 fi
+"$C/ax5/rule-assets.sh" "$KIND"
 lua "$C/ax5/config-normalize.lua" migrate
 if [ "$KIND" = meta ]; then
  timeout -t 60 "$C/ax5/native-resources.sh" "$C/configs/config.json"

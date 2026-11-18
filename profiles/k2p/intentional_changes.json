@@ -32,11 +32,11 @@
     "sha256": "e124b5a853fd70658b486b086524e6758813ce4ea1c974cc37b34ae13fed365f"
   },
   "payload/starts/panel_bfstart.sh": {
-    "sha256": "88535a4568da0884f0a9dc277c79649845c1f691331469fe314aafc13174a7ae",
-    "reason": "Reboot acceptance fixes: initialized routing hooks, safe executable reuse, remote domain cache, pre-download startup delay and explicit remote backup catalog query MAC proxy-access switch: authenticated bounded upload and persisted policy, owned IPv4/IPv6 firewall gates for transparent and explicit proxy paths, startup/mode reapply without core restart; UI state and confirmation. Local firewall transactions plus real IPv4 LAN HTTP/SOCKS/DNS, UI and enabled-policy boot verified separately; physical IPv6 traffic not available on the AX LAN. Unified capability-based ZeroTier/TUN policy and controls; shared lossless transaction; firmware adapter owns lifecycle and durable storage only. Existing proxy routing unchanged."
+    "reason": "Unify rule recovery: verified local and WebDAV cache, direct original/CDN, same-source latest native compatibility validation, guarded persistence/rollback and bounded startup readiness; retain routing and ZeroTier settings. Fixtures exercise the shared download policy.",
+    "sha256": "d8e3f833fbff3452c22546ad691b7c4a447d0783136e162df9ffe715a093babe"
   },
   "payload/starts/webdav.sh": {
-    "sha256": "3b38f9a18ab8a94a0b8b8384c14cc8c1d7f7154f7419ec360a065cf81cace170",
+    "sha256": "fe6fdf782d89f9ee78285e9bbfd14037ba74e11825155d13e3b79c2fe093c3fa",
     "reason": "Verify staged index before MOVE and preserve previous pointer until confirmed publication; live DAV gate retained."
   },
   "tests/test_webdav.py": {
@@ -44,8 +44,8 @@
     "reason": "Shared authenticated DAV tests cover guarded complete manifests, strict baseline metadata validation, server COPY isolation and staged/final pointer uncertainty preserving previous components."
   },
   "payload/starts/panel_boot.sh": {
-    "reason": "Allow bounded cold-cache legacy preparation plus native configuration checks before judging readiness; real phase trace showed the former 90-second timeout firing before core dispatch. Preserve authenticated API, mode reset, stop cancellation and finite failure checks. Preserve the owned updater existing64M tmpfs quota through boot; clear its environment flag before legacy children and retain normal45M default. Updater restores45M on commit/rollback. No memory threshold reduction. Preserve FD3 in bounded boot child; verified-handoff failure aborts without downloading/decompressing a second candidate. Native v12 exposed an FD link failure followed by excessive tmpfs and ZeroTier OOM; full upgrade remains a separate live gate.",
-    "sha256": "19d320aa1189747b2585e4515cd4a4f3c88c8d86daca9de66f8c4e3d1894137d"
+    "reason": "Unify rule recovery: verified local and WebDAV cache, direct original/CDN, same-source latest native compatibility validation, guarded persistence/rollback and bounded startup readiness; retain routing and ZeroTier settings. Fixtures exercise the shared download policy.",
+    "sha256": "f1cb0681b969cf4d6efed68d150cfa71e133712ec655343cbff6f0b9a07985af"
   },
   "tests/test_boot_readiness.py": {
     "reason": "Allow bounded cold-cache legacy preparation plus native configuration checks before judging readiness; real phase trace showed the former 90-second timeout firing before core dispatch. Preserve authenticated API, mode reset, stop cancellation and finite failure checks.",
@@ -232,11 +232,11 @@
     "sha256": "956feeaf6ac90200ccf1011d296c97eedae7498ec2fd943ae62c5de1b696e6cf"
   },
   "payload/starts/native_profile.sh": {
-    "reason": "Cold boot uses original rule URL and same-file GitHub CDN with pinned SHA checks; local proxy fallback requires a running core and listening port, so absent core is never a download dependency.",
-    "sha256": "11accbabe1baeceab46cd43b06e0ec4ac3b964d58b2b7c0fc7510c5e04154d75"
+    "reason": "Unify rule recovery: verified local and WebDAV cache, direct original/CDN, same-source latest native compatibility validation, guarded persistence/rollback and bounded startup readiness; retain routing and ZeroTier settings. Fixtures exercise the shared download policy.",
+    "sha256": "73fff8d3143087b254376eb36647c5f49687b86285c2d5015f085843c0aaba90"
   },
   "tests/test_native_resources.py": {
-    "reason": "Cover same-file CDN recovery, missing core/listener, running-proxy fallback and rejection of mismatched rule bytes.",
-    "sha256": "d3d157940e4d769e6188909fc23c3a7d6d4421e2e3f55e3e56134f3dae107be8"
+    "reason": "Unify rule recovery: verified local and WebDAV cache, direct original/CDN, same-source latest native compatibility validation, guarded persistence/rollback and bounded startup readiness; retain routing and ZeroTier settings. Fixtures exercise the shared download policy.",
+    "sha256": "24a25d64280aeaa3560953f103f49d0326b559b7d2ea8f11ad75c405c25c6595"
   }
 }

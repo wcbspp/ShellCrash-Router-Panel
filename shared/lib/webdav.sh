@@ -18,7 +18,7 @@ dav_live_ready(){
 }
 dav_mkdir(){ code=$(dav_curl -X MKCOL -o /dev/null -w '%{http_code}' "$1/") || return 1;case "$code" in 201|405) return 0;;*)echo "WebDAV 创建目录失败 HTTP=$code" >&2;return 1;;esac; }
 dav_object(){
- case "$1:$3" in core:tar.gz|dashboard:tar.gz|backup:tar.gz|runtime:tar.gz|info:txt|cn:mrs|cn:srs|rules:txt|rules:srs|rules:json|probe:txt) :;;*)return 2;;esac
+ case "$1:$3" in core:tar.gz|dashboard:tar.gz|backup:tar.gz|runtime:tar.gz|info:txt|cn:mrs|cn:srs|rules:txt|rules:srs|rules:json|rules:mmdb|rules:dat|probe:txt) :;;*)return 2;;esac
  printf '%s' "$2" | grep -Eq '^[a-f0-9]{64}$' || return 2
  dir=objects;[ "$1" != backup ] || dir=backups
  printf '%s/%s/%s-%s.%s\n' "$(dav_base)" "$dir" "$1" "$2" "$3"

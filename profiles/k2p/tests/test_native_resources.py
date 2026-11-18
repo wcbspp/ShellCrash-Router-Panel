@@ -17,7 +17,7 @@ class NativeResources(unittest.TestCase):
         self.tmp=tempfile.TemporaryDirectory();self.root=Path(self.tmp.name);self.c=self.root/'persist';self.d=self.root/'admin';self.ram=self.root/'ram'
         for p in [self.c/'starts',self.c/'configs',self.c/'jsons',self.d,self.ram/'ruleset']:p.mkdir(parents=True,exist_ok=True)
         (self.root/'meminfo').write_text('MemAvailable: 40960 kB\n')
-        for name in ['remote.sh','webdav.sh','policy_merge.awk']:shutil.copy(SOURCE/name,self.c/'starts'/name)
+        for name in ['remote.sh','webdav.sh','policy_merge.awk','rule-source.sh']:shutil.copy(SOURCE/name,self.c/'starts'/name)
         self.helper=self.root/'helper.sh';self.helper.write_text((SOURCE/'native_profile.sh').read_text().replace('/tmp/ShellCrash',str(self.ram)).replace('/proc/meminfo',str(self.root/'meminfo')))
         self.server=ThreadingHTTPServer(('127.0.0.1',0),Server);self.server.calls=[];self.server.payload=b'rules fixture';self.thread=threading.Thread(target=self.server.serve_forever,daemon=True);self.thread.start();self.url='http://127.0.0.1:%s/rules.srs'%self.server.server_port
         self.env=dict(os.environ,C=str(self.c),D=str(self.d),PANEL_LAN_IP='127.0.0.1')
@@ -70,9 +70,10 @@ curl(){
   case "$1" in --proxy)route=proxy;shift;;-o)shift;dest=$1;;https://testingcf.jsdelivr.net/*)route=mirror;;esac
   shift
  done
+ [ "$dest" != - ] || dest=/dev/stdout
  if [ "$route" = mirror ] && [ "$MIRROR" = 1 ];then
-  if [ "$CORRUPT" = 1 ];then echo changed > "$dest";else cp "$D/payload" "$dest";fi
- elif [ "$route" = proxy ];then cp "$D/payload" "$dest"
+  if [ "$CORRUPT" = 1 ];then echo changed > "$dest";else cat "$D/payload" > "$dest";fi
+ elif [ "$route" = proxy ];then cat "$D/payload" > "$dest"
  else return 28;fi
 }
 native_resource_fetch https://raw.githubusercontent.com/fixture/rules/123456/cn.srs "$D/download" '''+sha)

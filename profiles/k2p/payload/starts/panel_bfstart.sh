@@ -14,12 +14,13 @@ P=/tmp/panel-dns
 mkdir -p "$P" /tmp/ShellCrash/ruleset || exit 1
 hash=3b83cff9903602f27c3a6737c775f742253a24a60165ff4d9b9ef28ac22bc140
 . "$C/starts/domain_asset.sh"
-domain_asset_ensure "$hash" /tmp/ShellCrash/ruleset/cn.srs "$P" || { logger -t ShellCrash 'CN domain rules unavailable; proxy start cancelled';exit 1; }
-# Restore only bounded, checksum-pinned native assets after a RAM reset.
+domain_asset_ensure "$hash" /tmp/ShellCrash/ruleset/cn.srs "$P" 1 || { logger -t ShellCrash 'CN domain rules unavailable; proxy start cancelled';exit 1; }
+# Restore the old version first; commit a checked compatible update if it is gone.
 if [ -f "$C/configs/native-profile" ] && [ -s "$C/configs/native-resources.tsv" ];then
- D=/tmp/sc-admin;mkdir -p "$D";. "$C/starts/native_profile.sh"
- native_resources_prepare "$C/configs/native-resources.tsv" '' "$D/native-boot.tsv" || exit 1
- rm -f "$D/native-boot.tsv"
+ . "$C/starts/resource_health.sh"
+ resource_read
+ . "$C/starts/native_profile.sh"
+ native_resources_recover || exit 1
 fi
 # Upgrade older panel profiles before ShellCrash splits the configuration.
 if [ ! -f "$C/configs/native-profile" ];then

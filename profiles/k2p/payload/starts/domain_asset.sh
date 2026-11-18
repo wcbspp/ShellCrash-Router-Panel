@@ -49,6 +49,28 @@ domain_asset_sync(){
   }
  fi
 }
+domain_asset_latest()(
+ # The official bundle is a latest-version candidate, not an exact-cache hit.
+ [ -f "$C/libs/web_get_bin.sh" ] && [ -f "$C/starts/native_profile.sh" ] || return 1
+ . "$C/starts/native_profile.sh"
+ binary=$(rule_validation_binary) || return 1
+ available=$(awk '/^MemAvailable:/{print $2}' /proc/meminfo)
+ [ "${available:-0}" -ge "$(( (${rh_protect_mb:-12}+8)*1024 ))" ] || return 1
+ CRASHDIR=$C;export CRASHDIR
+ . "$C/configs/ShellCrash.cfg"
+ . "$C/libs/web_get_bin.sh"
+ webget(){ rule_source_fetch "$2" "$1" '' 2097152; }
+ package=$domain_work/latest.tgz
+ trap 'rm -f "$package" "$domain_work/cn.new"' EXIT
+ get_bin "$package" bin/geodata/srs.tar.gz || return 1
+ entry=$(tar -ztf "$package" | awk '$0=="cn.srs"||$0=="./cn.srs"{print}')
+ [ "$entry" = cn.srs ] || [ "$entry" = ./cn.srs ] || return 1
+ tar -zxOf "$package" "$entry" | head -c 1048577 > "$domain_work/cn.new"
+ rm -f "$package"
+ domain_asset_commit "$domain_work/cn.new" "$bin_url" archive || return 1
+ mv "$domain_work/cn.new" "$domain_file" || return 1
+ logger -t ShellCrash 'Old CN rules unavailable; official latest compatible version committed'
+)
 domain_asset_ensure(){
  domain_file=$2;domain_work=$3
  domain_asset_expected "$1" || { logger -t ShellCrash 'Saved domain version record invalid; refusing implicit downgrade';return 1; }
@@ -78,6 +100,10 @@ domain_asset_ensure(){
   fi
  done
  rm -f "$domain_work/cn.new" "$domain_work/ca.pem"
- [ "$domain_found" = 1 ] || return 1
+ if [ "$domain_found" != 1 ];then
+  [ "${4:-0}" = 1 ] || return 1
+  domain_asset_latest
+  return $?
+ fi
  domain_asset_sync
 }

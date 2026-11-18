@@ -14,9 +14,13 @@ class NativeResourcesTests(unittest.TestCase):
         self.addCleanup(temp.cleanup)
         p = Path(temp.name)
         c, r, tool, commands = (p / n for n in ('config', 'ram', 'tool', 'bin'))
-        for folder in (c / 'ruleset/native', r, tool / 'configs', tool / 'libs', commands):
+        for folder in (c / 'ruleset/native', c/'configs', c/'ax5', r, tool / 'configs', tool / 'libs', commands):
             folder.mkdir(parents=True, exist_ok=True)
         (tool / 'configs/ShellCrash.cfg').write_text('')
+        (c/'ax5/rule-source.sh').write_text((ROOT/'ax5/rule-source.sh').read_text())
+        (c/'ax5/remote.sh').write_text('remote_fetch(){ return 2; }\n')
+        (c/'ax5/check-binary.sh').write_text('#!/bin/sh\nexit 0\n')
+        (c/'ax5/check-binary.sh').chmod(0o700)
         (tool / 'libs/web_get_bin.sh').write_text(
             'get_bin(){ touch "'+str(p/'requested')+'"; head -c '+str(size)+' /dev/zero > "$1"; }\n')
         (commands / 'lua').write_text('#!/bin/sh\ncat >/dev/null\necho GeoSite.dat:geosite.dat:8388608\n')

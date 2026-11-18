@@ -5,6 +5,8 @@ function A.update(M,service)
  require_ok(kind=='meta'or kind=='singbox','invalid_core')
  local ext=kind=='meta'and'mrs'or'srs'
  local path=M.C..'/ruleset/cn.'..ext
+ local metadata=M.C..'/configs/domain-'..kind..'.json'
+ local oldmeta=M.read(metadata)
  local candidate=M.R..'/domain-candidate.'..ext
  local previous=M.R..'/domain-previous.'..ext
  local preview=M.R..'/domain-check.'..(kind=='meta'and'yaml'or'json')
@@ -41,8 +43,8 @@ function A.update(M,service)
   require_ok(M.run(command..' >> '..M.R..'/service.log 2>&1'),'database_check_failed')
   require_ok(M.run('cp '..M.quote(candidate)..' '..M.quote(path..'.new')),'database_save_failed')
   require_ok(os.rename(path..'.new',path));changed=true
+  M.save(metadata,{kind=kind,file='cn.'..ext,sha256=hash,updated=os.time(),source=M.read(M.R..'/domain-source'):gsub('%s+$','')})
   if wasrunning then service('start');paused=false end
-  M.save(M.C..'/configs/domain-'..kind..'.json',{kind=kind,file='cn.'..ext,sha256=hash,updated=os.time(),source=M.read(M.R..'/domain-source'):gsub('%s+$','')})
   if not M.run(M.C..'/ax5/backup-config.sh >> '..M.R..'/service.log 2>&1')then return 'configuration_saved_backup_pending'end
   return 'database_updated'
  end)
@@ -51,6 +53,7 @@ function A.update(M,service)
    pcall(service,'stop')
    require_ok(M.run('cp '..M.quote(previous)..' '..M.quote(path..'.new')),'database_rollback_failed')
    require_ok(os.rename(path..'.new',path))
+   if oldmeta=='' then os.remove(metadata)else M.write(metadata,oldmeta)end
   end
   if wasrunning and(paused or changed)then pcall(service,'start')end
  end
