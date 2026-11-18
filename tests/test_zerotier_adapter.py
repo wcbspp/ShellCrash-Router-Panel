@@ -24,7 +24,16 @@ esac
   source=source.replace('case "$1" in','kill(){ if [ "$1" = -0 ];then [ "$2" != 123 ];else echo "$*" >> "'+str(self.r/'signals')+'";fi; }\ncase "$1" in',1)
   self.helper=self.r/'helper.sh';self.helper.write_text(source)
  def script(self,p,s):p.write_text('#!/bin/sh\n'+s);p.chmod(0o700)
- def run_helper(self,mode):return subprocess.run(['sh',str(self.helper),mode],capture_output=True,timeout=8)
+ def run_helper(self,mode,*args):return subprocess.run(['sh',str(self.helper),mode,*map(str,args)],capture_output=True,timeout=8)
+ def test_same_home_alias_is_accepted_but_different_home_is_rejected(self):
+  alias=self.r/'zt-alias';alias.symlink_to(self.home,target_is_directory=True)
+  cli=str(self.bin/'zerotier-one')
+  (self.r/'proc/123/cmdline').write_bytes((cli+'\0'+str(alias)+'\0').encode())
+  self.assertEqual(self.run_helper('start',alias).returncode,0)
+  (self.r/'signals').unlink()
+  unrelated=self.r/'other';unrelated.mkdir()
+  self.assertNotEqual(self.run_helper('start',unrelated).returncode,0)
+  self.assertFalse((self.r/'signals').exists())
  def test_missing_identity_never_signals_service(self):
   (self.home/'identity.secret').unlink();self.assertNotEqual(self.run_helper('start').returncode,0);self.assertFalse((self.r/'signals').exists())
  def test_unexpected_process_arguments_never_signal_service(self):

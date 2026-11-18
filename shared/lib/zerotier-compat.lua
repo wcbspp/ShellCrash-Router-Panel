@@ -20,12 +20,49 @@ M.lock=M.lock or function(name,ttl)
  return false
 end
 local Z={}
-local path=assert(adapter.path)
+local function safe_path(path)
+ return type(path)=='string' and #path<512 and path:match('^/[A-Za-z0-9_./-]+$')
+  and not path:match('/%.%.?/') and not path:match('/%.%.?$')
+end
+local function persistent_home(path)
+ local dir=path
+ while dir~='' do
+  local st=fs.stat(dir)
+  if not st or st.type~='dir' or st.uid~=0 or not st.modestr or st.modestr:sub(5,5)=='w' or st.modestr:sub(8,8)=='w' then return false end
+  dir=dir:match('^(.*)/[^/]+$') or ''
+ end
+ if adapter.storage_root and path:sub(1,#adapter.storage_root+1)==adapter.storage_root..'/' then return true end
+ local mount,kind='',nil
+ for dir,fs_type in M.read('/proc/mounts',65536):gmatch('%S+ (%S+) (%S+)[^\n]*') do
+  if (dir=='/' or path==dir or path:sub(1,#dir+1)==dir..'/') and #dir>#mount then mount,kind=dir,fs_type end
+ end
+ local local_disk={ext2=true,ext3=true,ext4=true,ubifs=true,jffs2=true,f2fs=true,xfs=true,btrfs=true}
+ return local_disk[kind]==true
+end
+local function configured_home()
+ local declared=adapter.configured_home and adapter.configured_home() or (not adapter.configured_home and adapter.home)
+ if not safe_path(declared) then return nil end
+ local resolved=fs.realpath(declared)
+ if not safe_path(resolved) then return nil end
+ if resolved~=adapter.home and not persistent_home(resolved) then return nil end
+ return resolved
+end
+local home=adapter.binary and configured_home() or (not adapter.binary and adapter.home)
+local namespace=''
+local namespace_ok=true
+if adapter.binary and home and home~=adapter.home then
+ local sum=M.exec('printf %s '..M.quote(home)..' | openssl dgst -sha256 2>/dev/null'):match('(%x+)%s*$')
+ namespace_ok=sum~=nil and #sum==64
+ if namespace_ok then namespace='-'..sum end
+end
+local path=home and home..'/local.conf' or assert(adapter.path)
+Z.home=home or adapter.home
 local prefix=assert(adapter.prefix)
 assert(prefix:match('^[%w_-]+$')and #prefix<=32,'invalid_tun_prefix')
-local record=M.C..'/configs/zerotier-compat.json'
-local pending=M.R..'/zerotier-compat.pending'
-local diagnostic=M.R..'/zerotier-compat.error'
+local backup=M.C..'/configs/zerotier-compat'..namespace
+local record=backup..'.json'
+local pending=M.R..'/zerotier-compat'..namespace..'.pending'
+local diagnostic=M.R..'/zerotier-compat'..namespace..'.error'
 local function regular(p,optional)
  local s=fs.lstat(p);assert(not s and optional or s and s.type=='reg','zerotier_unsafe_file')
 end
@@ -40,7 +77,7 @@ end
 local function loadstate(raw)
  if raw==''then return {}end
  local s=M.json.decode(raw)
- assert(type(s)=='table'and s.enabled==true and type(s.added)=='boolean'and type(s.had_list)=='boolean'and(s.prefix==nil or s.prefix==prefix),'zerotier_invalid_state')
+ assert(type(s)=='table'and (s.home==nil and namespace=='' or s.home==home) and s.enabled==true and type(s.added)=='boolean'and type(s.had_list)=='boolean'and(s.prefix==nil or s.prefix==prefix),'zerotier_invalid_state')
  return s
 end
 local function skip(s,i)return s:find('%S',i)or #s+1 end
@@ -112,21 +149,24 @@ end
 local function target()
  if not adapter.available() then return false end
  if not adapter.binary then return true end
+ if not namespace_ok or not home or configured_home()~=home then return false end
  local pids=M.exec('pidof zerotier-one 2>/dev/null')
  if not pids:match('%S') then return true end
  local pid=pids:match('^%s*(%d+)%s*$')
  if not pid or fs.readlink('/proc/'..pid..'/exe')~=adapter.binary then return false end
  local args={}
  for v in M.read('/proc/'..pid..'/cmdline',4096):gmatch('([^%z]+)%z') do args[#args+1]=v end
- return args[1]==adapter.binary and args[#args]==adapter.home and
-  (#args==2 or (#args==3 and args[2]=='-d'))
+ if args[1]~=adapter.binary or not (#args==2 or (#args==3 and args[2]=='-d')) then return false end
+ local active=args[#args]
+ if not safe_path(active) or fs.realpath(active)~=home then return false end
+ return true,active
 end
 function Z.status()
  local matched=target()
  local ok,raw=false,nil
  if matched then ok,raw=pcall(read,path,adapter.allow_missing==true) end
  local stateok,state=pcall(function()return loadstate(read(record,true))end)
- if not stateok then state={}end
+ if not matched or not stateok then state={}end
  local out={available=ok and stateok,config_path=matched and path or nil,enabled=state.enabled==true,protected=false,managed=state.added==true}
  if ok then local good,c=pcall(M.json.decode,raw);if good and type(c)=='table'and type(c.settings)=='table'and type(c.settings.interfacePrefixBlacklist)=='table'then for _,v in ipairs(c.settings.interfacePrefixBlacklist)do if v==prefix then out.protected=true end end end end
  out.policy='exclude_tun_interfaces';out.tun_prefix=prefix
@@ -134,8 +174,9 @@ function Z.status()
  return out
 end
 local function restart()
- assert(target(),'zerotier_target_unverified')
- assert(adapter.restart(),'zerotier_restart_failed')
+ local verified,active=target()
+ assert(verified and (active or not adapter.binary),'zerotier_target_unverified')
+ assert(adapter.restart(active),'zerotier_restart_failed')
  assert(M.exec('pidof zerotier-one 2>/dev/null'):match('%d'),'zerotier_not_running')
 end
 function Z.set(enable,defer)
@@ -151,21 +192,21 @@ function Z.set(enable,defer)
   local state=loadstate(oldstate)
   local missing=not fs.lstat(path)
   local restoring=enable and state.enabled and missing and adapter.allow_missing
-  local base=restoring and read(M.C..'/configs/zerotier-compat.applied',false)or(missing and'{}'or old)
+  local base=restoring and read(backup..'.applied',false)or(missing and'{}'or old)
   local added,had;new,added,had=Z.patch(base,enable,state)
   if not enable and missing then new=''end
-  if not enable and state.added and old==read(M.C..'/configs/zerotier-compat.applied',true)then
-   local original=read(M.C..'/configs/zerotier-compat.before',false);if original~=''then M.json.decode(original)end;new=original
+  if not enable and state.added and old==read(backup..'.applied',true)then
+   local original=read(backup..'.before',false);if original~=''then M.json.decode(original)end;new=original
   end
   wasrunning=M.exec('pidof zerotier-one 2>/dev/null'):match('%d')~=nil
   changed=new~=old
   if changed then
-   if enable and not restoring then write(M.C..'/configs/zerotier-compat.before',old)end
+   if enable and not state.enabled then write(backup..'.before',old)end
    assert(read(path,adapter.allow_missing==true)==old,'zerotier_config_changed')
    if new==''then assert(not fs.lstat(path)or os.remove(path),'zerotier_remove_failed')else write(path,new)end
   end
   if state.enabled then had=state.had_list end
-  if enable then write(M.C..'/configs/zerotier-compat.applied',new);write(record,M.json.encode({enabled=true,added=added,had_list=had,prefix=prefix}))else os.remove(record);os.remove(pending)end
+  if enable then write(backup..'.applied',new);write(record,M.json.encode({enabled=true,added=added,had_list=had,prefix=prefix,home=home}))else os.remove(record);os.remove(pending)end
   persist()
   if changed and wasrunning then
    if defer then M.write(pending,'1\n')else restart();os.remove(pending)end
@@ -184,7 +225,7 @@ end
 function Z.enforce()
  local stateok,state=pcall(function()return loadstate(read(record,true))end)
  if not stateok then M.write(diagnostic,'invalid_state\n');return end
- if state.enabled~=true or Z.status().protected then return end
+ if not target() or state.enabled~=true or Z.status().protected then return end
  local ok=pcall(Z.set,true,true);if not ok then M.write(diagnostic,'enforce_failed\n')end
 end
 function Z.finish()

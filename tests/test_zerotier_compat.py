@@ -28,7 +28,7 @@ function M.exec()return running and'123' or''end
 function M.run(s)if s:find(' restart',1,true)then restarts=restarts+1;if fail_restart>0 then fail_restart=fail_restart-1;return false end end;return true end
 os.remove=function(p)files[p]=nil;return true end
 os.rename=function(a,b)if fail_rename>0 then fail_rename=fail_rename-1;return false end;files[b]=files[a];files[a]=nil;return true end
-local fs={readlink=function(p)return files[p]end,lstat=function(p)if types[p]then return {type=types[p]}end;if files[p]then return{type='reg'}end end,chmod=function(p,mode)assert(mode=='600','native permission string required');return true end}
+local fs={realpath=function(p)return files["resolve:"..p]or p end,stat=function()return{type="dir",uid=0,modestr="rwxr-xr-x"}end,readlink=function(p)return files[p]end,lstat=function(p)if types[p]then return {type=types[p]}end;if files[p]then return{type='reg'}end end,chmod=function(p,mode)assert(mode=='600','native permission string required');return true end}
 require=function(n)if n=='nixio.fs'then return fs elseif n=='nixio'then return{getpid=function()return123 end}end;error(n)end
 dofile=function()return M end
 files['/opt/etc/init.d/S27zerotier']='#!'
@@ -40,6 +40,7 @@ files['/opt/etc/init.d/S27zerotier']='#!'
   L,Z=self.fixture();g=L.globals()
   g.adapter['binary']='/opt/bin/zerotier-one';g.adapter['home']='/opt/var/lib/zerotier-one'
   g.files['/proc/123/exe']='/opt/bin/zerotier-one'
+  Z=L.execute(SOURCE,g.M,g.adapter)
   g.files['/proc/123/cmdline']='/opt/bin/zerotier-one\0-d\0/tmp/other-zerotier\0'
   self.assertFalse(Z.status().available)
   with self.assertRaises(Exception):Z.set(True,False)
@@ -48,6 +49,30 @@ files['/opt/etc/init.d/S27zerotier']='#!'
   g.files['/proc/123/cmdline']='/opt/bin/zerotier-one\0-d\0/opt/var/lib/zerotier-one\0'
   self.assertTrue(Z.status().available)
   self.assertEqual(Z.status().config_path,'/opt/var/lib/zerotier-one/local.conf')
+ def test_persistent_custom_home_uses_separate_state_and_rollback(self):
+  L,_=self.fixture();g=L.globals()
+  L.execute("""adapter.binary='/opt/bin/zerotier-one';adapter.home='/opt/var/lib/zerotier-one'
+adapter.configured_home=function()return '/mnt/ssd/zt' end
+M.exec=function(cmd) if cmd:find('openssl',1,true) then return string.rep('a',64) end; return '123' end
+""")
+  g.files['/proc/mounts']='disk /mnt/ssd ext4 rw 0 0\n'
+  g.files['/proc/123/exe']='/opt/bin/zerotier-one'
+  g.files['/proc/123/cmdline']='/opt/bin/zerotier-one\0-d\0/mnt/ssd/zt\0'
+  original='{"settings":{"portMappingEnabled":false}}'
+  g.files['/mnt/ssd/zt/local.conf']=original
+  prefix='/persist/configs/zerotier-compat'
+  g.files[prefix+'.json']='{"enabled":true,"added":true,"had_list":false}'
+  Z=L.execute(SOURCE,g.M,g.adapter)
+  self.assertEqual(Z.status().config_path,'/mnt/ssd/zt/local.conf')
+  self.assertFalse(Z.status().enabled)
+  self.assertTrue(Z.set(True,False))
+  self.assertIn('utun',g.files['/mnt/ssd/zt/local.conf'])
+  self.assertEqual(json.loads(g.files[prefix+'-'+'a'*64+'.json'])['home'],'/mnt/ssd/zt')
+  self.assertTrue(Z.set(False,False))
+  self.assertEqual(g.files['/mnt/ssd/zt/local.conf'],original)
+  self.assertIsNotNone(g.files[prefix+'.json'])
+  g.files['/proc/mounts']='none /mnt/ssd tmpfs rw 0 0\n'
+  self.assertFalse(L.execute(SOURCE,g.M,g.adapter).status().available)
  def test_patch_preserves_unknown_bytes_and_types(self):
   raw=' { "outside":[], "settings" : {"portMappingEnabled":false,"empty":[],"nested":{"x":"a,}:b\\\"c"},"interfacePrefixBlacklist":["docker"]},"tail":{}} '
   L,Z=self.fixture(raw);new,added,had=Z.patch(raw,True,None)

@@ -20,11 +20,16 @@ case "$1" in
  start)
   # Restart only this process: firmware service commands replay stale routes.
   supported || exit 1
+  run_home=${2:-/var/lib/zerotier-one}
+  printf '%s\n' "$run_home" | grep -Eq '^/[A-Za-z0-9_./-]+$' || exit 1
+  actual_dir=$(cd "$run_home" && pwd -P) || exit 1
+  expected_dir=$(cd /var/lib/zerotier-one && pwd -P) || exit 1
+  [ "$actual_dir" = "$expected_dir" ] || exit 1
   set -- $(pidof zerotier-one)
   [ "$#" = 1 ] || exit 1
   pid=$1
-  tr '\000' ' ' < "/proc/$pid/cmdline" | grep -qx '/usr/bin/zerotier-one /var/lib/zerotier-one ' || exit 1
-  [ -s /var/lib/zerotier-one/identity.secret ] && [ -s /var/lib/zerotier-one/identity.public ] || exit 1
+  tr '\000' ' ' < "/proc/$pid/cmdline" | grep -Fxq "/usr/bin/zerotier-one $run_home " || exit 1
+  [ -s "$run_home/identity.secret" ] && [ -s "$run_home/identity.public" ] || exit 1
   : > "$D/zerotier-restart.log"
   if [ ! -f "$D/zerotier-routes-pending" ];then
    ip -o link show | awk -F': ' '$2 ~ /^zt[[:alnum:]]+$/ {print $2}' | head -c 1025 > "$D/zerotier-interfaces"
@@ -38,7 +43,7 @@ case "$1" in
   kill "$pid" || exit 1
   n=0
   while kill -0 "$pid" 2>/dev/null;do n=$((n+1));[ "$n" -lt 10 ] || exit 1;sleep 1;done
-  /usr/bin/zerotier-one /var/lib/zerotier-one </dev/null >/dev/null 2>&1 & newpid=$!
+  /usr/bin/zerotier-one "$run_home" </dev/null >/dev/null 2>&1 & newpid=$!
   n=0
   while :;do
    kill -0 "$newpid" 2>/dev/null || exit 1
